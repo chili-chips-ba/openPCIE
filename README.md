@@ -6,7 +6,7 @@ Computing is about communicating. Some would also say networking. The digital so
 
 It aims to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — This **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
 
-All that with **`full HW/SW co-sim`** the kind of is yet to be seen in the proprietary settings. Augmented with a rock-solid **`openBackplane`** in the basement, the geek community will thus get all it takes for building their own _openCompute_ systems.
+All that with **`full HW/SW co-sim`** the kind of is yet to be seen in the proprietary settings. Augmented with a rock-solid **`openBackplane`** in the hardware basement, the geek community will thus get all it takes for building their own, end-to-end _openCompute_ systems.
 
 > The project‘s immediate goal is to empower the makers with ability to host PCIe-based peripherals on their soft RISC-V SOCs.
 
