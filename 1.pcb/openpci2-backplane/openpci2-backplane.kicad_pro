@@ -551,30 +551,24 @@
           "group_by": false,
           "label": "DigiKey",
           "name": "DigiKey",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Mouser",
           "name": "Mouser",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "TME",
           "name": "TME",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Description",
           "name": "Description",
-          "show": false
-        },
-        {
-          "group_by": false,
-          "label": "Uvitron",
-          "name": "Uvitron",
           "show": false
         }
       ],
@@ -613,7 +607,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "../../0.doc/1.pcb/",
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
     "spice_model_current_sheet_as_root": true,
