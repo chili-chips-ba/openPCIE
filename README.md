@@ -1,12 +1,16 @@
-Computing is about communicating. Some would say networking. Sovereignty tag along -- “Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies” from 2021 calls for the development of critical open source IP blocks within 2-5 years. PCIe Root Complex (RC) was listed as one of them. This project is the first step in that direction.
+Computing is about communicating. Some would say networking. The digital sovereignty tags along -- _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_ calls for the development of critical open source IP blocks. 
+
+PCIe Root Complex (RC) was listed as one of them. This project is the first step in that direction.
 
 <p align="center">
   <img width=380 src="0.doc/artwork/PCIE2-RootC.logo.png">
 </p>
 
-It aims to open Artix7 PCIe Gen2 RC for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source Soft IP for PIO accesses — The RTL and, even more importantly, the layered sofware Driver with Demo App. All that with full HW/SW co-sim the kind of is unheard of in proprietary settings. And with an openBackplane that allows building your openCompute systems on top of.
+It aims to open Artix7 PCIe Gen2 RC for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source Soft IP for PIO accesses — The RTL and, even more importantly, the layered sofware Driver with Demo App. All that with full HW/SW co-sim the kind of is yet to be seen in the proprietary settings. And with an openBackplane that allows building your openCompute systems on top of.
 
-The project‘s immediate goal is to empower the makers with ability to host PCIe-based peripherals on their RISC-V SOCs. Since End-Point (EP) with DMA is already available, open-source PCIe peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project intends to change that status quo.
+> The project‘s immediate goal is to empower the makers with ability to host PCIe-based peripherals on their RISC-V SOCs.
+
+Since End-Point (EP) with DMA is already available, open-source PCIe peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project intends to change that status quo.
 
 The long-term goal is to set the stage for the development of full open-source PCIe stack, and gradually phase out Xilinx HMs from the solution. That’s a long, ambitious path, esp. when it comes to mixed-signal SerDes and high-quality PLLs. We therefore anticipate a series of follow on projects that would build on the foundations we hereby set.
 
@@ -27,7 +31,7 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 
 # Project Status
 
-#### 1. Mini PCIE Backplane PCB
+#### STEP 1. Mini PCIE Backplane PCB
 
 Almost all consumer PCIE installations have the RC chip soldered down on the motherboard, typically embodied in the CPU or "North Bridge" ASIC, where PCIE connectors are used solely for the EP cards. Similarly, all FPGA boards on the market are meant for EP applications. As such, they expect clock, reset and a few other signals from the infrastructure. It is only the professional and military-grade electronics that may have both RC and EP functions on add-on cards, with a backplane connecting them (see VPX chassis, or VITA 46.4).
 
@@ -45,18 +49,18 @@ We are happy to announce that [Envox.eu](https://www.envox.eu) has agreed to par
  - [ ] Manufacure prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity
  - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
-#### 2. Project setup and preparatory activities
+#### STEP 2. Project setup and preparatory activities
  - [x] Procure FPGA development boards and PCIE accessories.
  - [ ] Analyze and fully understand the existing proprietary codebase and design setup. Take the entire team to the sufficient level of understanding of the existing PCIE ecosystem, both proprietary and open-source. 
  - [ ] Prepare project repo and documentation blueprint for both hardware and software elements of the overall solution.
  - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, Vivado toolchain, proprietary SW Driver and TestApp. 
  
-#### 3. Initial HW/SW implementation
+#### STEP 3. Initial HW/SW implementation
  - [ ] HW development of open-source RTL that mimics the functionality of PCIE RC proprietary solution.
  - [ ] SW development of open-source driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
  - [ ] Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
 
-#### 4. HW/SW co-simulation using full PCIE EP model
+#### STEP 4. HW/SW co-simulation using full PCIE EP model
 
 This development task is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC framework. While that would have reduced time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that Simon Southwell is now also onboard!
 
@@ -68,20 +72,19 @@ With full simulation in place, we hope that the need for hardware debugging, usi
  - [ ] Testbench development and build up. Execution and debug of sim testcases.
  - [ ] Documentation of EP model, TB and sim environment, with objectives to make it easy for anyone to use and understand.
  
-#### 5. Integration, testing and iterative design refinements
+#### STEP 5. Integration, testing and iterative design refinements
  - [ ] One by one replace proprietary design elements from task (2.d) with our open-source versions (except for Vivado and TestApp), testing it along the way, and fixing problems as they occur.
  
-#### 6.Prepare Demo and port it to openXC7
+#### STEP 6. Prepare Demo and port it to openXC7
 
 It is expected that, due to nextpnr-xilinx limitations, we might run into showstoppers on the timing closure front. Provided that ScalePNR is ready for real-life testing, even though PCIE is an advanced and high-speed design, we are here to support ScalePNR developers.
 
  - [ ] Develop our open-source PIO TestApp software and representative Demo.
  - [ ] Build design with openXC7, reporting issues and working with developers to fix them, possibly also trying ScalePNR flow.
 
-
 --------------------
 
-# PCIE Backplane
+# Backplane PCB Design
 - WIP
 
 --------------------
@@ -98,7 +101,6 @@ It is expected that, due to nextpnr-xilinx limitations, we might run into showst
 
 # SW Architecture
 - WIP
-
 
 --------------------
 
