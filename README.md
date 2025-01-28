@@ -1,16 +1,16 @@
-Computing is about communicating. Some would say networking. The digital sovereignty tags along with it -- _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_ calls for the development of critical open source IP blocks, such as **`PCIe Root Complex (RC)`**. This project is the first step in that direction.
+Computing is about communicating. Some would also say networking. The digital sovereignty tags along with them -- _"The Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_ calls for the development of critical open source IP blocks, such as **`PCIe Root Complex (RC)`**. This project is the first step in that direction.
 
 <p align="center">
   <img width=350 src="0.doc/artwork/PCIE2-RootC.logo.png">
 </p>
 
-It aims to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — This `RTL` and, even more importantly, the layered `sofware Driver with Demo App`. 
+It aims to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — This **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
 
-All that with `full HW/SW co-sim` the kind of it's yet to be seen in the proprietary settings. Augmented with a rock-solid `openBackplane` in the basement, the geek community will thus get all it takes for building their own openCompute systems.
+All that with **`full HW/SW co-sim`** the kind of is yet to be seen in the proprietary settings. Augmented with a rock-solid **`openBackplane`** in the basement, the geek community will thus get all it takes for building their own _openCompute_ systems.
 
-> **The project‘s immediate goal is to empower the makers with ability to host PCIe-based peripherals on their soft RISC-V SOCs.**
+> The project‘s immediate goal is to empower the makers with ability to host PCIe-based peripherals on their soft RISC-V SOCs.
 
-Given that PCIE End-Point (EP) with DMA is already available in opensource, the opensource PCIe peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project intends to change that status quo.
+Given that the PCIE End-Point (EP) with DMA is already available in opensource, the opensource PCIe peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project intends to change that status quo.
 
 Our long-term goal is to set the stage for the development of full opensource PCIe stack, gradually phasing out Xilinx HMs from the solution. That’s a long, ambitious track, esp. when it comes to mixed-signal SerDes and high-quality PLLs. We therefore anticipate a series of follow on projects that would build on the foundations we hereby set.
 
