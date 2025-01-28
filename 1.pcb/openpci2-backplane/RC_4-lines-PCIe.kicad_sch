@@ -7421,6 +7421,17 @@
 		)
 		(uuid "a8154037-be7c-4a11-a996-db2d1b3d3a58")
 	)
+	(text "Decide where to connect +3.3Vaux!"
+		(exclude_from_sim no)
+		(at 95.758 86.106 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 255 0 0 1)
+			)
+		)
+		(uuid "156d6e17-d392-4616-828f-f6a7c22ccef7")
+	)
 	(text "One high power down converter or one per slot?"
 		(exclude_from_sim no)
 		(at 71.12 17.78 0)
@@ -8562,7 +8573,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0ca11988-1514-43e3-95dd-8930cc37f167")
-		(property "Reference" "#PWR053"
+		(property "Reference" "#PWR048"
 			(at 93.98 46.99 0)
 			(effects
 				(font
@@ -8612,7 +8623,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR053")
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)
@@ -8739,7 +8750,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "16fbe8f3-dc8e-4a46-ab90-de21e2ee1065")
-		(property "Reference" "#PWR056"
+		(property "Reference" "#PWR051"
 			(at 167.64 163.83 0)
 			(effects
 				(font
@@ -8789,7 +8800,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR056")
+					(reference "#PWR051")
 					(unit 1)
 				)
 			)
@@ -9112,7 +9123,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "27a913e7-d5a9-4203-833c-4fae61a128e8")
-		(property "Reference" "#PWR050"
+		(property "Reference" "#PWR045"
 			(at 73.66 156.21 0)
 			(effects
 				(font
@@ -9162,7 +9173,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR050")
+					(reference "#PWR045")
 					(unit 1)
 				)
 			)
@@ -9177,7 +9188,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "27e31758-864d-477b-b79e-83347c1a6200")
-		(property "Reference" "R19"
+		(property "Reference" "R17"
 			(at 173.99 150.495 0)
 			(effects
 				(font
@@ -9258,7 +9269,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R19")
+					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -9564,7 +9575,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3658a89d-9993-4fbb-b8e1-04d1b2c3f29b")
-		(property "Reference" "#PWR058"
+		(property "Reference" "#PWR053"
 			(at 220.98 153.67 0)
 			(effects
 				(font
@@ -9614,7 +9625,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR058")
+					(reference "#PWR053")
 					(unit 1)
 				)
 			)
@@ -9629,7 +9640,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "452eea53-f41a-41d9-bbdd-fe7567dfeccd")
-		(property "Reference" "R20"
+		(property "Reference" "R18"
 			(at 222.25 134.62 90)
 			(effects
 				(font
@@ -9710,7 +9721,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R20")
+					(reference "R18")
 					(unit 1)
 				)
 			)
@@ -10098,7 +10109,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4dc39371-0885-44da-81d1-50c6db33da07")
-		(property "Reference" "#PWR057"
+		(property "Reference" "#PWR052"
 			(at 172.72 163.83 0)
 			(effects
 				(font
@@ -10148,7 +10159,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR057")
+					(reference "#PWR052")
 					(unit 1)
 				)
 			)
@@ -10163,7 +10174,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6fdb1848-e46c-43b1-83b3-c676d3d2ad6b")
-		(property "Reference" "R18"
+		(property "Reference" "R16"
 			(at 173.99 140.97 0)
 			(effects
 				(font
@@ -10244,7 +10255,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R18")
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -10260,7 +10271,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "736892c9-0cbc-4149-92af-2e25e25bea6c")
-		(property "Reference" "R16"
+		(property "Reference" "R14"
 			(at 74.295 31.75 90)
 			(effects
 				(font
@@ -10341,7 +10352,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R16")
+					(reference "R14")
 					(unit 1)
 				)
 			)
@@ -10953,7 +10964,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "837ee980-2489-4ec6-b10b-63b893ff1fbf")
-		(property "Reference" "R21"
+		(property "Reference" "R19"
 			(at 236.855 63.5 90)
 			(effects
 				(font
@@ -11034,7 +11045,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R21")
+					(reference "R19")
 					(unit 1)
 				)
 			)
@@ -11095,7 +11106,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "399-3683-1-ND"
+		(property "DigiKey" "PCE4579CT-ND"
 			(at 78.74 71.12 0)
 			(effects
 				(font
@@ -11104,7 +11115,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" "80-T491A106K0067280"
+		(property "Mouser" "667-EEE-1CA101WAP"
 			(at 78.74 71.12 0)
 			(effects
 				(font
@@ -11113,7 +11124,7 @@
 				(hide yes)
 			)
 		)
-		(property "TME" " T491A106K006AT"
+		(property "TME" "EEE1CA101WAP"
 			(at 78.74 71.12 0)
 			(effects
 				(font
@@ -11146,7 +11157,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8da21b54-1e3d-4329-b7b2-69f07440f76e")
-		(property "Reference" "#PWR054"
+		(property "Reference" "#PWR049"
 			(at 121.92 148.59 0)
 			(effects
 				(font
@@ -11196,7 +11207,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR054")
+					(reference "#PWR049")
 					(unit 1)
 				)
 			)
@@ -11410,7 +11421,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9535ec38-e4fa-4cf2-9e3b-27928db57bfe")
-		(property "Reference" "#PWR048"
+		(property "Reference" "#PWR043"
 			(at 48.26 29.21 0)
 			(effects
 				(font
@@ -11460,7 +11471,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR048")
+					(reference "#PWR043")
 					(unit 1)
 				)
 			)
@@ -11475,7 +11486,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "98c4018e-aea1-4ba7-8754-1083beeec81b")
-		(property "Reference" "#PWR051"
+		(property "Reference" "#PWR046"
 			(at 78.74 82.55 0)
 			(effects
 				(font
@@ -11525,7 +11536,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR051")
+					(reference "#PWR046")
 					(unit 1)
 				)
 			)
@@ -12100,7 +12111,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a3a81f82-f67a-4df4-9a82-228399ea57c3")
-		(property "Reference" "#PWR055"
+		(property "Reference" "#PWR050"
 			(at 139.7 161.29 0)
 			(effects
 				(font
@@ -12150,7 +12161,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR055")
+					(reference "#PWR050")
 					(unit 1)
 				)
 			)
@@ -12167,7 +12178,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a71c7c13-15a2-46d4-9bf8-fc6320c636c6")
-		(property "Reference" "#PWR059"
+		(property "Reference" "#PWR054"
 			(at 238.76 133.35 0)
 			(effects
 				(font
@@ -12217,7 +12228,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR059")
+					(reference "#PWR054")
 					(unit 1)
 				)
 			)
@@ -12330,7 +12341,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "aeaa9313-f83e-4758-88c0-f6dd6b75e314")
-		(property "Reference" "#PWR060"
+		(property "Reference" "#PWR055"
 			(at 246.38 82.55 0)
 			(effects
 				(font
@@ -12380,7 +12391,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR060")
+					(reference "#PWR055")
 					(unit 1)
 				)
 			)
@@ -12492,7 +12503,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b6162949-237a-460a-ab94-ef4528144647")
-		(property "Reference" "#PWR046"
+		(property "Reference" "#PWR041"
 			(at 43.18 46.99 0)
 			(effects
 				(font
@@ -12542,7 +12553,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR046")
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
@@ -12558,7 +12569,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c3a339bb-f737-4cf3-aadd-615751074953")
-		(property "Reference" "U7"
+		(property "Reference" "U6"
 			(at 208.28 128.27 0)
 			(effects
 				(font
@@ -12621,7 +12632,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "U7")
+					(reference "U6")
 					(unit 1)
 				)
 			)
@@ -12636,7 +12647,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c3b575a2-5103-4bbc-b0c3-26fb000bf9f5")
-		(property "Reference" "#PWR052"
+		(property "Reference" "#PWR047"
 			(at 77.47 68.58 0)
 			(effects
 				(font
@@ -12686,7 +12697,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR052")
+					(reference "#PWR047")
 					(unit 1)
 				)
 			)
@@ -12768,7 +12779,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d3cf813b-c82a-483f-b25a-7852579c9420")
-		(property "Reference" "#PWR047"
+		(property "Reference" "#PWR042"
 			(at 45.72 156.21 0)
 			(effects
 				(font
@@ -12818,7 +12829,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR047")
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -12931,7 +12942,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "dd96d6e8-6bf3-4cc8-94fb-8b0cacbc8a5c")
-		(property "Reference" "#PWR049"
+		(property "Reference" "#PWR044"
 			(at 66.04 46.99 0)
 			(effects
 				(font
@@ -12981,7 +12992,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "#PWR049")
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
@@ -13394,7 +13405,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f7734f47-5cde-4ac8-9687-4fd8c35c8f5b")
-		(property "Reference" "R17"
+		(property "Reference" "R15"
 			(at 120.65 103.505 0)
 			(effects
 				(font
@@ -13475,7 +13486,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/6ab8d74d-40e9-45a1-a821-59a82de68ed7"
-					(reference "R17")
+					(reference "R15")
 					(unit 1)
 				)
 			)
@@ -13633,15 +13644,6 @@
 				(hide yes)
 			)
 		)
-		(property "Uvitron" "n/a"
-			(at 43.18 35.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "DigiKey" "SMBJ24ALFTR-ND"
 			(at 43.18 35.56 0)
 			(effects
@@ -13704,7 +13706,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "~"
+		(property "Value" "n/a"
 			(at 114.3 129.54 0)
 			(effects
 				(font
