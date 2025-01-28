@@ -115,7 +115,7 @@ The **wyvernSemi**'s wisdom and contribution made a great deal of difference -- 
  <img width="115" alt="wyvernSemi-Logo" src="https://github.com/user-attachments/assets/94858fce-081a-43b4-a593-d7d79ef38e13">
 </p>
 
-The **Envox**, our next-door buddy, is responsible for the Birth of our Backplane. We like to call it BB, not to be mixed with their gorgeous [BB3](https://www.envox.eu/eez-bb3) beauty.
+The **Envox**, our next-door buddy, is responsible for the Birth of our Backplane. We like to call it BB, not to be mistaked for their gorgeous [BB3](https://www.envox.eu/eez-bb3) blue beauty 🙂.
 
 <p align="center">
   <img width=250 src="0.doc/artwork/EEZ-web-logo.png">
