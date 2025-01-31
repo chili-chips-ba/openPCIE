@@ -1,4 +1,4 @@
-Computing is about communicating. Some would also say about networking. Digital independence tags along with the _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction.
+Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction.
 
 <p align="center">
   <img width=350 src="0.doc/artwork/PCIE2-RootC.logo.png">
