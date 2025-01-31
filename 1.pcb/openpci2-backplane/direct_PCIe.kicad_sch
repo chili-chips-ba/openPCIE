@@ -321,7 +321,7 @@
 				(pin input line
 					(at -5.08 -12.7 0)
 					(length 5.08)
-					(name "JTAG2"
+					(name "TCK"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -339,7 +339,7 @@
 				(pin input line
 					(at -5.08 -15.24 0)
 					(length 5.08)
-					(name "JTAG3"
+					(name "TDI"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -357,7 +357,7 @@
 				(pin output line
 					(at -5.08 -17.78 0)
 					(length 5.08)
-					(name "JTAG4"
+					(name "TDO"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -375,7 +375,7 @@
 				(pin input line
 					(at -5.08 -20.32 0)
 					(length 5.08)
-					(name "JTAG5"
+					(name "TMS"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -465,10 +465,10 @@
 				(pin passive line
 					(at 17.78 -33.02 180)
 					(length 5.08)
-					(name "RSVD"
+					(name "~{CLKREQ}"
 						(effects
 							(font
-								(size 1.016 1.016)
+								(size 0.889 0.889)
 							)
 						)
 					)
@@ -717,7 +717,7 @@
 				(pin input line
 					(at 17.78 -22.86 180)
 					(length 5.08)
-					(name "JTAG1"
+					(name "~{TRST}"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -2716,7 +2716,7 @@
 				(pin input line
 					(at -5.08 -12.7 0)
 					(length 5.08)
-					(name "JTAG2"
+					(name "TCK"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -2734,7 +2734,7 @@
 				(pin input line
 					(at -5.08 -15.24 0)
 					(length 5.08)
-					(name "JTAG3"
+					(name "TDI"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -2752,7 +2752,7 @@
 				(pin output line
 					(at -5.08 -17.78 0)
 					(length 5.08)
-					(name "JTAG4"
+					(name "TDO"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -2770,7 +2770,7 @@
 				(pin input line
 					(at -5.08 -20.32 0)
 					(length 5.08)
-					(name "JTAG5"
+					(name "TMS"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -2860,10 +2860,10 @@
 				(pin passive line
 					(at 17.78 -33.02 180)
 					(length 5.08)
-					(name "RSVD"
+					(name "~{CLKREQ}"
 						(effects
 							(font
-								(size 1.016 1.016)
+								(size 0.889 0.889)
 							)
 						)
 					)
@@ -3364,7 +3364,7 @@
 				(pin input line
 					(at 17.78 -22.86 180)
 					(length 5.08)
-					(name "JTAG1"
+					(name "~{TRST}"
 						(effects
 							(font
 								(size 1.016 1.016)
