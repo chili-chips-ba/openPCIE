@@ -1,4 +1,4 @@
-Computing is about communicating. Some would also say about networking. The digital independence tags along with the _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction.
+Computing is about communicating. Some would also say about networking. Digital independence tags along with the _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction.
 
 <p align="center">
   <img width=350 src="0.doc/artwork/PCIE2-RootC.logo.png">
@@ -41,14 +41,12 @@ Such approach is less work and less risk than to design our own PCIE motherboard
  - [x] Create requirements document.
  - [x] Select components. Schematic and PCB layout design.
  - [ ] Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
- - [ ] Manufacure prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
+ - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
  - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
 #### `PART 2. Project setup and preparatory activities`
  - [x] Procure FPGA development boards and PCIE accessories.
- - [ ] Analyze and fully understand the existing proprietary codebase and design setup. Take the entire team to the sufficient level of understanding of the existing PCIE ecosystem, both proprietary and open-source. 
- - [ ] Prepare project repo and documentation blueprint for both hardware and software elements of the overall solution.
- - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, Vivado toolchain, proprietary SW Driver and TestApp. 
+ - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
  
 #### `PART 3. Initial HW/SW implementation`
  - [ ] HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
@@ -59,23 +57,23 @@ Such approach is less work and less risk than to design our own PCIE motherboard
 
 This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
 
-Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE RC model. The plan is to first convert it to the comprehensive PCIE EP model, then pair it up in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-chose opensource sims of the entire PCIE subsystem.
+Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE RC model. The plan is to first convert it to the comprehensive PCIE EP model, then pair it up in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
 
-With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment, and/or PCIE protocol analyzers would be alleviated.
+With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
 
- - [x] Conversion of the existing PCIE RC model to EP model.
+ - [x] Conversion of existing PCIE RC model to EP model.
  - [ ] Testbench development and build up. Execution and debug of sim testcases.
- - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy for other projects.
+ - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
 #### `PART 5. Integration, testing and iterative design refinements`
- - [ ] One-by-one replace proprietary design elements from PART2.d with our opensource versions (except for Vivado and TestApp), testing it along the way, and fixing problems as they occur.
+ - [ ] One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
  - [ ] Develop our opensource PIO TestApp software and representative Demo.
  - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
-Given that the PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shorcomings and limitations, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for some real-life, heavy duty testing within this project.
+Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
 
 --------------------
 
