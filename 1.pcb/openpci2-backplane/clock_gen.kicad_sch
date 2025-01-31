@@ -5,7 +5,7 @@
 	(uuid "d1bd8037-6549-4311-81a2-2754fbafa5c6")
 	(paper "A4")
 	(title_block
-		(date "2025-01-28")
+		(date "2025-01-29")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -5026,6 +5026,19 @@
 		)
 		(uuid "fdbc3ef6-5fa5-4f6e-8de4-fb5e22dd60d6")
 	)
+	(rectangle
+		(start 179.07 79.375)
+		(end 188.595 111.125)
+		(stroke
+			(width 0)
+			(type default)
+			(color 255 0 0 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 3a7c0b30-d8fa-4abc-9071-67fc6c7d025c)
+	)
 	(text "Requires +3.3V power!"
 		(exclude_from_sim no)
 		(at 57.658 62.992 0)
@@ -5036,6 +5049,17 @@
 			)
 		)
 		(uuid "59c7d6d5-6fff-4646-bb1f-868ac0f77d3a")
+	)
+	(text "Currently not used!"
+		(exclude_from_sim no)
+		(at 183.642 78.74 0)
+		(effects
+			(font
+				(size 0.889 0.889)
+				(color 255 0 0 1)
+			)
+		)
+		(uuid "d4c62c99-5e7a-4ef8-9ecd-3dc01399f216")
 	)
 	(text "Clock generator & fanout"
 		(exclude_from_sim no)
