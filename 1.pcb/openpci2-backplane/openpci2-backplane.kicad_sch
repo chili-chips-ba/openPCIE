@@ -32,7 +32,7 @@
 					(hide yes)
 				)
 			)
-			(property "Footprint" "PCM_EEZ_SMD:Fiducial"
+			(property "Footprint" "PCM_EEZ_SMD:Fiducial_0.75mm_Mask1.5mm"
 				(at 0 -5.08 0)
 				(effects
 					(font
@@ -983,7 +983,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "2b2b44eb-2b8f-4d72-b207-bb17ce77e810")
-		(property "Sheetname" "Clock generator"
+		(property "Sheetname" "Clock generator & Reset fanout"
 			(at 30.48 27.2284 0)
 			(effects
 				(font
@@ -1021,7 +1021,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "6ab8d74d-40e9-45a1-a821-59a82de68ed7")
-		(property "Sheetname" "RC 4-lines PCIe"
+		(property "Sheetname" "RC 4-lanes PCIe"
 			(at 30.48 62.7884 0)
 			(effects
 				(font
@@ -1030,7 +1030,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Sheetfile" "RC_4-lines-PCIe.kicad_sch"
+		(property "Sheetfile" "RC_4-lanes-PCIe.kicad_sch"
 			(at 30.48 71.7046 0)
 			(effects
 				(font
@@ -1059,7 +1059,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "95043c95-aec2-4e16-ae00-6544aa3d2f89")
-		(property "Sheetname" "4 x 1-lines PCIe"
+		(property "Sheetname" "4 x 1-lanes PCIe"
 			(at 30.48 80.5684 0)
 			(effects
 				(font
@@ -1068,7 +1068,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Sheetfile" "4_1-lines_PCIe.kicad_sch"
+		(property "Sheetfile" "4_1-lanes_PCIe.kicad_sch"
 			(at 30.48 89.4846 0)
 			(effects
 				(font
