@@ -5,7 +5,7 @@
 	(uuid "7c1f7c93-511a-4650-8368-2299c4bb51f8")
 	(paper "A4")
 	(title_block
-		(date "2025-01-29")
+		(date "2025-02-02")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -120,7 +120,7 @@
 						)
 					)
 				)
-				(pin input line
+				(pin open_collector line
 					(at -5.08 -27.94 0)
 					(length 5.08)
 					(name "~{PERST}"
@@ -2263,7 +2263,7 @@
 						)
 					)
 				)
-				(pin input line
+				(pin open_collector line
 					(at -5.08 -27.94 0)
 					(length 5.08)
 					(name "~{PERST}"
@@ -7971,6 +7971,30 @@
 			(type default)
 		)
 		(uuid "ff6ea79b-f2b5-4ee6-94f0-15dacbe0142c")
+	)
+	(text "2-lane PCIe"
+		(exclude_from_sim no)
+		(at 15.24 17.78 0)
+		(effects
+			(font
+				(size 1.778 1.5113)
+				(color 194 194 194 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "4ca65067-abf0-43d8-a800-4441cc8bfad5")
+	)
+	(text "1-lane PCIe"
+		(exclude_from_sim no)
+		(at 193.04 17.78 0)
+		(effects
+			(font
+				(size 1.778 1.5113)
+				(color 194 194 194 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "b49769aa-1378-4aca-bc5c-7be62429ea91")
 	)
 	(label "L1_3V3"
 		(at 251.46 106.68 270)

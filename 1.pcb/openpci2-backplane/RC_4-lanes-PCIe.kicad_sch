@@ -5,7 +5,7 @@
 	(uuid "df1778d0-6bc7-4502-b193-5f686593d7c2")
 	(paper "A4")
 	(title_block
-		(date "2025-01-29")
+		(date "2025-02-02")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -1539,7 +1539,7 @@
 						)
 					)
 				)
-				(pin input line
+				(pin open_collector line
 					(at -5.08 -27.94 0)
 					(length 5.08)
 					(name "~{PERST}"
@@ -6939,7 +6939,7 @@
 		)
 		(uuid "a78b4e76-85c7-4c12-aeea-8f522d88991b")
 	)
-	(text "4-lanes PCIe for Root Complex"
+	(text "4-lane PCIe for Root Complex"
 		(exclude_from_sim no)
 		(at 17.78 17.78 0)
 		(effects
@@ -6951,7 +6951,7 @@
 		)
 		(uuid "a99aa85a-f84b-4847-9866-8221d376f4e3")
 	)
-	(text "4-lanes M.2 (Type M) for Root Complex"
+	(text "4-lane M.2 (Type M) for Root Complex"
 		(exclude_from_sim no)
 		(at 101.6 17.78 0)
 		(effects
@@ -6973,6 +6973,17 @@
 			)
 		)
 		(uuid "d646248b-a20f-4386-ac7b-7e7450326998")
+	)
+	(text "Open drain output, connect to RESET?"
+		(exclude_from_sim no)
+		(at 96.52 81.28 0)
+		(effects
+			(font
+				(size 0.889 0.889)
+				(color 255 0 0 1)
+			)
+		)
+		(uuid "df8d5584-e45f-4bf3-bc0b-b81c5b58806b")
 	)
 	(label "RC_3V3"
 		(at 35.56 73.66 0)
