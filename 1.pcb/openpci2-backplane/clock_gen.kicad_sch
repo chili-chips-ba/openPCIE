@@ -5,7 +5,7 @@
 	(uuid "d1bd8037-6549-4311-81a2-2754fbafa5c6")
 	(paper "A4")
 	(title_block
-		(date "2025-01-29")
+		(date "2025-02-02")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -7811,7 +7811,20 @@
 		)
 		(uuid 3a7c0b30-d8fa-4abc-9071-67fc6c7d025c)
 	)
-	(text "Requires +3.3V power!\nUse 4-lanes PCIe power supply for Clock and PCIe switch?"
+	(rectangle
+		(start 255.905 51.435)
+		(end 265.43 87.63)
+		(stroke
+			(width 0)
+			(type default)
+			(color 255 0 0 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid fb7ff563-875d-4f88-b89e-501b5a413e2d)
+	)
+	(text "Requires +3.3V power!\nUse 4-lane PCIe power supply for Clock and PCIe switch?"
 		(exclude_from_sim no)
 		(at 93.98 25.4 0)
 		(effects
@@ -7835,16 +7848,17 @@
 		)
 		(uuid "b68cb598-b7aa-4fba-9675-5751895ca7a7")
 	)
-	(text "One high power down converter or one per slot?"
+	(text "Remove?"
 		(exclude_from_sim no)
-		(at 58.42 27.94 0)
+		(at 255.905 50.8 0)
 		(effects
 			(font
-				(size 1.27 1.27)
+				(size 0.889 0.889)
 				(color 255 0 0 1)
 			)
+			(justify left)
 		)
-		(uuid "bebbc146-2163-4883-bd33-764d41e52fb9")
+		(uuid "c1c8da10-d711-4a03-a5ff-e5a43fd94aa3")
 	)
 	(text "Voltage Supervisor, Manual Reset and Reset fanout"
 		(exclude_from_sim no)
