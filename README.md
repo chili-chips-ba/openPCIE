@@ -19,7 +19,10 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 --------------------
 
 #### References
-- TODO
+- https://github.com/hdlguy/litefury_pcie
+- https://github.com/regymm/pcie_7x
+- [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
+- https://www.chili-chips.xyz/openpcie2-root-complex
 
 --------------------
 
