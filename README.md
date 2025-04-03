@@ -118,7 +118,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 </p>
 
 ### Public posts:
-- Soon to come
+- [2025-04-03](https://www.linkedin.com/feed/update/urn:li:activity:7313386031125303296?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7313386031125303296%2C7313594045216223236%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287313594045216223236%2Curn%3Ali%3Aactivity%3A7313386031125303296%29)
 
 --------------------
 #### End of Document
