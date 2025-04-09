@@ -23,6 +23,7 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 - https://github.com/regymm/pcie_7x
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
 - https://www.chili-chips.xyz/openpcie2-root-complex
 
 --------------------
