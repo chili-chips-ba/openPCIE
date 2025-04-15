@@ -27,6 +27,7 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 - [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
 - [PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
 - [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
+- [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
 - https://www.chili-chips.xyz/openpcie2-root-complex
 
 --------------------
