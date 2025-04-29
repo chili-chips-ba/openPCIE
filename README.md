@@ -106,7 +106,7 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 
 --------------------
 
-# Test App, debug, bring up
+# Debug, Bringup, Testing
 
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
