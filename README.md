@@ -97,7 +97,20 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 --------------------
 
 # TB/Sim Architecture
-- WIP
+
+The *openpcie2-rc* top level test bench is based around the [*pcievhost*](https://github.com/wyvernSemi/pcievhost) PCIe 2.0 verification co-simulation IP in order to drive the DUT's PCIe link. This is a C model for generating PCIe traffic data connected to the logic simulation using the [*VProc*](https://github.com/wyvernSemi/vproc) virtual processor  co-simulation element. _VProc_ allows a user program to be compiled natively on the host machine and 'run' on an instantiated HDL component in a logic simulation and has a generic memory mapped master bus for generating read an write transactions. A Bus Functional Model (BFM) wrapper encapsulates a _VProc_ component and effectively memory maps the PCIe ports into the address space, allowing software to drive and read these ports and interface with the PCIe C model. Although originally designed as a root complex model, the _pcievhost_ components has <ins>some</ins> endpoint features, enabled with a parameter.
+
+The diagram below is a *draft* block diagram of the proposed top level test bench.
+
+<p align=center>
+<img width=600 src="5.sim/images/openpcierc_tb_draft.png">
+</p>
+
+The DUT PCIe link is connected to the _pcievhost_, configured as an endpoint, running some user code to do link training and any transaction generation required, though it will automatically respond to transactions requiring a completion. A pair of _PcieDispLink_ HDL components (supplied as part of _pcievhost_) are optionally connected to the up and down links that can display the traffic on the PCIe link. It also does _some_ on-the-fly compliance testing. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device. A user program can then be run on the virtal processor to access the device's registers etc.
+
+The software to run on the virtual processor is proposed to be a means to connect to an external QEMU process via a TCP/IP socket with a (TBD) protocol to instigate read and write transactions and return data (where applicable). It is envisaged that the client software is driven via the DUT's device driver to communicate with server software on _VProc_. This is currently TBD.
+
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file.
   
 --------------------
 
