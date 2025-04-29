@@ -19,16 +19,7 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 --------------------
 
 #### References
-- https://github.com/hdlguy/litefury_pcie
-- https://github.com/regymm/pcie_7x
-- [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
-- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- [PCI Leech](https://github.com/ufrisk/pcileech)
-- [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
-- [PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
-- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
-- [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
-- https://www.chili-chips.xyz/openpcie2-root-complex
+- [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
 
 --------------------
 
@@ -92,17 +83,50 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 --------------------
 
 # HW Architecture
-- WIP
+
+#### References:
+- https://github.com/hdlguy/litefury_pcie
+- https://github.com/regymm/pcie_7x
+- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- https://gitlab.nikhef.nl/franss/wupper
   
 --------------------
 
 # TB/Sim Architecture
 - WIP
-  
+
+#### References
+- [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
+
+
 --------------------
 
 # SW Architecture
 - WIP
+
+--------------------
+
+# Test App, debug, bring up
+
+#### References
+- [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
+- [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
+
+
+--------------------
+
+# PCIE Protocol Analyzer
+
+#### References
+- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
+- [Stark 75T Card](https://www.ebay.com/itm/396313189094?var=664969332633)
+- [ngpscope](http://www.ngscopeclient.org/protocol-analysis)
+- [PCI Leech](https://github.com/ufrisk/pcileech)
+- [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
+- [LiteX PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
+- [LiteX PCIE Analyzer](https://github.com/enjoy-digital/pcie_analyzer)
+
+
 
 --------------------
 
