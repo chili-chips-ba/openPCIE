@@ -20,11 +20,15 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 
 #### References
 - [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
+- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
+  
 --------------------
 
 ## Hardware platform
-- TODO
+#### References:
+- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- 
 
 --------------------
 
@@ -85,10 +89,14 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 # HW Architecture
 
 #### References:
-- https://github.com/hdlguy/litefury_pcie
-- https://github.com/regymm/pcie_7x
-- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- https://gitlab.nikhef.nl/franss/wupper
+- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
+- [Regymm PCIE](https://github.com/regymm/pcie_7x)
+- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
+- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
+- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
+- [XIlinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
+- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+
   
 --------------------
 
@@ -138,7 +146,9 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 - [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
 - [LiteX PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
 - [LiteX PCIE Analyzer](https://github.com/enjoy-digital/pcie_analyzer)
-
+- [Wireshark PCIe Dissector](https://github.com/antmicro/wireshark-pcie-dissector)
+- [PCIe Tool Hunt](https://scolton.blogspot.com/2023/05/pcie-deep-dive-part-1-tool-hunt.html)
+- [PCIe network simulator](https://github.com/antmicro/warp-pipe)
 
 
 --------------------
