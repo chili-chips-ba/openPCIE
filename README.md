@@ -19,12 +19,16 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 --------------------
 
 #### References
-- TODO
+- [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
+- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
+  
 --------------------
 
 ## Hardware platform
-- TODO
+#### References:
+- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- 
 
 --------------------
 
@@ -83,17 +87,69 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 --------------------
 
 # HW Architecture
-- WIP
+
+#### References:
+- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
+- [Regymm PCIE](https://github.com/regymm/pcie_7x)
+- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
+- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
+- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
+- [XIlinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
+- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+
   
 --------------------
 
 # TB/Sim Architecture
-- WIP
+
+The *openpcie2-rc* top level test bench is based around the [*pcievhost*](https://github.com/wyvernSemi/pcievhost) PCIe 2.0 verification co-simulation IP in order to drive the DUT's PCIe link. This is a C model for generating PCIe traffic data connected to the logic simulation using the [*VProc*](https://github.com/wyvernSemi/vproc) virtual processor  co-simulation element. _VProc_ allows a user program to be compiled natively on the host machine and 'run' on an instantiated HDL component in a logic simulation and has a generic memory mapped master bus for generating read an write transactions. A Bus Functional Model (BFM) wrapper encapsulates a _VProc_ component and effectively memory maps the PCIe ports into the address space, allowing software to drive and read these ports and interface with the PCIe C model. Although originally designed as a root complex model, the _pcievhost_ components has <ins>some</ins> endpoint features, enabled with a parameter.
+
+The diagram below is a *draft* block diagram of the proposed top level test bench.
+
+<p align=center>
+<img width=600 src="5.sim/images/openpcierc_tb_draft.png">
+</p>
+
+The DUT PCIe link is connected to the _pcievhost_, configured as an endpoint, running some user code to do link training and any transaction generation required, though it will automatically respond to transactions requiring a completion. A pair of _PcieDispLink_ HDL components (supplied as part of _pcievhost_) are optionally connected to the up and down links that can display the traffic on the PCIe link. It also does _some_ on-the-fly compliance testing. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device. A user program can then be run on the virtal processor to access the device's registers etc.
+
+The software to run on the virtual processor is proposed to be a means to connect to an external QEMU process via a TCP/IP socket with a (TBD) protocol to instigate read and write transactions and return data (where applicable). It is envisaged that the client software is driven via the DUT's device driver to communicate with server software on _VProc_. This is currently TBD.
+
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file.
   
+
+#### References
+- [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
+
 --------------------
 
 # SW Architecture
 - WIP
+
+--------------------
+
+# Debug, Bringup, Testing
+
+#### References
+- [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
+- [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
+
+
+--------------------
+
+# PCIE Protocol Analyzer
+
+#### References
+- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
+- [Stark 75T Card](https://www.ebay.com/itm/396313189094?var=664969332633)
+- [ngpscope](http://www.ngscopeclient.org/protocol-analysis)
+- [PCI Leech](https://github.com/ufrisk/pcileech)
+- [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
+- [LiteX PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
+- [LiteX PCIE Analyzer](https://github.com/enjoy-digital/pcie_analyzer)
+- [Wireshark PCIe Dissector](https://github.com/antmicro/wireshark-pcie-dissector)
+- [PCIe Tool Hunt](https://scolton.blogspot.com/2023/05/pcie-deep-dive-part-1-tool-hunt.html)
+- [PCIe network simulator](https://github.com/antmicro/warp-pipe)
+
 
 --------------------
 
@@ -118,7 +174,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 </p>
 
 ### Public posts:
-- Soon to come
+- [2025-04-03](https://www.linkedin.com/feed/update/urn:li:activity:7313386031125303296?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7313386031125303296%2C7313594045216223236%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287313594045216223236%2Curn%3Ali%3Aactivity%3A7313386031125303296%29)
 
 --------------------
 #### End of Document
