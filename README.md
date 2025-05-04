@@ -20,15 +20,13 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 
 #### References
 - [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
-- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
-  
 --------------------
 
 ## Hardware platform
 #### References:
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- 
+- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
 --------------------
 
@@ -149,6 +147,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 - [Wireshark PCIe Dissector](https://github.com/antmicro/wireshark-pcie-dissector)
 - [PCIe Tool Hunt](https://scolton.blogspot.com/2023/05/pcie-deep-dive-part-1-tool-hunt.html)
 - [PCIe network simulator](https://github.com/antmicro/warp-pipe)
+- [An interesting PCIE tidbit: Peer-to-Peer communicaton](https://xilinx.github.io/XRT/master/html/p2p.html). Also see [this](https://xillybus.com/tutorials/pci-express-tlp-pcie-primer-tutorial-guide-1)
 
 
 --------------------
