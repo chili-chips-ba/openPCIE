@@ -20,15 +20,13 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 
 #### References
 - [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
-- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
-  
 --------------------
 
 ## Hardware platform
 #### References:
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- 
+- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
 --------------------
 
