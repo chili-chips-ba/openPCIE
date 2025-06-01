@@ -130,6 +130,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
 - [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
+- Using [bysybox (devmem)](0.doc/using-busybox-devmem-for-reg-access.txt) for register access 
 
 
 --------------------
