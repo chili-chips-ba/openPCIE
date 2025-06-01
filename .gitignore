@@ -1,6 +1,56 @@
+#--------
+# Editing
+#--------
+*~
+*.bak
+*.bkp
+*.log
+*\#*\#
+*\#*
 
-/1.pcb/openpci2-backplane/openpci2-backplane-backups
+
+#--------
+# Sim
+#--------
+*.fst
+
+
+#--------
+# Vivado project directories and files
+#--------
+*.jou
+*.log
+.Xil
+*.cache
+*.data
+*.ipdefs
+*.ip_user_files
+*.runs
+*.gen
+*.obj
+*.dll
+*.lib
+*.exe
+*.str
+
+
+#--------
+#PCB
+#--------
+1.pcb/openpci2-backplane/openpci2-backplane-backups
 1.pcb/openpci2-backplane/fp-info-cache
 1.pcb/openpci2-backplane/\#auto_saved_files\#
 1.pcb/openpci2-backplane/~openpci2-backplane.kicad_sch.lck
-0.doc/1.pcb/0.README.txt~
+
+
+#--------
+# Misc
+#--------
+*/Thumbs.db
+*xOLD*
+*output*
+
+
+#--------
+# End-of-File
+#--------

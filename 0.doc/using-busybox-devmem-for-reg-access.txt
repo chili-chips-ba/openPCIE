@@ -1,0 +1,21 @@
+-----------------------------------
+Get 'busybox' to peek and poke at hardware memory addresses:
+
+ $ wget https://busybox.net/downloads/binaries/1.28.1-defconfig-multiarch/busybox-x86_64 --no-check-certificate
+
+- - - - - - - - - - - - - - - - - -
+ $ mv busybox-x86_64 devmem
+ $ chmod +x devmem
+
+ $ sudo lspci -vvvv | grep Xilinx -A 30 | grep Region
+ Region 1: Memory at c5200000 (32-bit, non-prefetchable) [disabled] [size=64K]
+
+ # 0xc5200000 is the address assigned to your BAR.
+ # If you have a RW (scratchpad) register on address 0 of that BAR,
+ #  you can exersize it as follows:
+ 
+ $ sudo ./devmem 0xc5200000 32 0x12345678
+ $ sudo ./devmem 0xc5200000 32
+ 0x12345678
+
+-----------------------------------
