@@ -5,7 +5,7 @@
 	(uuid "0b8e5f97-03cb-4466-8d11-5c2a0c360436")
 	(paper "A4")
 	(title_block
-		(date "2025-07-11")
+		(date "2025-07-12")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -180,429 +180,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "PCM_Chili-chips:74LVC08A"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "U"
-				(at 1.27 6.35 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Quad 2-input AND gate"
-				(at 0.635 -6.985 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_locked" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "74LVC08A_1_0"
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 -5.08)
-					)
-					(stroke
-						(width 0.4064)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin input line
-					(at -2.54 2.54 0)
-					(length 2.54)
-					(name "1A"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at -2.54 -2.54 0)
-					(length 2.54)
-					(name "1B"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "1Y"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "74LVC08A_1_1"
-				(arc
-					(start 0.0221 5.08)
-					(mid 5.08 0)
-					(end 0.0221 -5.08)
-					(stroke
-						(width 0.4064)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "74LVC08A_2_0"
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 -5.08)
-					)
-					(stroke
-						(width 0.4064)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin input line
-					(at -2.54 2.54 0)
-					(length 2.54)
-					(name "2A"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at -2.54 -2.54 0)
-					(length 2.54)
-					(name "2B"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "2Y"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "74LVC08A_2_1"
-				(arc
-					(start 0.0221 5.08)
-					(mid 5.08 0)
-					(end 0.0221 -5.08)
-					(stroke
-						(width 0.4064)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "74LVC08A_3_0"
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 -5.08)
-					)
-					(stroke
-						(width 0.4064)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin input line
-					(at -2.54 2.54 0)
-					(length 2.54)
-					(name "3A"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "9"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at -2.54 -2.54 0)
-					(length 2.54)
-					(name "3B"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "3Y"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "74LVC08A_3_1"
-				(arc
-					(start 0.0221 5.08)
-					(mid 5.08 0)
-					(end 0.0221 -5.08)
-					(stroke
-						(width 0.4064)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "74LVC08A_4_0"
-				(polyline
-					(pts
-						(xy 0 5.08) (xy 0 -5.08)
-					)
-					(stroke
-						(width 0.4064)
-						(type solid)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin input line
-					(at -2.54 2.54 0)
-					(length 2.54)
-					(name "4A"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "12"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at -2.54 -2.54 0)
-					(length 2.54)
-					(name "4B"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 7.62 0 180)
-					(length 2.54)
-					(name "4Y"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "11"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(symbol "74LVC08A_4_1"
-				(arc
-					(start 0.0221 5.08)
-					(mid 5.08 0)
-					(end 0.0221 -5.08)
-					(stroke
-						(width 0.4064)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "74LVC08A_5_0"
-				(pin power_in line
-					(at 0 7.62 270)
-					(length 5.08)
-					(name "VCC"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "14"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 0 -7.62 90)
-					(length 5.08)
-					(name "GND"
-						(effects
-							(font
-								(size 0 0)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.016 1.016)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "PCM_Chili-chips:ASM1184E"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -625,7 +202,7 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" "Package_DFN_QFN:QFN-64-1EP_9x9mm_P0.5mm_EP5.2x5.2mm"
+			(property "Footprint" "PCM_Chili-chips:QFN-64-1EP_9x9mm_P0.5mm_EP5.2x5.2mm"
 				(at 12.7 -100.33 0)
 				(effects
 					(font
@@ -3220,18 +2797,6 @@
 		(uuid "053f0e5f-2074-4b2f-9992-c9530745e5fb")
 	)
 	(junction
-		(at 220.98 99.06)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0ce3cc81-084c-4fcc-b6a6-9a9c39b55a38")
-	)
-	(junction
-		(at 220.98 86.36)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "12985d04-ac45-40bf-86a6-0b4b6d4ec214")
-	)
-	(junction
 		(at 48.26 60.96)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3316,12 +2881,6 @@
 		(uuid "443da565-266d-440f-9d93-b98a3ceaace0")
 	)
 	(junction
-		(at 220.98 91.44)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "44af8c2b-07b4-4079-93d6-b9177feef7d8")
-	)
-	(junction
 		(at 83.82 91.44)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3370,12 +2929,6 @@
 		(uuid "585d46c8-2060-490a-b92f-45d74ff7f6b2")
 	)
 	(junction
-		(at 226.06 144.78)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "5c7cd505-5467-4ded-95d6-c454626f3835")
-	)
-	(junction
 		(at 71.12 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3412,18 +2965,6 @@
 		(uuid "6c1f077c-6964-44c5-9613-cd0380c96a7d")
 	)
 	(junction
-		(at 220.98 73.66)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6e11b5de-3804-4384-a534-20f1378ec810")
-	)
-	(junction
-		(at 220.98 60.96)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "76919930-f5aa-491b-ad1d-fb09e8eb3ce4")
-	)
-	(junction
 		(at 83.82 142.24)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3454,12 +2995,6 @@
 		(uuid "9784da45-1d54-4be0-b8c4-5c51eb519c1d")
 	)
 	(junction
-		(at 226.06 129.54)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9a2913c3-aba4-4c7f-b2c7-c58a06126b26")
-	)
-	(junction
 		(at 83.82 68.58)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3470,12 +3005,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "9e4d9f32-c1a3-4a33-b648-f715419322b3")
-	)
-	(junction
-		(at 220.98 78.74)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a5810223-1604-4e37-a354-bd2e7f07d8be")
 	)
 	(junction
 		(at 48.26 30.48)
@@ -3512,12 +3041,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d3436626-696d-4216-9dab-f3c2f38a254b")
-	)
-	(junction
-		(at 220.98 66.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d95ce56c-5663-40c7-85f7-6e28da459823")
 	)
 	(junction
 		(at 83.82 60.96)
@@ -4014,16 +3537,6 @@
 	)
 	(wire
 		(pts
-			(xy 233.68 76.2) (xy 238.76 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "13649ae6-3ab9-4da5-a4e4-4faaf3255687")
-	)
-	(wire
-		(pts
 			(xy 48.26 66.04) (xy 55.88 66.04)
 		)
 		(stroke
@@ -4159,7 +3672,7 @@
 	)
 	(wire
 		(pts
-			(xy 104.14 160.02) (xy 111.76 160.02)
+			(xy 109.22 160.02) (xy 111.76 160.02)
 		)
 		(stroke
 			(width 0)
@@ -4410,16 +3923,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "20feb586-d044-463e-b61a-7e1cac52a23c")
-	)
-	(wire
-		(pts
-			(xy 218.44 60.96) (xy 220.98 60.96)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "212d8694-7899-4180-82b1-c74162700c91")
 	)
 	(wire
 		(pts
@@ -4878,16 +4381,6 @@
 		)
 		(uuid "2e4ecb3e-c8e7-4382-a58f-3500c518570a")
 	)
-	(wire
-		(pts
-			(xy 233.68 101.6) (xy 238.76 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2f2932c3-1113-45f7-a382-969ca0c76645")
-	)
 	(polyline
 		(pts
 			(xy 195.58 15.24) (xy 195.58 162.56)
@@ -4985,16 +4478,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "33bfc95e-6f11-4880-8ffb-aa684d176399")
-	)
-	(wire
-		(pts
-			(xy 220.98 78.74) (xy 220.98 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "33cf79d8-73c2-4a2a-9099-0df3664c3686")
 	)
 	(wire
 		(pts
@@ -5205,16 +4688,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "3b2c117c-3ebf-4b51-b640-955c23f4fa2b")
-	)
-	(wire
-		(pts
-			(xy 226.06 144.78) (xy 226.06 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3c1b1900-6b48-485c-96bf-94792a48abb3")
 	)
 	(wire
 		(pts
@@ -5542,26 +5015,6 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 60.96) (xy 220.98 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "49c04e20-2c09-4f12-b4f6-18292b14442d")
-	)
-	(wire
-		(pts
-			(xy 220.98 66.04) (xy 220.98 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "49e7d137-fde1-4766-b0fd-ce7002340d65")
-	)
-	(wire
-		(pts
 			(xy 86.36 88.9) (xy 83.82 88.9)
 		)
 		(stroke
@@ -5812,16 +5265,6 @@
 			(type default)
 		)
 		(uuid "564c20e5-2160-4b1c-8342-ea52a54a43b2")
-	)
-	(wire
-		(pts
-			(xy 220.98 86.36) (xy 220.98 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "56e2de92-8dc8-4348-9da4-4dcf81c1a797")
 	)
 	(wire
 		(pts
@@ -6158,16 +5601,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "6543cf05-9360-4f1f-98b8-bcc5483cb147")
-	)
-	(wire
-		(pts
-			(xy 220.98 99.06) (xy 220.98 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "659d8eb2-c195-47d6-b52e-0832995d1197")
 	)
 	(polyline
 		(pts
@@ -6588,16 +6021,6 @@
 	)
 	(wire
 		(pts
-			(xy 226.06 129.54) (xy 226.06 134.62)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "74664ad9-9329-40fa-9c9d-5935e8bfcc31")
-	)
-	(wire
-		(pts
 			(xy 139.7 83.82) (xy 139.7 86.36)
 		)
 		(stroke
@@ -6626,16 +6049,6 @@
 			(type default)
 		)
 		(uuid "75345d6d-4f8d-4abf-8a55-ee37497597ad")
-	)
-	(wire
-		(pts
-			(xy 220.98 86.36) (xy 223.52 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7606d173-c41e-43cd-9743-fb6b15cae10b")
 	)
 	(polyline
 		(pts
@@ -7172,16 +6585,6 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 99.06) (xy 223.52 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "927a84fe-7a56-43fd-8f50-50509a91f93c")
-	)
-	(wire
-		(pts
 			(xy 149.86 38.1) (xy 152.4 38.1)
 		)
 		(stroke
@@ -7242,16 +6645,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "95b13af6-9dc7-4d97-8840-b588096ff31d")
-	)
-	(wire
-		(pts
-			(xy 231.14 144.78) (xy 226.06 144.78)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "96100bd1-ddca-4bd6-8d62-49d28de81e9f")
 	)
 	(wire
 		(pts
@@ -7525,16 +6918,6 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 78.74) (xy 223.52 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a1b69c73-9f7f-4092-a8b2-7cdef27bfb04")
-	)
-	(wire
-		(pts
 			(xy 63.5 83.82) (xy 63.5 86.36)
 		)
 		(stroke
@@ -7584,16 +6967,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "a3e18df6-2238-473b-949e-96556ff34b53")
-	)
-	(wire
-		(pts
-			(xy 231.14 129.54) (xy 226.06 129.54)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a41d458d-f289-4462-a383-d0728a1c626a")
 	)
 	(polyline
 		(pts
@@ -7740,16 +7113,6 @@
 			(type solid)
 		)
 		(uuid "ab2fe429-5d9f-4f99-8f70-a0b7cdebf283")
-	)
-	(wire
-		(pts
-			(xy 233.68 63.5) (xy 238.76 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ab70f1f3-c12b-49de-a711-2aa84a2960b1")
 	)
 	(polyline
 		(pts
@@ -7985,26 +7348,6 @@
 	)
 	(wire
 		(pts
-			(xy 223.52 60.96) (xy 220.98 60.96)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b4a0513d-ee0d-41d3-a913-34cb3b660f24")
-	)
-	(wire
-		(pts
-			(xy 220.98 91.44) (xy 223.52 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b4b494b0-b315-4340-a4bb-b8a5ac23e27f")
-	)
-	(wire
-		(pts
 			(xy 137.16 68.58) (xy 119.38 68.58)
 		)
 		(stroke
@@ -8022,16 +7365,6 @@
 			(type default)
 		)
 		(uuid "b7023db3-d668-42ae-98c4-fc1cf68ad7b6")
-	)
-	(wire
-		(pts
-			(xy 233.68 88.9) (xy 238.76 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b8874a6b-7d54-46b8-b5a0-9458ac79ef39")
 	)
 	(polyline
 		(pts
@@ -8541,16 +7874,6 @@
 			(type default)
 		)
 		(uuid "cc9c82f2-b48e-4977-a698-caf9cc920d4c")
-	)
-	(wire
-		(pts
-			(xy 220.98 66.04) (xy 223.52 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cca0e06c-b1ca-4dab-bc8e-d50aca198991")
 	)
 	(wire
 		(pts
@@ -9216,16 +8539,6 @@
 		)
 		(uuid "e92ca81c-c0bc-4259-afad-63cc1a8d4a96")
 	)
-	(wire
-		(pts
-			(xy 220.98 91.44) (xy 220.98 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e94fb826-4f27-46d4-bd79-6d16331dfb12")
-	)
 	(polyline
 		(pts
 			(xy 123.19 78.4225) (xy 124.46 78.4225)
@@ -9289,16 +8602,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "ec659b7c-99ac-428c-921d-d9934463ab49")
-	)
-	(wire
-		(pts
-			(xy 220.98 73.66) (xy 220.98 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ece8ea2c-b6dd-4e86-a1c0-b326b643be16")
 	)
 	(polyline
 		(pts
@@ -9423,16 +8726,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "f228e41b-33d0-4a00-9221-8d258b6d9f83")
-	)
-	(wire
-		(pts
-			(xy 220.98 104.14) (xy 223.52 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f23a75a3-55db-4bf4-bf9a-709c5b2eae7b")
 	)
 	(polyline
 		(pts
@@ -9625,16 +8918,6 @@
 		)
 		(uuid "fc2187fd-e90b-45d5-89c0-cfb8f28ac937")
 	)
-	(wire
-		(pts
-			(xy 220.98 73.66) (xy 223.52 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fc9b32cc-6c94-4c4f-aea5-ec4d1d5728fb")
-	)
 	(polyline
 		(pts
 			(xy 139.7 48.895) (xy 140.335 49.53)
@@ -9770,16 +9053,6 @@
 		)
 		(uuid "529bc1dd-9b62-402d-8701-aa832d54da1a")
 	)
-	(label "RCTX0_P"
-		(at 104.14 160.02 0)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left bottom)
-		)
-		(uuid "5d98ece5-959d-45ea-890c-249c5c97311a")
-	)
 	(label "LDO_1V2"
 		(at 76.2 30.48 0)
 		(effects
@@ -9819,28 +9092,6 @@
 			(justify left bottom)
 		)
 		(uuid "fdd47a32-0b20-4fc8-b8e7-a0f3e7afc745")
-	)
-	(global_label "~{SW_RST2}"
-		(shape output)
-		(at 238.76 88.9 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "0201307a-ab1d-444a-a978-257906e24f31")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 246.6492 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
 	)
 	(global_label "SW_SLOT0_CLK_N"
 		(shape output)
@@ -10084,28 +9335,6 @@
 			)
 		)
 	)
-	(global_label "~{SW_RST3}"
-		(shape output)
-		(at 238.76 101.6 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "6f6b74ad-8aba-404e-82b7-b663b1c52b0b")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 246.6492 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT0_RX_P"
 		(shape input)
 		(at 157.48 45.72 0)
@@ -10119,28 +9348,6 @@
 		(uuid "725ea978-f14b-4d78-a4b9-7988437aeff6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 170.1105 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "~{SW_RST0}"
-		(shape output)
-		(at 238.76 63.5 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "730e48d0-88b5-49bb-8c36-1feaba1866fb")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 246.6492 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10480,28 +9687,6 @@
 			)
 		)
 	)
-	(global_label "RST_PCIESW_OUT"
-		(shape input)
-		(at 218.44 60.96 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "d1fc1341-3630-4ba8-a946-787a32ec6820")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.1747 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT1_CLK_N"
 		(shape output)
 		(at 157.48 73.66 0)
@@ -10656,6 +9841,28 @@
 			)
 		)
 	)
+	(global_label "RC_TX0_P"
+		(shape input)
+		(at 109.22 160.02 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right)
+		)
+		(uuid "e9a458f2-83e6-4b5e-a872-97ff7258fffe")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 100.7382 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "SW_RC_CLK_N"
 		(shape input)
 		(at 157.48 137.16 0)
@@ -10669,28 +9876,6 @@
 		(uuid "eadc916e-5be8-4132-9a26-5cad2a641d09")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 168.6711 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "~{SW_RST1}"
-		(shape output)
-		(at 238.76 76.2 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "f5457ca8-c485-43dd-93e9-99a7082ccce9")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 246.6492 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11588,103 +10773,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 226.06 139.7 0)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "20de036a-a302-42ad-88b8-3d5aaac8fc8a")
-		(property "Reference" "C60"
-			(at 226.06 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right top)
-			)
-		)
-		(property "Value" "100n"
-			(at 226.06 141.605 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right top)
-			)
-		)
-		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
-			(at 226.06 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 226.06 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "1276-1000-1-ND"
-			(at 226.06 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser" "187-CL10B104KB8NNNC "
-			(at 226.06 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "TME" "CL10B104KB8NNNC"
-			(at 226.06 139.7 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0ba5fa85-934f-440c-b826-d313efc71e99")
-		)
-		(pin "2"
-			(uuid "321c4ec7-a79e-45f3-a46c-d5081e268136")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "C60")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 20.32 109.22 0)
 		(unit 1)
@@ -12234,110 +11322,6 @@
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
 					(reference "JP7")
 					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCM_Chili-chips:74LVC08A")
-		(at 226.06 76.2 0)
-		(unit 2)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "31a28bc3-a0bd-46a7-bfd3-a3da2dbc683e")
-		(property "Reference" "U7"
-			(at 228.6 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "74LVC08APW,118"
-			(at 228.6 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-			(at 226.06 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Quad 2-input AND gate"
-			(at 226.695 83.185 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "9b830503-bb4b-4dd2-8bbf-c09b574a360e")
-		)
-		(pin "7"
-			(uuid "089b3ea5-0ce8-43da-9de7-a063706b514c")
-		)
-		(pin "14"
-			(uuid "7ffa79fa-947d-45b7-8f4b-ff1dbe46efcf")
-		)
-		(pin "9"
-			(uuid "ed7b1fda-b02a-43bf-8302-c26c145a9f69")
-		)
-		(pin "2"
-			(uuid "f7a57e23-5350-4576-a88a-7f7ed01f2a4c")
-		)
-		(pin "5"
-			(uuid "25bfd73a-0b13-4c06-9bab-f388a0cd1cb5")
-		)
-		(pin "11"
-			(uuid "2989821a-3d0a-4030-95f6-5ac1a69a7407")
-		)
-		(pin "12"
-			(uuid "b87f70a0-b715-4588-8c9f-0c95d70128b3")
-		)
-		(pin "3"
-			(uuid "376d9c03-faa7-4e1a-9368-4ccd569440ce")
-		)
-		(pin "4"
-			(uuid "c45697d2-eb7e-4525-9e75-fc5cccee61de")
-		)
-		(pin "13"
-			(uuid "7c3614b2-3551-42a5-b482-e5b7d5d3c10d")
-		)
-		(pin "1"
-			(uuid "de87b794-f02a-47cb-b456-88c9a974f2a3")
-		)
-		(pin "6"
-			(uuid "6dc18eb9-ef9d-4970-8f6f-415e3ed51d7c")
-		)
-		(pin "10"
-			(uuid "afdd2d4f-f0d3-44a4-917c-b362943e349d")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "U7")
-					(unit 2)
 				)
 			)
 		)
@@ -13192,109 +12176,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:74LVC08A")
-		(at 226.06 63.5 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5a67a69c-088c-40be-8384-bec90202866d")
-		(property "Reference" "U7"
-			(at 228.6 55.245 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "74LVC08APW,118"
-			(at 228.6 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-			(at 226.06 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Quad 2-input AND gate"
-			(at 226.695 70.485 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "9b830503-bb4b-4dd2-8bbf-c09b574a360b")
-		)
-		(pin "7"
-			(uuid "089b3ea5-0ce8-43da-9de7-a063706b5149")
-		)
-		(pin "14"
-			(uuid "7ffa79fa-947d-45b7-8f4b-ff1dbe46efcc")
-		)
-		(pin "9"
-			(uuid "ed7b1fda-b02a-43bf-8302-c26c145a9f66")
-		)
-		(pin "2"
-			(uuid "9eef622a-0eeb-44fc-befb-cdbe29a0af65")
-		)
-		(pin "5"
-			(uuid "47a173dd-3c09-42b1-9cd7-eea7a03aeef4")
-		)
-		(pin "11"
-			(uuid "2989821a-3d0a-4030-95f6-5ac1a69a7403")
-		)
-		(pin "12"
-			(uuid "b87f70a0-b715-4588-8c9f-0c95d70128af")
-		)
-		(pin "3"
-			(uuid "73a06a42-bcae-45ef-84e0-2dd861db0c22")
-		)
-		(pin "4"
-			(uuid "19a41806-b650-4302-b5f8-38c23bfb62f4")
-		)
-		(pin "13"
-			(uuid "7c3614b2-3551-42a5-b482-e5b7d5d3c109")
-		)
-		(pin "1"
-			(uuid "a2e4a6fd-8f7b-4e37-a411-66df4a3e7daf")
-		)
-		(pin "6"
-			(uuid "36c7eabf-802f-434f-be24-927948dad79b")
-		)
-		(pin "10"
-			(uuid "afdd2d4f-f0d3-44a4-917c-b362943e349a")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 58.42 142.24 0)
 		(unit 1)
@@ -14007,110 +12888,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:74LVC08A")
-		(at 226.06 88.9 0)
-		(unit 3)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "79fb849a-5bf9-4f2d-abb6-daa091be0748")
-		(property "Reference" "U7"
-			(at 228.6 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "74LVC08APW,118"
-			(at 228.6 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-			(at 226.06 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Quad 2-input AND gate"
-			(at 226.695 95.885 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "7c1988b5-423a-4b86-8856-a34280e8a98d")
-		)
-		(pin "7"
-			(uuid "089b3ea5-0ce8-43da-9de7-a063706b5148")
-		)
-		(pin "14"
-			(uuid "7ffa79fa-947d-45b7-8f4b-ff1dbe46efcb")
-		)
-		(pin "9"
-			(uuid "ac978739-575e-449e-83fc-d2ef7d4d0987")
-		)
-		(pin "2"
-			(uuid "f7a57e23-5350-4576-a88a-7f7ed01f2a47")
-		)
-		(pin "5"
-			(uuid "47a173dd-3c09-42b1-9cd7-eea7a03aeef3")
-		)
-		(pin "11"
-			(uuid "2989821a-3d0a-4030-95f6-5ac1a69a7402")
-		)
-		(pin "12"
-			(uuid "b87f70a0-b715-4588-8c9f-0c95d70128ae")
-		)
-		(pin "3"
-			(uuid "376d9c03-faa7-4e1a-9368-4ccd569440c9")
-		)
-		(pin "4"
-			(uuid "19a41806-b650-4302-b5f8-38c23bfb62f3")
-		)
-		(pin "13"
-			(uuid "7c3614b2-3551-42a5-b482-e5b7d5d3c108")
-		)
-		(pin "1"
-			(uuid "de87b794-f02a-47cb-b456-88c9a974f29e")
-		)
-		(pin "6"
-			(uuid "36c7eabf-802f-434f-be24-927948dad79a")
-		)
-		(pin "10"
-			(uuid "9bb7805a-b995-4e86-83a3-a6480cb9688e")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "U7")
-					(unit 3)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
 		(at 144.78 83.82 90)
 		(unit 1)
@@ -14627,112 +13404,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:74LVC08A")
-		(at 231.14 137.16 0)
-		(unit 5)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "87c93ab1-8243-401d-9cc6-5d5b257f4809")
-		(property "Reference" "U7"
-			(at 232.41 136.5249 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "74LVC08APW,118"
-			(at 232.41 138.43 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-			(at 231.14 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 231.14 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Quad 2-input AND gate"
-			(at 231.775 144.145 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "9b830503-bb4b-4dd2-8bbf-c09b574a3609")
-		)
-		(pin "7"
-			(uuid "f6547da7-2b51-453d-84e3-2356c4cdb2f7")
-		)
-		(pin "14"
-			(uuid "90141ebd-03e6-42da-bd9a-0d0ecfd8a42f")
-		)
-		(pin "9"
-			(uuid "ed7b1fda-b02a-43bf-8302-c26c145a9f64")
-		)
-		(pin "2"
-			(uuid "f7a57e23-5350-4576-a88a-7f7ed01f2a46")
-		)
-		(pin "5"
-			(uuid "47a173dd-3c09-42b1-9cd7-eea7a03aeef2")
-		)
-		(pin "11"
-			(uuid "2989821a-3d0a-4030-95f6-5ac1a69a7401")
-		)
-		(pin "12"
-			(uuid "b87f70a0-b715-4588-8c9f-0c95d70128ad")
-		)
-		(pin "3"
-			(uuid "376d9c03-faa7-4e1a-9368-4ccd569440c8")
-		)
-		(pin "4"
-			(uuid "19a41806-b650-4302-b5f8-38c23bfb62f2")
-		)
-		(pin "13"
-			(uuid "7c3614b2-3551-42a5-b482-e5b7d5d3c107")
-		)
-		(pin "1"
-			(uuid "de87b794-f02a-47cb-b456-88c9a974f29d")
-		)
-		(pin "6"
-			(uuid "36c7eabf-802f-434f-be24-927948dad799")
-		)
-		(pin "10"
-			(uuid "afdd2d4f-f0d3-44a4-917c-b362943e3498")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "U7")
-					(unit 5)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
 		(at 63.5 55.88 0)
 		(mirror x)
@@ -15052,110 +13723,6 @@
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
 					(reference "#PWR034")
 					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCM_Chili-chips:74LVC08A")
-		(at 226.06 101.6 0)
-		(unit 4)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "914df409-4ef9-472b-b708-2687f1b89414")
-		(property "Reference" "U7"
-			(at 228.6 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "74LVC08APW,118"
-			(at 228.6 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:SOP65P640X120-14N"
-			(at 226.06 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Quad 2-input AND gate"
-			(at 226.695 108.585 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "8"
-			(uuid "9b830503-bb4b-4dd2-8bbf-c09b574a3608")
-		)
-		(pin "7"
-			(uuid "089b3ea5-0ce8-43da-9de7-a063706b5146")
-		)
-		(pin "14"
-			(uuid "7ffa79fa-947d-45b7-8f4b-ff1dbe46efc9")
-		)
-		(pin "9"
-			(uuid "ed7b1fda-b02a-43bf-8302-c26c145a9f63")
-		)
-		(pin "2"
-			(uuid "f7a57e23-5350-4576-a88a-7f7ed01f2a45")
-		)
-		(pin "5"
-			(uuid "47a173dd-3c09-42b1-9cd7-eea7a03aeef1")
-		)
-		(pin "11"
-			(uuid "485c743e-3e76-47e5-ad39-134a0d71d863")
-		)
-		(pin "12"
-			(uuid "1c3c34d9-3f2d-47e8-b445-16b6f6e99005")
-		)
-		(pin "3"
-			(uuid "376d9c03-faa7-4e1a-9368-4ccd569440c7")
-		)
-		(pin "4"
-			(uuid "19a41806-b650-4302-b5f8-38c23bfb62f1")
-		)
-		(pin "13"
-			(uuid "96baa6fe-7b8f-46c9-a392-d5050918c1e2")
-		)
-		(pin "1"
-			(uuid "de87b794-f02a-47cb-b456-88c9a974f29c")
-		)
-		(pin "6"
-			(uuid "36c7eabf-802f-434f-be24-927948dad798")
-		)
-		(pin "10"
-			(uuid "afdd2d4f-f0d3-44a4-917c-b362943e3497")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "U7")
-					(unit 4)
 				)
 			)
 		)
@@ -15621,7 +14188,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a16ee82d-5402-411d-b31e-e7238027e99e")
-		(property "Reference" "#FLG06"
+		(property "Reference" "#FLG08"
 			(at 83.82 26.035 0)
 			(effects
 				(font
@@ -15671,7 +14238,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "#FLG06")
+					(reference "#FLG08")
 					(unit 1)
 				)
 			)
@@ -16391,71 +14958,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 226.06 129.54 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "cf8a2a8e-e05f-4489-8087-1b94c0a249c8")
-		(property "Reference" "#PWR059"
-			(at 226.06 133.35 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 226.06 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 226.06 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 226.06 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3ee2e821-a34a-4362-b094-5fae6eed11f7")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "#PWR059")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_unsorted:JP3 shorted with 0R")
 		(at 30.48 114.3 90)
 		(mirror x)
@@ -17099,72 +15601,6 @@
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
 					(reference "JP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 226.06 144.78 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f4b9f730-5e51-4ef9-9650-0c49972ac5a2")
-		(property "Reference" "#PWR060"
-			(at 226.06 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 222.25 146.685 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 226.06 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 226.06 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4bda7e4e-b0fb-4fd5-9944-00742d5b3d43")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "#PWR060")
 					(unit 1)
 				)
 			)
