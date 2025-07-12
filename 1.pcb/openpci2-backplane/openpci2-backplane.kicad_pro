@@ -487,6 +487,30 @@
         "via_diameter": 0.6,
         "via_drill": 0.3,
         "wire_width": 6
+      },
+      {
+        "name": "+12V",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 3,
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      },
+      {
+        "name": "+3V3",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 2,
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      },
+      {
+        "name": "diff",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      },
+      {
+        "name": "diff_clk",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
       }
     ],
     "meta": {
@@ -494,7 +518,208 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "+12V",
+        "pattern": "+12V"
+      },
+      {
+        "netclass": "+3V3",
+        "pattern": "+3V3"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_RX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_RX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_CLK_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_TX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT0_TX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_RX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_RX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_CLK_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_TX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT1_TX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_RX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_RX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_CLK_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_TX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT2_TX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_RX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_RX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_CLK_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_TX_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SW_SLOT3_TX_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX2_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_TX3_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX3_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX2_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_RX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_CLK_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC_CLK_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "2L_CLK_P"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "2L_CLK_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "1L_CLK_P"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "1L_CLK_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SW_RC_CLK_P"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SW_RC_CLK_N"
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {

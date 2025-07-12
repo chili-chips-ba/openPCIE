@@ -5,7 +5,7 @@
 	(uuid "dbe4b28f-a208-4c36-92c3-c7f8669f867d")
 	(paper "A4")
 	(title_block
-		(date "2025-07-11")
+		(date "2025-07-12")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -12587,28 +12587,6 @@
 			)
 		)
 	)
-	(global_label "SLOT0_3V3"
-		(shape input)
-		(at 30.48 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "1881355f-0f64-4364-82cf-65ce02cdd94d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 21.2361 154.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT0_TX_N"
 		(shape input)
 		(at 30.48 111.76 180)
@@ -12807,28 +12785,6 @@
 			)
 		)
 	)
-	(global_label "SLOT0_3V3"
-		(shape input)
-		(at 66.04 45.72 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "2af60def-6e14-4721-becf-be4459efbc6f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 75.2839 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT0_TX_P"
 		(shape input)
 		(at 30.48 109.22 180)
@@ -12842,28 +12798,6 @@
 		(uuid "33ac6658-8779-4b5a-adde-bd6f8fa4877d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 18.0612 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLOT0_3V3"
-		(shape input)
-		(at 27.94 43.18 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "34db70e2-8926-4936-aa64-a931b2c1e5d7")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 18.6961 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12917,28 +12851,6 @@
 			)
 		)
 	)
-	(global_label "SLOT1_3V3"
-		(shape input)
-		(at 96.52 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "3df6c9ac-5ae9-4b40-8b57-b7a97fb0680a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 87.2761 154.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT3_CLK_N"
 		(shape input)
 		(at 231.14 101.6 180)
@@ -12974,50 +12886,6 @@
 		(uuid "40c0882a-1b4f-448e-9142-8268fa836061")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 215.6188 66.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLOT1_3V3"
-		(shape input)
-		(at 134.62 45.72 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "443875b5-448c-4fbb-957c-bd9a42db2cc0")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 143.8639 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLOT3_3V3"
-		(shape input)
-		(at 269.24 45.72 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "44981336-c1f9-44f5-add1-ece87a929520")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 278.4839 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13181,28 +13049,6 @@
 			)
 		)
 	)
-	(global_label "SLOT3_3V3"
-		(shape input)
-		(at 231.14 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "5f229967-a373-46ea-b2d5-a91d28e7324a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 221.8961 154.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT0_TX_N"
 		(shape input)
 		(at 68.58 68.58 0)
@@ -13291,28 +13137,6 @@
 			)
 		)
 	)
-	(global_label "SLOT2_3V3"
-		(shape input)
-		(at 200.66 45.72 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify left)
-		)
-		(uuid "7035fc47-b54f-49a5-bbf7-8772381d67bd")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 209.9039 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT0_CLK_P"
 		(shape input)
 		(at 30.48 99.06 180)
@@ -13353,28 +13177,6 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLOT2_3V3"
-		(shape input)
-		(at 162.56 43.18 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "910b567a-ae8f-46e5-adcf-a4cd1224bf9d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.3161 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 				(hide yes)
 			)
 		)
@@ -13775,28 +13577,6 @@
 			)
 		)
 	)
-	(global_label "SLOT3_3V3"
-		(shape input)
-		(at 231.14 43.18 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "bc1f9d91-3fbb-4d67-b803-dca7fec079b4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 221.8961 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT3_TX_P"
 		(shape input)
 		(at 271.78 66.04 0)
@@ -13815,28 +13595,6 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SLOT1_3V3"
-		(shape input)
-		(at 96.52 43.18 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "dd199c0f-56d2-4b4d-90a2-32ce149f1427")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 87.2761 43.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 				(hide yes)
 			)
 		)
@@ -13995,28 +13753,6 @@
 			)
 		)
 	)
-	(global_label "SLOT2_3V3"
-		(shape input)
-		(at 162.56 154.94 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 0.889 0.889)
-			)
-			(justify right)
-		)
-		(uuid "fdb63432-9a48-4b7c-9ed5-55b4763614ab")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 153.3161 154.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SW_SLOT3_CLK_N"
 		(shape input)
 		(at 271.78 60.96 0)
@@ -14040,6 +13776,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 231.14 43.18 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "063bdea9-bf7e-4c72-85da-0cfa68e742b7")
+		(property "Reference" "#PWR0109"
+			(at 234.95 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 225.425 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 231.14 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 231.14 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 231.14 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "544ae3db-7446-4e0d-b485-aca190d5b56d")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR0109")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+12V")
 		(at 228.6 27.94 90)
 		(mirror x)
@@ -14049,7 +13850,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "089cd088-ef97-49b1-8d4c-4b78019fd225")
-		(property "Reference" "#PWR0100"
+		(property "Reference" "#PWR0107"
 			(at 232.41 27.94 0)
 			(effects
 				(font
@@ -14099,7 +13900,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0100")
+					(reference "#PWR0107")
 					(unit 1)
 				)
 			)
@@ -14253,7 +14054,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0da8d075-8d56-4a10-8670-fc0c867797b4")
-		(property "Reference" "C65"
+		(property "Reference" "C64"
 			(at 94.107 32.385 0)
 			(effects
 				(font
@@ -14334,7 +14135,72 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "C65")
+					(reference "C64")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 162.56 154.94 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0ec283a6-1bee-4328-85fd-fc7e576ab68c")
+		(property "Reference" "#PWR0100"
+			(at 166.37 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 156.845 154.94 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 162.56 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 162.56 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 162.56 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7de2d1ec-53e7-4e1a-9df6-063d0424dca5")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR0100")
 					(unit 1)
 				)
 			)
@@ -14350,10 +14216,10 @@
 		(dnp no)
 		(uuid "0ff50b34-7b05-4dfd-af23-d6b13ddfd20b")
 		(property "Reference" "D6"
-			(at 135.89 132.08 0)
+			(at 135.89 132.715 0)
 			(effects
 				(font
-					(size 1.524 1.524)
+					(size 1.27 1.27)
 				)
 				(justify left)
 			)
@@ -14843,6 +14709,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 66.04 45.72 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1d83c831-c5ae-4f26-9096-7956c0f86424")
+		(property "Reference" "#PWR082"
+			(at 62.23 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 71.755 45.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 66.04 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 66.04 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 66.04 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "518a186f-675c-4e4b-b78d-a708c39f7edd")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR082")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_unsorted:JP3 shorted")
 		(at 274.32 147.32 180)
 		(unit 1)
@@ -14924,7 +14856,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "25629f76-4193-40fc-9d14-3af4cccf0554")
-		(property "Reference" "C64"
+		(property "Reference" "C63"
 			(at 25.527 32.385 0)
 			(effects
 				(font
@@ -15005,7 +14937,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "C64")
+					(reference "C63")
 					(unit 1)
 				)
 			)
@@ -15020,7 +14952,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "261c242e-677c-4a52-8db4-3b8274ec5fe2")
-		(property "Reference" "#PWR0105"
+		(property "Reference" "#PWR0115"
 			(at 269.24 118.11 0)
 			(effects
 				(font
@@ -15070,7 +15002,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0105")
+					(reference "#PWR0115")
 					(unit 1)
 				)
 			)
@@ -15085,7 +15017,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "27111022-e5ea-48f3-b127-54ea5772a2bb")
-		(property "Reference" "C66"
+		(property "Reference" "C65"
 			(at 160.147 32.385 0)
 			(effects
 				(font
@@ -15166,7 +15098,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "C66")
+					(reference "C65")
 					(unit 1)
 				)
 			)
@@ -15181,7 +15113,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2c443ddd-9a5d-4ca2-84d4-d61364c38396")
-		(property "Reference" "#PWR091"
+		(property "Reference" "#PWR095"
 			(at 134.62 118.11 0)
 			(effects
 				(font
@@ -15231,7 +15163,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR091")
+					(reference "#PWR095")
 					(unit 1)
 				)
 			)
@@ -15345,7 +15277,7 @@
 		(dnp no)
 		(uuid "3e8d0029-fb9f-4948-bec6-becc24ff0b7f")
 		(property "Reference" "J11"
-			(at 48.26 19.05 0)
+			(at 42.545 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15353,10 +15285,10 @@
 			)
 		)
 		(property "Value" "10018784-10210TLF"
-			(at 48.26 21.59 0)
+			(at 47.625 74.93 0)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
@@ -15886,14 +15818,13 @@
 	(symbol
 		(lib_id "power:GND")
 		(at 129.54 73.66 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "4cc1a4d3-4955-4c28-8856-07d1e0b5955d")
-		(property "Reference" "#PWR090"
+		(property "Reference" "#PWR093"
 			(at 129.54 80.01 0)
 			(effects
 				(font
@@ -15903,7 +15834,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 125.73 75.565 0)
+			(at 133.35 75.565 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15943,7 +15874,137 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR090")
+					(reference "#PWR093")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 30.48 154.94 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4dba800d-0ad9-404f-8668-cc6e52ded3f3")
+		(property "Reference" "#PWR076"
+			(at 34.29 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 24.765 154.94 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 30.48 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "deb3eae5-a7c5-4ec9-9143-97869ecfd367")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR076")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 27.94 43.18 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5127605b-8bab-42e7-84ea-572afa983edb")
+		(property "Reference" "#PWR075"
+			(at 31.75 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 22.225 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 27.94 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 27.94 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 27.94 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d2299e1a-e110-4a36-a077-6a693e002296")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR075")
 					(unit 1)
 				)
 			)
@@ -15959,10 +16020,10 @@
 		(dnp no)
 		(uuid "58adce32-3187-40de-a4c5-b780b73f25e5")
 		(property "Reference" "D5"
-			(at 69.85 132.08 0)
+			(at 69.85 132.715 0)
 			(effects
 				(font
-					(size 1.524 1.524)
+					(size 1.27 1.27)
 				)
 				(justify left)
 			)
@@ -16976,7 +17037,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "68d222d6-1a39-4897-b333-74e209e49d1d")
-		(property "Reference" "#PWR0101"
+		(property "Reference" "#PWR0108"
 			(at 231.14 44.45 0)
 			(effects
 				(font
@@ -17026,7 +17087,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0101")
+					(reference "#PWR0108")
 					(unit 1)
 				)
 			)
@@ -17339,6 +17400,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 134.62 45.72 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6a91f150-1eb2-49de-8e08-faf9f12f34e3")
+		(property "Reference" "#PWR094"
+			(at 130.81 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 140.335 45.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 134.62 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 134.62 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 134.62 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "392aaf61-1d9a-4257-aa67-a51c1a9718bc")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR094")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_discretes:DIODE_LED")
 		(at 269.24 134.62 0)
 		(unit 1)
@@ -17348,10 +17475,10 @@
 		(dnp no)
 		(uuid "786cd221-db4e-47bc-8d20-fc1017dc2f96")
 		(property "Reference" "D8"
-			(at 270.51 132.3341 0)
+			(at 270.51 132.715 0)
 			(effects
 				(font
-					(size 1.524 1.524)
+					(size 1.27 1.27)
 				)
 				(justify left)
 			)
@@ -17432,6 +17559,71 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
 					(reference "D8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 162.56 43.18 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7a09c322-4355-450b-8144-316068e7820d")
+		(property "Reference" "#PWR099"
+			(at 166.37 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 156.845 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 162.56 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 162.56 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 162.56 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7be6ea55-fff0-42d1-a59a-9ed191c94d56")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR099")
 					(unit 1)
 				)
 			)
@@ -17753,7 +17945,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7c5c993a-e6a0-4339-9cd5-a273839808c3")
-		(property "Reference" "#PWR088"
+		(property "Reference" "#PWR091"
 			(at 99.06 166.37 0)
 			(effects
 				(font
@@ -17803,7 +17995,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR088")
+					(reference "#PWR091")
 					(unit 1)
 				)
 			)
@@ -17812,14 +18004,13 @@
 	(symbol
 		(lib_id "power:GND")
 		(at 195.58 73.66 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "7d91e813-2aef-4967-8586-6fa0487d83f8")
-		(property "Reference" "#PWR097"
+		(property "Reference" "#PWR0103"
 			(at 195.58 80.01 0)
 			(effects
 				(font
@@ -17829,7 +18020,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 191.77 75.565 0)
+			(at 199.39 75.565 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17869,7 +18060,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR097")
+					(reference "#PWR0103")
 					(unit 1)
 				)
 			)
@@ -17885,7 +18076,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7ec2b550-4978-47f3-946c-4ab909455693")
-		(property "Reference" "#PWR0106"
+		(property "Reference" "#PWR0116"
 			(at 269.24 166.37 0)
 			(effects
 				(font
@@ -17935,7 +18126,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0106")
+					(reference "#PWR0116")
 					(unit 1)
 				)
 			)
@@ -17951,7 +18142,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "7f4d3d90-b1a5-4139-ba4e-90d1af8d5c14")
-		(property "Reference" "#PWR076"
+		(property "Reference" "#PWR074"
 			(at 27.94 44.45 0)
 			(effects
 				(font
@@ -18001,7 +18192,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR076")
+					(reference "#PWR074")
 					(unit 1)
 				)
 			)
@@ -18016,7 +18207,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "829c6ca6-52ef-41b9-b1d6-ca1786854ce6")
-		(property "Reference" "#PWR082"
+		(property "Reference" "#PWR083"
 			(at 68.58 118.11 0)
 			(effects
 				(font
@@ -18066,7 +18257,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR082")
+					(reference "#PWR083")
 					(unit 1)
 				)
 			)
@@ -18082,7 +18273,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "84d74cb2-9240-426e-9f50-87939a79e96a")
-		(property "Reference" "#PWR086"
+		(property "Reference" "#PWR087"
 			(at 93.98 191.77 0)
 			(effects
 				(font
@@ -18132,7 +18323,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR086")
+					(reference "#PWR087")
 					(unit 1)
 				)
 			)
@@ -18149,7 +18340,7 @@
 		(dnp no)
 		(uuid "8944e536-e4af-49e9-ad60-d294273464a1")
 		(property "Reference" "J15"
-			(at 182.88 19.05 0)
+			(at 177.165 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18157,10 +18348,10 @@
 			)
 		)
 		(property "Value" "10018784-10210TLF"
-			(at 182.88 21.59 0)
+			(at 182.245 74.93 0)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
@@ -18318,7 +18509,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8edbc1a7-5516-4c79-8d3d-4452f4de5cc1")
-		(property "Reference" "C67"
+		(property "Reference" "C66"
 			(at 228.727 32.385 0)
 			(effects
 				(font
@@ -18399,7 +18590,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "C67")
+					(reference "C66")
 					(unit 1)
 				)
 			)
@@ -18415,7 +18606,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "8f1128e1-6760-4f9a-b7a3-4e9f5078c72f")
-		(property "Reference" "#PWR0103"
+		(property "Reference" "#PWR0112"
 			(at 236.22 80.01 0)
 			(effects
 				(font
@@ -18465,7 +18656,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0103")
+					(reference "#PWR0112")
 					(unit 1)
 				)
 			)
@@ -18481,7 +18672,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9366a833-a218-44c8-b96c-44f309ae859b")
-		(property "Reference" "#PWR084"
+		(property "Reference" "#PWR085"
 			(at 73.66 191.77 0)
 			(effects
 				(font
@@ -18531,7 +18722,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR084")
+					(reference "#PWR085")
 					(unit 1)
 				)
 			)
@@ -18547,7 +18738,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "948cc4b3-fccb-40e1-9add-ddd9835eae9f")
-		(property "Reference" "#PWR092"
+		(property "Reference" "#PWR096"
 			(at 134.62 166.37 0)
 			(effects
 				(font
@@ -18597,7 +18788,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR092")
+					(reference "#PWR096")
 					(unit 1)
 				)
 			)
@@ -18613,7 +18804,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9591ffe9-eefc-4687-a5a2-6b1b7ae740ba")
-		(property "Reference" "#PWR099"
+		(property "Reference" "#PWR0106"
 			(at 200.66 166.37 0)
 			(effects
 				(font
@@ -18663,7 +18854,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR099")
+					(reference "#PWR0106")
 					(unit 1)
 				)
 			)
@@ -19748,6 +19939,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 96.52 43.18 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a303bca0-a138-4245-a2db-3457447830a9")
+		(property "Reference" "#PWR089"
+			(at 100.33 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 90.805 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 96.52 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 96.52 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 96.52 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "534c9e3c-b278-45a2-aecb-38872fac9108")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR089")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_discretes:DIODE_LED")
 		(at 200.66 134.62 0)
 		(unit 1)
@@ -19757,10 +20013,10 @@
 		(dnp no)
 		(uuid "a4a058e3-00b2-4345-b79f-17a654f01316")
 		(property "Reference" "D7"
-			(at 201.93 132.08 0)
+			(at 201.93 132.715 0)
 			(effects
 				(font
-					(size 1.524 1.524)
+					(size 1.27 1.27)
 				)
 				(justify left)
 			)
@@ -20468,7 +20724,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ab9822a1-5db3-4a62-a615-f95c1f625d18")
-		(property "Reference" "#PWR089"
+		(property "Reference" "#PWR092"
 			(at 101.6 80.01 0)
 			(effects
 				(font
@@ -20518,7 +20774,72 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR089")
+					(reference "#PWR092")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 96.52 154.94 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b40777c8-7a0c-492c-aaba-267060934cd6")
+		(property "Reference" "#PWR090"
+			(at 100.33 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 90.805 154.94 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 96.52 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 96.52 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 96.52 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a47d281d-e99c-41f3-a7b1-5ee5d876510b")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR090")
 					(unit 1)
 				)
 			)
@@ -20534,7 +20855,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b784f8df-4871-45be-81a2-f38cc8004111")
-		(property "Reference" "#PWR0102"
+		(property "Reference" "#PWR0111"
 			(at 233.68 166.37 0)
 			(effects
 				(font
@@ -20584,7 +20905,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0102")
+					(reference "#PWR0111")
 					(unit 1)
 				)
 			)
@@ -20651,6 +20972,72 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
 					(reference "#PWR077")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 200.66 45.72 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ba780d3c-afa6-4a55-a9e4-4c73160b8a51")
+		(property "Reference" "#PWR0104"
+			(at 196.85 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 206.375 45.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 200.66 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 200.66 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 200.66 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4f926e77-f66f-49c7-bb1c-679333f94601")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR0104")
 					(unit 1)
 				)
 			)
@@ -20730,6 +21117,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 269.24 45.72 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c036a98d-d623-4be1-bbe9-6b9db719191b")
+		(property "Reference" "#PWR0114"
+			(at 265.43 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 274.955 45.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 269.24 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 269.24 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 269.24 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9e7c1131-b377-438e-9286-80e0818958ad")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR0114")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 96.52 38.1 0)
 		(mirror y)
@@ -20739,7 +21192,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c2f0a071-ff51-479e-9b1a-14e978de71ad")
-		(property "Reference" "#PWR087"
+		(property "Reference" "#PWR088"
 			(at 96.52 44.45 0)
 			(effects
 				(font
@@ -20789,7 +21242,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR087")
+					(reference "#PWR088")
 					(unit 1)
 				)
 			)
@@ -20798,14 +21251,13 @@
 	(symbol
 		(lib_id "power:GND")
 		(at 264.16 73.66 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "c5508fb8-be83-4159-bce7-3475b4e9e951")
-		(property "Reference" "#PWR0104"
+		(property "Reference" "#PWR0113"
 			(at 264.16 80.01 0)
 			(effects
 				(font
@@ -20815,7 +21267,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 260.35 75.565 0)
+			(at 267.97 75.565 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20855,7 +21307,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR0104")
+					(reference "#PWR0113")
 					(unit 1)
 				)
 			)
@@ -21175,7 +21627,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c7ae7dcb-704a-4d77-9464-be30a9956d58")
-		(property "Reference" "#PWR098"
+		(property "Reference" "#PWR0105"
 			(at 200.66 118.11 0)
 			(effects
 				(font
@@ -21225,7 +21677,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR098")
+					(reference "#PWR0105")
 					(unit 1)
 				)
 			)
@@ -21547,7 +21999,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "cd004aef-28d1-44e9-b8eb-df5f51684e36")
-		(property "Reference" "#PWR094"
+		(property "Reference" "#PWR098"
 			(at 162.56 44.45 0)
 			(effects
 				(font
@@ -21597,7 +22049,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR094")
+					(reference "#PWR098")
 					(unit 1)
 				)
 			)
@@ -21613,7 +22065,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "cecbe9d3-756a-4d71-bd1b-79aeff646114")
-		(property "Reference" "#PWR096"
+		(property "Reference" "#PWR0102"
 			(at 167.64 80.01 0)
 			(effects
 				(font
@@ -21663,7 +22115,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR096")
+					(reference "#PWR0102")
 					(unit 1)
 				)
 			)
@@ -21679,7 +22131,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "cf7ee27e-d136-4623-8297-424777def61e")
-		(property "Reference" "#PWR083"
+		(property "Reference" "#PWR084"
 			(at 68.58 166.37 0)
 			(effects
 				(font
@@ -21729,7 +22181,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR083")
+					(reference "#PWR084")
 					(unit 1)
 				)
 			)
@@ -21843,7 +22295,7 @@
 		(dnp no)
 		(uuid "d667219c-28bf-4ec3-8ae4-6d0c685320e0")
 		(property "Reference" "J14"
-			(at 116.84 19.05 0)
+			(at 111.125 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21851,10 +22303,10 @@
 			)
 		)
 		(property "Value" "10018784-10210TLF"
-			(at 116.84 21.59 0)
+			(at 116.205 74.93 0)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
@@ -22319,7 +22771,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "de5cf62d-f3a2-4bcf-80e2-7c8497049d25")
-		(property "Reference" "#PWR095"
+		(property "Reference" "#PWR0101"
 			(at 165.1 166.37 0)
 			(effects
 				(font
@@ -22369,7 +22821,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR095")
+					(reference "#PWR0101")
 					(unit 1)
 				)
 			)
@@ -22378,7 +22830,6 @@
 	(symbol
 		(lib_id "power:GND")
 		(at 60.96 73.66 0)
-		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -22395,7 +22846,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 57.15 75.565 0)
+			(at 64.77 75.565 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22451,7 +22902,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ecb5f847-267f-45d0-91c4-123fdb1c7a4e")
-		(property "Reference" "#PWR085"
+		(property "Reference" "#PWR086"
 			(at 97.79 27.94 0)
 			(effects
 				(font
@@ -22501,7 +22952,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR085")
+					(reference "#PWR086")
 					(unit 1)
 				)
 			)
@@ -22517,7 +22968,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ed1be315-4cd6-4a15-b1ae-83ec17a37637")
-		(property "Reference" "#PWR093"
+		(property "Reference" "#PWR097"
 			(at 163.83 27.94 0)
 			(effects
 				(font
@@ -22567,7 +23018,72 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR093")
+					(reference "#PWR097")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 231.14 154.94 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f286d344-7c39-4558-827f-b55da68d20b7")
+		(property "Reference" "#PWR0110"
+			(at 234.95 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 225.425 154.94 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 231.14 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 231.14 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 231.14 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3101713d-ae5e-4aad-a2f5-e97cee63bb65")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
+					(reference "#PWR0110")
 					(unit 1)
 				)
 			)
@@ -22584,7 +23100,7 @@
 		(dnp no)
 		(uuid "f51c2ada-3c44-487b-9015-a8e3dc27f32c")
 		(property "Reference" "J16"
-			(at 251.46 19.05 0)
+			(at 245.745 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22592,10 +23108,10 @@
 			)
 		)
 		(property "Value" "10018784-10210TLF"
-			(at 251.46 21.59 0)
+			(at 250.825 74.93 0)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
@@ -22820,7 +23336,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fc8aeb8c-0853-43df-87d7-e83a48b9ebc9")
-		(property "Reference" "#PWR075"
+		(property "Reference" "#PWR073"
 			(at 29.21 27.94 0)
 			(effects
 				(font
@@ -22870,7 +23386,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "#PWR075")
+					(reference "#PWR073")
 					(unit 1)
 				)
 			)
