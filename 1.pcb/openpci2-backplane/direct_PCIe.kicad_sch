@@ -5,7 +5,7 @@
 	(uuid "7c1f7c93-511a-4650-8368-2299c4bb51f8")
 	(paper "A4")
 	(title_block
-		(date "2025-07-12")
+		(date "2025-07-22")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -8232,7 +8232,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "1d045b53-4f17-40e4-b3b6-b045e33dae6d")
-		(property "Reference" "C68"
+		(property "Reference" "C72"
 			(at 93.472 48.4124 0)
 			(effects
 				(font
@@ -8313,7 +8313,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C68")
+					(reference "C72")
 					(unit 1)
 				)
 			)
@@ -8393,7 +8393,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2fac949c-6c68-4329-b81b-b6a7122c7e6a")
-		(property "Reference" "C71"
+		(property "Reference" "C75"
 			(at 140.208 144.9324 0)
 			(effects
 				(font
@@ -8474,7 +8474,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C71")
+					(reference "C75")
 					(unit 1)
 				)
 			)
@@ -8620,7 +8620,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "438b3ccd-df58-40ab-b414-dc37ae4ad124")
-		(property "Reference" "C69"
+		(property "Reference" "C73"
 			(at 98.552 48.4124 0)
 			(effects
 				(font
@@ -8701,7 +8701,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C69")
+					(reference "C73")
 					(unit 1)
 				)
 			)
@@ -8783,7 +8783,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4548c3be-4d61-46fa-a854-14a7b7ff7530")
-		(property "Reference" "C72"
+		(property "Reference" "C76"
 			(at 187.833 32.385 0)
 			(effects
 				(font
@@ -8864,7 +8864,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C72")
+					(reference "C76")
 					(unit 1)
 				)
 			)
@@ -9283,6 +9283,42 @@
 				(hide yes)
 			)
 		)
+		(property "DigiKey" "609-2029-ND"
+			(at 160.02 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C5083888"
+			(at 160.02 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "649-1001878410210TLF"
+			(at 160.02 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "10018784-10210TLF"
+			(at 160.02 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "A18"
 			(uuid "9657fe8a-457b-4a54-82ac-8d7d3685c4e2")
 		)
@@ -9519,7 +9555,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 20.32 185.42 0)
 			(effects
 				(font
@@ -9528,7 +9564,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 20.32 185.42 0)
 			(effects
 				(font
@@ -9537,7 +9573,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 20.32 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 20.32 185.42 0)
 			(effects
 				(font
@@ -9781,7 +9826,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "679c6007-9e2d-4c96-8c83-8b596517a81e")
-		(property "Reference" "C67"
+		(property "Reference" "C71"
 			(at 81.153 29.845 0)
 			(effects
 				(font
@@ -9862,7 +9907,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C67")
+					(reference "C71")
 					(unit 1)
 				)
 			)
@@ -10506,7 +10551,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "490-5178-1-ND"
 			(at 83.82 149.86 0)
 			(effects
 				(font
@@ -10515,7 +10560,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "81-BLM15AG221SN1D "
 			(at 83.82 149.86 0)
 			(effects
 				(font
@@ -10524,7 +10569,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "BLM15AG221SN1Dž"
+			(at 83.82 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C85813"
 			(at 83.82 149.86 0)
 			(effects
 				(font
@@ -10798,7 +10852,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 25.4 185.42 0)
 			(effects
 				(font
@@ -10807,7 +10861,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 25.4 185.42 0)
 			(effects
 				(font
@@ -10816,7 +10870,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 25.4 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 25.4 185.42 0)
 			(effects
 				(font
@@ -11059,7 +11122,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b35741cb-3794-4fc0-8252-c5720fc89fa2")
-		(property "Reference" "C70"
+		(property "Reference" "C74"
 			(at 135.128 144.9324 0)
 			(effects
 				(font
@@ -11140,7 +11203,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
-					(reference "C70")
+					(reference "C74")
 					(unit 1)
 				)
 			)
@@ -11405,7 +11468,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 213.36 152.4 0)
 			(effects
 				(font
@@ -11414,7 +11477,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 213.36 152.4 0)
 			(effects
 				(font
@@ -11423,7 +11486,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 213.36 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 213.36 152.4 0)
 			(effects
 				(font
@@ -11777,7 +11849,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 218.44 152.4 0)
 			(effects
 				(font
@@ -11786,7 +11858,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 218.44 152.4 0)
 			(effects
 				(font
@@ -11795,7 +11867,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 218.44 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 218.44 152.4 0)
 			(effects
 				(font
@@ -12039,19 +12120,21 @@
 		(dnp no)
 		(uuid "d4db4185-9550-4b79-87e0-ea9832939ab0")
 		(property "Reference" "J20"
-			(at 172.72 80.01 0)
+			(at 160.02 83.185 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left bottom)
 			)
 		)
 		(property "Value" "1-2199230-6"
-			(at 172.72 82.55 0)
+			(at 160.02 158.115 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
 		(property "Footprint" "PCM_Chili-chips:1-2199230-6 with holes (80 mm)"
@@ -12082,7 +12165,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 160.02 83.82 0)
 			(effects
 				(font
@@ -12091,7 +12174,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 160.02 83.82 0)
 			(effects
 				(font
@@ -12100,7 +12183,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 160.02 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 160.02 83.82 0)
 			(effects
 				(font
@@ -12542,19 +12634,21 @@
 		(dnp no)
 		(uuid "ddb80213-8c31-469b-b74d-b5d292aaf401")
 		(property "Reference" "J17"
-			(at 66.04 110.49 0)
+			(at 53.34 113.665 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left bottom)
 			)
 		)
 		(property "Value" "1-2199230-6"
-			(at 66.04 113.03 0)
+			(at 53.34 189.865 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left bottom)
 			)
 		)
 		(property "Footprint" "PCM_Chili-chips:1-2199230-6 with holes (80 mm)"
@@ -12585,7 +12679,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 53.34 114.3 0)
 			(effects
 				(font
@@ -12594,7 +12688,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 53.34 114.3 0)
 			(effects
 				(font
@@ -12603,7 +12697,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 53.34 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 53.34 114.3 0)
 			(effects
 				(font
@@ -12957,7 +13060,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "490-5178-1-ND"
 			(at 190.5 119.38 0)
 			(effects
 				(font
@@ -12966,7 +13069,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "81-BLM15AG221SN1D "
 			(at 190.5 119.38 0)
 			(effects
 				(font
@@ -12975,7 +13078,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "BLM15AG221SN1Dž"
+			(at 190.5 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C85813"
 			(at 190.5 119.38 0)
 			(effects
 				(font
@@ -13053,7 +13165,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 208.28 152.4 0)
 			(effects
 				(font
@@ -13062,7 +13174,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 208.28 152.4 0)
 			(effects
 				(font
@@ -13071,7 +13183,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 208.28 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 208.28 152.4 0)
 			(effects
 				(font
@@ -13359,7 +13480,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "A118046CT-ND"
 			(at 30.48 185.42 0)
 			(effects
 				(font
@@ -13368,7 +13489,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" ""
+		(property "Mouser" "571-1-2199230-6"
 			(at 30.48 185.42 0)
 			(effects
 				(font
@@ -13377,7 +13498,16 @@
 				(hide yes)
 			)
 		)
-		(property "TME" ""
+		(property "TME" "121992306-TEC"
+			(at 30.48 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4710843"
 			(at 30.48 185.42 0)
 			(effects
 				(font
