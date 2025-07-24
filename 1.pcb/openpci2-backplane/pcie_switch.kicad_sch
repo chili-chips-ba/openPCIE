@@ -2711,7 +2711,7 @@
 	)
 	(rectangle
 		(start 156.21 122.555)
-		(end 167.005 133.35)
+		(end 168.275 133.35)
 		(stroke
 			(width 0)
 			(type default)
@@ -2724,7 +2724,7 @@
 	)
 	(text "Root Complex / RPi Tx -> Switch Tx\nRoot Complex / RPi Rx -> Switch Rx\n"
 		(exclude_from_sim no)
-		(at 167.64 127 0)
+		(at 168.91 127 0)
 		(effects
 			(font
 				(size 0.889 0.889)
@@ -9159,7 +9159,7 @@
 			)
 		)
 	)
-	(global_label "RC_TX0_P"
+	(global_label "SWRC_TX0_P"
 		(shape input)
 		(at 157.48 124.46 0)
 		(fields_autoplaced yes)
@@ -9171,7 +9171,7 @@
 		)
 		(uuid "1798e487-6600-487f-b5e0-bf6baa0bd7b9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 165.9618 124.46 0)
+			(at 167.8245 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9225,7 +9225,7 @@
 			)
 		)
 	)
-	(global_label "RC_RX0_N"
+	(global_label "SWRC_RX0_N"
 		(shape output)
 		(at 157.48 132.08 0)
 		(fields_autoplaced yes)
@@ -9237,7 +9237,7 @@
 		)
 		(uuid "2c524854-4c3d-4ae3-a5a1-b48ad1c9be0c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 166.2158 132.08 0)
+			(at 168.0785 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9643,7 +9643,7 @@
 			)
 		)
 	)
-	(global_label "RC_RX0_P"
+	(global_label "SWRC_RX0_P"
 		(shape output)
 		(at 157.48 129.54 0)
 		(fields_autoplaced yes)
@@ -9655,7 +9655,7 @@
 		)
 		(uuid "a1332630-a98c-41dc-8ce6-b232ef1681dc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 166.1735 129.54 0)
+			(at 168.0362 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9731,7 +9731,7 @@
 			)
 		)
 	)
-	(global_label "RC_TX0_N"
+	(global_label "SWRC_TX0_N"
 		(shape input)
 		(at 157.48 127 0)
 		(fields_autoplaced yes)
@@ -9743,7 +9743,7 @@
 		)
 		(uuid "d7a14937-91b2-441c-88de-a2056bfc7a9a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 166.0041 127 0)
+			(at 167.8668 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9819,7 +9819,7 @@
 			)
 		)
 	)
-	(global_label "RC_RX0_P"
+	(global_label "SWRC_RX0_P"
 		(shape input)
 		(at 109.22 175.26 180)
 		(fields_autoplaced yes)
@@ -9831,7 +9831,7 @@
 		)
 		(uuid "e8fae65e-8d12-45f2-9bb9-86631799ce25")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 100.5265 175.26 0)
+			(at 98.6638 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9841,7 +9841,7 @@
 			)
 		)
 	)
-	(global_label "RC_TX0_P"
+	(global_label "SWRC_TX0_P"
 		(shape input)
 		(at 109.22 160.02 180)
 		(fields_autoplaced yes)
@@ -9853,7 +9853,7 @@
 		)
 		(uuid "e9a458f2-83e6-4b5e-a872-97ff7258fffe")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 100.7382 160.02 0)
+			(at 98.8755 160.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)

@@ -502,7 +502,7 @@
       },
       {
         "name": "diff",
-        "pcb_color": "rgb(255, 0, 255)",
+        "pcb_color": "rgb(255, 153, 0)",
         "priority": 1,
         "schematic_color": "rgba(0, 0, 0, 0.000)"
       },
@@ -536,11 +536,11 @@
         "pattern": "SW_SLOT0_RX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT0_CLK_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT0_CLK_N"
       },
       {
@@ -560,11 +560,11 @@
         "pattern": "SW_SLOT1_RX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT1_CLK_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT1_CLK_N"
       },
       {
@@ -584,11 +584,11 @@
         "pattern": "SW_SLOT2_RX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT2_CLK_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT2_CLK_N"
       },
       {
@@ -608,11 +608,11 @@
         "pattern": "SW_SLOT3_RX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT3_CLK_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SW_SLOT3_CLK_N"
       },
       {
@@ -718,6 +718,142 @@
       {
         "netclass": "diff_clk",
         "pattern": "SW_RC_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX2_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_TX3_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX2_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "RC4_RX3_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX0_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX0_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX2_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SWRC_CLK_P"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SWRC_CLK_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_TX3_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX1_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX1_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX2_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX2_N"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX3_P"
+      },
+      {
+        "netclass": "diff",
+        "pattern": "SWRC_RX3_N"
       }
     ]
   },

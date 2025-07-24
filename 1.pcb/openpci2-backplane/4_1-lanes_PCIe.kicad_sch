@@ -10,7 +10,7 @@
 		(company "Chili.CHIPS")
 	)
 	(lib_symbols
-		(symbol "PCM_Chili-chips:10018784-10210TLF"
+		(symbol "PCM_Chili-chips:10061913-110PLF"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -23,8 +23,8 @@
 					(justify left bottom)
 				)
 			)
-			(property "Value" "10018784-10210TLF"
-				(at -4.445 -53.34 0)
+			(property "Value" "10061913-110PLF"
+				(at 0 -53.34 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -32,7 +32,7 @@
 					(justify left bottom)
 				)
 			)
-			(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
+			(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
 				(at 0 -55.88 0)
 				(effects
 					(font
@@ -51,7 +51,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "PCIe card connector, 36-pins"
+			(property "Description" "PCIe card connector, 36-pins, SMD"
 				(at 5.08 -57.785 0)
 				(effects
 					(font
@@ -60,7 +60,47 @@
 					(hide yes)
 				)
 			)
-			(symbol "10018784-10210TLF_1_0"
+			(property "DigiKey" "609-4718-1-ND"
+				(at 0 -60.96 0)
+				(show_name)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Mouser" "649-10061913-110PLF"
+				(at 0 -66.04 0)
+				(show_name)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "TME" "10061913110PLF-0"
+				(at 0 -68.58 0)
+				(show_name)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "LCSC" "C5021468"
+				(at 0 -63.5 0)
+				(show_name)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "10061913-110PLF_1_0"
 				(rectangle
 					(start 0 0)
 					(end 12.7 -50.8)
@@ -725,6 +765,24 @@
 						)
 					)
 					(number "B18"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 17.78 -50.8 180)
+					(length 5.08)
+					(name "SH"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+					(number "SH"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -3304,6 +3362,12 @@
 		(uuid "093e7c0d-1742-46a0-a80c-c77a3d4ae0a5")
 	)
 	(junction
+		(at 236.22 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0b51a868-9378-4572-9429-c9001b181ab2")
+	)
+	(junction
 		(at 134.62 149.86)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3526,6 +3590,12 @@
 		(uuid "8921646f-c2fd-4627-8570-12cc655bbbbe")
 	)
 	(junction
+		(at 33.02 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8cdb3fb8-b561-4325-a6c2-1cef66cab0f4")
+	)
+	(junction
 		(at 27.94 27.94)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -3548,6 +3618,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "9e9f0138-3aac-4685-8f75-7849a8003529")
+	)
+	(junction
+		(at 167.64 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9f8e93d5-9c16-409d-a96b-8f557154cd8a")
 	)
 	(junction
 		(at 198.12 45.72)
@@ -3638,6 +3714,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ce93588d-f504-456a-9a31-c9d2bdc6d3e6")
+	)
+	(junction
+		(at 101.6 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d13b39b6-abc9-4318-a0b9-9a221af275cd")
 	)
 	(junction
 		(at 236.22 40.64)
@@ -6063,6 +6145,16 @@
 		)
 		(uuid "40fc76e7-b939-43ff-8992-a3605ad55f0a")
 	)
+	(wire
+		(pts
+			(xy 33.02 73.66) (xy 35.56 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "41036d24-684f-48bc-b5da-36fc406771ab")
+	)
 	(polyline
 		(pts
 			(xy 162.56 59.69) (xy 163.195 59.69)
@@ -7488,6 +7580,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "6e16d589-a121-4a5e-9ae8-50a5317d537b")
+	)
+	(wire
+		(pts
+			(xy 236.22 73.66) (xy 238.76 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6e259193-9bee-4ff5-b4f3-e43ea92a5635")
 	)
 	(wire
 		(pts
@@ -11363,6 +11465,16 @@
 		)
 		(uuid "dc0efb79-57e1-4afe-a815-cbefe60b9d2b")
 	)
+	(wire
+		(pts
+			(xy 167.64 73.66) (xy 170.18 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc43ebfa-1ae0-4a59-9374-e95c38914e13")
+	)
 	(polyline
 		(pts
 			(xy 164.465 107.95) (xy 165.1 107.315)
@@ -11705,6 +11817,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "e8a87a51-5c89-40ab-9e9c-d3b62b56fc3c")
+	)
+	(wire
+		(pts
+			(xy 101.6 73.66) (xy 104.14 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e91513a9-a76a-4bef-a089-e84603fb4b7e")
 	)
 	(wire
 		(pts
@@ -15294,7 +15416,7 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:10018784-10210TLF")
+		(lib_id "PCM_Chili-chips:10061913-110PLF")
 		(at 53.34 22.86 0)
 		(mirror y)
 		(unit 1)
@@ -15311,7 +15433,7 @@
 				)
 			)
 		)
-		(property "Value" "10018784-10210TLF"
+		(property "Value" "10061913110PLF"
 			(at 47.625 74.93 0)
 			(effects
 				(font
@@ -15319,7 +15441,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
+		(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
 			(at 53.34 78.74 0)
 			(effects
 				(font
@@ -15338,7 +15460,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "PCIe card connector, 36-pins"
+		(property "Description" "PCIe card connector, 36-pins, SMD"
 			(at 48.26 80.645 0)
 			(effects
 				(font
@@ -15347,8 +15469,9 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "609-2029-ND"
-			(at 53.34 22.86 0)
+		(property "DigiKey" "609-4718-1-ND"
+			(at 53.34 83.82 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15356,8 +15479,9 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5083888"
-			(at 53.34 22.86 0)
+		(property "LCSC" "C5021468"
+			(at 53.34 86.36 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15365,8 +15489,9 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" "649-1001878410210TLF"
-			(at 53.34 22.86 0)
+		(property "Mouser" "649-10061913-110PLF"
+			(at 53.34 88.9 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15374,8 +15499,9 @@
 				(hide yes)
 			)
 		)
-		(property "TME" "10018784-10210TLF"
-			(at 53.34 22.86 0)
+		(property "TME" "10061913110PLF-0"
+			(at 53.34 91.44 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15490,6 +15616,9 @@
 		)
 		(pin "A4"
 			(uuid "fd8618e7-e96e-4085-91fa-d16486d11eba")
+		)
+		(pin "SH"
+			(uuid "283aac1f-efa5-4a7b-bc0b-873361d8fcb7")
 		)
 		(instances
 			(project "openpci2-backplane"
@@ -18447,7 +18576,7 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:10018784-10210TLF")
+		(lib_id "PCM_Chili-chips:10061913-110PLF")
 		(at 187.96 22.86 0)
 		(mirror y)
 		(unit 1)
@@ -18464,7 +18593,7 @@
 				)
 			)
 		)
-		(property "Value" "10018784-10210TLF"
+		(property "Value" "10061913110PLF"
 			(at 182.245 74.93 0)
 			(effects
 				(font
@@ -18472,7 +18601,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
+		(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
 			(at 187.96 78.74 0)
 			(effects
 				(font
@@ -18491,7 +18620,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "PCIe card connector, 36-pins"
+		(property "Description" "PCIe card connector, 36-pins, SMD"
 			(at 182.88 80.645 0)
 			(effects
 				(font
@@ -18500,8 +18629,9 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "609-2029-ND"
-			(at 187.96 22.86 0)
+		(property "DigiKey" "609-4718-1-ND"
+			(at 187.96 83.82 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18509,8 +18639,9 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5083888"
-			(at 187.96 22.86 0)
+		(property "LCSC" "C5021468"
+			(at 187.96 86.36 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18518,8 +18649,9 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" "649-1001878410210TLF"
-			(at 187.96 22.86 0)
+		(property "Mouser" "649-10061913-110PLF"
+			(at 187.96 88.9 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18527,8 +18659,9 @@
 				(hide yes)
 			)
 		)
-		(property "TME" "10018784-10210TLF"
-			(at 187.96 22.86 0)
+		(property "TME" "10061913110PLF-0"
+			(at 187.96 91.44 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18643,6 +18776,9 @@
 		)
 		(pin "A4"
 			(uuid "60bf787b-ba03-4219-be38-fb8efc6395c3")
+		)
+		(pin "SH"
+			(uuid "f35eb6e0-9b03-4fa3-9b8a-a3be6ca750ce")
 		)
 		(instances
 			(project "openpci2-backplane"
@@ -22519,7 +22655,7 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:10018784-10210TLF")
+		(lib_id "PCM_Chili-chips:10061913-110PLF")
 		(at 121.92 22.86 0)
 		(mirror y)
 		(unit 1)
@@ -22536,7 +22672,7 @@
 				)
 			)
 		)
-		(property "Value" "10018784-10210TLF"
+		(property "Value" "10061913110PLF"
 			(at 116.205 74.93 0)
 			(effects
 				(font
@@ -22544,7 +22680,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
+		(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
 			(at 121.92 78.74 0)
 			(effects
 				(font
@@ -22563,7 +22699,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "PCIe card connector, 36-pins"
+		(property "Description" "PCIe card connector, 36-pins, SMD"
 			(at 116.84 80.645 0)
 			(effects
 				(font
@@ -22572,8 +22708,9 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "609-2029-ND"
-			(at 121.92 22.86 0)
+		(property "DigiKey" "609-4718-1-ND"
+			(at 121.92 83.82 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22581,8 +22718,9 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5083888"
-			(at 121.92 22.86 0)
+		(property "LCSC" "C5021468"
+			(at 121.92 86.36 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22590,8 +22728,9 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" "649-1001878410210TLF"
-			(at 121.92 22.86 0)
+		(property "Mouser" "649-10061913-110PLF"
+			(at 121.92 88.9 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22599,8 +22738,9 @@
 				(hide yes)
 			)
 		)
-		(property "TME" "10018784-10210TLF"
-			(at 121.92 22.86 0)
+		(property "TME" "10061913110PLF-0"
+			(at 121.92 91.44 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22715,6 +22855,9 @@
 		)
 		(pin "A4"
 			(uuid "df14c82c-acde-4448-bfed-eaad1b2957d9")
+		)
+		(pin "SH"
+			(uuid "99fc753d-bff4-4916-9334-44341550b823")
 		)
 		(instances
 			(project "openpci2-backplane"
@@ -23369,7 +23512,7 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_Chili-chips:10018784-10210TLF")
+		(lib_id "PCM_Chili-chips:10061913-110PLF")
 		(at 256.54 22.86 0)
 		(mirror y)
 		(unit 1)
@@ -23386,7 +23529,7 @@
 				)
 			)
 		)
-		(property "Value" "10018784-10210TLF"
+		(property "Value" "10061913110PLF"
 			(at 250.825 74.93 0)
 			(effects
 				(font
@@ -23394,7 +23537,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
+		(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
 			(at 256.54 78.74 0)
 			(effects
 				(font
@@ -23413,7 +23556,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "PCIe card connector, 36-pins"
+		(property "Description" "PCIe card connector, 36-pins, SMD"
 			(at 251.46 80.645 0)
 			(effects
 				(font
@@ -23422,8 +23565,9 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "609-2029-ND"
-			(at 256.54 22.86 0)
+		(property "DigiKey" "609-4718-1-ND"
+			(at 256.54 83.82 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23431,8 +23575,9 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5083888"
-			(at 256.54 22.86 0)
+		(property "LCSC" "C5021468"
+			(at 256.54 86.36 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23440,8 +23585,9 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser" "649-1001878410210TLF"
-			(at 256.54 22.86 0)
+		(property "Mouser" "649-10061913-110PLF"
+			(at 256.54 88.9 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23449,8 +23595,9 @@
 				(hide yes)
 			)
 		)
-		(property "TME" "10018784-10210TLF"
-			(at 256.54 22.86 0)
+		(property "TME" "10061913110PLF-0"
+			(at 256.54 91.44 0)
+			(show_name yes)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23565,6 +23712,9 @@
 		)
 		(pin "A4"
 			(uuid "e8537643-b7b8-44fb-9ee3-009eada12c2a")
+		)
+		(pin "SH"
+			(uuid "f0163eb7-5fa6-43d5-9c09-48c56163a2d5")
 		)
 		(instances
 			(project "openpci2-backplane"
