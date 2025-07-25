@@ -5,7 +5,7 @@
 	(uuid "dbe4b28f-a208-4c36-92c3-c7f8669f867d")
 	(paper "A4")
 	(title_block
-		(date "2025-07-24")
+		(date "2025-07-25")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -3325,6 +3325,32 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "SW_EP1"
+		(exclude_from_sim no)
+		(at 116.205 19.05 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
+				(color 132 0 132 1)
+			)
+		)
+		(uuid "1423d4f3-ef26-4e50-8f25-08594465e63c")
+	)
+	(text "SW_EP2"
+		(exclude_from_sim no)
+		(at 181.61 19.05 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
+				(color 132 0 132 1)
+			)
+		)
+		(uuid "5c0530c9-cc31-4afc-a2b7-7056915f43dd")
+	)
 	(text "Switch Tx -> x1 slot / M.2 Rx\nSwitch Rx -> x1 slot / M.2 Tx\n"
 		(exclude_from_sim no)
 		(at 36.195 79.375 0)
@@ -3336,6 +3362,32 @@
 			(justify left)
 		)
 		(uuid "9ed5ae4b-5864-44ac-9978-b26883be9d90")
+	)
+	(text "SW_EP3"
+		(exclude_from_sim no)
+		(at 250.825 19.05 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
+				(color 132 0 132 1)
+			)
+		)
+		(uuid "f112c7aa-80fa-41f7-8515-a0d5d7db25c1")
+	)
+	(text "SW_EP0"
+		(exclude_from_sim no)
+		(at 46.99 19.05 0)
+		(effects
+			(font
+				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
+				(color 132 0 132 1)
+			)
+		)
+		(uuid "f89897fa-701c-4ab1-80f8-c65317a82390")
 	)
 	(junction
 		(at 33.02 25.4)
@@ -14752,7 +14804,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "15bd74e3-0098-43de-958a-5f9eb8441b71")
-		(property "Reference" "R30"
+		(property "Reference" "R32"
 			(at 201.93 121.285 0)
 			(effects
 				(font
@@ -14842,7 +14894,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "R30")
+					(reference "R32")
 					(unit 1)
 				)
 			)
@@ -15319,7 +15371,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3143e995-7637-4729-a983-9bbfbe484689")
-		(property "Reference" "R29"
+		(property "Reference" "R31"
 			(at 135.89 121.285 0)
 			(effects
 				(font
@@ -15409,7 +15461,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "R29")
+					(reference "R31")
 					(unit 1)
 				)
 			)
@@ -20167,7 +20219,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a27903d4-68a0-4d4b-a5a1-03dbb61860a9")
-		(property "Reference" "R31"
+		(property "Reference" "R33"
 			(at 270.51 121.285 0)
 			(effects
 				(font
@@ -20257,7 +20309,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "R31")
+					(reference "R33")
 					(unit 1)
 				)
 			)
@@ -22558,7 +22610,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d0f5083f-620e-4b38-8736-9689d1da32bd")
-		(property "Reference" "R28"
+		(property "Reference" "R30"
 			(at 69.85 121.285 0)
 			(effects
 				(font
@@ -22648,7 +22700,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/95043c95-aec2-4e16-ae00-6544aa3d2f89"
-					(reference "R28")
+					(reference "R30")
 					(unit 1)
 				)
 			)
