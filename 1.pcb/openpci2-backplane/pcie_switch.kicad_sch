@@ -5,7 +5,7 @@
 	(uuid "0b8e5f97-03cb-4466-8d11-5c2a0c360436")
 	(paper "A4")
 	(title_block
-		(date "2025-07-24")
+		(date "2025-07-25")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -9401,7 +9401,7 @@
 			)
 		)
 	)
-	(global_label "SW_RC_CLK_P"
+	(global_label "SW_CLK_P"
 		(shape input)
 		(at 157.48 134.62 0)
 		(fields_autoplaced yes)
@@ -9413,7 +9413,7 @@
 		)
 		(uuid "8073a219-dd3f-487f-996e-9b17bedfb8cc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 168.6288 134.62 0)
+			(at 166.1735 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9445,7 +9445,7 @@
 			)
 		)
 	)
-	(global_label "RST_PCIESW"
+	(global_label "~{RST_PCIESW}"
 		(shape input)
 		(at 132.08 142.24 0)
 		(fields_autoplaced yes)
@@ -9511,7 +9511,7 @@
 			)
 		)
 	)
-	(global_label "RST_PCIESW_OUT"
+	(global_label "~{RST_PCIESW_OUT}"
 		(shape output)
 		(at 132.08 139.7 0)
 		(fields_autoplaced yes)
@@ -9863,7 +9863,7 @@
 			)
 		)
 	)
-	(global_label "SW_RC_CLK_N"
+	(global_label "SW_CLK_N"
 		(shape input)
 		(at 157.48 137.16 0)
 		(fields_autoplaced yes)
@@ -9875,7 +9875,7 @@
 		)
 		(uuid "eadc916e-5be8-4132-9a26-5cad2a641d09")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 168.6711 137.16 0)
+			(at 166.2158 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10730,7 +10730,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "195254e4-ac40-44b6-912d-733085edf60f")
-		(property "Reference" "R22"
+		(property "Reference" "R24"
 			(at 78.105 132.08 90)
 			(effects
 				(font
@@ -10811,7 +10811,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R22")
+					(reference "R24")
 					(unit 1)
 				)
 			)
@@ -11023,7 +11023,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2a9aefac-6b53-4007-8ffa-97719e376747")
-		(property "Reference" "R24"
+		(property "Reference" "R26"
 			(at 114.935 158.75 90)
 			(effects
 				(font
@@ -11104,7 +11104,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R24")
+					(reference "R26")
 					(unit 1)
 				)
 			)
@@ -11736,7 +11736,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "40fb3049-de19-402c-8d09-1c1fae4fda00")
-		(property "Reference" "R23"
+		(property "Reference" "R25"
 			(at 78.105 137.16 90)
 			(effects
 				(font
@@ -11817,7 +11817,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R23")
+					(reference "R25")
 					(unit 1)
 				)
 			)
@@ -13960,7 +13960,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "968c3b15-8d31-4586-b489-4e6838aac885")
-		(property "Reference" "R21"
+		(property "Reference" "R23"
 			(at 78.105 127 90)
 			(effects
 				(font
@@ -14041,7 +14041,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R21")
+					(reference "R23")
 					(unit 1)
 				)
 			)
@@ -15601,7 +15601,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f3d56fa1-fb18-46fe-a56c-9d14600506f7")
-		(property "Reference" "R25"
+		(property "Reference" "R27"
 			(at 114.935 173.99 90)
 			(effects
 				(font
@@ -15682,7 +15682,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R25")
+					(reference "R27")
 					(unit 1)
 				)
 			)
