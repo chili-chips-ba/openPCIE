@@ -1,7 +1,7 @@
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction.
 
-<p align="center">
-  <img width=350 src="0.doc/artwork/PCIE2-RootC.logo.png">
+<p align="center" width="100%">
+  <img width="25%" src="0.doc/artwork/PCIE2-RootC.logo.png">
 </p>
 
 Our project aims to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
@@ -31,7 +31,7 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 #### Backplane Block Diagram
 
 <p align="center" width="100%">
-    <img width="80%" src="0.doc/1/pcb/openPCIE-BlockDiagram.jpg">
+    <img width="80%" src="0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
 </p>
 
 
