@@ -28,6 +28,13 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
 - [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
 
+#### Backplane Block Diagram
+
+<p align="center" width="100%">
+    <img width="80%" src="0.doc/1/pcb/openPCIE-BlockDiagram.jpg">
+</p>
+
+
 --------------------
 
 # Project Status
