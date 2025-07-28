@@ -792,11 +792,11 @@
         "pattern": "SWRC_TX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SWRC_RX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "diff_clk",
         "pattern": "SWRC_RX0_P"
       },
       {
@@ -918,6 +918,14 @@
       {
         "netclass": "diff_clk",
         "pattern": "SWRC2_CLK_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SWRC3_CLK_N"
+      },
+      {
+        "netclass": "diff_clk",
+        "pattern": "SWRC3_CLK_P"
       }
     ]
   },
@@ -1154,8 +1162,8 @@
       "Clock generator & Reset fanout"
     ],
     [
-      "c14e31b3-5f49-4318-a18f-f67eef2f143c",
-      "PCIe switch"
+      "b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105",
+      "Direct 4-lane PCIe"
     ],
     [
       "6ab8d74d-40e9-45a1-a821-59a82de68ed7",
@@ -1166,8 +1174,8 @@
       "Switched 4 x 1-lanes PCIe"
     ],
     [
-      "b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105",
-      "Direct 4-lane PCIe"
+      "c14e31b3-5f49-4318-a18f-f67eef2f143c",
+      "PCIe switch"
     ]
   ],
   "text_variables": {}
