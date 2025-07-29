@@ -5,7 +5,7 @@
 	(uuid "4049bf06-3ac2-49e6-a199-57d4e4e4797e")
 	(paper "A4")
 	(title_block
-		(date "2025-07-28")
+		(date "2025-07-29")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -418,6 +418,206 @@
 					)
 					(fill
 						(type outline)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "PCM_Chili-chips:Raspberry Pi outline"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(property "Reference" "LOGO"
+				(at 2.2225 0.9525 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" ""
+				(at 0 -20.32 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Footprint" "PCM_Chili-chips:Raspberry-Pi-4 outline"
+				(at -0.3175 -11.43 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Raspberry Pi outline_0_1"
+				(polyline
+					(pts
+						(xy 0 -0.635) (xy 0 -9.525)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 -0.635)
+					(mid 0.186 -0.186)
+					(end 0.635 0)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0.635 -0.635)
+					(radius 0.3175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0.635 -9.525)
+					(radius 0.3175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0.635 -10.16)
+					(mid 0.186 -9.974)
+					(end 0 -9.525)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 15.24 0) (xy 0.635 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 15.24 -0.635)
+					(radius 0.3175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 15.24 0)
+					(mid 15.689 -0.186)
+					(end 15.875 -0.635)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 15.24 -9.525)
+					(radius 0.3175)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 15.875 -9.525)
+					(mid 15.689 -9.974)
+					(end 15.24 -10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 15.24 -10.16) (xy 0.635 -10.16)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 15.875 -0.635) (xy 15.875 -9.525)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
 					)
 				)
 			)
@@ -4982,6 +5182,70 @@
 		)
 	)
 	(symbol
+		(lib_id "PCM_Chili-chips:Raspberry Pi outline")
+		(at 116.84 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "60009933-4109-45e5-8bbc-1d703d1a088d")
+		(property "Reference" "LOGO4"
+			(at 119.0625 169.2275 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "~"
+			(at 116.84 190.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "PCM_Chili-chips:Raspberry-Pi-4 outline"
+			(at 116.5225 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 116.84 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 116.84 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project ""
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "LOGO4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_symbols:FIDUCIAL")
 		(at 50.8 187.96 0)
 		(unit 1)
@@ -5542,7 +5806,7 @@
 		)
 	)
 	(sheet
-		(at 30.48 81.28)
+		(at 30.48 99.06)
 		(size 33.02 7.62)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5558,7 +5822,7 @@
 		)
 		(uuid "95043c95-aec2-4e16-ae00-6544aa3d2f89")
 		(property "Sheetname" "Switched 4 x 1-lanes PCIe"
-			(at 30.48 80.5684 0)
+			(at 30.48 98.3484 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5567,7 +5831,7 @@
 			)
 		)
 		(property "Sheetfile" "4_1-lanes_PCIe.kicad_sch"
-			(at 30.48 89.4846 0)
+			(at 30.48 107.2646 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5578,7 +5842,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
-					(page "5")
+					(page "6")
 				)
 			)
 		)
@@ -5626,7 +5890,7 @@
 		)
 	)
 	(sheet
-		(at 30.48 99.06)
+		(at 30.48 81.28)
 		(size 33.02 7.62)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5642,7 +5906,7 @@
 		)
 		(uuid "c14e31b3-5f49-4318-a18f-f67eef2f143c")
 		(property "Sheetname" "PCIe switch"
-			(at 30.48 98.3484 0)
+			(at 30.48 80.5684 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5651,7 +5915,7 @@
 			)
 		)
 		(property "Sheetfile" "pcie_switch.kicad_sch"
-			(at 30.48 107.2646 0)
+			(at 30.48 89.4846 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5662,7 +5926,7 @@
 		(instances
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
-					(page "6")
+					(page "5")
 				)
 			)
 		)
