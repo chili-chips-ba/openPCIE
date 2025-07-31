@@ -5,7 +5,7 @@
 	(uuid "d1bd8037-6549-4311-81a2-2754fbafa5c6")
 	(paper "A4")
 	(title_block
-		(date "2025-07-29")
+		(date "2025-07-31")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -5244,6 +5244,12 @@
 		(uuid "4fd40ca5-0c97-4e02-afb7-d5016c11b28b")
 	)
 	(junction
+		(at 264.16 114.3)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "521a930c-0b70-45a0-8ec0-76dbad367ead")
+	)
+	(junction
 		(at 162.56 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5620,6 +5626,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c5475ea2-99cf-4284-bba8-a7095a765404")
+	)
+	(junction
+		(at 264.16 132.08)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c6379f75-e7c8-4226-b673-cbd1d4da53b3")
 	)
 	(junction
 		(at 182.88 129.54)
@@ -6151,7 +6163,7 @@
 	)
 	(wire
 		(pts
-			(xy 256.54 109.22) (xy 256.54 111.76)
+			(xy 256.54 109.22) (xy 256.54 114.3)
 		)
 		(stroke
 			(width 0)
@@ -6878,6 +6890,16 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 129.54) (xy 264.16 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2cf73ef9-1c8b-473d-a89d-33eea3263928")
+	)
+	(wire
+		(pts
 			(xy 27.94 53.34) (xy 25.4 53.34)
 		)
 		(stroke
@@ -7083,6 +7105,16 @@
 			(type default)
 		)
 		(uuid "34c74c4f-2d7f-4598-ae90-d1ffd7c8cfc6")
+	)
+	(wire
+		(pts
+			(xy 264.16 114.3) (xy 266.7 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "352350d3-6154-47c5-94cf-1d6c66dc81a1")
 	)
 	(wire
 		(pts
@@ -8092,7 +8124,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 109.22) (xy 266.7 109.22)
+			(xy 264.16 109.22) (xy 271.78 109.22)
 		)
 		(stroke
 			(width 0)
@@ -8491,6 +8523,16 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 114.3) (xy 264.16 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70e2d369-cec8-4524-8698-5f83633cfb41")
+	)
+	(wire
+		(pts
 			(xy 147.32 27.94) (xy 165.1 27.94)
 		)
 		(stroke
@@ -8858,6 +8900,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "84160ce9-f86f-40eb-8870-ec81ccd90399")
+	)
+	(wire
+		(pts
+			(xy 264.16 132.08) (xy 271.78 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "841a8288-84ca-4116-8e21-2ea4c5a02c0f")
 	)
 	(wire
 		(pts
@@ -9794,6 +9846,16 @@
 	)
 	(wire
 		(pts
+			(xy 256.54 114.3) (xy 264.16 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "af4e0c10-56bd-4406-bbd5-a6298fa423fe")
+	)
+	(wire
+		(pts
 			(xy 40.64 165.1) (xy 53.34 165.1)
 		)
 		(stroke
@@ -9960,7 +10022,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 60.96) (xy 266.7 60.96)
+			(xy 264.16 60.96) (xy 271.78 60.96)
 		)
 		(stroke
 			(width 0)
@@ -12270,6 +12332,16 @@
 			"BPLa5MnK7SrVHYk6Pkz1O2g0GuZNnsz/A89E1+LMtDI2AAAAAElFTkSuQmCC"
 		)
 	)
+	(label "LDO_1V8"
+		(at 271.78 132.08 180)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right bottom)
+		)
+		(uuid "0ae519cd-d0c2-48ae-bf94-b315225b7718")
+	)
 	(label "PGOOD"
 		(at 38.1 88.9 0)
 		(effects
@@ -12281,6 +12353,16 @@
 		(uuid "0b01917e-b63c-45fd-a4f0-cd8da8b4d2a0")
 	)
 	(label "LDO_1V8"
+		(at 271.78 60.96 180)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right bottom)
+		)
+		(uuid "38684c38-dede-4320-b157-61a9b24641a2")
+	)
+	(label "LDO_1V8"
 		(at 154.94 27.94 180)
 		(effects
 			(font
@@ -12289,6 +12371,16 @@
 			(justify right bottom)
 		)
 		(uuid "5edc5a3b-b1b2-4a98-ba7b-3cf9e319f9e8")
+	)
+	(label "LDO_1V8"
+		(at 271.78 109.22 180)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right bottom)
+		)
+		(uuid "b1938e52-02dd-4703-b2be-8248478a8c2d")
 	)
 	(label "PGOOD"
 		(at 40.64 144.78 270)
@@ -12829,6 +12921,28 @@
 		(uuid "98bfad1a-04d6-4f28-8d58-42019a592770")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 254.1845 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "~{CLKREQ_SWRC1}"
+		(shape input)
+		(at 266.7 114.3 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify left)
+		)
+		(uuid "a918e42a-84da-4b0c-a09d-d72f3ee841bd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 279.0765 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13403,8 +13517,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
-		(at 261.62 124.46 0)
-		(mirror x)
+		(at 261.62 124.46 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -13412,7 +13525,7 @@
 		(dnp no)
 		(uuid "075eedbf-b0be-4419-a446-d2d79315822f")
 		(property "Reference" "R24"
-			(at 262.89 124.46 0)
+			(at 260.35 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13421,7 +13534,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 262.89 126.365 0)
+			(at 260.35 126.365 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18659,72 +18772,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 266.7 109.22 270)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "7c807f16-ffe9-4272-8622-9facc03e3590")
-		(property "Reference" "#PWR036"
-			(at 262.89 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 272.415 109.22 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 266.7 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 266.7 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 266.7 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7b847a76-5982-42b6-9541-1a5c02d53caf")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "#PWR036")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 66.04 35.56 0)
 		(unit 1)
@@ -19756,72 +19803,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 264.16 132.08 270)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9e82e49c-10d1-41e7-8ed0-08e519a79ce7")
-		(property "Reference" "#PWR034"
-			(at 260.35 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 269.875 132.08 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 264.16 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 264.16 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 264.16 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a4227bfb-d9af-4dbf-9725-b674aa6405a9")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "#PWR034")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
 		(at 109.22 73.66 0)
 		(unit 1)
@@ -20252,71 +20233,6 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
 					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 256.54 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "a9c8a680-70b4-4289-a42d-7d236c6288e8")
-		(property "Reference" "#PWR032"
-			(at 256.54 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 260.35 113.665 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 256.54 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 256.54 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 256.54 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5f485711-78a3-45fc-a0ba-17c4de6186c9")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -21573,7 +21489,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b327c534-5165-4499-8e72-fdfe106a672f")
-		(property "Reference" "#PWR033"
+		(property "Reference" "#PWR032"
 			(at 261.62 57.15 0)
 			(effects
 				(font
@@ -21623,7 +21539,7 @@
 		(instances
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "#PWR033")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -23149,6 +23065,102 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
+		(at 264.16 124.46 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dc76d8b4-256e-422c-a23f-e82e7d5dbb75")
+		(property "Reference" "R27"
+			(at 269.24 123.825 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" "10K"
+			(at 269.24 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
+			(at 264.16 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b2b5d981-79e2-4d41-8d29-84f4304b6941")
+		)
+		(pin "2"
+			(uuid "542eddd2-b154-4209-aeab-247d32239b39")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
+					(reference "R27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_passives:R-EU")
 		(at 215.9 50.8 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -24472,72 +24484,6 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
 					(reference "#FLG08")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 266.7 60.96 270)
-		(mirror x)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "f70d1c49-a2f6-4c90-8e0b-72872a8fc493")
-		(property "Reference" "#PWR035"
-			(at 262.89 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 272.415 60.96 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 266.7 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 266.7 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 266.7 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dde14eee-ade5-4f4e-a416-6e5ea86cb17b")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "#PWR035")
 					(unit 1)
 				)
 			)
