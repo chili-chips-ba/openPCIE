@@ -1,346 +1,464 @@
 # openpcie2-rc Simulation Top Level Test Bench
 
-# Table of Contents
+## Table of Contents
 
 * [Introduction](#introduction)
-* [The pcievhost Verification IP](#the-pcievhost-verification-ip)
-  * [The HDL Component](#the-hdl-component)
-  * [PcieDispLink](#pciedisplink)
-  * [The Pcie C Model](#the-pcie-c-model)
-    * [Internal Architecture](#internal-architecture)
-  * [User API Summary](#user-api-summary)
-    * [Model Initialisation and Configuration](#model-initialisation-and-configuration)
-    * [Transaction Layer Packet Generation](#transaction-layer-packet-generation)
-    * [Data LinkLayer Packet Generation](#data-link-layer-packet-generation)
-    * [Ordered Set Generation](#ordered-set-generation)
-    * [Internal Memory Access](#internal-memory-access)
-    * [Internal Configuration Space Access](#internal-configuration-space-access)
-      * [Constructing a Configuration Space](#constructing-a-configuration-space)
-  * [Additionally Provide Functionality](#additionally-provided-functionality)
-    * [Endpoint Features](#endpoint-features)
-    * [Model Limitations](#model-limitations)
-      * [Endpoint Feature Limitations](#endpoint-feature-limitations)
-      * [LTSSM Limitations](#ltssm-limitations)
-      * [Model Verification](#model-verification)
-* [The VProc Virtual Processor](#the-vproc-virtual-processor)] 
+* [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
+* [_VProc_ Software](#vproc-software)
+  * [Other Software Use Cases](#other-software-use-cases)
+    [Natively Compiled Application](#natively-compiled-application)
+    [RISC-V Compiled Application](#risc-v-compiled-application)
+* [Building and Running Code](#building-and-running-code)
+  * [Configuring ISS timing model](#configuring-iss-timing-model)
+  * [Running ISS code](#running-iss-code)
+* [PicoRV32 RTL-Only Simulation Makefile](#picorv32-rtl-only-simulation-makefile)
+* [Debugging Code](#debugging-code)
+  * [Natively Compiled Code](#natively-compiled-code)
+  * [ISS Software](#iss-software)
+* [The mem_model Co-Simulation Sparse Memory Model](#the-mem_model-co-simulation-sparse-memory-model)
+* [Driving the PCie Link](#driving-the-pcie-link)
+* [Co-simulation HAL](#co-simulation-hal)
+* [References](#references)
 
-# Introduction
+
+## Introduction
 
 The *openpcie2-rc* top level test bench is based around the [*pcievhost*](https://github.com/wyvernSemi/pcievhost) PCIe 2.0 verification co-simulation IP in order to drive the DUT's PCIe link. This is a C model for generating PCIe 1.1 and 2.0 traffic data connected to the logic simulation using the [*VProc*](https://github.com/wyvernSemi/vproc) virtual processor co-simulation element. _VProc_ allows a user program to be compiled natively on the host machine and 'run' on an instantiated HDL component in a logic simulation, including running the PCIe C model. _VProc_ has a generic memory mapped master bus for generating read and write transactions and a Bus Functional Model (BFM) wrapper encapsulates the _VProc_ component and effectively memory maps the PCIe ports into the address space, allowing software to drive and read these ports and interface with the PCIe C model. Although originally designed as a root complex model, the _pcievhost_ components has <ins>some</ins> endpoint features, enabled by setting a parameter. The endpoint features are [limited](#endpoint-feature-limitations) and were originally designed just as a target for the main root complex model to be tested.
 
-The diagram below is a *draft* block diagram of the top level test bench showing the main features.
+The diagram below is a block diagram of the top level test bench showing the main features.
 
 <p align=center>
-<img width=800 src="images/openpcierc_tb_draft.png">
+<img width=1000 src="images/openpcierc_tb.png">
 </p>
 
-The DUT PCIe link is connected to the _pcievhost_, configured as an endpoint, and running some user code to do link training and do any transaction generation required, though it will automatically respond to transactions requiring a completion. A pair of _PcieDispLink_ HDL components (supplied as part of _pcievhost_) are optionally cnnected to the up and down links that can display the traffic on the PCIe link. It also does _some_ on-the-fly compliance testing. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device. A user program can then be run on the virtal processor to access the device's registers etc.
+The DUT PCIe link is connected to the _pcievhost_, instantiated in a wrapper x1 PIPE link (`pcieVHostePipex1.v`) configured as an endpoint, and running some user code  to generate PCIe traffic as required, though it will automatically respond to transactions requiring a completion. The model is capable of display link traffic on both the up- and downstream links to the consile, configurable via `ContDisps.hex` file. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device. A user program can then be run on the virtal processor to access the device's registers etc.
 
-The software to run on the virtual processor is proposed to be a means to connect to an external QEMU process via a TCP/IP socket with a (TBD) protocol to instigate read and write transactions and return data (where applicable). It is envisaged that the client software is driven via the DUT's device driver to communicate with server software on _VProc_. This is currently TBD.
+The software to run on the virtual processor is proposed to be a means configure the model, such as setting the config space registers settings, do required link initialisation, and do any further modelling of a specific Endpoint implementation. This is TBD.
 
-# The _pcievhost_ Verification IP
+## Auto-selection of soc_cpu Component
 
-The [_pcievhost_](https://github.com/wyvernSemi/pcievhost) VIP is a co-simulation element that runs a PCIe C model on a [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor to drive lanes within a PCIe 1.1 or 2.0 link, with support for up to 16 lanes. The PCIe C model provides an API for generating PCIe traffic over the link with some additional helper functionality for modelling _some_ of the link training LTSSM features. It also provides an internal sparse memory model as a target for MemRd and MemWr transactions and, when configured as an endpoint, a configuration space as a target for CfgRd and CfgWr transactions. Feature of the API allow for the configuratins space to be pre-programmed with valid configurations and a read-only mask overlay, though there is no support for 'special' functions like write one to clear etc.
+The _openpcie2-rc_ top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the soc_cpu, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a test model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the rest of the HDL files come from the VProc and mem_model repositories (auto-checked out by the make file, if necessary). These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
 
-More details of the model can be found in the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
+## VProc Software
 
-## The HDL component
+The VProc software consists of DPI-C code for communication and sycnronisation with the simulation, for both the memory model and VProc itself. On top of this are the APIs for VProc and mem_model for use by the running code. In the case of VProc there is a low level C API) or, if preferred, a C++ API. In _openpcie2-rc_, the VProc <tt>soc_cpu</tt> is node 0, and so the entry point for user software is <tt>VUserMain0</tt>, in place of <tt>main</tt>.
 
-A Verilog module for the _pcievhost_ model is provided in a `pcieVHost.v` file in the `5.sim/models/pcievhost/verilog/pcieVHost` directory. The diagram below shows the module's ports and parameters.
+The _VProc_ software is compiled into libraries located in `5.sim/models/cosim/lib`, with the headers in `5.sim/models/cosim/include (see [here](models/cosim/README.md) for more details). The C++ API is defined in a class <tt>VProc</tt> (defined in <tt>VProcClass.h</tt>), and a constructor creates an API object, defining the node for which it is connected:
 
-<p align=center>
-<img width=600 src="images/pcievhost_module.png">
-</p>
-
-The module's clock and reset must be synchronous (i.e. the reset originate from the  same clock domain) and the clock run at the PCIe raw bit rate $\div$ 5. So for GEN1 this is 500MHz (2000ps period) and GEN2 this is 1000MHz (1000ps period).
-
-The module has 16 lane input and output ports, numberd 0 to 15, each 10 bits wide. This, by default, transfer 8b10b encoded data but the model can be configured to generate unencoded and unscrambled data, where bits 7:0 are a byte value, and bit 8 is a 'K' symbol flag when set. Bit 9 is unused in this configuration.
-
-Two additional signals are present (`ElecIdleOut` and `ElecIdleIn`) when using the model with Verilator (and `VERILATOR` is defined) to resolve electrical idle due to Verilator's limitation in resolving signal strengths. This is not an issue for other supported simulators and the ports will not be present.
-
-The components has three Parameters to configure the model. The first, `LinkWidth`, configures which lanes will be active, and always starts from lane 0. Note that the ports for the unused lanes are still present but can be left unconnected. It defaults to all 16 lanes. The second parameter is `EndPoint`. This is used to enable endpoint features in the model and does so if set to a non-zero value, with 0 being the default setting. Finally the `NodeNum` parameter sets the node number of the internal _VProc_ component. Each instantiated _VProc_, whether part of a _pcievhost_ model, or not, must have a unique node number to associate itself with a particular user program. The default value for `NodeNum` is 8.
-
-More details of the `PcieVhost` HDL component can be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
-
-## PcieDispLink
-
-Supplied along with the _pcievhost_ model is a pure Verilog _PcieDispLink_ module that is used to configurably display the traffic on a PCIe link as well as do _some_ on-the-fly compliance checking. The use of this component is optional, and the _pcievhost_ model does not rely on its presence.
-
-The module is usually used as an instantiated pair with one connectd to the down link lanes (i.e. those towards the endpoint) and one connected to the up link lanes (i.e. towards the root complex). The diagram belos shows a typicl connection:
-
-<p align=center>
-<img width=800 src="images/pciedisplink.png">
-</p>
-
-Here the `link` inputs are connected to the link's lane signals as appropriate. The `PcieDispLink` components share data via `DispDataIn` and `DispDataOut` ports which are connected across from out to in, as shown. A `DispValIn` input port is used to control what the `PcieDispLink` displays. A `ContDisps` module can generate these inputs via a `ContDisps.hex` file that it will read from the local run directory. This allows control of displaying various PCIe layer data, from PHY, through DLL and TL, bit-mapped onto an 8 bit value. Each value is associated with a time stamp (in cycles) as to when the display value is enabled or not. A typical file looks like the following:
-
-```
-// Example ContDisps.hex file
-// Copy to the appropriate test directory, and edit as necessary.
-// See pciedispheader.v for more details
-
-//                     +8              +4              +2              +1
-// ,-->  7 - 4:    DispRawSym         DispPL         DispDL          DispTL
-// |,->  3 - 0:    unused             DispStop       DispFinish      DispAll
-// || ,-> Time (clock cycles, decimal)
-// || |                          
-   70 000000000000
-   02 009999999999
-```
-Three further inout signals are used to set labbels within the output to identify the source and direction of the data. The `FwdName` is an 8 bit value that can be set to a character constant (e.g. `"D"`) that is put in the output lines for transactions originating from the link (such as MemRd or MemWr), and the `BckName` input is for completion data from the link. Normally, the `PcieDispLink` connected to the down link would have a `FwdName` of "D" and a `BckName` of "U", whist the `PcieDispLink` connected to the up link would have the opposite. This would mean reads and their completions would have the same label for easier association. The `NodeNum` input is a value that would normally be set for the node number of the associated `PcieVHost` (though needn't be). In the case where a DUT is one end of the link, the other `PcieDispLink` node number just needs to be set as a different number. Typically values of 0 and 1 are used.
-
-A set of four configuration inputs are also present on `PcieDispLink`. The `LinkWidth` input must match that of the `LinkWidth` parameter setting of the `PcieVHost`. the `DisableScramble` and `Disable8b10b` inputs, when set, disable these features and are used when the link is a PIPE style interface (where encoding and scrambling are down downstream of the interface in the PCS). The `PcieVHost` would then also be configured for this mode. Lastly, the `InvertTxPolarity` is a 16 bit wide signal to invert the outputs on the link individually for each lane.
-
-The clock and reset (`ExtClk` and `notReset`) signals would normally be connected to the same clock and reset concted to the `PcieVhost` component.
-
-A fragment of some `PcieDispLink` output is shown below:
-
-```
-PCIEU1: {STP
-PCIEU1: 00 39 4a 00 80 21 00 00 00 80 00 01 42 03 33 7e 5c 73 4a dd 90 27
-PCIEU1: 7f 8d d3 9d 9b fe 69 5c 17 9b a3 c3 ea 4d 52 a9 9f 40 81 40 aa e9
-PCIEU1: 64 3f fc 48 8b 40 d5 6a 5b 66 da 33 bf 44 67 5a 1b fa 26 b5 82 a1
-PCIEU1: e1 b7 28 ea 94 37 1a 01 c7 72 2c b8 1a 54 33 e1 22 f3 75 fb 73 5d
-PCIEU1: 5e 12 fe 93 75 e0 9e d5 8e 38 ed 20 40 a5 5c f6 99 4e 83 5d 11 1c
-PCIEU1: b5 2a bd 1f d8 7f c5 2e 73 93 18 ce 09 b1 5e 56 a6 84 2f 50 b7 91
-PCIEU1: 82 21 1e 05 68 ed 86 b1 fa b5 f4 00 00 00 cb 5c 1b e7 3f 8f f0 5d
-PCIEU1: END}
-PCIEU1: ...DL Sequence number=57
-PCIEU1: ......TL Completion with Data Successful CID=0000 BCM=0 Byte Count=080 RID=0001 TAG=42 Lower Addr=03
-PCIEU1: ......Traffic Class=0, TLP Digest, Payload Length=0x021 DW
-PCIEU1: ......337e5c73 4add9027 7f8dd39d 9bfe695c 179ba3c3 ea4d52a9 9f408140 aae9643f
-PCIEU1: ......fc488b40 d56a5b66 da33bf44 675a1bfa 26b582a1 e1b728ea 94371a01 c7722cb8
-PCIEU1: ......1a5433e1 22f375fb 735d5e12 fe9375e0 9ed58e38 ed2040a5 5cf6994e 835d111c
-PCIEU1: ......b52abd1f d87fc52e 739318ce 09b15e56 a6842f50 b7918221 1e0568ed 86b1fab5
-PCIEU1: ......f4000000
-PCIEU1: ......TL Good ECRC (cb5c1be7)
-PCIEU1: ...DL Good LCRC (3f8ff05d)
-PCIEU1: {STP
-PCIEU1: 00 3a 0a 00 80 00 00 00 00 04 00 01 43 00 f1 bc ee 5d ba 49 eb 4e
-PCIEU1: END}
-PCIEU1: ...DL Sequence number=58
-PCIEU1: ......TL Completion Successful CID=0000 BCM=0 Byte Count=004 RID=0001 TAG=43 Lower Addr=00
-PCIEU1: ......Traffic Class=0, TLP Digest
-PCIEU1: ......TL Good ECRC (f1bcee5d)
-PCIEU1: ...DL Good LCRC (ba49eb4e)
-PCIEU1: {SDP
-PCIEU1: 90 16 80 16 cd 0d
-PCIEU1: END}
-PCIEU1: ...DL UpdateFC-NP  VC0  HdrFC=90 DataFC=22
-PCIEU1: ...DL Good DLLP CRC (cd0d)
-PCIED0: {SDP
-PCIED0: 00 00 00 39 19 8a
-PCIED0: END}
-PCIED0: ...DL Ack seq 57
-PCIED0: ...DL Good DLLP CRC (198a)
+```c++
+VProc (const uint32_t node);
 ```
 
-More details on the `PcieDisplLink` can be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
+For the C++ VProc API there are two basic word access methods:
 
-## The PCIe C Model
+```c++
+    int  write (const unsigned   addr, const unsigned    data, const int delta=0);
+    int  read  (const unsigned   addr,       unsigned   *data, const int delta=0);
+```
 
-### Internal Architecture
+For these methods, the address argument is agnostic to being a byte address or a word address, but for the _openpcie2-rc_ implementation these are **byte addresses**. The delta argument is unused in _openpcie2-rc_, and should be left at its default value, with just the address and data arguments used in the call to these methods. Along with these basic methods is a method to advance simulation time without doing a read or write transaction.
 
-The diagram below summarises the core PCIe model functionality, along with the connection to a logic simulation via the _VProc_ co-simulation component.
+```c++
+int  tick (const unsigned ticks);
+```
+This method's units of the <tt>ticks</tt> argument are in clock cycles, as per the clock that the VProc HDL is connected to. A basic VProc program, then, is shown below:
 
-<p align=center>
-<img width=1000 src="images/pcievhost_architecture.png">
-</p>
-
-On the left of the diagram are the two user supplied functions. The `VUserMain`<i>n</i> function is the main entry point for user code and this has access to the [model's API](#user-api-summary). Optionally, a user callback function can be registered (`VUserInput` in the diagram) that gets called to with non-handled packets (e.g. read completions) that are received over the link.
-
-The Left column of boxes are the various API functions available, categorised by function. The first group generate TLP or DLLP packets that get queued, before being sent to `SendPacket`. The non-automatic sending of ACKs and NAKs bypass the queue and are sent straight to the `SendPacket` function. The `SendPacket` function itself sends its TLP or DLLP packets to the `codec` which scrambles and encodes the data and drives the output on the link.
-
-The `codec` code also process input data, decoding and descrambling, passing on to `ExtractPhyInput`. Training sequences and other ordered set data is sent to `ProcessOs` whilst TLPs and DLLPs are sent to `ProcessInput`. The API can read received OS event counts from the `ProcessOs` function. `ProcessInput` has access to the internal memory for MemRd and MemWr TLPs and (not shown) the config space for CfgRd and CfgWr TLPs. It will automatically generate (valid) completions for reads and add to the queue. All other TLPs are sent to any registed user callback.
-
-## User API Summary
-
-The _pcievhost_ model is a highly complex mode and the API is quite large to match this. This document can only summarise the main features and usage and reference to the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) _must_ be made for the finer details of argumets and usage. The information below refers to the low level C model's API but a C++ class (`pcieModelClass`) is also provided which wraps the functions up into class methods which are slightly easier to use.
-
-### Model Initialisation and Configuration
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `InitialisePcie` | Initialise the model |
-| `ConfigurePcie`  | Configure the model |
-| `PcieSeed`       | Seed internal random number generator |
-
-The `InitailsePcie` is called before any other function to initialise the model. The user can supply a pointer to a callback function which will be called with data for all unhandeled received packets. Optionally a user supplied pointer may also be gived which is returned when the callback is called, allowing a user to store away key information for cross checking, verification or any other purpose. The model does not process this pointer itself.
-
-The model is highly configurable with 30 different parameters which may be set, one at a time, using the `ConfigurePcie` function that takes a type and value arguments. The details of this are to be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
-
-Internally, the model can generate random data and the generator can be seeded with `PcieSeed`. The internal code uses `PcieRand` to generate randome data, but this is also available as part of the API. Finally, the model keeps a count of cycles internally, and the value may be retrieved with `GetCycleCount`.
-
-### Transaction Layer Packet Generation
-
-| **API Function**   | **Description** |
-|--------------------|-----------------|
-| `MemWrite`         | Generate a memory write transaction |
-| `MemRead`          | Generate a memory read transaction  |
-| `Completion`       | Generate a Completion transaction  |
-| `PartCompletion`   | Generate a partial completion transaction |
-| `CfgWrite`         | Generate a configuration space write transaction |
-| `CfgRead`          | Generate a configuration space read transaction |
-| `IoWrite`          | Generate an IO write transaction |
-| `IoRead`           | Generate an IO read transaction |
-| `Message`          | Generation a message transaction |
-
-The above functions are called with varying arguments (see the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) for details) and all have a 'digest' version (e.g. `MemWriteDigest`) which have an additional argument to select whether a digest (i.e. an ECRC) is generated or not, with the above functions defaulting to generating a digest. There are also 'delay' versions of the `Completion` and `PartCompletion` function which will not send out the packets immediately but after some delay as configured during the model initialisation.
-
-A user program can also wait for a completion to arrive, or a number of completions, with the `WaitForCompletion` and `WaitForCompletionN` functions.
-
-### Data Link Layer Packet Generation
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `SendAck`          | Send an acknowledgement packet |
-| `SendNak`          | Send an not-acknowledgement packet |
-| `SendFC`           | Send a flow control packet |
-| `SendPM`           | Send a power manegement packet |
-| `SendVendor`       | Send a vendor specific packet |
-
-### Ordered Set Generation
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `SendIdle`         | Send idle symbols on all active lanes |
-| `SendOs`           | Send an ordered set down all active lanes |
-| `SendTs`           | Send a training sequence ordered set on all active lanes| 
-
-These functions generate ordered sets on the link lanes, with `SendTs` automatically generating lane numbers if not called to generate PAD. Internally the model keeps counts of the reception of training sequences on each lane and these can be read using the `ReadEventCount` function and, if required, the counts may be reset with `ResetEventCount`. To fetch the last training sequence processed on a given lane, the `GetTS` function can be used.
-
-### Internal Memory Access
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `WriteRamByte`   | Write a byte to internal memory |
-| `WriteRamWord`   | Write a 16-bit word to internal memory |
-| `WriteRamDWord`  | Write a 32-bit word to internal memory |
-| `ReadRamByte`    | Read a byte from internal memory |
-| `ReadRamWord`    | Read a 16-bit word from internal memory |
-| `ReadRamDWord`   | Read a 32-bit word from internal memory |
-| `WriteRamByteBlock` | Write a block of bytes to internal memory |
-| `ReadRamByteBlock` | Read a block of bytes from internal memory |
-
-The _pcievhost_ model has an internal sparse memory model which can support a full 64-bit address space. This is used as a target for received MemWr and MemRd transactions. As well as accessing this space via PCIe transactions, the memory model has its own API functions to do reads and writes of bytes, 16-bit words, and 32-bit words, as well as reading and writing of multiple byte blocks.
-
-### Internal Configuration Space Access
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `WriteConfigSpace` | Write a 32-bit value to the configuration space |
-| `ReadConfigSpace`  | Write a 32-bit value from the configuration space |
-| `WriteConfigSpaceMask` | Write a 32-bit mask value to the configuration space mask (bits set to 1 become read only over PCIe) |
-| `ReadConfigSpaceMask`  | Read a 32-bit value from the configuration space mask |
-
-If a _pcievhost_ is configured as an endpoint it then has an internal 4096 by 32-bit configuration memory. By default this is blank, but CfgWr and CfgRd transactions can access this space. To configure this space the `WriteConfigSpace` (and its `ReadConfigSpace` counterpart) can be used to set up an valid configuration space settings. A shadow mask memory is also available, which defaults to all 0s, to set any number of bits to be read only. There is a one-to-one correspondence to the main configuration memory, but if a mask bit is set, then the corresponding config space bit becomes read only when accessed over the link with CfgWr transactions. The mask memory is set using the `WriteConfigSpaceMask` and can be inspected with `ReadConfigSpaceMask`.
-
-#### Constructing a Configuration Space
-
-The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pcie_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
-
-| **Structure** | **Union** | **Description** |
-|---------------|-----------|-----------------|
-| `cfg_spc_type0_struct_t`          | `cfg_spc_type0_t` |Type 0 configuration space |
-| `cfg_spc_pcie_caps_struct_t`      | `cfg_spc_pcie_caps_t` | PCIe capabilities |
-| `cfg_spc_msi_caps_struct_t`       | `cfg_spc_msi_caps_t` | Message Signalled Interrupt cpabilities | 
-| `cfg_spc_pwr_mgmnt_caps_struct_t` | `cfg_spc_pwr_mgmnt_caps_t` | Power Management capabilities |
-
-The individual fields of the structure can be filled in and then the word buffer used with `WriteConfigSpace` to update the model. In the [_pcievhost_ repository](https://github.com/wyvernSemi/pcievhost/tree/master/verilog/test/usercode) the `VUserMain.c` test file has a function `ConfigureType0PcieCfg` which gives an example of configuring an endpoint configuration space using the structures and the API function.
-
-## Additionally Provided Functionality
-
-The _pcievhost_ model was originally designed as a Root Complex PCIe 1.1 and 2.0 traffic generator, with the API features as described above. In that sense it did not have higher level features. In particular it did not have link training and status state machine (LTSSM) features or data link layer initialistion code. <i><b>Partial</b></i> implementations now form part of the model for demonstration and education purposes. These use the API from above to go through an abbreviated link training and a DLL initialisation using the following API functions:
-
-| **API Function** | **Description** |
-|------------------|-------------|
-| `InitLink`       | Go through an LTSSM link training sequence |
-| `InitFC`         | Initialise DLL flow control credits |
-
-These functions only provide enough functionality to go through an initialisation that has no exception conditions. The LTSSM also only goes through one training sequence and can't, as yet, go through the Recovery state, and retrain at a higher generation (i.e. from GEN1 to GEN2). The LTSSM has various states that are long to execute due to various TS event counts and cycle times. The model's demonstration `ltssm.c` code can be complied for an 'abbreviated' power up by defining `LTSSM_ABBREVIATED` when compiling the code. This reduces the `Polling.Active` TX count from 1024 to 16 and the `Detect.Quite` timeout count from 12ms to 1500 cycles.
-
-All the hooks are in place for the other paths through the LTSSM, but these are not implemented and the LTSSM was never meant to be part of the _pcievhost_ model but provided as a guide to coding one and as a reference example. The DLL initialisation is simpler and there are no outstanding features for the implementation at this time. Again,this is demonstration and example code only.
-
-### Endpoint Features
-
-The _pcievhost_ VIP was originally designed to generate PCIe traffic as a root complex. The addition of endpoint features was to allow a target for the main root complex model to be tested. This mainly consisted of the addition of a configuration space memory and for out generation of completions fr bot the internal memeory model and  the configuratiion space. As such, the user program on the end point does not need to do very much if it does not need to instigate transactions but only respond. The code fragment below shows an abbreviated program running on a _pcievhost_ model.
-
-```C
-#include <stdio.h>
-#include <stdlib.h>
-#include "pcie.h"
-
-static int node = 1;
-
-static void VUserInput_1(pPkt_t pkt, int status, void* usrptr)
-{
-  /* Do stuff here with input */
+```c++
+#include "VProcClass.h"
+extern "C" {
+#include "mem.h"
 }
 
-void ConfigureType0PcieCfg (void)
+static const int node    = 0;
+
+extern "C" void VUserMain0(void)
 {
-  /* Initialise the configuration space and mask here */
-}
+    // Create VProc access object for this node
+    VProc* vp0 = new VProc(node);
 
-void VUserMain1()
-{
+    // Wait a bit
+    vp0->tick(100);
 
-    // Initialise PCIe VHost, with input callback function and no user pointer.
-    InitialisePcie(VUserInput_1, NULL, node);
+    uint32_t addr  = 0x10001000;
+    uint32_t wdata = 0x900dc0de;
 
-    // Make sure the link is out of electrical idle
-    VWrite(LINK_STATE, 0, 0, node);
+    vp0->write(addr, wdata);
+    VPrint("Written   0x%08x  to  addr 0x%08x\n", wdata, addr);
 
-    // Use node number as seed
-    PcieSeed(node, node);
+    vp0->tick(3);
 
-    // Construct an endpoint PCIe configuration space
-    ConfigureType0PcieCfg();
+    uint32_t rdata;
+    vp0->read(addr, &rdata);
 
-    // Initialise the link for 16 lanes
-    InitLink(16, node);
-
-    // Initialise flow control
-    InitFc(node);
-
-    // Send out idles forever
-    while (true)
+    if (rdata == wdata)
     {
-        SendIdle(100, node);
+        VPrint("Read back 0x%08x from addr 0x%08x\n", rdata, addr);
     }
+    else
+    {   VPrint("***ERROR: data mis-match at addr = 0x%08x. Got 0x%08x, expected 0x%08x\n", addr, rdata, wdata);
+    }
+
+    // Sleep forever
+    while(true)
+        vp0->tick(GO_TO_SLEEP);
+}
+```
+The above code is a slightly abbreviated version of the code in <tt>5.sim/usercode</tt>. Note that the <tt>VUserMain0</tt> function must have C linkage as the VProc software that calls it is in C (as all the programming logic interfaces, including DPI-C, are C). The API also has a set of other methods for finer access control which are listed below, and more details can be found in the [VProc manual](https://github.com/wyvernSemi/vproc/blob/master/doc/VProc.pdf).
+
+```c++
+    int  writeByte    (const unsigned   byteaddr, const unsigned    data, const int delta=0);
+    int  writeHword   (const unsigned   byteaddr, const unsigned    data, const int delta=0);
+    int  writeWord    (const unsigned   byteaddr, const unsigned    data, const int delta=0);
+    int  readByte     (const unsigned   byteaddr,       unsigned   *data, const int delta=0);
+    int  readHword    (const unsigned   byteaddr,       unsigned   *data, const int delta=0);
+    int  readWord     (const unsigned   byteaddr,       unsigned   *data, const int delta=0);
+
+```
+The other methods is this class are not, at this point, used by _openpcie2-rc_. These methods can now be used to write test code to drive the <tt>soc_if</tt> bus of the <tt>soc_cpu</tt> component, and is the basic method to write test code software. As well as the VProc API, the user software can have direct access to the sparse memory model API by including <tt>mem.h</tt>, which are a set of C methods (and <tt>mem.h</tt> must be included as <tt>extern "C"</tt> in C++ code). The functions relevant to _openpcie2-rc_ are shown below:
+
+```c++
+void     WriteRamByte  (const uint64_t addr, const uint32_t data, const uint32_t node);
+void     WriteRamHWord (const uint64_t addr, const uint32_t data, const int little_endian, const uint32_t node);
+void     WriteRamWord  (const uint64_t addr, const uint32_t data, const int little_endian, const uint32_t node);
+uint32_t ReadRamByte   (const uint64_t addr, const uint32_t node);
+uint32_t ReadRamHWord  (const uint64_t addr, const int little_endian, const uint32_t node);
+uint32_t ReadRamWord   (const uint64_t addr, const int little_endian, const uint32_t node);
+```
+
+Note that, as C functions, there are no default parameters and the <tt>little_endian</tt> and <tt>node</tt> arguments must be passed in, even though they are constant. The <tt>little_endian</tt> argument is non-zero for little endian and zero for big endian. The <tt>node</tt> argument is **not** the same as for VProc, but allows multiple separate memory spaces to be modelled, just as for VProc multiple virtual processor instantiations. For _openpcie2-rc_, this is always 0. All instantiated <tt>mem_model</tt> components in the HDL have (through the DPI) access to the same memory space model as the API, and so data can be exchanged from the simulation and the running code, such as the RISC-V programs over the IMEM write interface.
+
+Compiling co-designed application code, either compiled for the native host machine, or to run on the <tt>rv32</tt> RISC-V ISS will need further layers on top of these APIs, which will be virtualised away by that point ([see the sections below](#co-simulation-hal)). The diagram below summarises the software layers that make up a program running on the VProc HDL component. The "native test code" use case, shown at the top left, is for the case just described above  that use the APIs directly.
+
+<p align="center">
+<img src="images/soc_cpu_vproc_stack.png" width=800>
+</p>
+
+### Other Software Use Cases
+
+#### Natively Compiled Application
+
+As well as the native test code case seen in the previous section, the _openpcie2-rc_ application can be compiled natively for the host machine, including the hardware access layer (HAL), generated from SystemRDL. The HAL software output from this is processed to generate a version that makes accesses to the VProc and mem_model APIs in place of accesses with pointers to and from memory (see the [Co-simulation HAL](#co-simulation-hal) section below). The rest of the application software has these details hidden away in the HAL and sees the same API as presented by the auto-generated code. In both cases transactions happen on the <tt>soc_if bus</tt> port of the <tt>soc_cpu</tt> component. The <tt>main</tt> entry point is also swapped for <tt>VUserMain0</tt>.
+
+#### RISC-V Compiled Application
+
+To execute RISC-V compiled application code, the <tt>rv32</tt> instruction set simulator is used as the code running on the virtual processor. The <tt>VUserMain0</tt> program now becomes software to creates an ISS object and integrate with VProc. This uses the ISS's external memory access callback function to direct loads and stores either towards the sparse memory model, the VProc API for simulation transactions, or back to the ISS itself to handle. This ISS integration <tt>VUserMain0</tt> program is located in <tt>5.sim/models/rv32/usercode</tt>. When built the code here is compiled and uses the pre-built library in <tt>5.sim/models/rv32/lib/librv32lnx.a</tt> containing the ISS, with the headers for it in <tt>5.sim/models/rv32/include</tt>. More details of the integration code and methods can be found [here](models/rv32/README.md).
+
+The ISS supports interrupts, but these are not currently used on _openpcie2-rc_. The integration software can read a configuration file, if present in the <tt>5.sim/</tt> directory, called <tt>vusermain.cfg</tt>. This allows the ISS and other features to be configured at run-time. The configuration file is in lieu of command line options and the entries in the file are formatted as if they were such, with a command matching the VUserMain program:
+
+```
+vusermain0 [options]
+```
+One of the options is <tt>-h</tt> for a help message, which is as shown below:
+```
+Usage:vusermain0 -t <test executable> [-hHebdrgxXRcI][-n <num instructions>]
+      [-S <start addr>][-A <brk addr>][-D <debug o/p filename>][-p <port num>]
+      [-l <line bytes>][-w <ways>][-s <sets>][-j <imem base addr>][-J <imem top addr>]
+      [-P <cycles>][-x <base addr>][-X <top addr>][-V <core>]
+   -t specify test executable/binary file (default test.exe)
+   -B specify to load a raw binary file (default load ELF executable)
+   -L specify address to load binary, if -B specified (default 0x00000000)
+   -n specify number of instructions to run (default 0, i.e. run until unimp)
+   -d Enable disassemble mode (default off)
+   -r Enable run-time disassemble mode (default off. Overridden by -d)
+   -C Use cycle count for internal mtime timer (default real-time)
+   -a display ABI register names when disassembling (default x names)
+   -T Use external memory mapped timer model (default internal)
+   -H Halt on unimplemented instructions (default trap)
+   -e Halt on ecall instruction (default trap)
+   -E Halt on ebreak instruction (default trap)
+   -b Halt at a specific address (default off)
+   -A Specify halt address if -b active (default 0x00000040)
+   -D Specify file for debug output (default stdout)
+   -R Dump x0 to x31 on exit (default no dump)
+   -c Dump CSR registers on exit (default no dump)
+   -g Enable remote gdb mode (default disabled)
+   -p Specify remote GDB port number (default 49152)
+   -S Specify start address (default 0)
+   -I Enable instruction cache timing model (default disabled)
+   -l Specify number of bytes in icache line (default 8)
+   -w Specify number of ways in icache (default 2)
+   -s Specify number of sets in icache (default 256)
+   -j Specify cached IMEM base address (default 0x00000000)
+   -J Specify cached IMEM top address (default 0x7fffffff)
+   -P Specify penalty, in cycles, of one slow mem access (default 4)
+   -x Specify base address of external access region (default 0xFFFFFFFF)
+   -X Specify top address of external access region (default 0xFFFFFFFF)
+   -V Specify RISC-V core timing model to use (default "DEFAULT")
+   -h display this help message
+```
+With these options the model can load an elf executable to memory directly and be set up with some execution termination conditions. Disassembly output can also be switched on and registers dumped on exit. More details of all these features can be found in the <tt>rv32</tt> [ISS manual](https://github.com/wyvernSemi/riscV/blob/main/iss/doc/iss_manual.pdf).
+
+Specific to the _openpcie2-rc_ project is the ability to specify the region where memory loads and stores will make external simulation transactions rather than use internal memory modelling or peripherals, using the <tt>-x</tt> and <tt>-X</tt> options. This is useful to allow access to the CSR registers in the HDL whilst mapping all of the memory internal using the sparse C memory model of <tt>mem_model</tt>. The cache model can be enabled with the <tt>-I</tt> option and the cache configured. The <tt>-l</tt> option specifies the number of bytes in a cache line, which can be 4, 8 or 16. The number of ways is set with <tt>-w</tt> and can be either 1 or 2, and the number of sets is specified with the <tt>-s</tt> options and can be 128, 256, 512 or 1024. The _openpcie2-rc_ project also has the option to load a raw binary file to memory in place of reading an ELF file. The <tt>-B</tt> selects this mode (with the <tt>-t</tt> still specifying the file name), and the load address can be changed from 0 with the <tt>-L</tt> option. A set of pre-configured timing models can be specified with the <tt>-V</tt> option. The argument must be one of the following:
+
+* DEFAULT
+* PICORV32
+* EDUBOS5STG2
+* EDUBOS5STG3
+* IBEXMULSGL
+* IBEXMULFAST
+* IBEXMULSLOW
+
+This reflects the available models as detailed in the _Configuring ISS timing model_ section below.
+
+## Building and Running Code
+
+A <tt>MakefileVProc.mk</tt> file is provided in the <tt>5.sim/</tt> directory to compile the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and to build and run the test bench HDL. The make file will compile all the user code or, where an ISS build is selected (see make file variables below) the provided `soc_cpu` user code that's the _rv32_ ISS integration software. By default, the make file will compile the <tt>VUserMain0.cpp</tt> user code for `soc_cpu` and `VUserMainPcie.cpp` for _pcieVHost__ located in <tt>5.sim/usercode</tt>, but the directory and list of files to compile can be specified on the command line (see below). The `VUserMainPcie.cpp` file contains the `VUserMain<n>` entry point for the instantiated _pcieVHost_ module (node 1). To alter which files to compile, the make file `USER_C` variable can be updated to list a set of C++ files for the `soc_cpu`. Similarly, the `PCIE_C` variable can be updated with a list of files for the PCie component. The location of the source files is in the variable `USRCODEDIR`, which may also be altered. Any modifications can be done to the make file itself, or on the command line. E.g., to add additional files to the `soc_cpu` build:
+
+```
+make -f MakefileVProc.mk USER_C="VUserMain0.cpp MyTest1Class.cpp"
+```
+
+If many variants of software build are required then either scripts can be constructed with the various command line variable modification calls to `make` or other make files which set these varaiable and call the common make file. This is useful in managing source code for multiple tests located in different directories, compiling for ISS (perhaps also calling the RISC-V application build), or for compiling application code natively which will have a different set of source files.
+
+The user software is compiled into a local static library, <tt>libuser.a</tt> which is linked to the simulation code within Verilator along with the precompiled <tt>libcosimlnx.a</tt> (or <tt>libcosimwin.a</tt> for MSYS2/mingw64 on Windows) located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc* and *mem_model*. The headers for the *VProc* and *mem_model* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openpcie2-rc_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
+
+The <tt>MakefileVProc.mk</tt> make file has a target <tt>help</tt>, which produces the following output:
+
+```
+make -f MakefileVProc.mk help          Display this message
+make -f MakefileVProc.mk               Build C/C++ and HDL code without running simulation
+make -f MakefileVProc.mk run           Build and run batch simulation
+make -f MakefileVProc.mk rungui/gui    Build and run GUI simulation
+make -f MakefileVProc.mk clean         clean previous build artefacts
+
+Command line configurable variables:
+  USER_C:       list of user source code files (default VUserMain0.cpp)
+  PCIE_C:       list of user source code files (default VUserMainPcie.cpp)
+  USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
+  OPTFLAG:      Optimisation flag for user VProc code (default -g)
+  TIMINGOPT:    Verilator timing flags (default --timing)
+  TRACEOPTS:    Verilator trace flags (default --trace-fst --trace-structs)
+  TOPFILELIST:  RTL file list name (default top.filelist)
+  SOCCPUMATCH:  string to match for soc_cpu filtering in h/w file list (default ip.cpu)
+  USRSIMOPTS:   additional Verilator flags, such as setting generics (default blank)
+  WAVESAVEFILE: name of .gtkw file to use when displaying waveforms (default waves.gtkw)
+  BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
+  TIMEOUTUS:    Test bench timeout period in microseconds (default 15000)
+```
+
+By default, without a named target, the simulation executable will be built but not run. With a <tt>run</tt> target, the simulation executable is built and then executed in batch mode. To fire up waveforms after the run, a target of <tt>rungui</tt> or </tt>gui</tt> can be used. A target of <tt>clean</tt> removes all intermediate files of previous compilations.
+
+The make file has a set of variables (with default settings) that can be overridden on running <tt>make</tt>. E.g. <tt>make VAR=NewVal</tt>. The help output shows these variables with brief decriptions. Entries with multiple values should be enclosed in double quotes. By default native test code is built, but if <tt>BUILD</tt> is set to <tt>ISS</tt>, then the rv32 ISS and VProc program is compiled and, in this case, the <tt>USER_C</tt> and <tt>USRCODEDIR</tt> are ignored as the make file compiles the supplied source code for the ISS.
+
+The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the VProc code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. The _openpcie2-rc_ <tt>top.filelist</tt> filename can be overridden to allow multiple configurations to be selected from, if required. The processing of this file to remove the listed <tt>soc_cpu</tt> HDL files is selected on a pattern (<tt>ip.cpu</tt>) but this can be changed using <tt>SOCCPUMATCH</tt>. If any additional options for Verilator are required, then these can be added to <tt>USRSIMOPTS</tt>. The GTKWave waveform file can be selected with <tt>WAVESAVEFILE</tt>.
+
+Control of when the simulation exits can be specified with the <tt>TIMEOUTUS</tt> variable in units of microseconds. Some example commands using the make file are shown below:
+
+```
+make -f MakefileVProc.mk run                                                   # Build and run default VUserMain0.cpp code in usercode/
+make -f MakefileVProc.mk                                                       # Build but don't run default code
+make -f MakefileVProc.mk USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 run  # Build and run test1.cpp and subfuncs.cpp in test1/
+make -f MakefileVProc.mk BUILD=ISS gui                                         # Build and run ISS simulation and show waves
+make -f MakefileVProc.mk clean                                                 # Clean all intermediate files
+```
+
+### Configuring ISS timing model
+
+Configuration of the timing model can done from the supplied integration code in <tt>VUserMain0.cpp</tt>. The main <tt>pre_run_setup()</tt> function, in <tt>VUserMain0.cpp</tt>, creates an <tt>rv32_timing_config</tt> object (<tt>rv32_time_cfg</tt>) which has an <tt>update_timing</tt> method that takes a pointer to the iss object and an enumerated type to select the model to use for the particular core timings required. This second argument is selected from one of the following:
+
+* <tt>rv32_timing_config::risc_v_core_e::DEFAULT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt> : Default timing values
+* <tt>rv32_timing_config::risc_v_core_e::PICORV32&nbsp;&nbsp;&nbsp;&nbsp;</tt> : picoRV32 timings
+* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG2&nbsp;</tt> : 2 stage eduBOS5
+* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG3&nbsp;</tt> : 3 stage eduBOS5
+* <tt>rv32_timing_config::risc_v_core_e::IBEXMULSGL&nbsp;&nbsp;</tt> : IBEX single cycle multipler
+* <tt>rv32_timing_config::risc_v_core_e::IBEXMULFAST&nbsp;</tt> : IBEX fast multi-cycle multiplier
+* <tt>rv32_timing_config::risc_v_core_e::IBEXMULSLOW&nbsp;</tt> : IBEX slow multi-cycle multiplier
+
+As detailed in the _RISC-V Compiled Application_ section above, the ISS can be configured via the <tt>vusermain.cfg</tt> file using the <tt>-V</tt> option.
+
+### Running ISS code
+
+When the test bench is built for the rv32 ISS, the actual 'user' application code is run on the RISC-V ISS model itself, and is compiled using the normal RISC-V GNU toochain to produce a binary file that the ISS can load and run. As described above, the code that is run is slected with the </tt>vusermain.cfg</tt> file and the </tt>-t</tt> option. The various flags configure the ISS and determines when the ISS is halted (if at all). An example assembly file is provided in <tt>3.sw/models/rv32/riscvtest/main.s</tt> (as well as a recompiled <tt>main.bin</tt>). This assembly code reproduces the functionality of the example <tt>VuserMain0.cpp</tt> program discussed previously, writing to memory, reading back and comparing for a mismatch. The example assembly code is compiled with:
+
+```
+$riscv64-unknown-elf-as.exe -fpic -march=rv32imafdc -aghlms=main.list -o main.o main.s
+$riscv64-unknown-elf-ld.exe main.o -Ttext 0 -Tdata 1000 -melf32lriscv -o main.bin
+```
+In this instance, the code is set to compile to use the MAFDC extensions (maths, atomic, float, double and compressed). To run this code the <tt>vusermain.cfg</tt> is set to:
+
+```
+vusermain0 -x 0x10000000 -X 0x20000000 -rEHRca -t ./models/rv32/riscvtest/main.bin
+```
+This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives the following output:
+
+```
+$make -f MakefileVProc.mk BUILD=ISS run
+- V e r i l a t i o n   R e p o r t: Verilator 5.024 2024-04-05 rev v5.024-42-gc561fe8ba
+- Verilator: Built from 2.145 MB sources in 40 modules, into 0.556 MB in 20 C++ files needing 0.001 MB
+- Verilator: Walltime 0.298 s (elab=0.020, cvt=0.087, bld=0.000); cpu 0.000 s on 1 threads; alloced 14.059 MB
+Archive ar -rcs Vtb__ALL.a Vtb__ALL.o
+VInit(0): initialising DPI-C interface
+  VProc version 1.11.4. Copyright (c) 2004-2024 Simon Southwell.
+                   0 TOP.tb.error_mon (0) - ERROR_CLEARED
+
+  ******************************
+  *   Wyvern Semiconductors    *
+  * rv32 RISC-V ISS (on VProc) *
+  *     Copyright (c) 2024     *
+  ******************************
+
+00000000: 0x00001197    auipc     gp, 0x00000001
+00000004: 0x0101a183    lw        gp, 16(gp)
+00000008: 0x0001a103    lw        sp, 0(gp)
+0000000c: 0x10001237    lui       tp, 0x00010001
+00000010: 0x00222023    sw        sp, 0(tp)
+00000014: 0x00022283    lw        t0, 0(tp)
+00000018: 0x00229663    bne       t0, sp, 12
+0000001c: 0x00004505'   addi      a0, zero, 1
+0000001e: 0x00004501'   addi      a0, zero, 0
+00000020: 0x05d00893    addi      a7, zero, 93
+00000024: 0x00009002'   ebreak
+    *
+
+Register state:
+
+  zero = 0x00000000   ra = 0x00000000   sp = 0x900dc0de   gp = 0x00001000
+    tp = 0x10001000   t0 = 0x900dc0de   t1 = 0x00000000   t2 = 0x00000000
+    s0 = 0x00000000   s1 = 0x00000000   a0 = 0x00000000   a1 = 0x00000000
+    a2 = 0x00000000   a3 = 0x00000000   a4 = 0x00000000   a5 = 0x00000000
+    a6 = 0x00000000   a7 = 0x0000005d   s2 = 0x00000000   s3 = 0x00000000
+    s4 = 0x00000000   s5 = 0x00000000   s6 = 0x00000000   s7 = 0x00000000
+    s8 = 0x00000000   s9 = 0x00000000  s10 = 0x00000000  s11 = 0x00000000
+    t3 = 0x00000000   t4 = 0x00000000   t5 = 0x00000000   t6 = 0x00000000
+
+CSR state:
+
+  mstatus    = 0x00003800
+  mie        = 0x00000000
+  mvtec      = 0x00000000
+  mscratch   = 0x00000000
+  mepc       = 0x00000000
+  mcause     = 0x00000000
+  mtval      = 0x00000000
+  mip        = 0x00000000
+  mcycle     = 0x0000000000000037
+  minstret   = 0x000000000000000b
+  mtime      = 0x0006263f2bfc6bcf
+  mtimecmp   = 0xffffffffffffffff
+Exited running ./models/rv32/riscvtest/main.bin
+- /mnt/hgfs/winhome/simon/git/openpcierc/5.sim/tb.sv:44: Verilog $finish
+```
+Note that the disassembled output is a mixture of 32-bit and compressed 16-bit instructions, with the compressed instruction hexadecimal values shown followed by a <tt>'</tt> character and the instruction heximadecimal value in the lower 16-bits. Unlike for the native compiled code use cases, unless the HDL has changed, the test bench does not need to be re-built when the RISC-V source code is changed or a different binary is to be run, just the RISC-V code is re-compiled or the <tt>vusermain.cfg</tt> updated to point to a different binary file.
+
+### PicoRV32 RTL-Only Simulation Makefile
+
+A standalone Makefile (located in `5.sim/`) for cycle-accurate simulation using the real picoRV32 RTL core.
+It:
+
+- Drives the PCie BFM (node 1) via `usercode/VUserMainPci.cpp`, using VProc’s DPI-C engine for the PCIe VIP.
+- Generates C++ sources with:
+  - `--cc -sv --timing --trace-fst --trace-structs`
+  - `+define+SIM_ONLY` and `+define+VPROC_SV`
+  - File lists `top.filelist` & `simple_tb.filelist` to pull in picoRV32 RTL.
+- Compiles into `output/` and links against:
+  - `libcosimlnx.a` (co-simulation)
+  - `libcpcie_lnx64.a` (PCIe VIP)
+  - DPI headers in `models/cosim/include` and `models/pcievhost/include`.
+- Provides standard targets:
+  - `compile` → generate & build
+  - `sim`     → run `./output/Vtb` (logs to `sim.log`)
+  - `wave`    → open `wave.fst` in GTKWave
+  - `clean`   → remove `output/`, `tb.xml`, `tb.stems`
+
+## Debugging Code
+
+In each of the three usage cases of software, each can be debugged using <tt>gdb</tt>, either for the host computer or the gnu RISC-V toolchain's gdb.
+
+### Natively Compiled code
+
+For natively compiled code, whether test code or natively compiled application code, so long as each was compiled with the -g flag set ([see above](#building-and-running-code) for make file options) then the Verilator compiled simulation is an executable file (compiled into an <tt>output/</tt> directory) that contains the all the compiled user code. Therefore, to debug using <tt>gdb</tt>, this executable just needs to be run with the host computer's <tt>gdb</tt>. E.g., from the <tt>5.sim/</tt> directory:
+
+```
+gdb output/Vtb
+```
+
+Debugging then proceeds just as for any other executable.
+
+### ISS Software
+The ISS has a remote <tt>gdb</tt> interface (enable with the <tt>-g</tt> option in the <tt>vusermain.cfg</tt> file) allowing the loading of programs via this connection, and of doing all the normal debugging steps of the RISC-V code. The [ISS manual](https://github.com/wyvernSemi/riscV/blob/main/iss/doc/iss_manual.pdf) details how to use the <tt>gdb</tt> remote debug interface but, to summarise, when the ISS is run in GDB mode, it will create a TCP socket and advertise the port number to the screen (e.g. <tt>RV32GDB: Using TCP port number: 49152</tt>). The RISC-V <tt>gdb</tt> is then run and a remote connection is made with a command:
+
+ ```
+ (gdb) target remote :49152
+ ```
+
+A blank before the colon character in the port number indicates the connection is on the local host, but a remote host name can be used to do remote debugging from another machine on the network, or even over the internet, if sufficient access permissions. The program (if not done so by other means) can be loaded over this connection and then debugging commence as normal.
+
+The [ISS manual](https://github.com/wyvernSemi/riscV/blob/main/iss/doc/iss_manual.pdf) has more details on this and also has an appendix showing how to setup an Eclipse IDE project to debug the code via <tt>gdb</tt>.
+
+## The mem_model Co-Simulation Sparse Memory Model
+
+The _openpcie2-rc_ test bench makes use of the [mem_model](https://github.com/wyvernSemi/mem_model) co-simulation HDL component. This consists of a sparse memory model, written in C with a software API for read and write transactions that is part of the _pcieVHost_ model's software. It can map a 64-bit address space, with pages allocated on demand to restrict the actual memory required. The API can be accessed from any _VProc_ running code to share this memory space. This model can also be accessed from the HDL using the `mem_model` HDL component, which may be instantiated any number of times, but always accesses the same memory. This allows multiple _VProc_ virtual processors and the simulated test bench logic to access a common memory space.
+
+Currently, the `soc_cpu.VPROC` component has a `mem_model` instantiated for program writes via a UART, and the software running on the _VProc_ virtual processor can access the memory directly via the API. The software running on the  _VProc_ used on the [_pcievhost_](#driving-the-pcie-link) in the `pcieVHostPipex1` driver also has access to the same API and memory space.
+
+Details of the memory model HDL can be found in the [README.md](models/cosim/README.md) in `5.sim/models/cosim`.
+
+## Driving the PCIe Link
+
+The _openpcie2-rc_ logic has interfaces for a single PCIe PIPE x1 downstream port, transferring PCIe packets for GEN1 and GEN2 standards. In order to drive this interfaces, the test bench has a `pcieVHostPipex1` module based on the _pcieVHost_ VIP to generate the PCIe traffic.
+
+<p align=center>
+<img width=750 src="models/pcievhost/images/pcievhost_module.png">
+</p>
+
+More details on the PCIe driver and _pcieVHost_ can be found in the [README.md](models/pcievhost/README.md) file in 4.sim/models/pcievhost, along with details of configuring and driving the model.
+
+## Co-simulation HAL
+
+### Using the HAL
+
+The HAL provides a hierarchical access to the registers via a set of pointer dereferencing and a final access method (for reads and writes of registers and their bit fields) that reflects the hierarchy of the RDL specification. The following shows some example accesses, based on the `4.build/csr_build/csr.rdl` (as at its first revision on 10/11/2024):
+
+```
+    #include "openpcie2-rc_regs.h"
+
+    // Create a CSR register object. A base address can be specified
+    // but defaults to the address specified in the RDL
+    csr_vp_t* csr = new csr_vp_t();
+
+    // Write to address field and read back.
+    csr->ip_lookup_engine->table[0]->allowed_ip[0]->address(0x12345678);
+    printf("address = 0x%08lx\n\n", csr->ip_lookup_engine->table[0]->allowed_ip[0]->address());
+
+    // Write to whole endpoint register
+    csr->ip_lookup_engine->table[3]->endpoint->full(0x5555555555555555ULL);
+
+    // Write to bit field in endpoint register
+    csr->ip_lookup_engine->table[3]->endpoint->interface(0x7);
+
+    // Read back bit field in endpoint register
+    printf("interface = 0x%1lx\n\n", csr->ip_lookup_engine->table[3]->endpoint->interface());
+```
+The above code will compile either natively for *VProc* or for the RISC-V hardware, with the appropriate header, as decribed above. Write accesses use a method with the final register bit field name with an appropriate argument (this is either a `uint64_t` or `uint32_t` as appropriate to the register's definition). A read access is done in the same manner bit without an argument and returns a value (either a `uint64_t` or `uint32_t` as appropriate).
+
+A convention has been used where to access a whole register the 'bit field' access method is named `full`, with bit field accesses using their declared names, as normal. Some assumptions have been made with the script as it stands based on the current `csr.rdl` (but new features can be added). The main one currently is that arrays can't be multi-dimensional (hierarchy can be used to achieve the same thing) and an error is thrown if detected.
+
+### Other Co-simulation considerations
+
+The HAL software abstracts away the details of hardware and co-simulation register accesses but a couple of other consideration are needed to allow code to compile both for hardware and simulation. The first of these is the `main` entry point.
+
+A normal application compiled for the target has a `main()` entry point function. In *VProc* co-simulation, this is not the case as the logic simulation itself has a `main()` function already defined and there can be multiple *VProc* node instantiations, each with their own entry point. These are named `VUserMain<n>`, where `<n>` is the node number. So, node 0 has an entry point function `VUserMain0`. The auto-generated HAL co-simulation headers include a `PCIEMAIN` definition that is either `main` for the hardware code or `VUserMain0` for *VProc* code (assuming node 0 for `soc_cpu`). This is then used in place of `main` at the top level application code.
+
+```
+#include "openpcie2-rc_regs.h"
+
+// Application top level
+void PCIEMAIN (void)
+{
+  // Top level source code here
 }
 ```
 
-Here the model is initialised, registering a user callback function (`VUserInput_1`) for receiving data. A low level _VProc_ API call is made to get the link out of electrical idle state before configuring the model. HerAfter this a seed is set for random data generation before calling a local function to configure the endpoint configuration space. The link training is then invoked before initialising the DLL flow control. From this point on, a loop continuously calls `SendIdle` for sending idles over the link. The model will respond to received transactions, overriding the idles with, for example, completions for MemRd transactions, and all the DLL ACKs and flow control DLLP packets etc. In this sense, unless transactions are to be instigated from the endpoint, no further programming is required.
+The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `wg_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to the equivalent of 80MHz that the test bench uses for the `soc_cpu`. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
 
-### Model Limitations
+Finally, the
 
-The _pcievhost_ model was originally conceived as a PCIe traffic pattern generator for driving an endpoint design to bridge the gap in development before a commercial sign-off VIP was made available to compliance check the implementation. The API reflects this functionality, allowing any combination of PHY, DLL and TLP patterns to be generated in order to drive an endpoint DUT. It is not a model of a root complex or an endpoint implementation, and user code must be written to drive sequences of patterns for meaningful and valid communication. Beyond this various additional functions are provided _in a limited capacity_.
-
-#### Endpoint Feature Limitations
-
-Endpoint features have been added to provide a target for the original _pcievhost_ model to be tested. These include an internal memory model as a target for MemRd and MemWr transactions and a configurations space as a target for CfgRd and CfgWr transactions. The configuration space can be programed, using the API, with valid config space patterns and a mask programmed to make various bits read-only. More sophisticaled register bit operatoins, such as write one to clear, are not supported.
-
-The configurations space, by default, has no programmed pattern and must be configured in the user program running on the model using the API functions. The [_pcievhost_ repository](https://github.com/wyvernSemi/pcievhost) has an example of programming the configuration space for a particular endpoint in its `verilog/test/usercode/VUserMain1.c` file, encapsulated in a `ConfigureType0PcieCfg` function, which may be used as a reference.
-
-#### LTSSM Limitations
-
-The link training and status state machine (LTSSM) does not form part of the _pcievhost_ model proper. A _limited_ implementation is provide, as an example, in the `ltssm.c` file, and this provides enough functionality to go from electrical idle to the L0 powered up state for a given generation speed. What it does not currently do is:
-
-  * Support any expection, error or timeout roots through the LTSSM
-  * Support switching speeds through Recovery and retrain automatically
-  * Switch to lower power states
-  * Switch to directed states such as Disabled, Loopback or Hot Reset
-  * Auto reverse lanes
-  * Auto invert lane polarity
-  * Auto limit link width
-
-Hooks for all of these states are present in the code, but would need development for a full implementation. Lane width is controlled through a parameter and fixed for simulation. For GEN1 to GEN2 switching a means would also be needed to switch clock speeds at the appropriate sub-state in the LTSSM.
-
-#### Model Verification
-
-The _pcievhost_ model's original deployment was to drive an endpoint implementation which operated as a 16 lane GEN1 device, or an 8 lane GEN2 device. Almost all testing has been done at these widths and speeds. Support for different widths are fully implemented but not as fully tested.
-
-# The VProc virtual processor
-
-Details of usage (outside of _pcievhost_) TBD
+## References:
+- [VProc](https://github.com/wyvernSemi/vproc)
+- [mem_model](https://github.com/wyvernSemi/mem_model)
+- [PCIe VHost Model](https://github.com/wyvernSemi/pcievhost)
+- [rv32 RISC-V ISS](https://github.com/wyvernSemi/riscV/tree/main/iss)
+- [Surfer](https://gitlab.com/surfer-project/surfer)
+- [Verilator](https://verilator.org/guide/latest/install.html)
+- [SystemRDL](https://www.accellera.org/downloads/standards/systemrdl)
+- [PeakRDL and SystemRDLcompiler](https://github.com/SystemRDL)
