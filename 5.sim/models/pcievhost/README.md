@@ -1,5 +1,29 @@
 # The _pcievhost_ Verification IP
 
+## Table of Contents
+
+* [Introduction](#introduction)
+* [The HDL Component](#the-hdl-component)
+* [Link Traffic Display](#link-traffic-display)
+* [The Pcie C Model](#the-pcie-c-model)
+  * [Internal Architecture](#internal-architecture)
+  * [Model Initialisation and Configuration](#model-initialisation-and-configuration)
+  * [Transaction Layer Packet Generation](#transaction-layer-packet-generation)
+  * [Data Link Layer Packet Generation](#data-link-layer-packet-generation)
+  * [Ordered Set Generation](#ordered-set-generation)
+  * [Internal Memory Access](#internal-memory-access)
+  * [Internal Configuration Space Access](#internal-configuration-space-access)
+    * [Constructing a Configuration Space](#constructing-a-configuration-space)
+* [User API Summary](#user-api-summary)
+* [Additionally Provided Functionality](#addittionally-provided-functionality)
+  * [Endpoint Features](#endpoint-features)
+  * [Model Limitations](#model-limitations)
+    * [Endpoint Feature Limitations](#endpoint-feature-limitations)
+    * [LTSSM Limitations](#ltssm-limitations)
+    * [Model Verification](#model-verification)
+
+## Introduction
+
 The [_pcievhost_](https://github.com/wyvernSemi/pcievhost) VIP is a co-simulation element that runs a PCIe C model on a [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor to drive lanes within a PCIe 1.1 or 2.0 link, with support for up to 16 lanes. The PCIe C model provides an API for generating PCIe traffic over the link with some additional helper functionality for modelling _some_ of the link training LTSSM features (not strictly part of the model). It also provides an internal sparse memory model as a target for MemRd and MemWr transactions and, when configured as an endpoint, a configuration space as a target for CfgRd and CfgWr transactions. Features of the API allow for the configuratins space to be pre-programmed with valid configurations and a read-only mask overlay, though there is no support for 'special' functions like write one to clear etc.
 
 More details of the model can be found in the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
@@ -45,7 +69,7 @@ The level of detail to display is controlled by bits 4 to 7. The bit 7 can enabl
 A fragment of some link display output, using the `ContDisps.hex` file example above, is shown in the diagram below:
 
 <p align=center>
-<img  src="images/pcie_disp_terminal.png">
+<img  width=750 src="images/pcie_disp_terminal.png">
 </p>
 
 More details on the link display can be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
@@ -72,15 +96,73 @@ The _pcievhost_ model is a highly complex mode and the API is quite large to mat
 
 ### Model Initialisation and Configuration
 
-| **API Function** | **Description** |
-|------------------|-------------|
-| `InitialisePcie` | Initialise the model |
-| `ConfigurePcie`  | Configure the model |
-| `PcieSeed`       | Seed internal random number generator |
+| **API Function**      | **Description** |
+|-----------------------|-------------|
+| `InitialisePcie`      | Initialise the model |
+| `ConfigurePcie`       | Configure the model |
+| `ConfigurePcieLtssm`  | Configure the model's LTSSM |
+| `PcieSeed`            | Seed internal random number generator |
 
-The `InitailsePcie` is called before any other function to initialise the model. The user can supply a pointer to a callback function which will be called with data for all unhandeled received packets. Optionally a user supplied pointer may also be gived which is returned when the callback is called, allowing a user to store away key information for cross checking, verification or any other purpose. The model does not process this pointer itself.
+The `InitailsePcie` is called before any other function to initialise the model. The user can supply a pointer to a callback function which will be called with data for all unhandled received packets. Optionally a user supplied pointer may also be gived which is returned when the callback is called, allowing a user to store away key information for cross checking, verification or any other purpose. The model does not process this pointer itself.
 
-The model is highly configurable with 30 different parameters which may be set, one at a time, using the `ConfigurePcie` function that takes a type and value arguments. The details of this are to be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
+The model is highly configurable with many different parameters which may be set, one at a time, using the `ConfigurePcie` and `ConfigurePcieLtssm` functions that take a type and, where applicable, value argument. .
+
+#### Configuration via ConfigurePcie
+
+The following table shows the valid configuration `type` settings and expected `value` for the use with the `ConfigurePcie(type, value)` function.
+
+| **TYPE**                       |**VALUE**|**UNITS**| **Description**                                                              |
+|--------------------------------|---------|---------|------------------------------------------------------------------------------|
+| CONFIG_FC_HDR_RATE             |   yes   | cycles  | Rx Header consumption rate (default 4)                                       |
+| CONFIG_FC_DATA_RATE            |   yes   | cycles  | Rx Data consumption rate (default 4)                                         |
+| CONFIG_ENABLE_FC               |   no    |         | Enable auto flow control (default)                                           |
+| CONFIG_DISABLE_FC              |   no    |         | Disable auto flow control                                                    |
+| CONFIG_ENABLE_ACK              |   yes   | cycles  | Enable auto acknowledges with processing rate (default rate 1)               |
+| CONFIG_DISABLE_ACK             |   no    |         | Disable auto acknowledges                                                    |
+| CONFIG_ENABLE_MEM              |   no    |         | Enable internal memory (default)                                             |
+| CONFIG_DISABLE_MEM             |   no    |         | Disable internal memory                                                      |
+| CONFIG_ENABLE_SKIPS            |   yes   | cycles  | Enable regular Skip ordered sets, with interval (default interval 1180)      |
+| CONFIG_DISABLE_SKIPS           |   no    |         | Disable regular Skip ordered sets                                            |
+| CONFIG_DISABLE_SCRAMBLING      |   no    |         | Disable data scrambling                                                      |
+| CONFIG_ENABLE_SCRAMBLING       |   no    |         | Enable data scrambling (default)                                             |
+| CONFIG_DISABLE_8B10B           |   no    |         | Disable 8b10b encoding and decoding                                          |
+| CONFIG_ENABLE_8B10B            |   no    |         | Enable 8b10b encoding and decoding (default)                                 |
+| CONFIG_DISABLE_ECRC_CMPL       |   no    |         | Disable ECRC auto-generation on completions for requests with ECRCs          |
+| CONFIG_ENABLE_ECRC_CMPL        |   no    |         | Enable ECRC auto-generation on completions for requests with ECRCs (default) |
+| CONFIG_ENABLE_UR_CPL           |   no    |         | Enable auto unsupported request completions (default)                        |
+| CONFIG_DISABLE_UR_CPL          |   no    |         | Disable auto unsupported request completions                                 |
+| CONFIG_ENABLE_INTERNAL_MEM     |   no    |         | Enable internal memory (default)                                             |
+| CONFIG_DISABLE_INTERNAL_MEM    |   no    |         | Disable internal memory (packets passed to user callback if registered)      |
+| CONFIG_ENABLE_DISPLINK_COLOUR  |   no    |         | Enable colour formatting of link display output (default)                    |
+| CONFIG_DISABLE_DISPLINK_COLOUR |   no    |         | Disable colour formatting of link display output                             |
+| CONFIG_POST_HDR_CR†            |   yes   | credits | Initial advertised posted header credits (default 32)                        |
+| CONFIG_POST_DATA_CR†           |   yes   | credits | Initial advertised posted data credits (default 1K)                          |
+| CONFIG_NONPOST_HDR_CR†         |   yes   | credits | Initial advertised non-posted header credits (default 32)                    |
+| CONFIG_NONPOST_DATA_CR†        |   yes   | credits | Initial advertised non-posted data credits (default 1)                       |
+| CONFIG_CPL_HDR_CR†             |   yes   | credits | Initial advertised completion header credits (default ∞)                     |
+| CONFIG_CPL_DATA_CR†            |   yes   | credits | Initial advertised non-posted data credits (default ∞)                       |
+| CONFIG_CPL_DELAY_RATE†         |   yes   | cycles  | Auto completion delay rate (default 0)                                       |
+| CONFIG_CPL_DELAY_SPREAD†       |   yes   | cycles  | Auto completion delay randomised spread (default 0)                          |
+
+† Call immediately after `InitialisePcie()` to take effect from time 0
+
+#### Configuration via ConfigurePcieLtssm
+
+The following table shows the valid configuration `type` settings and expected `value` for use with the `ConfigurePcieLtssm(type, value)` function.
+
+| **TYPE**                            |**VALUE**| **UNITS** | **Description**                                                                           |
+|-------------------------------------|---------|-----------|-------------------------------------------------------------------------------------------|
+| CONFIG_LTSSM_LINKNUM††              |  yes    | integer   | Training sequence advertised link number (default 0)                                      |
+| CONFIG_LTSSM_N_FTS††                |  yes    | integer   | Training sequence number of fast training sequences (default 255)                         |
+| CONFIG_LTSSM_TS_CTL††               |  yes    | integer   | Five bit TS control field (default 0)                                                     |
+| CONFIG_LTSSM_DETECT_QUIET_TO††      |  yes    | cycles    | Detect quite timeout (default 1500/6M, depending if `LTSSM_ABBREVIATED` defined or not)   |
+| CONFIG_LTSSM_POLL_ACTIVE_TO_COUNT†† |  yes    | cycles    | Polling active TX count (default 16/1024, depending if `LTSSM_ABBREVIATED` defined or not)|
+| CONFIG_LTSSM_ENABLE_TESTS††         |  yes    | bit mask  | Enable LTSSM test exceptions (default 0)                                                  |
+| CONFIG_LTSSM_FORCE_TESTS††          |  yes    | bit mask  | Force LTSSM test exceptions (default 0)                                                   |
+
+†† Call before calling `InitLink()` to take effect in training sequences.
+
+Further details of model configuration are to be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
 
 Internally, the model can generate random data and the generator can be seeded with `PcieSeed`. The internal code uses `PcieRand` to generate randome data, but this is also available as part of the API. Finally, the model keeps a count of cycles internally, and the value may be retrieved with `GetCycleCount`.
 
@@ -174,6 +256,112 @@ These functions only provide enough functionality to go through an initialisatio
 
 All the hooks are in place for the other paths through the LTSSM, but these are not implemented and the LTSSM was never meant to be part of the _pcievhost_ model but provided as a guide to coding one and as a reference example. The DLL initialisation is simpler and there are no outstanding features for the implementation at this time. Again,this is demonstration and example code only.
 
+## C++ Support
+
+In addition to the C API functions described above, there is asupport for C++ via a class, in `pcieModelClass.cpp`, called `pcieModelClass` that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object.
+
+```C++
+class pcieModelClass
+{
+public:
+               pcieModelClass       (const unsigned nodeIn) : node (nodeIn) {};
+
+    // TLP generation
+    pPktData_t memWrite             (const uint64_t addr, const PktData_t *data, const int length, const int tag,
+                                     const uint32_t rid, const bool queue = false, const bool digest = false);
+
+    pPktData_t memRead              (const uint64_t addr, const int length, const int tag, const uint32_t rid,
+                                    const bool queue = false, const bool digest = false);
+
+    pPktData_t completion           (const uint64_t addr, const PktData_t *data, const int status, const int fbe, const int lbe,
+                                     const int length,  const int tag, const uint32_t cid, const uint32_t rid,
+                                     const bool queue = false, const bool digest = false);
+
+    pPktData_t partCompletion       (const uint64_t addr, const PktData_t *data, const int status, const int fbe, const int lbe,
+                                     const int rlength, const int length, const int tag, const uint32_t cid, const uint32_t rid,
+                                     const bool queue = false, const bool digest = false);
+
+    pPktData_t cfgWrite             (const uint64_t addr, const PktData_t *data, const int length, const int tag,
+                                    const uint32_t rid, const bool queue = false, const bool digest = false);
+
+    pPktData_t cfgRead              (const uint64_t addr, const int length, const int tag, const uint32_t rid,
+                                     const bool queue = false, const bool digest = false);
+
+    pPktData_t ioWrite              (const uint64_t addr, const PktData_t *data, const int length, const int tag,
+                                     const uint32_t rid, const bool queue = false, const bool digest = false);
+
+    pPktData_t ioRead               (const uint64_t addr, const int length, const int tag, const uint32_t rid,
+                                     const bool queue = false, const bool digest = false);
+
+    pPktData_t message              (const int code, const PktData_t *data, const int length, const int tag, const uint32_t rid,
+                                    const bool queue = false, const bool digest = false);
+
+
+    // Flow control initialisation
+    void       initFc               (void);
+
+    // Queue flushing
+    void       sendPacket           (void)
+
+    // Dllps
+    void       sendAck              (const int seq);
+    void       sendNak              (const int seq);
+    void       sendFC               (const int type,  const int vc,    const int hdrfc, const int datafc, const bool queue);
+    void       sendPM               (const int type,  const bool queue = false);
+
+    void       sendVendor           (const bool queue = false);
+    void       sendVendor           (const int data,  const bool queue = false);
+
+    // Physical layer Ordered sets etc.
+    void       sendIdle             (const int ticks = 1);
+    void       sendOs               (const int type);
+    void       sendTs               (const int identifier, const int lane_num, const int link_num, const int n_fts,
+                                     const int control, const bool is_gen2 = false);
+
+    void       waitForCompletion    (const uint32_t count = 1);
+    void       initialisePcie       (const callback_t    cb_func, void *usrptr);
+    void       registerOsCallback   (const os_callback_t cb_func);
+    uint32_t   getCycleCount        (void);
+    void       configurePcie        (const config_t type, const int value = 0);
+
+    // Physical layer event routines
+    int        resetEventCount      (const int type);
+    int        readEventCount       (const int type, uint32_t *ts_data);
+    TS_t       getTS                (const int lane);
+
+    // Miscellaneous support routines
+    uint32_t   pcieRand             (void);
+    void       pcieSeed             (const uint32_t seed);
+    void       setTxEnabled         (void);
+    void       setTxDisabled        (void);
+    void       getPcieVersionStr    (char* sbuf, const int bufsize);
+
+    // Memory access
+    void       writeRamByteBlock    (const uint64_t addr, const PktData_t* const data, const int fbe, const int lbe,
+                                     const int length);
+    int        readRamByteBlock     (const uint64_t addr, PktData_t* const data, const int length);
+
+    void       writeRamByte         (const uint64_t addr, const uint32_t data);
+    void       writeRamHWord        (const uint64_t addr, const uint32_t data, const int little_endian = 0);
+    void       writeRamWord         (const uint64_t addr, const uint32_t data, const int little_endian = 0);
+    void       writeRamDWord        (const uint64_t addr, const uint64_t data, const int little_endian = 0);
+    uint32_t   readRamByte          (const uint64_t addr);
+    uint32_t   readRamHWord         (const uint64_t addr, const int little_endian = 0);
+    uint32_t   readRamWord          (const uint64_t addr, const int little_endian = 0);
+    uint64_t   readRamDWord         (const uint64_t addr, const int little_endian = 0);
+
+    // Configuration space access
+    void       writeConfigSpace     (const uint32_t addr, const uint32_t data);
+    uint32_t   readConfigSpace      (const uint32_t addr);
+    void       writeConfigSpaceMask (const uint32_t addr, const uint32_t data);
+    uint32_t   readConfigSpaceMask  (const uint32_t addr);
+
+private:
+    unsigned node;
+};
+```
+
+
 ### Endpoint Features
 
 The _pcievhost_ VIP was originally designed to generate PCIe traffic as a root complex. The addition of endpoint features was to allow a target for the main root complex model to be tested. This mainly consisted of the addition of a configuration space memory and for out generation of completions fr bot the internal memeory model and  the configuratiion space. As such, the user program on the end point does not need to do very much if it does not need to instigate transactions but only respond. The code fragment below shows an abbreviated program running on a _pcievhost_ model.
@@ -200,6 +388,10 @@ void VUserMain1()
 
     // Initialise PCIe VHost, with input callback function and no user pointer.
     InitialisePcie(VUserInput_1, NULL, node);
+
+    // Configure for a PIPE
+    ConfigurePcie(CONFIG_DISABLE_SCRAMBLING, 0, node);
+    ConfigurePcie(CONFIG_DISABLE_8B10B, 0, node);
 
     // Make sure the link is out of electrical idle
     VWrite(LINK_STATE, 0, 0, node);
