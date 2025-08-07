@@ -6,7 +6,7 @@ Computing is about communicating. Some would also say about networking. Digital 
 
 Our project aims to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
 
-All that with **`full HW/SW opensource co-sim`** the kind of is yet to be seen in the proprietary settings. Augmented with a rock-solid **`openBackplane`** in the basement of our hardware solution, the geek community will thus get all it takes for building their own, end-to-end _openCompute_ systems.
+All that with **`full HW/SW opensource co-sim`**. Augmented with a rock-solid **`openBackplane`** in the basement of our hardware solution, the geek community will thus get all it takes for building their own, end-to-end _openCompute_ systems.
 
 > The project‘s immediate goal is to empower the makers with ability to drive PCIE-based peripherals from their own soft RISC-V SOCs.
 
@@ -66,11 +66,11 @@ Such approach is less work and less risk than to design our own PCIE motherboard
 
 This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
 
-Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE RC model. The plan is to first convert it to the comprehensive PCIE EP model, then pair it up in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
+Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE model. The PCIE model has some EP capabilities with a configurtable configurations space, which can be paired in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
 
 With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
 
- - [x] Conversion of existing PCIE RC model to EP model.
+ - [x] Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
  - [ ] Testbench development and build up. Execution and debug of sim testcases.
  - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
@@ -107,17 +107,31 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 
 # TB/Sim Architecture
 
-The *openpcie2-rc* top level test bench is based around the [*pcievhost*](https://github.com/wyvernSemi/pcievhost) PCIe 2.0 verification co-simulation IP in order to drive the DUT's PCIe link. This is a C model for generating PCIe traffic data connected to the logic simulation using the [*VProc*](https://github.com/wyvernSemi/vproc) virtual processor  co-simulation element. _VProc_ allows a user program to be compiled natively on the host machine and 'run' on an instantiated HDL component in a logic simulation and has a generic memory mapped master bus for generating read an write transactions. A Bus Functional Model (BFM) wrapper encapsulates a _VProc_ component and effectively memory maps the PCIe ports into the address space, allowing software to drive and read these ports and interface with the PCIe C model. Although originally designed as a root complex model, the _pcievhost_ components has <ins>some</ins> endpoint features, enabled with a parameter.
+## Simulation Test Bench
 
-The diagram below is a *draft* block diagram of the proposed top level test bench.
+The [openpcue2-rc test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with a RISC-V processor RTL implementation such as picoRV32, IBEX or EDUBOS5, or to co-simulate software using the virtual processor, with a significant speed up in simulation times. The test bench has the following features:
 
-<p align=center>
-<img width=600 src="5.sim/images/openpcierc_tb_draft.png">
+* A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC`](5.sim/models/README.md#soc-cpu-vproc) component
+  * [Selectable](5.sim/README.md#auto-selection-of-soc_cpu-component) between this or an RTL softcore
+  * Can run natively compiled test code
+  * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#co-simulation-hal)
+  * Can run RISC-V compiled code using the [rv32 RISC-V ISS model](5.sim/models/rv32/README.md)
+* The [_pcieVHost VIP_](https://github.com/wyvernSemi/pcievhost) is used to drive the logic's PCIe link
+* Uses a C [sparse memory model](https://github.com/wyvernSemi/mem_model)
+  * An [HDL component](5.sim/models/cosim/README.md) instantiated in logic gives logic access to this memory
+  * An API is provided to _VProc_ running code for direct access from the _pcieVHost_ software, which implements this sparse memory C model.
+
+The figure below shows an oveview block diagram of the test bench HDL.
+
+<p align="center">
+<img src="5.sim/images/openpcierc_tb.png" width=800>
 </p>
 
-The DUT PCIe link is connected to the _pcievhost_, configured as an endpoint, running some user code to do link training and any transaction generation required, though it will automatically respond to transactions requiring a completion. A pair of _PcieDispLink_ HDL components (supplied as part of _pcievhost_) are optionally connected to the up and down links that can display the traffic on the PCIe link. It also does _some_ on-the-fly compliance testing. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device. A user program can then be run on the virtal processor to access the device's registers etc.
+More details on the architecture and usage of the Wireguard test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
 
-The software to run on the virtual processor is proposed to be a means to connect to an external QEMU process via a TCP/IP socket with a (TBD) protocol to instigate read and write transactions and return data (where applicable). It is envisaged that the client software is driven via the DUT's device driver to communicate with server software on _VProc_. This is currently TBD.
+## Co-simulation HAL
+
+The Wireguard control and status register harware abstraction layer (HAL) software is [auto-generated](4.build/README.md#co-simulation-hal), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#co-simulation-hal) in the `4.build/` directory.
 
 More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file.
   
