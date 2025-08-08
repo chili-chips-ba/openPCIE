@@ -11,12 +11,14 @@
   * [Transaction Layer Packet Generation](#transaction-layer-packet-generation)
   * [Data Link Layer Packet Generation](#data-link-layer-packet-generation)
   * [Ordered Set Generation](#ordered-set-generation)
+  * [Receiving Data](#receiving-data)
   * [Internal Memory Access](#internal-memory-access)
   * [Internal Configuration Space Access](#internal-configuration-space-access)
-    * [Constructing a Configuration Space](#constructing-a-configuration-space)
 * [User API Summary](#user-api-summary)
 * [Additionally Provided Functionality](#addittionally-provided-functionality)
-  * [Endpoint Features](#endpoint-features)
+  * [Running the Model as an Endpoint](#running-the-model-as-an-endpoint)
+      * [Configuration Space Helper Structures](#configuration-space-helper-structures)
+      * [Setting Up the Configuration Space](#setting-up-the-configuration-space)
   * [Model Limitations](#model-limitations)
     * [Endpoint Feature Limitations](#endpoint-feature-limitations)
     * [LTSSM Limitations](#ltssm-limitations)
@@ -155,7 +157,7 @@ The following table shows the valid configuration `type` settings and expected `
 | CONFIG_LTSSM_LINKNUM††              |  yes    | integer   | Training sequence advertised link number (default 0)                                      |
 | CONFIG_LTSSM_N_FTS††                |  yes    | integer   | Training sequence number of fast training sequences (default 255)                         |
 | CONFIG_LTSSM_TS_CTL††               |  yes    | integer   | Five bit TS control field (default 0)                                                     |
-| CONFIG_LTSSM_DETECT_QUIET_TO††      |  yes    | cycles    | Detect quite timeout (default 1500/6M, depending if `LTSSM_ABBREVIATED` defined or not)   |
+| CONFIG_LTSSM_DETECT_QUIET_TO††      |  yes    | cycles    | Detect quiet timeout (default 1500/6M, depending if `LTSSM_ABBREVIATED` defined or not)   |
 | CONFIG_LTSSM_POLL_ACTIVE_TO_COUNT†† |  yes    | cycles    | Polling active TX count (default 16/1024, depending if `LTSSM_ABBREVIATED` defined or not)|
 | CONFIG_LTSSM_ENABLE_TESTS††         |  yes    | bit mask  | Enable LTSSM test exceptions (default 0)                                                  |
 | CONFIG_LTSSM_FORCE_TESTS††          |  yes    | bit mask  | Force LTSSM test exceptions (default 0)                                                   |
@@ -230,18 +232,121 @@ The _pcievhost_ model has an internal sparse memory model which can support a fu
 
 If a _pcievhost_ is configured as an endpoint it then has an internal 4096 by 32-bit configuration memory. By default this is blank, but CfgWr and CfgRd transactions can access this space. To configure this space the `WriteConfigSpace` (and its `ReadConfigSpace` counterpart) can be used to set up an valid configuration space settings. A shadow mask memory is also available, which defaults to all 0s, to set any number of bits to be read only. There is a one-to-one correspondence to the main configuration memory, but if a mask bit is set, then the corresponding config space bit becomes read only when accessed over the link with CfgWr transactions. The mask memory is set using the `WriteConfigSpaceMask` and can be inspected with `ReadConfigSpaceMask`.
 
-#### Constructing a Configuration Space
+### Receiving Data
 
-The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pcie_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
+If a user callback function was registered when `InitialisePcie()` was called this will be invoked with any received packet that the model did not handle itself. The most common of these will be completion packets received for a memory or configuration read. When the callback is invoked the packet, via a point of type `pPkt_t` is passed in along with a status and, if a user pointer was passed in when registering the callback, this is also passed in.
 
-| **Structure** | **Union** | **Description** |
-|---------------|-----------|-----------------|
-| `cfg_spc_type0_struct_t`          | `cfg_spc_type0_t` |Type 0 configuration space |
-| `cfg_spc_pcie_caps_struct_t`      | `cfg_spc_pcie_caps_t` | PCIe capabilities |
-| `cfg_spc_msi_caps_struct_t`       | `cfg_spc_msi_caps_t` | Message Signalled Interrupt cpabilities | 
-| `cfg_spc_pwr_mgmnt_caps_struct_t` | `cfg_spc_pwr_mgmnt_caps_t` | Power Management capabilities |
+The `status` value is bit map of error flags ORed together. The following table lists the possible bit seeting types, with `PKT_STATUS_GOOD` being a valueo fo 0.
 
-The individual fields of the structure can be filled in and then the word buffer used with `WriteConfigSpace` to update the model. In the [_pcievhost_ repository](https://github.com/wyvernSemi/pcievhost/tree/master/verilog/test/usercode) the `VUserMain.c` test file has a function `ConfigureType0PcieCfg` which gives an example of configuring an endpoint configuration space using the structures and the API function.
+|**Status Value**       | **Packet type** |
+|-----------------------|-----------------|
+|PKT_STATUS_GOOD        | all             |
+|PKT_STATUS_BAD_LCRC    | TLP and DLLP    |
+|PKT_STATUS_BAD_ECRC    | TLP             |
+|PKT_STATUS_UNSUPPORTED | TLP completion  |
+|PKT_STATUS_NULLIFIED   | TLP             |
+
+The received packet is passed in with a pointer to a structure as defined below:
+
+```C
+typedef struct  pkt_struct {
+    pPkt_t      NextPkt;     // Pointer to next packet to be sent
+    PktData_t   *data;       // Pointer to a raw data packet, terminated by -1
+    int         seq;         // DLL sequence number for packet (-1 for DLLP)
+    int         Retry;
+    uint32_t    TimeStamp;
+    uint32_t    ByteCount;
+} sPkt_t;
+```
+The `NextPtr` can be ignored by the callback, but the `data` argument is a pointer to a set of byte values representing the whole raw packet. Each byte value is of `PktData_t` type, which is not an 8-bit type, so cannot be overlaid as an array of `char`, for instance. The last byte in teh packet is followed by a -1 to mark the end of the data. The `seq` field gives the sequence number of the received packet and the `Retry` field is a count ofthe number of retries for the packet that have already occured. A `Timestamp` field provides a clock cycle count for the time the packet was fuly received and passed to the callback. Finally, a `ByteCount` gives the size of the payload for the packet (in bytes), which can be 0.
+
+A set of helper macros are avilable to process the raw packet data. To extract the payload data, for example the `GET_TLP_PAYLOAD_PTR(pkt)` returns a pointer to the beginning of the payload data (if any), taking care of whether the packet has a 3 or 4 word header. Using this, along with the `ByteCount` value, the data can be extracted from the packet. Some highlights from the set of available macros are given below :
+
+|**Macro**             |**Description**                                                      |
+|----------------------|---------------------------------------------------------------------|
+| GET_TLP_TYPE(pkt)    | Get the type code of the TLP packet (as defined in `pci_express.h`) |
+| GET_TLP_ADDRESS(pkt) | Get a TLP's address of as `uint64_t`                                |
+| GET_TLP_FBE(pkt)     | Get a TLP packet's first byte enable value                          |
+| GET_TLP_LBE(pkt)     | Get aTLP packet's last byte enable value                            |
+| GET_TLP_RID(pkt)     | Get a TLP packet's requester ID                                     |
+| GET_TLP_TAG(pkt)     | Get a TLP packet's tag value                                        |
+| TLP_HAS_DIGEST(pkt)  | Flag if a TLP has an ECRC digest                                    |
+| TLP_IS_POSTED(pkt)   | Flag if a TLP is a posied request                                   |
+
+The TLP packet types defined (in `pci_express.h`) are as shown in the table below:
+| **TYPE**       | **Description**                                    |
+|----------------|----------------------------------------------------|
+|TL_MRD32        | A memory read request with a 32-bit address        |
+|TL_MRD64        | A memory read request with a 64-bit address        |
+|TL_MRDLCK32     | A locked memory read request with a 32-bit address |
+|TL_MRDLCK64     | A locked memory read request with a 64-bit address |
+|TL_MWR32        | A memory write with a 32-bit address               |
+|TL_MWR64        | A memory write with a 64-bit address               |
+|TL_IORD         | A memory I/O read request                          |
+|TL_IOWR         | A memory I/O write                                 |
+|TL_CFGRD0       | A Type 0 configuration space read request          |
+|TL_CFGWR0       | A Type 0 configuration space write                 |
+|TL_CFGRD1       | A Type 1 configuration space read request          |
+|TL_CFGWR1       | A Type 1 configuration space write                 |
+|TL_MSG          | A message with no payload                          |
+|TL_MSGD         | A message with payload                             |
+|TL_CPL          | A completion with no payload                       |
+|TL_CPLD         | A completion with payload                          |
+|TL_CPLLK        | A locked access completion with no payload         |
+|TL_CPLDLK       | A locked access completion with payload            |
+
+Once a packet has been processed it is <u>vital</u> that the packet passed in to the callback is freed. A `DISCARD_PACKET(pkt)` macro is provided for this purpose, freeing all required memory. This is usually the last line of the callback function as all data will be lost at this point. If any of the data is to be retained it must be copied from the packet before calling this macro. This is what the optional user point might be used for (if one registered on the call to `InitialisePcie()`), where it it might be a point to a queue, and the relevant parts of the packeted added to the queue to be processed by the main part of the program.
+
+A simple example callback function for a _pcievhost_ configured as a root complex, is shown below:
+
+```C
+ void VUserInput_0(pPkt_t pkt, int status, void* usrptr)
+{
+    int idx;
+
+    // Is a DLLP
+    if (pkt->seq == DLLP_SEQ_ID)
+    {
+        DebugVPrint("---> VUserInput_0 received DLLP\n");
+    }
+    // A TLP
+    else
+    {
+        DebugVPrint("---> VUserInput_0 received TLP sequence %d of %d bytes at %d\n",
+                       pkt->seq, GET_TLP_LENGTH(pkt->data), pkt->TimeStamp);
+
+        // If a completion, extract the TPL payload data and display
+        if (pkt->ByteCount)
+        {
+            // Get a pointer to the start of the payload data
+            pPktData_t payload = GET_TLP_PAYLOAD_PTR(pkt->data);
+
+            // Display the data
+            DebugVPrint("---> ");
+            for (idx = 0; idx < pkt->ByteCount; idx++)
+            {
+                DebugVPrint("%02x ", payload[idx]);
+                if ((idx % 16) == 15)
+                {
+                    DebugVPrint("\n---> ");
+                }
+            }
+
+            if ((idx % 16) != 0)
+            {
+                DebugVPrint("\n");
+            }
+        }
+    }
+
+    // Once packet is finished with, the allocated space *must* be freed.
+    // All input packets have their own memory space to avoid overwrites
+    // with shared buffers.
+    DISCARD_PACKET(pkt);
+}
+```
+An equivalent callback function for a _pcievhost_ configured as an endpoint woUld be much simpler, or even one not registered at all if the model has all the internal memory and auto-completion features enabled (the default). If a callback is registered, only unhandled packets would be sent to the function, such as message packets and I/O access packets.
+
 
 ## Additionally Provided Functionality
 
@@ -249,7 +354,7 @@ The _pcievhost_ model was originally designed as a Root Complex PCIe 1.1 and 2.0
 
 | **API Function** | **Description** |
 |------------------|-------------|
-| `InitLink`       | Go through an LTSSM link training sequence |
+| `InitLink`       | Go through an LTSSM link training sequence (part of the separate LTSSM model, defined in `ltssm.h`) |
 | `InitFC`         | Initialise DLL flow control credits |
 
 These functions only provide enough functionality to go through an initialisation that has no exception conditions. The LTSSM also only goes through one training sequence and can't, as yet, go through the Recovery state, and retrain at a higher generation (i.e. from GEN1 to GEN2). The LTSSM has various states that are long to execute due to various TS event counts and cycle times. The model's demonstration `ltssm.c` code can be complied for an 'abbreviated' power up by defining `LTSSM_ABBREVIATED` when compiling the code. This reduces the `Polling.Active` TX count from 1024 to 16 and the `Detect.Quite` timeout count from 12ms to 1500 cycles.
@@ -258,7 +363,7 @@ All the hooks are in place for the other paths through the LTSSM, but these are 
 
 ## C++ Support
 
-In addition to the C API functions described above, there is asupport for C++ via a class, in `pcieModelClass.cpp`, called `pcieModelClass` that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object.
+In addition to the C API functions described above, there is support for C++ via an API class, in `pcieModelClass.cpp`, called `pcieModelClass`, that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object. Note that the LTSSM model is implemented in separate source files (`ltssm.c` and `ltssm.h`) and the API for this (consisting of the `ConfigurePcieLtssm()` and `initLink()` functions) is not part of `pcieModeClass`.
 
 ```C++
 class pcieModelClass
@@ -361,62 +466,219 @@ private:
 };
 ```
 
+### Running the Model as an Endpoint
 
-### Endpoint Features
-
-The _pcievhost_ VIP was originally designed to generate PCIe traffic as a root complex. The addition of endpoint features was to allow a target for the main root complex model to be tested. This mainly consisted of the addition of a configuration space memory and for out generation of completions fr bot the internal memeory model and  the configuratiion space. As such, the user program on the end point does not need to do very much if it does not need to instigate transactions but only respond. The code fragment below shows an abbreviated program running on a _pcievhost_ model.
+The _pcievhost_ VIP was originally designed to generate PCIe traffic as a root complex. The addition of endpoint features was to allow a target for the main root complex model to be tested. This mainly consisted of the addition of a configuration space memory and for out generation of completions for both the internal memory model and  the configuratiion space. As such, the user program on the end point does not need to do very much if it does not need to instigate transactions but only respond. The code fragment below shows an abbreviated program running on a _pcievhost_ model.
 
 ```C
 #include <stdio.h>
 #include <stdlib.h>
-#include "pcie.h"
-
-static int node = 1;
+#include "pcieModelClass.h"
+#include "ltssm.h"
 
 static void VUserInput_1(pPkt_t pkt, int status, void* usrptr)
 {
   /* Do stuff here with input */
 }
 
-void ConfigureType0PcieCfg (void)
+static void ConfigureType0PcieCfg (pcieModelClass *pcie)
 {
   /* Initialise the configuration space and mask here */
 }
 
-void VUserMain1()
+extern "C" void VUserMain1(int node)
 {
+    // Create a pcie model API object for this node 
+    pcieModelClass *pcie = new pcieModelClass(node);
 
     // Initialise PCIe VHost, with input callback function and no user pointer.
-    InitialisePcie(VUserInput_1, NULL, node);
+    pcie->initialisePcie(VUserInput_1, NULL);
 
-    // Configure for a PIPE
-    ConfigurePcie(CONFIG_DISABLE_SCRAMBLING, 0, node);
-    ConfigurePcie(CONFIG_DISABLE_8B10B, 0, node);
+    // Configure the model for PIPE operation
+    pcie->configurePcie(CONFIG_DISABLE_SCRAMBLING);
+    pcie->configurePcie(CONFIG_DISABLE_8B10B);
+
+    // Configure LTSSM for full timings (longer link training simulation time)
+    ConfigurePcieLtssm(CONFIG_LTSSM_DETECT_QUIET_TO,      6000000, node);
+    ConfigurePcieLtssm(CONFIG_LTSSM_POLL_ACTIVE_TO_COUNT, 1024,    node);
 
     // Make sure the link is out of electrical idle
     VWrite(LINK_STATE, 0, 0, node);
 
     // Use node number as seed
-    PcieSeed(node, node);
+    pcie->pcieSeed(node);
 
     // Construct an endpoint PCIe configuration space
-    ConfigureType0PcieCfg();
+    ConfigureType0PcieCfg(pcie);
 
     // Initialise the link for 16 lanes
     InitLink(16, node);
 
     // Initialise flow control
-    InitFc(node);
+    pcie->initFc();
 
     // Send out idles forever
     while (true)
     {
-        SendIdle(100, node);
+        pcie->sendIdle(100);
     }
 }
 ```
 
-Here the model is initialised, registering a user callback function (`VUserInput_1`) for receiving data. A low level _VProc_ API call is made to get the link out of electrical idle state before configuring the model. HerAfter this a seed is set for random data generation before calling a local function to configure the endpoint configuration space. The link training is then invoked before initialising the DLL flow control. From this point on, a loop continuously calls `SendIdle` for sending idles over the link. The model will respond to received transactions, overriding the idles with, for example, completions for MemRd transactions, and all the DLL ACKs and flow control DLLP packets etc. In this sense, unless transactions are to be instigated from the endpoint, no further programming is required.
+Here the model is initialised, registering a user callback function (`VUserInput_1`) for receiving data. The model is then configured with any required settings to override defaults, before configuring the LTSSM. A low level _VProc_ API call is made to get the link out of electrical idle state before configuring the model. After this a seed is set for random data generation before calling a local function to set up the endpoint configuration space. The link training is then invoked before initialising the DLL flow control. From this point on, a loop continuously calls `SendIdle` for sending idles over the link. The model will respond to received transactions, overriding the idles with, for example, completions for MemRd transactions, and all the DLL ACKs and flow control DLLP packets etc. In this sense, unless transactions are to be instigated from the endpoint, no further programming is required.
+
+#### Configuration Space Helper Structures
+
+The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pcie_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
+
+| **Structure** | **Union** | **Description** |
+|---------------|-----------|-----------------|
+| `cfg_spc_type0_struct_t`          | `cfg_spc_type0_t` |Type 0 configuration space |
+| `cfg_spc_pcie_caps_struct_t`      | `cfg_spc_pcie_caps_t` | PCIe capabilities |
+| `cfg_spc_msi_caps_struct_t`       | `cfg_spc_msi_caps_t` | Message Signalled Interrupt cpabilities | 
+| `cfg_spc_pwr_mgmnt_caps_struct_t` | `cfg_spc_pwr_mgmnt_caps_t` | Power Management capabilities |
+
+The individual fields of the structure can be filled in and then the word buffer used with `WriteConfigSpace` to update the model. The next session provides examples of their use.
+
+#### Setting Up the Configuration Space
+
+In the previous example for an endpoint program the `ConfigureType0PcieCfg` function was left blank for brevity purposes. By default, the configuration space acts just like a 4K &times; 32bit memory space initilaised to 0. Configurations writes will have all bits written to the word addressed and subsequent reads will read back the value written. In order to configure for a model of a real configuration space the pcie model's API provides the aforementions methods and some structures to aid constructing capabilities. The use of thmode's features does require understanding of PCIe configuration space requirements but an example is given below for a <u>minimal</u> Type 0 configuration space for a proprietary network card with no PCIe extended capabilities. For more information about PCIe configurations spaces see the [PCIe Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx) Part 4).
+
+```C
+static void ConfigureType0PcieCfg (pcieModelClass *pcie)
+{
+    unsigned        next_cap_ptr = 0;
+    
+    // -------------------------------------
+    // PCI compatible header
+    // -------------------------------------
+    
+    cfg_spc_type0_t     type0;
+    cfg_spc_type0_t     type0_mask;
+    cfg_spc_pcie_caps_t pcie_caps;
+    cfg_spc_pcie_caps_t pcie_caps_mask;
+    cfg_spc_msi_caps_t  msi_caps;
+    cfg_spc_msi_caps_t  msi_caps_mask;
+    pwr_mgmnt_caps_t    pwr_mgmnt_caps;
+    pwr_mgmnt_caps_t    pwr_mgmnt_caps_mask;
+
+    // Default to all zeros and read-only
+    for (int idx = 0; idx < (CFG_PCI_HDR_SIZE_BYTES/4); idx++)
+    {
+        type0.words[idx]      = 0x00000000;
+        type0_mask.words[idx] = 0xffffffff;
+    }
+
+    next_cap_ptr += CFG_PCI_HDR_SIZE_BYTES;
+
+    // Construct PCI compatible structure value, and set writable bits where appropriate
+    type0.type0_struct.vendor_id               = 0x14fc;
+    type0.type0_struct.device_id               = 0x0002;
+    type0.type0_struct.command                 = 0x0006;     type0_mask.type0_struct.command = 0xfab8;
+    type0.type0_struct.status                  = 0x0010;
+    type0.type0_struct.revision_id             = 0x01;
+    type0.type0_struct.prog_if                 = 0x00;       // don't care
+    type0.type0_struct.subclass                = 0x80;       // other
+    type0.type0_struct.class_code              = 0x02;       // network controller
+    type0.type0_struct.cache_line_size         = 0x00;       type0_mask.type0_struct.cache_line_size = 0x00; 
+    type0.type0_struct.bar[0]                  = 0x00000008; type0_mask.type0_struct.bar[0]          = 0x00000fff; // 32-bit, prefetchable, 4K
+    type0.type0_struct.bar[1]                  = 0x00000008; type0_mask.type0_struct.bar[1]          = 0x000003ff; // 32-bit, prefetchable, 1K
+    type0.type0_struct.bar[2]                  = 0x00000000;
+    type0.type0_struct.bar[3]                  = 0x00000000;
+    type0.type0_struct.bar[4]                  = 0x00000000;
+    type0.type0_struct.bar[5]                  = 0x00000000;
+    type0.type0_struct.expansion_rom_base_addr = 0x00000000; type0_mask.type0_struct.expansion_rom_base_addr = 0x000007fe;
+    type0.type0_struct.capabilities_ptr        = next_cap_ptr;
+
+    // Update config space and mask with values
+    for (int idx = 0; idx < (CFG_PCI_HDR_SIZE_BYTES/4); idx++)
+    {
+        pcie->writeConfigSpace     (next_cap_ptr - CFG_PCI_HDR_SIZE_BYTES + idx*4, type0.words[idx]);
+        pcie->writeConfigSpaceMask (next_cap_ptr - CFG_PCI_HDR_SIZE_BYTES + idx*4, type0_mask.words[idx]);
+    }
+    
+    // -------------------------------------
+    // PCIe capability
+    // -------------------------------------
+
+    // Default to all zeros and read-only
+    for (int idx = 0; idx < (CFG_PCIE_CAPS_SIZE_BYTES/4); idx++)
+    {
+        pcie_caps.words[idx]      = 0x00000000;
+        pcie_caps_mask.words[idx] = 0xffffffff;
+    }
+
+    next_cap_ptr += CFG_PCIE_CAPS_SIZE_BYTES;
+
+    pcie_caps.pcie_caps_struct.cap_id         = 0x10;
+    pcie_caps.pcie_caps_struct.next_cap_ptr   = next_cap_ptr;
+    pcie_caps.pcie_caps_struct.device_caps    = 0x00000001;   // max payload = 256 bytes
+    pcie_caps.pcie_caps_struct.device_control = 0x2810;       pcie_caps_mask.pcie_caps_struct.device_control = 0x0000;
+    pcie_caps.pcie_caps_struct.link_caps      = 0x0003fc12;   
+    pcie_caps.pcie_caps_struct.link_control   = 0x0000;       pcie_caps_mask.pcie_caps_struct.link_control   = 0xf004;
+    pcie_caps.pcie_caps_struct.link_status    = 0x0091;       
+    pcie_caps.pcie_caps_struct.link_control2  = 0x0002;       pcie_caps_mask.pcie_caps_struct.link_control2  = 0xe06f;
+
+    for (int idx = 0; idx < (CFG_PCIE_CAPS_SIZE_BYTES/4); idx++)
+    {
+        pcie->writeConfigSpace     (next_cap_ptr - CFG_PCIE_CAPS_SIZE_BYTES + idx*4, pcie_caps.words[idx]);
+        pcie->writeConfigSpaceMask (next_cap_ptr - CFG_PCIE_CAPS_SIZE_BYTES + idx*4, pcie_caps_mask.words[idx]);
+    }
+    
+    // -------------------------------------
+    // MSI capability
+    // -------------------------------------
+
+    // Default to all zeros and read-only
+    for (int idx = 0; idx < (CFG_MSI_CAPS_SIZE_BYTES/4); idx++)
+    {
+        msi_caps.words[idx]      = 0x00000000;
+        msi_caps_mask.words[idx] = 0xffffffff;
+    }
+
+    next_cap_ptr += CFG_MSI_CAPS_SIZE_BYTES;
+
+    msi_caps.msi_caps_struct.cap_id           = 0x05;
+    msi_caps.msi_caps_struct.next_cap_ptr     = next_cap_ptr;
+    msi_caps.msi_caps_struct.mess_control     = 0x0080;     msi_caps_mask.msi_caps_struct.mess_control = 0xff8e;
+    msi_caps.msi_caps_struct.mess_addr_lo     = 0x00000000; msi_caps_mask.msi_caps_struct.mess_addr_lo = 0x00000003;
+    msi_caps.msi_caps_struct.mess_addr_hi     = 0x00000000; msi_caps_mask.msi_caps_struct.mess_addr_hi = 0x00000000;
+    msi_caps.msi_caps_struct.mess_data        = 0x0000;     msi_caps_mask.msi_caps_struct.mess_data    = 0x0000;
+    msi_caps.msi_caps_struct.mask             = 0x00000000; msi_caps_mask.msi_caps_struct.mask         = 0x00000000;
+    msi_caps.msi_caps_struct.pending          = 0x00000000;
+
+    for (int idx = 0; idx < (CFG_MSI_CAPS_SIZE_BYTES/4); idx++)
+    {
+        pcie->writeConfigSpace     (next_cap_ptr - CFG_MSI_CAPS_SIZE_BYTES + idx*4, msi_caps.words[idx]);
+        pcie->writeConfigSpaceMask (next_cap_ptr - CFG_MSI_CAPS_SIZE_BYTES + idx*4, msi_caps_mask.words[idx]);
+    }
+
+    // -------------------------------------
+    // Power managment capability
+    // -------------------------------------
+
+    // Default to all zeros and read-only
+    for (int idx = 0; idx < (CFG_PWR_MGMT_CAPS_SIZE_BYTES/4); idx++)
+    {
+        pwr_mgmnt_caps.words[idx]      = 0x00000000;
+        pwr_mgmnt_caps_mask.words[idx] = 0xffffffff;
+    }
+
+    next_cap_ptr += CFG_PWR_MGMT_CAPS_SIZE_BYTES;
+
+    pwr_mgmnt_caps.pwr_mgmnt_caps_struct.cap_id                        = 0x01;
+    pwr_mgmnt_caps.pwr_mgmnt_caps_struct.next_cap_ptr                  = 0x00; // last capability
+    pwr_mgmnt_caps.pwr_mgmnt_caps_struct.pwr_mgmnt_caps                = 0x0003;
+    pwr_mgmnt_caps.pwr_mgmnt_caps_struct.pwr_mgmnt_control_status      = 0x0008;
+    pwr_mgmnt_caps_mask.pwr_mgmnt_caps_struct.pwr_mgmnt_control_status = 0xe0fc;
+
+    for (int idx = 0; idx < (CFG_PWR_MGMT_CAPS_SIZE_BYTES/4); idx++)
+    {
+        pcie->writeConfigSpace     (next_cap_ptr - CFG_PWR_MGMT_CAPS_SIZE_BYTES + idx*4, pwr_mgmnt_caps.words[idx]);
+        pcie->writeConfigSpaceMask (next_cap_ptr - CFG_PWR_MGMT_CAPS_SIZE_BYTES + idx*4, pwr_mgmnt_caps_mask.words[idx]);
+    }
+}
+```
 
 ### Model Limitations
 
@@ -426,7 +688,7 @@ The _pcievhost_ model was originally conceived as a PCIe traffic pattern generat
 
 Endpoint features have been added to provide a target for the original _pcievhost_ model to be tested. These include an internal memory model as a target for MemRd and MemWr transactions and a configurations space as a target for CfgRd and CfgWr transactions. The configuration space can be programed, using the API, with valid config space patterns and a mask programmed to make various bits read-only. More sophisticaled register bit operatoins, such as write one to clear, are not supported.
 
-The configurations space, by default, has no programmed pattern and must be configured in the user program running on the model using the API functions. The [_pcievhost_ repository](https://github.com/wyvernSemi/pcievhost) has an example of programming the configuration space for a particular endpoint in its `verilog/test/usercode/VUserMain1.c` file, encapsulated in a `ConfigureType0PcieCfg` function, which may be used as a reference.
+The configurations space, by default, has no programmed pattern and must be configured in the user program running on the model using the API functions (see the example in the [Setting Up the Configuration Space](#setting-up-the-configuration-space) section).
 
 #### LTSSM Limitations
 
@@ -444,4 +706,4 @@ Hooks for all of these states are present in the code, but would need developmen
 
 #### Model Verification
 
-The _pcievhost_ model's original deployment was to drive an endpoint implementation which operated as a 16 lane GEN1 device, or an 8 lane GEN2 device. Almost all testing has been done at these widths and speeds. Support for different widths are fully implemented and tested using thtwo _pcieVHost_ modules back to back, one as an RC and  the other as an EP.
+The _pcievhost_ model's original deployment was to drive an endpoint implementation which operated as a 16 lane GEN1 device, or an 8 lane GEN2 device. Almost all testing has been done at these widths and speeds. Support for different widths are fully implemented and tested using two _pcieVHost_ modules back to back, one as an RC and the other as an EP.
