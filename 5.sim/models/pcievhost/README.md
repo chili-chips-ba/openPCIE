@@ -7,18 +7,19 @@
 * [Link Traffic Display](#link-traffic-display)
 * [The Pcie C Model](#the-pcie-c-model)
   * [Internal Architecture](#internal-architecture)
-  * [Model Initialisation and Configuration](#model-initialisation-and-configuration)
-  * [Transaction Layer Packet Generation](#transaction-layer-packet-generation)
-  * [Data Link Layer Packet Generation](#data-link-layer-packet-generation)
-  * [Ordered Set Generation](#ordered-set-generation)
-  * [Receiving Data](#receiving-data)
-  * [Internal Memory Access](#internal-memory-access)
-  * [Internal Configuration Space Access](#internal-configuration-space-access)
-* [User API Summary](#user-api-summary)
-* [Additionally Provided Functionality](#addittionally-provided-functionality)
+  * [User API Summary](#user-api-summary)
+    * [Model Initialisation and Configuration](#model-initialisation-and-configuration)
+    * [Transaction Layer Packet Generation](#transaction-layer-packet-generation)
+    * [Data Link Layer Packet Generation](#data-link-layer-packet-generation)
+    * [Ordered Set Generation](#ordered-set-generation)
+    * [Internal Memory Access](#internal-memory-access)
+    * [Internal Configuration Space Access](#internal-configuration-space-access)
+    * [Receiving Data](#receiving-data)
+* [Additionally Provided Functionality](#additionally-provided-functionality)
+  * [C plus plus Support](#c-plus-plus-support)
   * [Running the Model as an Endpoint](#running-the-model-as-an-endpoint)
-      * [Configuration Space Helper Structures](#configuration-space-helper-structures)
-      * [Setting Up the Configuration Space](#setting-up-the-configuration-space)
+    * [Configuration Space Helper Structures](#configuration-space-helper-structures)
+    * [Setting Up the Configuration Space](#setting-up-the-configuration-space)
   * [Model Limitations](#model-limitations)
     * [Endpoint Feature Limitations](#endpoint-feature-limitations)
     * [LTSSM Limitations](#ltssm-limitations)
@@ -26,7 +27,7 @@
 
 ## Introduction
 
-The [_pcievhost_](https://github.com/wyvernSemi/pcievhost) VIP is a co-simulation element that runs a PCIe C model on a [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor to drive lanes within a PCIe 1.1 or 2.0 link, with support for up to 16 lanes. The PCIe C model provides an API for generating PCIe traffic over the link with some additional helper functionality for modelling _some_ of the link training LTSSM features (not strictly part of the model). It also provides an internal sparse memory model as a target for MemRd and MemWr transactions and, when configured as an endpoint, a configuration space as a target for CfgRd and CfgWr transactions. Features of the API allow for the configuratins space to be pre-programmed with valid configurations and a read-only mask overlay, though there is no support for 'special' functions like write one to clear etc.
+The [_pcievhost_](https://github.com/wyvernSemi/pcievhost) VIP is a co-simulation element that runs a PCIe C model on a [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor to drive lanes within a PCIe 1.1 or 2.0 link, with support for up to 16 lanes. The PCIe C model provides an API for generating PCIe traffic over the link with some additional helper functionality for modelling _some_ of the link training LTSSM features (not strictly part of the model). It also provides an internal sparse memory model as a target for MemRd and MemWr transactions and, when configured as an endpoint, a configuration space as a target for CfgRd and CfgWr transactions. Features of the API allow for the configuration space to be pre-programmed with valid configurations and a read-only mask overlay, though there is no support for 'special' functions like write one to clear etc.
 
 More details of the model can be found in the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
 
@@ -61,17 +62,17 @@ The _pcievhost_ model has the capability to display link traffic to the console 
 //  ||,->  3 - 0:    Unused             Unused         Unused          DispAll
 //  ||| ,-> Time (clock cycles, decimal)
 //  ||| |                          
-    570 000000000000
+    370 000000000000
     002 009999999999
 ```
-The file has two numbers on each active line, with the first hex number being the control values and the second a <u>decimal</u> value timestamp (in clock cycles) when the control should become active. For the controls, the top nibble controls enabling output for Endpoint and Root Complex links separately to allow for co-existence with other extenal link displays. So, bits 10 and 9 enable display if an endpoint end or root-complex end model. By default, only received traffic is displayed but, if no other external traffic display is available, then transmitted data can be display if bit 8 is set.
+The file has two numbers on each active line, with the first hex number being the control values and the second a <u>decimal</u> value timestamp (in clock cycles) when the control should become active. For the controls, the top nibble controls enabling output for Endpoint and Root Complex links separately to allow for co-existence with other extenal link displays. So, bits 10 and 9 enable display if an endpoint end or root-complex end model respectively. By default, only received traffic is displayed but, if no other external traffic display is available, then transmitted data can be displayed if bit 8 is set.
 
-The level of detail to display is controlled by bits 4 to 7. The bit 7 can enable display of raw data link data, without any processing, though generates a lot of output and is hard to interpret. Bits 6 dow to 4 control formatted output for the threee main levels of PCIe traffic; namely physical, data link and transactions layers, bits 6 down to 4 controlling these respectively. The display will automatically indent higher layers if lower layers are enabled to allow easy distinguishing of the output.
+The level of detail to display is controlled by bits 4 to 7. The bit 7 can enable display of raw data link data, without any processing, though generates a lot of output and is hard to interpret. Bits 6 dow to 4 control formatted output for the three main levels of PCIe traffic; namely physical, data link and transactions layers, bits 6 down to 4 controlling these respectively. The display will automatically indent higher layers if lower layers are enabled to allow easy distinguishing of the output.
 
 A fragment of some link display output, using the `ContDisps.hex` file example above, is shown in the diagram below:
 
 <p align=center>
-<img  width=750 src="images/pcie_disp_terminal.png">
+<img  width=750 src="images/pcie_disp_terminal.png" style="box-shadow: 5px 5px 5px gray;">
 </p>
 
 More details on the link display can be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
@@ -92,24 +93,24 @@ The Left column of boxes are the various API functions available, categorised by
 
 The `codec` code also process input data, decoding and descrambling, passing on to `ExtractPhyInput`. Training sequences and other ordered set data is sent to `ProcessOs` whilst TLPs and DLLPs are sent to `ProcessInput`. The API can read received OS event counts from the `ProcessOs` function. `ProcessInput` has access to the internal memory for MemRd and MemWr TLPs and (not shown) the config space for CfgRd and CfgWr TLPs. It will automatically generate (valid) completions for reads and add to the queue. All other TLPs are sent to any registed user callback.
 
-## User API Summary
+### User API Summary
 
 The _pcievhost_ model is a highly complex mode and the API is quite large to match this. This document can only summarise the main features and usage and reference to the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) _must_ be made for the finer details of argumets and usage. The information below refers to the low level C model's API but a C++ class (`pcieModelClass`) is also provided which wraps the functions up into class methods which are slightly easier to use.
 
-### Model Initialisation and Configuration
+#### Model Initialisation and Configuration
 
 | **API Function**      | **Description** |
 |-----------------------|-------------|
 | `InitialisePcie`      | Initialise the model |
 | `ConfigurePcie`       | Configure the model |
-| `ConfigurePcieLtssm`  | Configure the model's LTSSM |
+| `ConfigurePcieLtssm`  | Configure the model's LTSSM (part of the external LTSSM model, API defined in `ltssm.h`)|
 | `PcieSeed`            | Seed internal random number generator |
 
 The `InitailsePcie` is called before any other function to initialise the model. The user can supply a pointer to a callback function which will be called with data for all unhandled received packets. Optionally a user supplied pointer may also be gived which is returned when the callback is called, allowing a user to store away key information for cross checking, verification or any other purpose. The model does not process this pointer itself.
 
 The model is highly configurable with many different parameters which may be set, one at a time, using the `ConfigurePcie` and `ConfigurePcieLtssm` functions that take a type and, where applicable, value argument. .
 
-#### Configuration via ConfigurePcie
+##### Configuration via ConfigurePcie
 
 The following table shows the valid configuration `type` settings and expected `value` for the use with the `ConfigurePcie(type, value)` function.
 
@@ -148,7 +149,7 @@ The following table shows the valid configuration `type` settings and expected `
 
 † Call immediately after `InitialisePcie()` to take effect from time 0
 
-#### Configuration via ConfigurePcieLtssm
+##### Configuration via ConfigurePcieLtssm
 
 The following table shows the valid configuration `type` settings and expected `value` for use with the `ConfigurePcieLtssm(type, value)` function.
 
@@ -168,71 +169,71 @@ Further details of model configuration are to be found in the [_pcievhost_ manua
 
 Internally, the model can generate random data and the generator can be seeded with `PcieSeed`. The internal code uses `PcieRand` to generate randome data, but this is also available as part of the API. Finally, the model keeps a count of cycles internally, and the value may be retrieved with `GetCycleCount`.
 
-### Transaction Layer Packet Generation
+#### Transaction Layer Packet Generation
 
-| **API Function**   | **Description** |
-|--------------------|-----------------|
-| `MemWrite`         | Generate a memory write transaction |
-| `MemRead`          | Generate a memory read transaction  |
-| `Completion`       | Generate a Completion transaction  |
-| `PartCompletion`   | Generate a partial completion transaction |
+| **API Function**   | **Description**                                  |
+|--------------------|--------------------------------------------------|
+| `MemWrite`         | Generate a memory write transaction              |
+| `MemRead`          | Generate a memory read transaction               |
+| `Completion`       | Generate a Completion transaction                |
+| `PartCompletion`   | Generate a partial completion transaction        |
 | `CfgWrite`         | Generate a configuration space write transaction |
-| `CfgRead`          | Generate a configuration space read transaction |
-| `IoWrite`          | Generate an IO write transaction |
-| `IoRead`           | Generate an IO read transaction |
-| `Message`          | Generation a message transaction |
+| `CfgRead`          | Generate a configuration space read transaction  |
+| `IoWrite`          | Generate an IO write transaction                 |
+| `IoRead`           | Generate an IO read transaction                  |
+| `Message`          | Generation a message transaction                 |
 
 The above functions are called with varying arguments (see the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) for details) and all have a 'digest' version (e.g. `MemWriteDigest`) which have an additional argument to select whether a digest (i.e. an ECRC) is generated or not, with the above functions defaulting to generating a digest. There are also 'delay' versions of the `Completion` and `PartCompletion` function which will not send out the packets immediately but after some delay as configured during the model initialisation.
 
 A user program can also wait for a completion to arrive, or a number of completions, with the `WaitForCompletion` and `WaitForCompletionN` functions.
 
-### Data Link Layer Packet Generation
+#### Data Link Layer Packet Generation
 
-| **API Function** | **Description** |
-|------------------|-------------|
-| `SendAck`          | Send an acknowledgement packet |
+| **API Function** | **Description**                      |
+|------------------|--------------------------------------|
+| `SendAck`          | Send an acknowledgement packet     |
 | `SendNak`          | Send an not-acknowledgement packet |
-| `SendFC`           | Send a flow control packet |
-| `SendPM`           | Send a power manegement packet |
-| `SendVendor`       | Send a vendor specific packet |
+| `SendFC`           | Send a flow control packet         |
+| `SendPM`           | Send a power manegement packet     |
+| `SendVendor`       | Send a vendor specific packet      |
 
-### Ordered Set Generation
+#### Ordered Set Generation
 
-| **API Function** | **Description** |
-|------------------|-------------|
-| `SendIdle`         | Send idle symbols on all active lanes |
-| `SendOs`           | Send an ordered set down all active lanes |
-| `SendTs`           | Send a training sequence ordered set on all active lanes| 
+| **API Function** | **Description**                                          |
+|------------------|----------------------------------------------------------|
+| `SendIdle`       | Send idle symbols on all active lanes                    |
+| `SendOs`         | Send an ordered set down all active lanes                |
+| `SendTs`         | Send a training sequence ordered set on all active lanes | 
 
 These functions generate ordered sets on the link lanes, with `SendTs` automatically generating lane numbers if not called to generate PAD. Internally the model keeps counts of the reception of training sequences on each lane and these can be read using the `ReadEventCount` function and, if required, the counts may be reset with `ResetEventCount`. To fetch the last training sequence processed on a given lane, the `GetTS` function can be used.
 
-### Internal Memory Access
+#### Internal Memory Access
 
-| **API Function** | **Description** |
-|------------------|-------------|
-| `WriteRamByte`   | Write a byte to internal memory |
-| `WriteRamWord`   | Write a 16-bit word to internal memory |
-| `WriteRamDWord`  | Write a 32-bit word to internal memory |
-| `ReadRamByte`    | Read a byte from internal memory |
-| `ReadRamWord`    | Read a 16-bit word from internal memory |
-| `ReadRamDWord`   | Read a 32-bit word from internal memory |
-| `WriteRamByteBlock` | Write a block of bytes to internal memory |
-| `ReadRamByteBlock` | Read a block of bytes from internal memory |
+| **API Function**    | **Description**                            |
+|---------------------|--------------------------------------------|
+| `WriteRamByte`      | Write a byte to internal memory            |
+| `WriteRamWord`      | Write a 16-bit word to internal memory     |
+| `WriteRamDWord`     | Write a 32-bit word to internal memory     |
+| `ReadRamByte`       | Read a byte from internal memory           |
+| `ReadRamWord`       | Read a 16-bit word from internal memory    |
+| `ReadRamDWord`      | Read a 32-bit word from internal memory    |
+| `WriteRamByteBlock` | Write a block of bytes to internal memory  |
+| `ReadRamByteBlock`  | Read a block of bytes from internal memory |
 
 The _pcievhost_ model has an internal sparse memory model which can support a full 64-bit address space. This is used as a target for received MemWr and MemRd transactions. As well as accessing this space via PCIe transactions, the memory model has its own API functions to do reads and writes of bytes, 16-bit words, and 32-bit words, as well as reading and writing of multiple byte blocks.
 
-### Internal Configuration Space Access
+#### Internal Configuration Space Access
 
-| **API Function** | **Description** |
-|------------------|-------------|
-| `WriteConfigSpace` | Write a 32-bit value to the configuration space |
-| `ReadConfigSpace`  | Write a 32-bit value from the configuration space |
+| **API Function**       | **Description**                                                                                      |
+|------------------------|------------------------------------------------------------------------------------------------------|
+| `WriteConfigSpace`     | Write a 32-bit value to the configuration space                                                      |
+| `ReadConfigSpace`      | Write a 32-bit value from the configuration space                                                    |
 | `WriteConfigSpaceMask` | Write a 32-bit mask value to the configuration space mask (bits set to 1 become read only over PCIe) |
-| `ReadConfigSpaceMask`  | Read a 32-bit value from the configuration space mask |
+| `ReadConfigSpaceMask`  | Read a 32-bit value from the configuration space mask                                                |
 
 If a _pcievhost_ is configured as an endpoint it then has an internal 4096 by 32-bit configuration memory. By default this is blank, but CfgWr and CfgRd transactions can access this space. To configure this space the `WriteConfigSpace` (and its `ReadConfigSpace` counterpart) can be used to set up an valid configuration space settings. A shadow mask memory is also available, which defaults to all 0s, to set any number of bits to be read only. There is a one-to-one correspondence to the main configuration memory, but if a mask bit is set, then the corresponding config space bit becomes read only when accessed over the link with CfgWr transactions. The mask memory is set using the `WriteConfigSpaceMask` and can be inspected with `ReadConfigSpaceMask`.
 
-### Receiving Data
+#### Receiving Data
 
 If a user callback function was registered when `InitialisePcie()` was called this will be invoked with any received packet that the model did not handle itself. The most common of these will be completion packets received for a memory or configuration read. When the callback is invoked the packet, via a point of type `pPkt_t` is passed in along with a status and, if a user pointer was passed in when registering the callback, this is also passed in.
 
@@ -361,7 +362,7 @@ These functions only provide enough functionality to go through an initialisatio
 
 All the hooks are in place for the other paths through the LTSSM, but these are not implemented and the LTSSM was never meant to be part of the _pcievhost_ model but provided as a guide to coding one and as a reference example. The DLL initialisation is simpler and there are no outstanding features for the implementation at this time. Again,this is demonstration and example code only.
 
-## C++ Support
+### C plus plus Support
 
 In addition to the C API functions described above, there is support for C++ via an API class, in `pcieModelClass.cpp`, called `pcieModelClass`, that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object. Note that the LTSSM model is implemented in separate source files (`ltssm.c` and `ltssm.h`) and the API for this (consisting of the `ConfigurePcieLtssm()` and `initLink()` functions) is not part of `pcieModeClass`.
 
@@ -531,14 +532,14 @@ Here the model is initialised, registering a user callback function (`VUserInput
 
 The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pcie_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
 
-| **Structure** | **Union** | **Description** |
-|---------------|-----------|-----------------|
-| `cfg_spc_type0_struct_t`          | `cfg_spc_type0_t` |Type 0 configuration space |
-| `cfg_spc_pcie_caps_struct_t`      | `cfg_spc_pcie_caps_t` | PCIe capabilities |
-| `cfg_spc_msi_caps_struct_t`       | `cfg_spc_msi_caps_t` | Message Signalled Interrupt cpabilities | 
-| `cfg_spc_pwr_mgmnt_caps_struct_t` | `cfg_spc_pwr_mgmnt_caps_t` | Power Management capabilities |
+| **Structure**                     | **Union**                   | **Description**                         |
+|-----------------------------------|-----------------------------|-----------------------------------------|
+| `cfg_spc_type0_struct_t`          | `cfg_spc_type0_t`           | Type 0 configuration space              |
+| `cfg_spc_pcie_caps_struct_t`      | `cfg_spc_pcie_caps_t`       | PCIe capabilities                       |
+| `cfg_spc_msi_caps_struct_t`       | `cfg_spc_msi_caps_t`        | Message Signalled Interrupt cpabilities | 
+| `cfg_spc_pwr_mgmnt_caps_struct_t` | `cfg_spc_pwr_mgmnt_caps_t`  | Power Management capabilities           |
 
-The individual fields of the structure can be filled in and then the word buffer used with `WriteConfigSpace` to update the model. The next session provides examples of their use.
+The individual fields of the structure can be filled in and then the word buffer used with `WriteConfigSpace` to update the model. The next section provides examples of their use.
 
 #### Setting Up the Configuration Space
 
