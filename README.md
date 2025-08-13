@@ -135,8 +135,7 @@ Properly programming and operating the Artix-7 FPGA on the SQRL board required t
 
 ### 1. Custom JTAG Cable
 
-The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the Xilinx Platform Cable USB. To overcome this, a custom adapter cable was created by splicing the original Xilinx programmer cable and connecting it to the board's pin header. The correct pin mapping is crucial for a successful connection.
-
+The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
 <table align="center" width="100%">
   <tr>
@@ -150,6 +149,19 @@ The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compat
     </td>
   </tr>
 </table>
+
+The connector on the board is a **Molex Pico-Lock 1.50mm pitch male header**. This is not a standard 2.54mm or 2.00mm header, so standard DuPont-style cables will not fit.
+
+To simplify making the cable, we highly recommend purchasing a pre-assembled cable with the correct female connector.
+
+*   **Recommended Part:** **[Molex 0369200603 on Digi-Key](https://www.digikey.com/en/products/detail/molex/0369200603/10233020)**
+
+This cable has the correct female connector on both ends. The easiest method is to **cut the cable in half**, which gives you two connector cables with open ends. You can then splice one of these cable ends onto the wires of your Xilinx programmer cable, matching the signals according to the following wiring diagram.
+
+<p align="center">
+  <img src="0.doc/pictures/acorn-jtag-wiring-diagram.PNG" style="width:90%; height:90%;">
+  <br><em>JTAG Connection Guide: Physical Pinout and Wiring Diagram.</em>
+</p>
 
 ### 2. External 12V Power Supply
 
