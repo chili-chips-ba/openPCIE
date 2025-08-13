@@ -24,6 +24,160 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 --------------------
 
 ## Hardware platform
+
+The hardware platform for this project is the **SQRL Acorn CLE-215+**, a versatile FPGA development board. Although originally designed as a crypto-accelerator, its powerful Artix-7 FPGA and modular design make it an excellent choice for general-purpose PCIe development.
+
+The system consists of two main components:
+
+*   **M.2 FPGA Module (Acorn CLE-215+):** This is the core of the system, a compact board in an M.2 form factor. It houses the **Xilinx Artix-7 XC7A200T FPGA** and is designed to be plugged into a standard M.2 M-key slot.
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <b>(a) M.2 FPGA Module (Top View)</b><br>
+      <img src="0.doc/pictures/M.2 FPGA Module (Top View).png" width="100%">
+    </td>
+    <td align="center">
+      <b>(b) M.2 FPGA Module (Bottom View)</b><br>
+      <img src="0.doc/pictures/M.2 FPGA Module (Bottom View).png" width="90%">
+    </td>
+  </tr>
+</table>
+
+
+*   **PCIe Adapter Board (Acorn Baseboard Mini):** A carrier board that holds the M.2 FPGA module. Its primary function is to adapt the M.2 interface to a standard **PCIe x4 edge connector**, allowing the entire assembly to be installed and tested in a regular PC motherboard slot.
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <b>(a) PCIe Adapter Board (Top View)</b><br>
+      <img src= "0.doc/pictures/PCIe Adapter Board (Top View).png" width="100%">
+    </td>
+    <td align="center">
+      <b>(b) PCIe Adapter Board (Bottom View)</b><br>
+      <img src="0.doc/pictures/PCIe Adapter Board (Bottom View).png" width="90%">
+    </td>
+  </tr>
+</table>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <b> The fully assembled Acorn CLE-215+ development board, ready for use in a PCIe slot.</b><br>
+      <img src="0.doc/pictures/The fully assembled Acorn CLE-215+.png" width="80%">
+    </td>
+  </tr>
+</table>
+
+It is important to note that the Acorn CLE-215+ is functionally identical to the more widely known NiteFury board, with the primary difference being the amount of onboard memory. The Acorn model features 1 GB of DDR3 RAM, while the standard NiteFury has 512 MB. Therefore, the [NiteFury schematic](https://github.com/chili-chips-ba/openPCIE/blob/main/0.doc/Reference-SCH/Schematic.FPGA-NiteFury.pdf) serves as a direct and accurate reference for the board's hardware layout.
+
+The central component of the SQRL Acorn CLE-215+ system is the **Xilinx Artix-7 XC7A200T-FBG484** chip. This FPGA is crucial for implementing the PCIe Endpoint functionality, possessing a range of features that make it highly suitable for this purpose.
+
+The key specifications are summarized below:
+
+<div align="center">
+  <table>
+    <thead>
+      <tr>
+        <th>Specification</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Family</td>
+        <td>Xilinx Artix-7</td>
+      </tr>
+      <tr>
+        <td>Speed Grade</td>
+        <td>-3</td>
+      </tr>
+      <tr>
+        <td>Logic Cells (LUT4-Equivalent)¹</td>
+        <td>215,360</td>
+      </tr>
+      <tr>
+        <td>LUT6</td>
+        <td>134,600</td>
+      </tr>
+      <tr>
+        <td>Flip-Flops</td>
+        <td>269,200</td>
+      </tr>
+      <tr>
+        <td>Block RAM</td>
+        <td>13 Mbit</td>
+      </tr>
+      <tr>
+        <td>DSP Slices</td>
+        <td>740</td>
+      </tr>
+      <tr>
+        <td>GTP Transceivers</td>
+        <td>4 (up to 6.6 Gbit/s)</td>
+      </tr>
+      <tr>
+        <td>DDR3 SDRAM (Board)</td>
+        <td>1 GB, 16-bit</td>
+      </tr>
+      <tr>
+        <td>QSPI Flash (Board)</td>
+        <td>32 MB</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><small>¹ The 'Logic Cells' count is a Xilinx metric derived from the physical 6-input LUTs to provide an estimated equivalent in simpler 4-input LUTs for comparison purposes. The number of physical LUTs and other resources are the exact counts for the XC7A200T chip.</small></p>
+</div>
+
+## Hardware Setup
+
+Properly programming and operating the Artix-7 FPGA on the SQRL board required two key hardware modifications.
+
+### 1. Custom JTAG Cable
+
+The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the Xilinx Platform Cable USB. To overcome this, a custom adapter cable was created by splicing the original Xilinx programmer cable and connecting it to the board's pin header. The correct pin mapping is crucial for a successful connection.
+
+
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="60%">
+      <b>Custom JTAG Cable connecting the Xilinx Programmer to the board</b><br>
+      <img src=0.doc/pictures/FPGA-JTAG.jpg style="max-width:90%; height:auto;">
+    </td>
+    <td align="center" width="30%">
+      <b>JTAG Connector Pinout on the Board</b><br>
+      <img src="0.doc/pictures/JTAG Connector Pinout on the Board.png" style="width:50%; height:50%;">
+    </td>
+  </tr>
+</table>
+
+### 2. External 12V Power Supply
+
+The board cannot be programmed or operated solely from the PCIe/M.2 slot power. It requires an external 12V supply to function correctly, especially when complex designs and high-speed transceivers are active. Power is provided via a standard 6-pin PCIe power connector from an ATX power supply.
+
+<p align="center">
+  <img src="0.doc/pictures/External 12V power connection.jpg" style="width:60%; height:60%;">
+  <br><em>External 12V power connection.</em>
+</p>
+
+### 3. Final Assembly
+
+The complete system, including the custom cabling, is mounted in a test PC chassis for verification.
+
+<p align="center">
+  <img src="0.doc/pictures/The complete FPGA system mounted in a PCIe slot.jpg" style="width:50%; height:50%;">
+  <br><em>The complete FPGA system mounted in a PCIe slot.</em>
+</p>
+
+### 4. Connection Verification
+
+After the hardware was prepared, the connection was verified using the **Vivado Hardware Manager**. As shown below, the tool successfully detected the JTAG programmer and identified the `xc7a200t_0` FPGA chip. This confirms that the physical connections are correct and the board is ready for programming.
+
+<p align="center">
+  <img src="0.doc/pictures/Successful device detection in Vivado Hardware Manager.png" style="width:40%; height:auto;">
+  <br><em>Successful device detection in Vivado Hardware Manager.</em>
+</p>
+
 #### References:
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
 - [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
@@ -143,10 +297,111 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 
 # SW Architecture
 - WIP
+# Implementation Workflow
+
+The design was implemented using the **Xilinx Vivado Design Suite**. The process follows a standard but critical workflow to ensure a functional PCIe Endpoint.
+
+**1. PCIe IP Core Generation**
+
+The foundation of the design is the PCIe Endpoint core, created using the Vivado **IP Generator**. This powerful tool abstracts the immense complexity of the PCIe protocol. Within the generator, all fundamental parameters are configured:
+*   Link settings (e.g., Lane Width, Max Speed).
+*   Device identifiers (Vendor ID, Device ID, Class Code).
+*   Base Address Register (BAR) memory space requirements.
+
+**2. Custom RTL Application Logic (Wrapper)**
+
+The generated IP core functions as a "black box" with a standard AXI4-Stream interface. To bring it to life, a custom RTL module (Verilog wrapper) was developed. This application logic is responsible for:
+*   Parsing incoming TLP packets from the host (e.g., Memory Read/Write requests).
+*   Handling the actual data access to the FPGA's internal Block RAM.
+*   Constructing and sending `Completion` TLP packets back to the host in response to read requests.
+
+**3. Physical Constraints (XDC File)**
+
+To map the logical design onto the physical FPGA chip, a manual **XDC (Xilinx Design Constraints) file** is crucial. This file is not automatically generated and serves as the bridge between RTL and the physical world. It must define:
+*   The precise pin locations on the FPGA for the PCIe differential pairs (TX/RX lanes).
+*   The pin location and timing characteristics of the reference clock.
+*   The location of the system reset signal.
 
 --------------------
 
 # Debug, Bringup, Testing
+
+After programming the FPGA with the generated bitstream, the system was tested in a real-world environment to verify its functionality. The verification process was conducted in three main stages.
+
+### 1. Device Enumeration
+
+The first and most fundamental test was to confirm that the host operating system could correctly detect and enumerate the FPGA as a PCIe device. This was successfully verified on both Windows and Linux.
+
+*   On **Windows**, the device appeared in the Device Manager, confirming that the system recognized the new hardware.
+*   On **Linux**, the `lspci` command was used to list all devices on the PCIe bus. The output clearly showed the Xilinx card with the correct Vendor and Device IDs, classified as a "Memory controller".
+
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="50%">
+      <b>Device detected in Windows Device Manager</b><br>
+      <img src="0.doc/pictures/Device detected in Windows Device Manager.png" style="max-width:90%; height:auto;">
+    </td>
+    <td align="center" width="50%">
+      <b>`lspci` output on Linux, identifying the device.</b><br>
+      <img src="0.doc/pictures/`lspci` output on Linux, identifying the device.png" style="width:100%; height:100%;">
+    </td>
+  </tr>
+</table>
+
+### 2. Advanced Setup for Low-Level Testing: PCI Passthrough
+
+While enumeration confirms device presence, directly testing read/write functionality required an isolated environment to prevent conflicts with the host OS. A Virtual Machine (VM) with **PCI Passthrough** was configured for this purpose.
+
+This step was non-trivial due to a common hardware issue: **IOMMU grouping**. The standard Linux kernel grouped our FPGA card with other critical system devices (like USB and SATA controllers), making it unsafe to pass it through directly.
+
+The solution involved a multi-step configuration of the host system:
+
+**1. BIOS/UEFI Configuration**
+
+The first step was to enable hardware virtualization support in the system's BIOS/UEFI:
+*   **AMD-V (SVM - Secure Virtual Machine Mode):** This option enables the core CPU virtualization extensions necessary for KVM.
+*   **IOMMU (Input-Output Memory Management Unit):** This is critical for securely isolating device memory. Enabling it is a prerequisite for VFIO and safe PCI passthrough.
+
+**2. Host OS Kernel and Boot Configuration**
+
+A standard Linux kernel was not sufficient due to the IOMMU grouping issue. To resolve this, the following steps were taken:
+*   **Install XanMod Kernel:** A custom kernel, **XanMod**, was installed because it includes the necessary **ACS Override patch**. This patch forces the kernel to break up problematic IOMMU groups.
+*   **Modify GRUB Boot Parameters:** The kernel's bootloader (GRUB) was configured to activate all required features on startup. The following parameters were added to the `GRUB_CMDLINE_LINUX_DEFAULT` line:
+    *   `amd_iommu=on`: Explicitly enables the IOMMU on AMD systems.
+    *   `pcie_acs_override=downstream,multifunction`: Activates the ACS patch to resolve the grouping problem.
+    *   `vfio-pci.ids=10ee:7014`: This crucial parameter instructs the VFIO driver to automatically claim our Xilinx device (Vendor ID `10ee`, Device ID `7014`) at boot, effectively hiding it from the host OS.
+
+**3. KVM Virtual Machine Setup**
+
+With the host system properly prepared, the final step was to assign the device to a KVM virtual machine using `virt-manager`. Thanks to the correct VFIO configuration, the Xilinx card appeared as an available "PCI Host Device" and was successfully passed through.
+
+This setup created a safe and controlled environment to perform direct, low-level memory operations on the FPGA without risking host system instability.
+
+### 3. Functional Verification: Direct Memory Read/Write
+
+With the FPGA passed through to the VM, the final test was to verify the end-to-end communication path. This was done using the `devmem2` utility to perform direct PIO (Programmed I/O) on the memory space mapped by the card's BAR0 register.
+
+The process was simple and effective:
+1.  The base physical address of BAR0 (e.g., `fc500000`) was identified using `lspci -v`.
+2.  A test value (`0xB`) was **written** to this base address.
+3.  The same address was immediately **read back**.
+
+<div align="center">
+  <table width="100%">
+    <tr>
+      <td align="center" width="50%">
+        <b>1. Writing a value (0xB) to the BAR0 address</b><br>
+        <img src="0.doc/pictures/Writing a value to the BAR0 address.png" style="max-width:90%; height:auto;">
+      </td>
+      <td align="center" width="50%">
+        <b>2. Reading back the value from the same address</b><br>
+        <img src="0.doc/pictures/Reading back the value from the same address.png" style="max-width:90%; height:auto;">
+      </td>
+    </tr>
+  </table>
+</div>
+
+The successful readback of the value `0xB` confirms that the entire communication chain is functional: from the user-space application, through the OS kernel and PCIe fabric, to the FPGA's internal memory and back.
 
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
