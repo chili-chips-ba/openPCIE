@@ -39,19 +39,19 @@ A Verilog module for the _pcievhost_ model is provided in a `pcieVHost.v` file i
 <img width=600 src="images/pcievhost_module.png">
 </p>
 
-The module's clock and reset must be synchronous (i.e. the reset originate from the  same clock domain) and the clock run at the PCIe raw bit rate $\div$ 5. So for GEN1 this is 500MHz (2000ps period) and GEN2 this is 1000MHz (1000ps period).
+The module's clock and reset must be synchronous (i.e. the reset originate from the same clock domain) and the clock run at the PCIe raw bit rate $\div$ 10. So for GEN1 this is 500MHz (2000ps period) and GEN2 this is 1000MHz (1000ps period).
 
-The model, by default, transfers 8b10b encoded data but the model can be configured in the software to generate unencoded and unscrambled data, where bits 7:0 are a byte value, and bit 8 is a 'K' symbol flag when set, and this must be done for the _openpcie2-rc_ project.
+The model, by default, transfers 8b10b encoded data but can be configured in the software to generate unencoded and unscrambled data, where bits 7:0 are a byte value, and bit 8 is a 'K' symbol flag when set, and this configuration must be done for the _openpcie2-rc_ project.
 
-The _pcieVHost_ component has three Parameters to configure the model. The first, `LinkWidth`, configures which lanes will be active and always starts from lane 0, defaulting to all 16 lanes. For _openpcie2-rc_, this is hardwired to 1 inside `pcieVHostPipex1`.  Note that the ports for the unused lanes are still present but can be left unconnected. The second parameter is `EndPoint`. This is used to enable endpoint features in the model and does so if set to a non-zero value, with 0 being the default setting. For _openpcie2-rc_, this shoild be set to 1. Finally the `NodeNum` parameter sets the node number of the internal _VProc_ component. Each instantiated _VProc_, whether part of a _pcievhost_ model, or not, must have a unique node number to associate itself with a particular user program. The default value for `NodeNum` is 8.
+The _pcieVHost_ component has three Parameters to configure the model. The first, `LinkWidth`, configures which lanes will be active and always starts from lane 0, defaulting to all 16 lanes. For _openpcie2-rc_, this is hardwired to 1 inside `pcieVHostPipex1`.  Note that the ports for the unused lanes are still present but can be left unconnected. The second parameter is `EndPoint`. This is used to enable endpoint features in the model and does so if set to a non-zero value, with 0 being the default setting. For _openpcie2-rc_, this should be set to 1. Finally the `NodeNum` parameter sets the node number of the internal _VProc_ component. Each instantiated _VProc_, whether part of a _pcievhost_ model, or not, must have a unique node number to associate itself with a particular user program. The default value for `NodeNum` is 8.
 
 More details of the `PcieVhost` HDL component can be found in the [_pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf).
 
 ## Link Traffic Display
 
-The _pcievhost_ model has the capability to display link traffic to the console that the simulation is runing in, with control over the level of detail available, including disbaling completely, and in which cycles it is turned on and off. It, by default, adds colour to distinguish between traffic flowing downstream from traffic flowing upstream.
+The _pcievhost_ model has the capability to display link traffic to the console that the simulation is runing in, with control over the level of detail available, including disabling completely, and in which cycles it is turned on and off. It, by default, adds colour to distinguish between traffic flowing downstream from traffic flowing upstream, though the model can be configureed to disable this when, for example, runing in a GUI that can't interpret these formatting codes.
 
- A `ContDisps.hex` configuration file will be read by the software from the local run directory. This allows control of displaying various PCIe layer data, from PHY, through DLL and TL, bit-mapped onto an 8 bit value. Each value is associated with a time stamp (in cycles) as to when the display value is enabled or not. A typical file looks like the following:
+ A `ContDisps.hex` configuration file will be read by the software from a `hex` directory, below the local run directory. This allows control of displaying various PCIe layer data, from PHY, through DLL and TL, bit-mapped onto an 8 bit value. Each value is associated with a _decimal_ time stamp (in cycles) as to when the display value is enabled or not. A typical file might look like the following:
 
 ```
 // Example ContDisps.hex file
@@ -89,13 +89,13 @@ The diagram below summarises the core PCIe model functionality, along with the c
 
 On the left of the diagram are the two user supplied functions. The `VUserMain`<i>n</i> function is the main entry point for user code and this has access to the [model's API](#user-api-summary). Optionally, a user callback function can be registered (`VUserInput` in the diagram) that gets called to with non-handled packets (e.g. read completions) that are received over the link.
 
-The Left column of boxes are the various API functions available, categorised by function. The first group generate TLP or DLLP packets that get queued, before being sent to `SendPacket`. The non-automatic sending of ACKs and NAKs bypass the queue and are sent straight to the `SendPacket` function. The `SendPacket` function itself sends its TLP or DLLP packets to the `codec` which scrambles and encodes the data and drives the output on the link.
+The left column of boxes are the various API functions available, categorised by function. The first group generate TLP or DLLP packets that get queued, before being sent to `SendPacket`. The non-automatic sending of ACKs and NAKs bypass the queue and are sent straight to the `SendPacket` function. The `SendPacket` function itself sends its TLP or DLLP packets to the `codec` which scrambles and encodes the data and drives the output on the link.
 
-The `codec` code also process input data, decoding and descrambling, passing on to `ExtractPhyInput`. Training sequences and other ordered set data is sent to `ProcessOs` whilst TLPs and DLLPs are sent to `ProcessInput`. The API can read received OS event counts from the `ProcessOs` function. `ProcessInput` has access to the internal memory for MemRd and MemWr TLPs and (not shown) the config space for CfgRd and CfgWr TLPs. It will automatically generate (valid) completions for reads and add to the queue. All other TLPs are sent to any registed user callback.
+The `codec` code also process input data, decoding and descrambling, passing on to `ExtractPhyInput`. Training sequences and other ordered set data is sent to `ProcessOs` whilst TLPs and DLLPs are sent to `ProcessInput`. The API can read received OS event counts from the `ProcessOs` function. `ProcessInput` has access to the internal memory for MemRd and MemWr TLPs and (for endpoints) the config space for CfgRd and CfgWr TLPs. It will automatically generate (valid) completions for reads and add to the queue. All other TLPs are sent to any registed user callback.
 
 ### User API Summary
 
-The _pcievhost_ model is a highly complex mode and the API is quite large to match this. This document can only summarise the main features and usage and reference to the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) _must_ be made for the finer details of argumets and usage. The information below refers to the low level C model's API but a C++ class (`pcieModelClass`) is also provided which wraps the functions up into class methods which are slightly easier to use.
+The _pcievhost_ model is a highly complex model and the API is quite large to match this. This document can only summarise the main features and usage and reference to the [_Pcievhost_ manual](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf) _must_ be made for the finer details of argumets and usage. The information below refers to the low level C model's API but a C++ class (`pcieModelClass`) is also provided which wraps the functions up into class methods which are slightly easier to use.
 
 #### Model Initialisation and Configuration
 
@@ -205,7 +205,7 @@ A user program can also wait for a completion to arrive, or a number of completi
 | `SendOs`         | Send an ordered set down all active lanes                |
 | `SendTs`         | Send a training sequence ordered set on all active lanes | 
 
-These functions generate ordered sets on the link lanes, with `SendTs` automatically generating lane numbers if not called to generate PAD. Internally the model keeps counts of the reception of training sequences on each lane and these can be read using the `ReadEventCount` function and, if required, the counts may be reset with `ResetEventCount`. To fetch the last training sequence processed on a given lane, the `GetTS` function can be used.
+These functions generate ordered sets on the link lanes, with `SendTs` automatically generating lane numbers if not called to generate `PAD`. Internally the model keeps counts of the reception of training sequences on each lane and these can be read using the `ReadEventCount` function and, if required, the counts may be reset with `ResetEventCount`. To fetch the last training sequence processed on a given lane, the `GetTS` function can be used.
 
 #### Internal Memory Access
 
