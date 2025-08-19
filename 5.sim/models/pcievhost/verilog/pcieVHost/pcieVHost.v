@@ -108,6 +108,15 @@ wire   [9:0] In [0:15];
            .Addr           (Addr),
            .WE             (WE),
            .RD             (RD),
+`ifdef VPROC_BYTE_ENABLE
+           .BE             (),
+`endif
+`ifdef VPROC_BURST_IF
+            .Burst         (),
+            .BurstFirst    (),
+            .BurstLast     (),
+
+`endif
            .DataOut        (DataOut),
            .DataIn         (DataIn),
            .WRAck          (WRAck),

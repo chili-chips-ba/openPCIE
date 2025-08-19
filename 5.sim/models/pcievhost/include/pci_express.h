@@ -48,6 +48,8 @@
 #define RV2                        0x19c // K28.4
 #define RV3                        0x1dc // K28.6
 
+#define SYMCTRLBIT                 0x100
+
 // Training sequence definitions
 #define TS1_ID                     0x4a
 #define TS2_ID                     0x45
@@ -85,6 +87,11 @@
 #define TL_CPLD                    0x4a // 1001010
 #define TL_CPLLK                   0x0b // 0001011
 #define TL_CPLDLK                  0x4b // 1001011
+
+// TLP type masks
+#define TL_TYPE_ADDR64             0x20
+#define TL_TYPE_WRITE              0x40
+#define TL_TYPE_MEMLOCK            0x01
 
 // DLLP types
 #define DL_ACK                     0x00
@@ -180,6 +187,8 @@
 #define CFG_BAR_LOCATABLE_32_BIT        0
 #define CFG_BAR_LOCATABLE_LT_1MB        1
 #define CFG_BAR_LOCATABLE_64_BIT        2
+#define CFG_BAR_LOCATABLE_MASK          0x6
+#define CFG_BAR_LOCATABLE_BIT_POS       0x1
 #define CFG_BAR_REGION_TYPE_IO          0
 #define CFG_BAR_REGION_TYPE_MEM         1
 #define CFG_BAR_NOT_PREFETCHABLE        0
@@ -189,6 +198,10 @@
 #define CFG_PCIE_CAPS_SIZE_BYTES        0x3C
 #define CFG_MSI_CAPS_SIZE_BYTES         0x18
 #define CFG_PWR_MGMT_CAPS_SIZE_BYTES    0x08
+
+#define PWRMGMTCAPTYPE                  0x01
+#define MSICAPTYPE                      0x05
+#define PCIECAPTYPE                     0x10
 
 typedef struct  __attribute__ ((__packed__)) {
     uint16_t vendor_id;

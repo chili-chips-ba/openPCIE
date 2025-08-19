@@ -204,35 +204,33 @@ This reflects the available models as detailed in the _Configuring ISS timing mo
 
 ## Building and Running Code
 
-A <tt>MakefileVProc.mk</tt> file is provided in the <tt>5.sim/</tt> directory to compile the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and to build and run the test bench HDL. The make file will compile all the user code or, where an ISS build is selected (see make file variables below) the provided `soc_cpu` user code that's the _rv32_ ISS integration software. By default, the make file will compile the <tt>VUserMain0.cpp</tt> user code for `soc_cpu` and `VUserMainPcie.cpp` for _pcieVHost__ located in <tt>5.sim/usercode</tt>, but the directory and list of files to compile can be specified on the command line (see below). The `VUserMainPcie.cpp` file contains the `VUserMain<n>` entry point for the instantiated _pcieVHost_ module (node 1). To alter which files to compile, the make file `USER_C` variable can be updated to list a set of C++ files for the `soc_cpu`. Similarly, the `PCIE_C` variable can be updated with a list of files for the PCie component. The location of the source files is in the variable `USRCODEDIR`, which may also be altered. Any modifications can be done to the make file itself, or on the command line. E.g., to add additional files to the `soc_cpu` build:
+A <tt>Makefile</tt> file is provided in the <tt>5.sim/</tt> directory to compile the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and to build and run the test bench HDL. The make file will compile all the user code or, where an ISS build is selected (see make file variables below) the provided `soc_cpu` user code that's the _rv32_ ISS integration software. By default, the make file will compile the <tt>VUserMain0.cpp</tt> user code for `soc_cpu` and `VUserMainPcie.cpp` for _pcieVHost__ located in <tt>5.sim/usercode</tt>, but the directory and list of files to compile can be specified on the command line (see below). The `VUserMainPcie.cpp` file contains the `VUserMain<n>` entry point for the instantiated _pcieVHost_ module (node 1). To alter which files to compile, the make file `USER_C` variable can be updated to list a set of C++ files for the `soc_cpu`. Similarly, the `PCIE_C` variable can be updated with a list of files for the PCie component. The location of the source files is in the variable `USRCODEDIR`, which may also be altered. Any modifications can be done to the make file itself, or on the command line. E.g., to add additional files to the `soc_cpu` build:
 
 ```
-make -f MakefileVProc.mk USER_C="VUserMain0.cpp MyTest1Class.cpp"
+make USER_C="VUserMain0.cpp MyTest1Class.cpp"
 ```
 
 If many variants of software build are required then either scripts can be constructed with the various command line variable modification calls to `make` or other make files which set these variables and call the common make file. This is useful in managing source code for multiple tests located in different directories, compiling for ISS (perhaps also calling the RISC-V application build), or for compiling application code natively which will have a different set of source files.
 
 The user software is compiled into a local static library, <tt>libuser.a</tt> which is linked to the simulation code within Verilator along with the precompiled <tt>libcosimlnx.a</tt> (or <tt>libcosimwin.a</tt> for MSYS2/mingw64 on Windows) located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc*. The headers for the *VProc* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openpcie2-rc_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
 
-The <tt>MakefileVProc.mk</tt> make file has a target <tt>help</tt>, which produces the following output:
+The <tt>Makefile</tt> make file has a target <tt>help</tt>, which produces the following output:
 
 ```
-make -f MakefileVProc.mk help          Display this message
-make -f MakefileVProc.mk               Build C/C++ and HDL code without running simulation
-make -f MakefileVProc.mk run           Build and run batch simulation
-make -f MakefileVProc.mk rungui/gui    Build and run GUI simulation
-make -f MakefileVProc.mk clean         clean previous build artefacts
+make help          Display this message
+make               Build C/C++ and HDL code without running simulation
+make run           Build and run batch simulation
+make rungui/gui    Build and run GUI simulation
+make clean         clean previous build artefacts
 
 Command line configurable variables:
   USER_C:       list of user source code files (default VUserMain0.cpp)
   PCIE_C:       list of user source code files (default VUserMainPcie.cpp)
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
-  TOPFILELIST:  RTL file list name (default top.filelist)
   SOCCPUMATCH:  string to match for soc_cpu filtering in h/w file list (default ip.cpu)
-  USRSIMOPTS:   additional simulator flags, such as setting generics (default blank)
+  USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
   BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
-  TIMEOUTUS:    Test bench timeout period in microseconds (default 15000)
 ```
 
 By default, without a named target, the simulation executable will be built but not run. With a <tt>run</tt> target, the simulation executable is built and then executed in batch mode. To fire up waveforms after the run, a target of <tt>rungui</tt> or <tt>gui</tt> can be used. A target of <tt>clean</tt> removes all intermediate files of previous compilations.
@@ -241,14 +239,12 @@ The make file has a set of variables (with default settings) that can be overrid
 
 The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. The _openpcie2-rc_ <tt>top.filelist</tt> filename can be overridden to allow multiple configurations to be selected from, if required. The processing of this file to remove the listed <tt>soc_cpu</tt> HDL files is selected on a pattern (<tt>ip.cpu</tt>) but this can be changed using <tt>SOCCPUMATCH</tt>. If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
 
-Control of when the simulation exits can be specified with the <tt>TIMEOUTUS</tt> variable in units of microseconds. Some example commands using the make file are shown below:
-
 ```
-make -f MakefileVProc.mk run                                                   # Build and run default VUserMain0.cpp code in usercode/
-make -f MakefileVProc.mk                                                       # Build but don't run default code
-make -f MakefileVProc.mk USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 run  # Build and run test1.cpp and subfuncs.cpp in test1/
-make -f MakefileVProc.mk BUILD=ISS gui                                         # Build and run ISS simulation and show waves
-make -f MakefileVProc.mk clean                                                 # Clean all intermediate files
+make run                                                   # Build and run default VUserMain0.cpp code in usercode/
+make                                                       # Build but don't run default code
+make USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 run  # Build and run test1.cpp and subfuncs.cpp in test1/
+make BUILD=ISS gui                                         # Build and run ISS simulation and show waves
+make clean                                                 # Clean all intermediate files
 ```
 
 ### Configuring ISS timing model
@@ -278,10 +274,17 @@ In this instance, the code is set to compile to use the MAFDC extensions (maths,
 ```
 vusermain0 -x 0x10000000 -X 0x20000000 -rEHRca -t ./models/rv32/riscvtest/main.bin
 ```
-This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output:
+This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed):
 
 ```
-$make -f MakefileVProc.mk BUILD=ISS run
+$make BUILD=ISS run
+
+   .
+   .
+   .
+ECHO is off.
+ECHO is off.
+
 ****** xsim v2023.2 (64-bit)
   **** SW Build 4029153 on Fri Oct 13 20:14:34 MDT 2023
   **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
@@ -289,12 +292,13 @@ $make -f MakefileVProc.mk BUILD=ISS run
     ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
     ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
 
-source xsim.dir/work.test/xsim_script.tcl
-# xsim {work.test} -autoloadwcfg -runall
+source xsim.dir/work.tb/xsim_script.tcl
+# xsim {work.tb} -autoloadwcfg -runall
 Time resolution is 1 ps
-open_wave_config {C:\git\vproc\test\work.test.wcfg}
-WARNING: Simulation object /test/restart was not found in the design.
 run -all
+VInit(0): initialising DPI-C interface
+  VProc version 1.13.2. Copyright (c) 2004-2025 Simon Southwell.
+
 
   ******************************
   *   Wyvern Semiconductors    *
@@ -340,11 +344,13 @@ CSR state:
   minstret   = 0x000000000000000b
   mtime      = 0x0006263f2bfc6bcf
   mtimecmp   = 0xffffffffffffffff
-$stop called at time : 200 ns : File "C:/git/openpcie/5.sim/tb.v" Line 234
+
+$finish called at time : 39217 ns : File "C:/git/openpcie/5.sim/models/pcievhost/verilog/pcieVHost/pcieVHost.v" Line 209
 exit
-INFO: [Common 17-206] Exiting xsim at Sun Aug 17 11:25:20 2025...
+INFO: [Common 17-206] Exiting xsim at Tue Aug 19 16:03:05 2025...
 
 ```
+
 Note that the disassembled output is a mixture of 32-bit and compressed 16-bit instructions, with the compressed instruction hexadecimal values shown followed by a <tt>'</tt> character and the instruction heximadecimal value in the lower 16-bits. Unlike for the native compiled code use cases, unless the HDL has changed, the test bench does not need to be re-built when the RISC-V source code is changed or a different binary is to be run, just the RISC-V code is re-compiled or the <tt>vusermain.cfg</tt> updated to point to a different binary file.
 
 ### PicoRV32 RTL-Only Simulation Makefile

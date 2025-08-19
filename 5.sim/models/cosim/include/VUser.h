@@ -2,7 +2,7 @@
 //
 // VUser.h                                            Date: 2005/01/10
 //
-// Copyright (c) 2005-2024 Simon Southwell.
+// Copyright (c) 2005-2025 Simon Southwell.
 //
 // This file is part of VProc.
 //
@@ -29,9 +29,6 @@
 
 #define DELTA_CYCLE     -1
 #define GO_TO_SLEEP     0x7fffffff
-
-#define MAX_INT_LEVEL   7
-#define MIN_INT_LEVEL   1
 
 #define MAXBURSTLEN     4096
 
@@ -75,9 +72,6 @@ extern int  VTick         (const unsigned      ticks, const unsigned  node);
 extern void VRegUser      (const pVUserCB_t    func,  const unsigned  node);
 extern void VRegIrq       (const pVUserIrqCB_t func,  const unsigned  node);
 
-// *** Deprecated in favour of VRegIrq ***/
-extern void VRegInterrupt (const int           level, const pVUserInt_t  func, const unsigned node);
-
 // Internal function for Python interface
 extern void VRegIrqPy     (const pPyIrqCB_t    func,  const unsigned  node);
 
@@ -97,6 +91,6 @@ extern int  VUser         (const unsigned   node);
 #endif
 
 // Pointer to VUserMain function type definition
-typedef void (*pVUserMain_t)(void);
+typedef void (*pVUserMain_t)(int node);
 
 #endif
