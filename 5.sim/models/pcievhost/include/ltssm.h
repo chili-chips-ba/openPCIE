@@ -1,6 +1,6 @@
 //=============================================================
 // 
-// Copyright (c) 2016 Simon Southwell. All rights reserved.
+// Copyright (c) 2016 - 2025 Simon Southwell. All rights reserved.
 //
 // Date: 20th Sep 2016
 //
@@ -23,10 +23,38 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "pcie.h"
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+#define EXTERN extern "C"
+#else
+#define EXTERN extern
+#endif
+
 #ifndef _LTSSM_H_
 #define _LTSSM_H_
 
 #define LINK_INIT_NO_CHANGE  (-1)
+
+# ifndef PCIENOFORMAT
+
+#define FMT_NORMAL              "\033[0m"
+#define FMT_RED                 "\033[31m"
+
+#else
+
+#define FMT_NORMAL              ""
+#define FMT_RED                 ""
+
+#endif
 
 typedef struct
 {
@@ -36,18 +64,23 @@ typedef struct
     int ltssm_detect_quiet_to;
     int ltssm_enable_tests;
     int ltssm_force_tests;
+    int ltssm_poll_active_tx_count;
 
 } ConfigLinkInit_t;
 
 #define INIT_CFG_LINK_STRUCT(_cfg) {                  \
-  (_cfg).ltssm_linknum         = LINK_INIT_NO_CHANGE; \
-  (_cfg).ltssm_n_fts           = LINK_INIT_NO_CHANGE; \
-  (_cfg).ltssm_ts_ctl          = LINK_INIT_NO_CHANGE; \
-  (_cfg).ltssm_detect_quiet_to = LINK_INIT_NO_CHANGE; \
-  (_cfg).ltssm_enable_tests    = LINK_INIT_NO_CHANGE; \
-  (_cfg).ltssm_force_tests     = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_linknum              = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_n_fts                = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_ts_ctl               = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_detect_quiet_to      = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_enable_tests         = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_force_tests          = LINK_INIT_NO_CHANGE; \
+  (_cfg).ltssm_poll_active_tx_count = LINK_INIT_NO_CHANGE; \
 }
 
-extern void ConfigLinkInit (const ConfigLinkInit_t cfg, const int node);
+// Link initialisation
+EXTERN void InitLink             (const int linkwidth,         const int node);
+EXTERN void ConfigLinkInit       (const ConfigLinkInit_t cfg,  const int node);
+EXTERN void ConfigurePcieLtssm   (const config_t         type, const int value, const int node);
 
 #endif

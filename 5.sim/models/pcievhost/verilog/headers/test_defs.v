@@ -25,7 +25,7 @@
 `define __TEST_DEFS_V_
 
 // Absolute path to fatal error task
-`define fatal test.Fatal;
+`define fatal tb.Fatal;
 
 //-------------------------------------------------------------
 // The following can be overridden on the compile command line.
