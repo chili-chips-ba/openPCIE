@@ -16,20 +16,83 @@ Our long-term goal is to set the stage for the development of full opensource PC
 
 This first phase is about implementing an open source PCIE Root Complex (RC) for Artix7 FPGA, utilizing Xilinx Series7 PCIE HM and GTP IP blocks, along with their low-jitter PLL.
 
---------------------
-
 #### References
 - [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
 
 --------------------
 
-## Hardware platform
+# Project Status
 
+#### `PART 1. Mini PCIE Backplane PCB`
+
+Almost all consumer PCIE installations have the RC chip soldered down on the motherboard, typically embodied in the CPU or "North Bridge" ASIC, where PCIE connectors are used solely for the EP cards. Similarly, all FPGA boards on the market are designed for EP applications. As such, they expect clock, reset and a few other signals from the infrastructure. It is only the professional and military-grade electronics that may have both RC and EP functions on add-on cards, with a backplane or mid-plane connecting them (see VPX chassis, or VITA 46.4).
+
+This dev activity is about creating the minimal PCIE infrastructure necessary for using a plethora of ready-made FPGA EP cards as a Root Complex. This infrastructure takes the physical form of a mini backplane that provides the necessary PCIE context similarly to what a typical motherboard would give, but without a soldered-down RC chip that would be conflicting with our own FPGA RC node.
+
+Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
+
+ - [x] Create requirements document.
+ - [x] Select components. Schematic and PCB layout design.
+ - [ ] Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
+ - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
+ - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
+
+#### `PART 2. Project setup and preparatory activities`
+ - [x] Procure FPGA development boards and PCIE accessories.
+ - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
+ 
+#### `PART 3. Initial HW/SW implementation`
+ - [ ] HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
+ - [ ] SW development of opensource driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
+ - [ ] Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
+
+#### `PART 4. HW/SW co-simulation using full PCIE EP model`
+
+This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
+
+Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE model. The PCIE model has some EP capabilities with a configurtable configurations space, which can be paired in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
+
+With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
+
+ - [x] Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
+ - [ ] Testbench development and build up. Execution and debug of sim testcases.
+ - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
+ 
+#### `PART 5. Integration, testing and iterative design refinements`
+ - [ ] One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
+ 
+#### `PART 6. Prepare Demo and port it to openXC7`
+
+ - [ ] Develop our opensource PIO TestApp software and representative Demo.
+ - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
+
+Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
+
+
+--------------------
+
+# HW Architecture
+
+#### References:
+- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
+- [Regymm PCIE](https://github.com/regymm/pcie_7x)
+- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
+- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
+- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
+- [XIlinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
+- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+
+## FPGA hardware platform
+
+#### References:
+- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
+  
 The hardware platform for this project is the **SQRL Acorn CLE-215+**, a versatile FPGA development board. Although originally designed as a crypto-accelerator, its powerful Artix-7 FPGA and modular design make it an excellent choice for general-purpose PCIe development.
 
 The system consists of two main components:
 
-*   **M.2 FPGA Module (Acorn CLE-215+):** This is the core of the system, a compact board in an M.2 form factor. It houses the **Xilinx Artix-7 XC7A200T FPGA** and is designed to be plugged into a standard M.2 M-key slot.
+*  **M.2 FPGA Module (Acorn CLE-215+):** This is the core of the system, a compact board in an M.2 form factor. It houses the **Xilinx Artix-7 XC7A200T FPGA** and is designed to be plugged into a standard M.2 M-key slot.
 
 <table align="center">
   <tr>
@@ -45,7 +108,7 @@ The system consists of two main components:
 </table>
 
 
-*   **PCIe Adapter Board (Acorn Baseboard Mini):** A carrier board that holds the M.2 FPGA module. Its primary function is to adapt the M.2 interface to a standard **PCIe x4 edge connector**, allowing the entire assembly to be installed and tested in a regular PC motherboard slot.
+*  **PCIe Adapter Board (Acorn Baseboard Mini):** A carrier board that holds the M.2 FPGA module. Its primary function is to adapt the M.2 interface to a standard **PCIe x4 edge connector**, allowing the entire assembly to be installed and tested in a regular PC motherboard slot.
 
 <table align="center">
   <tr>
@@ -129,11 +192,11 @@ The key specifications are summarized below:
   <p><small>¹ The 'Logic Cells' count is a Xilinx metric derived from the physical 6-input LUTs to provide an estimated equivalent in simpler 4-input LUTs for comparison purposes. The number of physical LUTs and other resources are the exact counts for the XC7A200T chip.</small></p>
 </div>
 
-## Hardware Setup
+### FPGA Board Setup
 
 Properly programming and operating the Artix-7 FPGA on the SQRL board required two key hardware modifications.
 
-### 1. Custom JTAG Cable
+#### 1. Custom JTAG Cable
 
 The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
@@ -163,7 +226,7 @@ This cable has the correct female connector on both ends. The easiest method is 
   <br><em>JTAG Connection Guide: Physical Pinout and Wiring Diagram.</em>
 </p>
 
-### 2. External 12V Power Supply
+#### 2. External 12V Power Supply
 
 The board cannot be programmed or operated solely from the PCIe/M.2 slot power. It requires an external 12V supply to function correctly, especially when complex designs and high-speed transceivers are active. Power is provided via a standard 6-pin PCIe power connector from an ATX power supply.
 
@@ -172,7 +235,7 @@ The board cannot be programmed or operated solely from the PCIe/M.2 slot power. 
   <br><em>External 12V power connection.</em>
 </p>
 
-### 3. Final Assembly
+#### 3. Final Assembly
 
 The complete system, including the custom cabling, is mounted in a test PC chassis for verification.
 
@@ -181,7 +244,7 @@ The complete system, including the custom cabling, is mounted in a test PC chass
   <br><em>The complete FPGA system mounted in a PCIe slot.</em>
 </p>
 
-### 4. Connection Verification
+#### 4. Connection Verification
 
 After the hardware was prepared, the connection was verified using the **Vivado Hardware Manager**. As shown below, the tool successfully detected the JTAG programmer and identified the `xc7a200t_0` FPGA chip. This confirms that the physical connections are correct and the board is ready for programming.
 
@@ -190,85 +253,17 @@ After the hardware was prepared, the connection was verified using the **Vivado 
   <br><em>Successful device detection in Vivado Hardware Manager.</em>
 </p>
 
-#### References:
-- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
-
-#### Backplane Block Diagram
+--------------------
+### Backplane PCB
 
 <p align="center" width="100%">
     <img width="80%" src="0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
 </p>
 
-
---------------------
-
-# Project Status
-
-#### `PART 1. Mini PCIE Backplane PCB`
-
-Almost all consumer PCIE installations have the RC chip soldered down on the motherboard, typically embodied in the CPU or "North Bridge" ASIC, where PCIE connectors are used solely for the EP cards. Similarly, all FPGA boards on the market are designed for EP applications. As such, they expect clock, reset and a few other signals from the infrastructure. It is only the professional and military-grade electronics that may have both RC and EP functions on add-on cards, with a backplane or mid-plane connecting them (see VPX chassis, or VITA 46.4).
-
-This dev activity is about creating the minimal PCIE infrastructure necessary for using a plethora of ready-made FPGA EP cards as a Root Complex. This infrastructure takes the physical form of a mini backplane that provides the necessary PCIE context similarly to what a typical motherboard would give, but without a soldered-down RC chip that would be conflicting with our own FPGA RC node.
-
-Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
-
- - [x] Create requirements document.
- - [x] Select components. Schematic and PCB layout design.
- - [ ] Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
- - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
- - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
-
-#### `PART 2. Project setup and preparatory activities`
- - [x] Procure FPGA development boards and PCIE accessories.
- - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
- 
-#### `PART 3. Initial HW/SW implementation`
- - [ ] HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
- - [ ] SW development of opensource driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
- - [ ] Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
-
-#### `PART 4. HW/SW co-simulation using full PCIE EP model`
-
-This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
-
-Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE model. The PCIE model has some EP capabilities with a configurtable configurations space, which can be paired in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
-
-With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
-
- - [x] Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
- - [ ] Testbench development and build up. Execution and debug of sim testcases.
- - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
- 
-#### `PART 5. Integration, testing and iterative design refinements`
- - [ ] One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
- 
-#### `PART 6. Prepare Demo and port it to openXC7`
-
- - [ ] Develop our opensource PIO TestApp software and representative Demo.
- - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
-
-Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
-
---------------------
-
-# Backplane PCB Design
-- WIP
-
---------------------
-
-# HW Architecture
-
 #### References:
-- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
-- [Regymm PCIE](https://github.com/regymm/pcie_7x)
-- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
-- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
-- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
-- [XIlinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
-- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+- [AntMicro EMS Sim](https://antmicro.com/blog/2025/07/recent-improvements-to-antmicros-signal-integrity-simulation-flow)
+- [openEMS](https://docs.openems.de)
 
-  
 --------------------
 
 # TB/Sim Architecture
@@ -301,7 +296,6 @@ The Wireguard control and status register harware abstraction layer (HAL) softwa
 
 More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file.
   
-
 #### References
 - [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
 
@@ -309,6 +303,8 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 
 # SW Architecture
 - WIP
+
+--------------------
 # Implementation Workflow
 
 The design was implemented using the **Xilinx Vivado Design Suite**. The process follows a standard but critical workflow to ensure a functional PCIe Endpoint.
