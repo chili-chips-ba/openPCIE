@@ -162,6 +162,7 @@ The following table shows the valid configuration `type` settings and expected `
 | CONFIG_LTSSM_POLL_ACTIVE_TO_COUNT†† |  yes    | cycles    | Polling active TX count (default 16/1024, depending if `LTSSM_ABBREVIATED` defined or not)|
 | CONFIG_LTSSM_ENABLE_TESTS††         |  yes    | bit mask  | Enable LTSSM test exceptions (default 0)                                                  |
 | CONFIG_LTSSM_FORCE_TESTS††          |  yes    | bit mask  | Force LTSSM test exceptions (default 0)                                                   |
+| CONFIG_LTSSM_DISABLE_DISP_STATE††   |  yes    | integer   | Disable display of LTSSM state to console (default 0 = display state)                     |
 
 †† Call before calling `InitLink()` to take effect in training sequences.
 

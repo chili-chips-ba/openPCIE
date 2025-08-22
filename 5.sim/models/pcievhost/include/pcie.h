@@ -61,7 +61,7 @@
 
 #define PCIE_MAJOR_VER                    1
 #define PCIE_MINOR_VER                    5
-#define PCIE_PATCH_VER                    11
+#define PCIE_PATCH_VER                    14
 
 // Used in macros
 #define BYTE_MASK                         0xff
@@ -448,7 +448,9 @@ enum config_e {
     CONFIG_DISABLE_DISPLINK_COLOUR,
     CONFIG_ENABLE_DISPLINK_COLOUR,
 
-    CONFIG_DISP_BCK_NODE_NUM
+    CONFIG_DISP_BCK_NODE_NUM,
+
+    CONFIG_LTSSM_DISABLE_DISP_STATE
 };
 
 typedef enum config_e config_t;
