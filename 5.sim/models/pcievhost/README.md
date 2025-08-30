@@ -57,17 +57,19 @@ The _pcievhost_ model has the capability to display link traffic to the console 
 // Example ContDisps.hex file
 // Copy to the appropriate test/hex directory, and edit as necessary.
 //                      +8              +4              +2              +1
-//  ,---> 11 - 8:    Unused             DispSwEnIfEp   DispSwEnIfRc    DispSwTx
+//  ,---> 11 - 8:    DispSwNoColour     DispSwEnIfEp   DispSwEnIfRc    DispSwTx
 //  |,-->  7 - 4:    DispRawSym         DispPL         DispDL          DispTL
-//  ||,->  3 - 0:    Unused             Unused         Unused          DispAll
+//  ||,->  3 - 0:    Unused             DispStop       DispFinish      DispAll
 //  ||| ,-> Time (clock cycles, decimal)
 //  ||| |                          
     370 000000000000
     002 009999999999
 ```
-The file has two numbers on each active line, with the first hex number being the control values and the second a <u>decimal</u> value timestamp (in clock cycles) when the control should become active. For the controls, the top nibble controls enabling output for Endpoint and Root Complex links separately to allow for co-existence with other extenal link displays. So, bits 10 and 9 enable display if an endpoint end or root-complex end model respectively. By default, only received traffic is displayed but, if no other external traffic display is available, then transmitted data can be displayed if bit 8 is set.
+The file has two numbers on each active line, with the first hex number being the control values and the second a <u>decimal</u> value timestamp (in clock cycles) when the control should become active. For the controls, the top nibble controls enabling output for Endpoint and Root Complex links separately to allow for co-existence with other extenal link displays. So, bit 11 controls the colour formatting by enabling (when 0) or disabling (when 1). Disabling the formatting is useful if the output is sent to a simulator's GUI console which may not support the colour encoding and messes up the output. Bits 10 and 9 enable display if an endpoint end or root-complex end model respectively. By default, only received traffic is displayed but, if no other external traffic display is available, then transmitted data can be displayed if bit 8 is set.
 
 The level of detail to display is controlled by bits 4 to 7. The bit 7 can enable display of raw data link data, without any processing, though generates a lot of output and is hard to interpret. Bits 6 dow to 4 control formatted output for the three main levels of PCIe traffic; namely physical, data link and transactions layers, bits 6 down to 4 controlling these respectively. The display will automatically indent higher layers if lower layers are enabled to allow easy distinguishing of the output.
+
+The lowest nibble has some simulator control in bits 1 and 2, to either stop the simulation (without exiting) or finish the simulation (end and close). Bit 0 is a 'force all' control to display all layers of the link traffic, regardless of the other settings.
 
 A fragment of some link display output, using the `ContDisps.hex` file example above, is shown in the diagram below:
 
