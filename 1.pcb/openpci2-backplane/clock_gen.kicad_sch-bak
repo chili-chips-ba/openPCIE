@@ -207,6 +207,179 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "74xGxx:74LVC1G125"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -10.16 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "74LVC1G125"
+				(at 2.54 -7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.ti.com/lit/ds/symlink/sn74lvc1g125.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Single Buffer Gate Tri-State, Low-Voltage CMOS"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "Single Gate Buff Tri-State LVC CMOS"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23* Texas?R-PDSO-G5?DCK* Texas?R-PDSO-N5?DRL* Texas?X2SON*0.8x0.8mm*P0.48mm*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "74LVC1G125_0_1"
+				(polyline
+					(pts
+						(xy -7.62 6.35) (xy -7.62 -6.35) (xy 5.08 0) (xy -7.62 6.35)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "74LVC1G125_1_1"
+				(pin input line
+					(at -15.24 0 0)
+					(length 7.62)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -5.08 10.16 270)
+					(length 5.08)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -5.08 -10.16 90)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input inverted
+					(at 0 10.16 270)
+					(length 7.62)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin tri_state line
+					(at 12.7 0 180)
+					(length 7.62)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector:Conn_Coaxial"
 			(pin_names
 				(offset 1.016)
@@ -5088,17 +5261,6 @@
 		)
 		(uuid "0624fff5-71ab-4216-96e9-83047022a2bf")
 	)
-	(text "Reset asserts when SENSE pin \nvoltage drops below 0.405V.\n"
-		(exclude_from_sim no)
-		(at 46.99 155.194 0)
-		(effects
-			(font
-				(size 1.016 1.016)
-				(color 0 0 132 1)
-			)
-		)
-		(uuid "1569c3b2-ccf4-4ad4-a397-0e7d9c6924d7")
-	)
 	(text "max. 30A"
 		(exclude_from_sim no)
 		(at 116.84 54.61 0)
@@ -5160,7 +5322,7 @@
 	)
 	(text "Voltage Supervisor, Manual Reset and Reset fanout"
 		(exclude_from_sim no)
-		(at 72.39 136.398 0)
+		(at 14.986 135.89 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -5169,17 +5331,6 @@
 			(justify left bottom)
 		)
 		(uuid "ca06b7f6-d93a-4500-a007-48bf0e0be577")
-	)
-	(text "Reset asserts when +12V input drops below ~10.73V."
-		(exclude_from_sim no)
-		(at 35.56 134.874 0)
-		(effects
-			(font
-				(size 1.016 1.016)
-				(color 0 0 132 1)
-			)
-		)
-		(uuid "d9a47aaf-13da-4543-a671-86683d34abd9")
 	)
 	(text "max. 500mA"
 		(exclude_from_sim no)
@@ -5486,6 +5637,12 @@
 		(uuid "4fd40ca5-0c97-4e02-afb7-d5016c11b28b")
 	)
 	(junction
+		(at 40.64 173.99)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "511326fe-4282-451a-abd9-c33904523d23")
+	)
+	(junction
 		(at 154.94 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5550,6 +5707,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "63b2778a-17fe-4ea8-926a-7888aa93f2a2")
+	)
+	(junction
+		(at 54.61 160.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "64fdb9f0-920b-433b-934e-4b06fe58afc3")
 	)
 	(junction
 		(at 203.2 93.98)
@@ -5888,12 +6051,6 @@
 		(uuid "cdace54d-de1c-4831-8cfd-155ea87275bc")
 	)
 	(junction
-		(at 54.61 160.02)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "cfcff124-c1a1-44c2-b189-ceb5be33bce3")
-	)
-	(junction
 		(at 53.34 55.88)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6012,12 +6169,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "fd4fef04-4fd5-4087-aff7-964a51394d0c")
-	)
-	(junction
-		(at 22.86 181.61)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "fe9e5476-2e4b-473b-892a-4a9d33935ce0")
 	)
 	(no_connect
 		(at 236.22 119.38)
@@ -6425,16 +6576,6 @@
 	)
 	(wire
 		(pts
-			(xy 20.32 181.61) (xy 22.86 181.61)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "10179ce5-4167-4a65-b3c4-c5f995f360f2")
-	)
-	(wire
-		(pts
 			(xy 93.98 66.04) (xy 93.98 71.12)
 		)
 		(stroke
@@ -6794,7 +6935,7 @@
 	)
 	(wire
 		(pts
-			(xy 30.48 160.02) (xy 54.61 160.02)
+			(xy 54.61 160.02) (xy 59.69 160.02)
 		)
 		(stroke
 			(width 0)
@@ -6811,16 +6952,6 @@
 			(type default)
 		)
 		(uuid "1c348d56-d2f6-4055-ae7a-992b3be9a33b")
-	)
-	(wire
-		(pts
-			(xy 54.61 160.02) (xy 59.69 160.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c5f7987-ea84-40dc-88a1-3601aa82b708")
 	)
 	(wire
 		(pts
@@ -7232,6 +7363,16 @@
 			(type default)
 		)
 		(uuid "31266050-f4e5-49f8-b002-9f2752b06e11")
+	)
+	(wire
+		(pts
+			(xy 53.34 185.42) (xy 54.61 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "31f59aca-9051-4b2c-ace0-7a4afa6a7d3e")
 	)
 	(polyline
 		(pts
@@ -8366,6 +8507,16 @@
 	)
 	(wire
 		(pts
+			(xy 40.64 172.72) (xy 40.64 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "61896b06-6e85-499c-96fc-6eaee74d9148")
+	)
+	(wire
+		(pts
 			(xy 175.26 119.38) (xy 175.26 121.92)
 		)
 		(stroke
@@ -9271,6 +9422,16 @@
 	)
 	(wire
 		(pts
+			(xy 30.48 160.02) (xy 54.61 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8cdc994a-3ac2-46b6-8059-ecd943243372")
+	)
+	(wire
+		(pts
 			(xy 236.22 76.2) (xy 261.62 76.2)
 		)
 		(stroke
@@ -9362,6 +9523,16 @@
 	)
 	(wire
 		(pts
+			(xy 40.64 173.99) (xy 41.91 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8fc22957-e7de-4cf6-951d-dda6624a1e15")
+	)
+	(wire
+		(pts
 			(xy 139.7 172.72) (xy 144.78 172.72)
 		)
 		(stroke
@@ -9369,6 +9540,16 @@
 			(type default)
 		)
 		(uuid "902b7258-7060-4e6c-a2ce-4a63e2e44474")
+	)
+	(wire
+		(pts
+			(xy 24.13 185.42) (xy 25.4 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "90a31d54-ec93-4481-9c1d-8a0cee80fb45")
 	)
 	(wire
 		(pts
@@ -9450,6 +9631,16 @@
 			(type default)
 		)
 		(uuid "94d6895f-9152-4ac5-8c47-e699c248af76")
+	)
+	(wire
+		(pts
+			(xy 54.61 160.02) (xy 54.61 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "955f2d98-fdff-4254-9068-3e3dfa1683ea")
 	)
 	(polyline
 		(pts
@@ -9552,6 +9743,16 @@
 			(type default)
 		)
 		(uuid "99514952-ae6e-4180-8448-421ab73470ee")
+	)
+	(wire
+		(pts
+			(xy 40.64 173.99) (xy 40.64 175.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "99875ed6-0d90-4f62-bba4-11520832d6d9")
 	)
 	(wire
 		(pts
@@ -9765,16 +9966,6 @@
 			(type default)
 		)
 		(uuid "a237f12e-a45d-4218-9942-dbbd9dc05c33")
-	)
-	(wire
-		(pts
-			(xy 24.13 193.04) (xy 22.86 193.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2bd23cf-2983-439e-9e1f-cfa9971143ba")
 	)
 	(wire
 		(pts
@@ -10034,16 +10225,6 @@
 			(type default)
 		)
 		(uuid "ab232d21-4b56-4837-87ba-8cdf878cabb7")
-	)
-	(wire
-		(pts
-			(xy 22.86 181.61) (xy 26.67 181.61)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ab899719-4dc8-4204-984c-5d1ea8d65562")
 	)
 	(wire
 		(pts
@@ -11649,6 +11830,16 @@
 	)
 	(wire
 		(pts
+			(xy 52.07 172.72) (xy 52.07 173.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f81dff72-07fb-471a-8ffa-92c8fff3d413")
+	)
+	(wire
+		(pts
 			(xy 116.84 157.48) (xy 116.84 160.02)
 		)
 		(stroke
@@ -11677,16 +11868,6 @@
 			(color 132 0 132 1)
 		)
 		(uuid "f96a1f06-50d7-4f52-ade8-dca8a18fa550")
-	)
-	(wire
-		(pts
-			(xy 54.61 160.02) (xy 54.61 181.61)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fa4eec48-f6fb-4b28-861f-5785780897dc")
 	)
 	(wire
 		(pts
@@ -11769,16 +11950,6 @@
 			(type default)
 		)
 		(uuid "fd9012c0-e0d9-44cb-9d5a-a29f730d26c1")
-	)
-	(wire
-		(pts
-			(xy 22.86 193.04) (xy 22.86 191.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fdc58641-5480-4730-9a33-afecb4a0733d")
 	)
 	(wire
 		(pts
@@ -13074,22 +13245,22 @@
 	)
 	(global_label "~{RPI_RST}"
 		(shape input)
-		(at 20.32 181.61 180)
+		(at 40.64 172.72 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
 				(size 0.889 0.889)
 			)
-			(justify right)
+			(justify left)
 		)
 		(uuid "6776158e-917a-4d02-bca2-b4ab462c9387")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 12.9389 181.61 0)
+			(at 40.64 165.3389 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -13522,7 +13693,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 114.3 73.66 0)
 			(effects
 				(font
@@ -13531,7 +13702,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 114.3 73.66 0)
 			(effects
 				(font
@@ -13618,7 +13789,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 175.26 137.16 0)
 			(effects
 				(font
@@ -13627,7 +13798,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 172.974 139.446 0)
 			(effects
 				(font
@@ -13837,7 +14008,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 160.02 116.84 0)
 			(effects
 				(font
@@ -13846,7 +14017,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 157.48 119.126 0)
 			(effects
 				(font
@@ -13961,7 +14132,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 264.16 130.81 0)
 			(effects
 				(font
@@ -14039,7 +14210,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 152.4 38.1 0)
 			(effects
 				(font
@@ -14066,7 +14237,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "RMCF0603FT33K0CT-ND"
+		(property "DigiKey" "13-RC0603FR-1333KLCT-ND"
 			(at 152.4 38.1 0)
 			(effects
 				(font
@@ -14371,7 +14542,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "445-5146-1-ND"
+		(property "DigiKey" "1276-1184-1-ND"
 			(at 198.12 137.16 0)
 			(effects
 				(font
@@ -14380,7 +14551,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "CL10B105KA8NNWC"
 			(at 198.12 137.16 0)
 			(effects
 				(font
@@ -14717,7 +14888,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:C_1206_3216Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0805_2012Metric"
 			(at 27.94 63.5 0)
 			(effects
 				(font
@@ -14744,7 +14915,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-1075-1-ND"
+		(property "DigiKey" "1276-1052-6-ND"
 			(at 27.94 60.96 0)
 			(effects
 				(font
@@ -14753,7 +14924,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "25V"
+		(property "Voltage" "10V"
 			(at 25.654 63.5 0)
 			(effects
 				(font
@@ -14803,7 +14974,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "PCM_EEZ_passives:L_0402_1005Metric"
 			(at 144.78 90.678 90)
 			(effects
 				(font
@@ -14839,7 +15010,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C85813"
 			(at 144.78 88.9 0)
 			(effects
 				(font
@@ -14955,7 +15126,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 264.16 68.58 0)
 			(effects
 				(font
@@ -15212,7 +15383,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "160-1416-1-ND"
+		(property "DigiKey" "160-1414-2-ND"
 			(at 99.06 25.4 0)
 			(show_name yes)
 			(effects
@@ -15328,7 +15499,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 200.66 33.02 0)
 			(effects
 				(font
@@ -15337,7 +15508,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 198.374 32.004 0)
 			(effects
 				(font
@@ -15424,7 +15595,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C30809315"
 			(at 71.12 129.54 0)
 			(show_name yes)
 			(effects
@@ -15518,7 +15689,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 33.02 88.9 0)
 			(effects
 				(font
@@ -15688,7 +15859,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 119.38 73.66 0)
 			(effects
 				(font
@@ -15697,7 +15868,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 119.38 73.66 0)
 			(effects
 				(font
@@ -15731,7 +15902,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
-		(at 22.86 186.69 0)
+		(at 46.99 173.99 90)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -15740,7 +15911,7 @@
 		(dnp no)
 		(uuid "34a16851-2c58-4b90-a616-c3b4711b5348")
 		(property "Reference" "R31"
-			(at 17.78 187.452 0)
+			(at 48.768 171.196 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15749,7 +15920,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 24.13 187.198 0)
+			(at 48.768 175.514 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15757,8 +15928,8 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
-			(at 22.86 186.69 0)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 46.99 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15767,7 +15938,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 22.86 186.69 0)
+			(at 46.99 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15776,7 +15947,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 22.86 186.69 0)
+			(at 46.99 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15785,7 +15956,7 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
-			(at 22.86 186.69 0)
+			(at 46.99 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15794,7 +15965,7 @@
 			)
 		)
 		(property "Voltage" ""
-			(at 22.86 186.69 0)
+			(at 46.99 173.99 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15870,7 +16041,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 109.22 60.96 0)
 			(effects
 				(font
@@ -15879,7 +16050,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 109.22 60.96 0)
 			(effects
 				(font
@@ -15938,7 +16109,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_01005_0402Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
 			(at 165.1 76.2 0)
 			(effects
 				(font
@@ -15965,7 +16136,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "478-KGU02ACG1C8R0CHCT-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 165.1 78.74 0)
 			(effects
 				(font
@@ -15974,7 +16145,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 163.068 78.232 0)
 			(effects
 				(font
@@ -16052,7 +16223,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 182.88 116.84 0)
 			(effects
 				(font
@@ -16061,7 +16232,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 180.086 119.126 0)
 			(effects
 				(font
@@ -16111,7 +16282,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 264.16 101.6 0)
 			(effects
 				(font
@@ -16322,7 +16493,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+		(property "Footprint" "PCM_EEZ_SMD:DBV5"
 			(at 170.18 48.26 0)
 			(effects
 				(font
@@ -16386,7 +16557,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C2877852"
 			(at 170.18 53.34 0)
 			(show_name yes)
 			(effects
@@ -16448,7 +16619,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 261.62 101.6 0)
 			(effects
 				(font
@@ -16592,7 +16763,7 @@
 				(justify top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 152.4 60.96 0)
 			(effects
 				(font
@@ -16698,7 +16869,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-1043-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 48.26 60.96 0)
 			(effects
 				(font
@@ -16707,7 +16878,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "25V"
+		(property "Voltage" "50V"
 			(at 46.228 63.5 0)
 			(effects
 				(font
@@ -16796,6 +16967,91 @@
 		)
 	)
 	(symbol
+		(lib_id "74xGxx:74LVC1G125")
+		(at 40.64 185.42 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "48859ecd-080b-4904-84ed-d191ccd1d038")
+		(property "Reference" "U9"
+			(at 46.482 187.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "74LVC1G125"
+			(at 46.482 189.738 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+			(at 40.64 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/sn74lvc1g125.pdf"
+			(at 40.64 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Single Buffer Gate Tri-State, Low-Voltage CMOS"
+			(at 40.64 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "296-11603-1-ND"
+			(at 40.64 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "5"
+			(uuid "a2c76120-a910-4f5e-9cd4-2dd3680948a0")
+		)
+		(pin "2"
+			(uuid "78b67db4-aa90-4058-9b3a-5915ba493558")
+		)
+		(pin "3"
+			(uuid "a93d211b-3e73-49df-998d-1165fa050ccf")
+		)
+		(pin "1"
+			(uuid "a3f11069-f5cd-4e40-9e23-77d35c3ca54d")
+		)
+		(pin "4"
+			(uuid "f3c52fe2-5fa8-430e-9727-f059e5874c48")
+		)
+		(instances
+			(project ""
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
+					(reference "U9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
 		(at 74.93 149.86 90)
 		(mirror x)
@@ -16823,7 +17079,7 @@
 				(justify top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 74.93 149.86 0)
 			(effects
 				(font
@@ -16911,7 +17167,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:ECAP8X12_5MM"
+		(property "Footprint" "Chili-chips:ECAP8X12_5MM"
 			(at 20.32 58.42 0)
 			(effects
 				(font
@@ -16947,7 +17203,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C1882681"
 			(at 20.32 58.42 0)
 			(effects
 				(font
@@ -17071,7 +17327,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_01005_0402Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
 			(at 165.1 68.58 0)
 			(effects
 				(font
@@ -17098,7 +17354,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "478-KGU02ACG1C8R0CHCT-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 165.1 71.12 0)
 			(effects
 				(font
@@ -17107,7 +17363,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 166.878 70.612 0)
 			(effects
 				(font
@@ -17185,7 +17441,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 160.02 96.52 0)
 			(effects
 				(font
@@ -17194,7 +17450,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 157.48 98.806 0)
 			(effects
 				(font
@@ -17244,7 +17500,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 43.18 109.22 90)
 			(effects
 				(font
@@ -17366,7 +17622,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C3172263"
 			(at 254 48.26 90)
 			(effects
 				(font
@@ -17574,7 +17830,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "SMBJ24ALFCT-ND"
+		(property "DigiKey" "SMBJ24ALFTR-ND"
 			(at 66.04 30.48 0)
 			(effects
 				(font
@@ -17653,7 +17909,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "445-5146-1-ND"
+		(property "DigiKey" "1276-1184-1-ND"
 			(at 43.18 60.96 0)
 			(effects
 				(font
@@ -17662,7 +17918,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "CL10B105KA8NNWC"
 			(at 43.18 60.96 0)
 			(effects
 				(font
@@ -17722,7 +17978,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 261.62 68.58 0)
 			(effects
 				(font
@@ -17828,7 +18084,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 175.26 116.84 0)
 			(effects
 				(font
@@ -17837,7 +18093,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 172.72 119.126 0)
 			(effects
 				(font
@@ -17923,7 +18179,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C472762"
 			(at 38.1 99.06 0)
 			(effects
 				(font
@@ -18010,7 +18266,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 167.64 116.84 0)
 			(effects
 				(font
@@ -18019,7 +18275,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 165.1 119.126 0)
 			(effects
 				(font
@@ -18199,7 +18455,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 50.8 109.22 90)
 			(effects
 				(font
@@ -18350,7 +18606,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 147.32 33.02 0)
 			(effects
 				(font
@@ -18462,7 +18718,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "SER4376CT-ND"
+		(property "DigiKey" "114-TSX-322525.0000MF20X-AJ0CT-ND"
 			(at 175.26 76.2 90)
 			(effects
 				(font
@@ -18471,7 +18727,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C5968231"
 			(at 175.26 76.2 90)
 			(effects
 				(font
@@ -18778,7 +19034,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "-"
 			(at 99.06 66.04 0)
 			(effects
 				(font
@@ -18921,7 +19177,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 124.46 60.96 0)
 			(effects
 				(font
@@ -18930,7 +19186,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 124.46 60.96 0)
 			(effects
 				(font
@@ -19017,7 +19273,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 167.64 96.52 0)
 			(effects
 				(font
@@ -19026,7 +19282,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 165.1 98.806 0)
 			(effects
 				(font
@@ -19143,7 +19399,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 30.48 149.86 0)
 			(effects
 				(font
@@ -19257,7 +19513,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 124.46 73.66 0)
 			(effects
 				(font
@@ -19266,7 +19522,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 124.46 73.66 0)
 			(effects
 				(font
@@ -19452,6 +19708,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 24.13 185.42 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8ea7e785-c00e-4884-9d38-8b3d0eea1428")
+		(property "Reference" "#PWR071"
+			(at 17.78 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 20.32 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 24.13 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 24.13 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 24.13 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b29bdc6b-d3b6-4f18-b5e3-6f4699f57b6e")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
+					(reference "#PWR071")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
 		(at 38.1 143.51 270)
 		(unit 1)
@@ -19478,7 +19800,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 38.1 143.51 0)
 			(effects
 				(font
@@ -19724,7 +20046,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 147.32 185.42 0)
 			(effects
 				(font
@@ -19733,7 +20055,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 150.114 186.436 0)
 			(effects
 				(font
@@ -19810,7 +20132,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 109.22 73.66 0)
 			(effects
 				(font
@@ -19819,7 +20141,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 109.22 73.66 0)
 			(effects
 				(font
@@ -19878,7 +20200,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
 			(at 193.04 71.12 0)
 			(effects
 				(font
@@ -19905,7 +20227,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-1313-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 193.04 68.58 0)
 			(effects
 				(font
@@ -19914,7 +20236,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 191.008 65.532 0)
 			(effects
 				(font
@@ -20050,7 +20372,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "PCM_EEZ_passives:L_0402_1005Metric"
 			(at 144.78 110.998 90)
 			(effects
 				(font
@@ -20086,7 +20408,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C85813"
 			(at 144.78 109.22 0)
 			(effects
 				(font
@@ -20303,7 +20625,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C471417"
 			(at 53.34 27.94 0)
 			(effects
 				(font
@@ -20480,7 +20802,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 167.64 137.16 0)
 			(effects
 				(font
@@ -20489,7 +20811,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 165.1 139.446 0)
 			(effects
 				(font
@@ -20665,7 +20987,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C2667931"
 			(at 208.28 66.04 0)
 			(effects
 				(font
@@ -20858,7 +21180,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 91.44 91.44 0)
 			(effects
 				(font
@@ -21035,7 +21357,7 @@
 				(justify top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 78.74 25.4 0)
 			(effects
 				(font
@@ -21149,7 +21471,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C221872"
 			(at 30.48 165.1 90)
 			(effects
 				(font
@@ -21228,7 +21550,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "445-5146-1-ND"
+		(property "DigiKey" "1276-1184-1-ND"
 			(at 38.1 60.96 0)
 			(effects
 				(font
@@ -21237,7 +21559,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "CL10B105KA8NNWC"
 			(at 38.1 60.96 0)
 			(effects
 				(font
@@ -21467,7 +21789,7 @@
 	)
 	(symbol
 		(lib_id "74xGxx:74LVC1G07")
-		(at 41.91 181.61 0)
+		(at 74.93 185.42 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -21475,7 +21797,7 @@
 		(dnp no)
 		(uuid "bf4cfeeb-5025-4017-a869-b2e123dd8c9e")
 		(property "Reference" "U8"
-			(at 48.26 175.26 0)
+			(at 81.28 179.07 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21483,15 +21805,15 @@
 			)
 		)
 		(property "Value" "74LVC1G07"
-			(at 48.26 177.8 0)
+			(at 81.28 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SC-74A-5_1.55x2.9mm_P0.95mm"
-			(at 41.91 181.61 0)
+		(property "Footprint" ""
+			(at 74.93 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21500,7 +21822,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/sn74lvc1g07.pdf"
-			(at 41.91 181.61 0)
+			(at 74.93 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21509,24 +21831,7 @@
 			)
 		)
 		(property "Description" "Single Buffer Gate, Open Drain, Low-Voltage CMOS"
-			(at 41.91 181.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Voltage" ""
-			(at 41.91 181.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "1727-4114-1-ND"
-			(at 41.91 181.61 0)
+			(at 74.93 185.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21622,7 +21927,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C7668"
 			(at 119.38 193.04 0)
 			(show_name yes)
 			(effects
@@ -21729,7 +22034,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
 			(at 17.78 167.64 0)
 			(effects
 				(font
@@ -21756,7 +22061,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-1313-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 17.78 165.1 0)
 			(effects
 				(font
@@ -21765,7 +22070,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 15.748 168.148 0)
 			(effects
 				(font
@@ -21816,7 +22121,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 208.28 50.8 0)
 			(effects
 				(font
@@ -21988,7 +22293,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 182.88 96.52 0)
 			(effects
 				(font
@@ -21997,7 +22302,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 180.848 99.06 0)
 			(effects
 				(font
@@ -22048,7 +22353,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:C_1206_3216Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0805_2012Metric"
 			(at 33.02 63.5 0)
 			(effects
 				(font
@@ -22075,7 +22380,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-1075-1-ND"
+		(property "DigiKey" "1276-1052-6-ND"
 			(at 33.02 60.96 0)
 			(effects
 				(font
@@ -22084,7 +22389,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "25V"
+		(property "Voltage" "10V"
 			(at 30.734 63.5 0)
 			(effects
 				(font
@@ -22227,7 +22532,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "445-5146-1-ND"
+		(property "DigiKey" "1276-1184-1-ND"
 			(at 48.26 81.28 0)
 			(effects
 				(font
@@ -22236,7 +22541,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "CL10B105KA8NNWC"
 			(at 48.26 81.28 0)
 			(effects
 				(font
@@ -22296,7 +22601,7 @@
 				(justify top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 147.32 66.04 0)
 			(effects
 				(font
@@ -22467,7 +22772,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-1043-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 53.34 60.96 0)
 			(effects
 				(font
@@ -22476,8 +22781,8 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "25V"
-			(at 50.8 63.5 0)
+		(property "Voltage" "50V"
+			(at 50.8 63.754 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -22658,7 +22963,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "PCM_EEZ_passives:L_0402_1005Metric"
 			(at 144.78 131.318 90)
 			(effects
 				(font
@@ -22694,7 +22999,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C85813"
 			(at 144.78 129.54 0)
 			(effects
 				(font
@@ -22810,7 +23115,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 270.51 130.81 0)
 			(effects
 				(font
@@ -22888,7 +23193,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 215.9 50.8 0)
 			(effects
 				(font
@@ -22993,7 +23298,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 119.38 60.96 0)
 			(effects
 				(font
@@ -23002,7 +23307,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 119.38 60.96 0)
 			(effects
 				(font
@@ -23116,8 +23421,8 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 36.83 191.77 0)
-		(mirror y)
+		(at 35.56 195.58 90)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -23125,7 +23430,7 @@
 		(dnp no)
 		(uuid "e022d989-b456-49f9-be8d-e15165423b59")
 		(property "Reference" "#PWR0150"
-			(at 36.83 198.12 0)
+			(at 41.91 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23134,7 +23439,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 36.83 195.58 0)
+			(at 39.37 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23142,7 +23447,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 36.83 191.77 0)
+			(at 35.56 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23151,7 +23456,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 36.83 191.77 0)
+			(at 35.56 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23160,7 +23465,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 36.83 191.77 0)
+			(at 35.56 195.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23207,7 +23512,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 99.06 83.82 90)
 			(effects
 				(font
@@ -23234,7 +23539,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "311-56KDCT-ND"
+		(property "DigiKey" "13-RT0603FRE0756KLCT-ND"
 			(at 99.06 83.82 0)
 			(effects
 				(font
@@ -23322,7 +23627,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 88.9 66.04 0)
 			(effects
 				(font
@@ -23331,7 +23636,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 90.932 69.088 90)
 			(effects
 				(font
@@ -23643,7 +23948,7 @@
 				(justify left top)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 246.38 55.88 0)
 			(effects
 				(font
@@ -23758,7 +24063,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 175.26 96.52 0)
 			(effects
 				(font
@@ -23767,7 +24072,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "50V"
 			(at 172.974 99.06 0)
 			(effects
 				(font
@@ -23998,7 +24303,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "1276-6786-1-ND"
+		(property "DigiKey" "490-14657-1-ND"
 			(at 114.3 60.96 0)
 			(effects
 				(font
@@ -24007,7 +24312,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C385040"
 			(at 114.3 60.96 0)
 			(effects
 				(font
@@ -24066,7 +24371,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 25.4 73.66 90)
 			(effects
 				(font
@@ -24193,7 +24498,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 24.13 193.04 270)
+		(at 35.56 175.26 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -24201,7 +24506,7 @@
 		(dnp no)
 		(uuid "f62cd5db-4cdd-40f5-96ff-ea37fc1d361a")
 		(property "Reference" "#PWR072"
-			(at 20.32 193.04 0)
+			(at 31.75 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24210,7 +24515,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 24.384 195.072 90)
+			(at 35.306 173.228 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24218,7 +24523,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 24.13 193.04 0)
+			(at 35.56 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24227,7 +24532,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 24.13 193.04 0)
+			(at 35.56 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24236,7 +24541,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 24.13 193.04 0)
+			(at 35.56 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24258,7 +24563,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 36.83 171.45 0)
+		(at 52.07 172.72 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -24266,7 +24571,7 @@
 		(dnp no)
 		(uuid "f664a62e-dd3d-4c3c-9d43-78babdb3d4f5")
 		(property "Reference" "#PWR0151"
-			(at 36.83 175.26 0)
+			(at 52.07 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24275,7 +24580,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 36.068 167.894 0)
+			(at 51.308 169.164 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24283,7 +24588,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 36.83 171.45 0)
+			(at 52.07 172.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24292,7 +24597,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 36.83 171.45 0)
+			(at 52.07 172.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -24301,7 +24606,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 36.83 171.45 0)
+			(at 52.07 172.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
