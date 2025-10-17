@@ -2710,6 +2710,31 @@
 			(embedded_fonts no)
 		)
 	)
+	(rectangle
+		(start 156.21 122.555)
+		(end 168.275 133.35)
+		(stroke
+			(width 0)
+			(type default)
+			(color 255 0 0 1)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 6b5b5c57-eb2f-4c9d-ba8d-9c2a8b7b8c07)
+	)
+	(text "Root Complex / RPi Tx -> Switch Tx\nRoot Complex / RPi Rx -> Switch Rx\n"
+		(exclude_from_sim no)
+		(at 168.91 127 0)
+		(effects
+			(font
+				(size 0.889 0.889)
+				(color 0 0 0 1)
+			)
+			(justify left)
+		)
+		(uuid "7e2cc930-3d78-4668-aa62-c388fb3ff44f")
+	)
 	(text "max. 500mA"
 		(exclude_from_sim no)
 		(at 78.105 24.765 0)
@@ -2761,7 +2786,7 @@
 		(effects
 			(font
 				(size 0.889 0.889)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 			(justify left top)
 		)
@@ -3943,7 +3968,7 @@
 	)
 	(wire
 		(pts
-			(xy 121.92 173.99) (xy 127 173.99)
+			(xy 121.92 175.26) (xy 127 175.26)
 		)
 		(stroke
 			(width 0)
@@ -4561,7 +4586,7 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 173.99) (xy 111.76 173.99)
+			(xy 109.22 175.26) (xy 111.76 175.26)
 		)
 		(stroke
 			(width 0)
@@ -9846,7 +9871,7 @@
 	)
 	(global_label "SWRC_RX0_P"
 		(shape input)
-		(at 109.22 173.99 180)
+		(at 109.22 175.26 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9856,7 +9881,7 @@
 		)
 		(uuid "e8fae65e-8d12-45f2-9bb9-86631799ce25")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 98.6638 173.99 0)
+			(at 98.6638 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9987,7 +10012,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 48.26 73.66 0)
 			(effects
 				(font
@@ -9996,12 +10021,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 45.974 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 48.26 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 48.26 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -10021,7 +10056,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 132.08 179.07 0)
+		(at 132.08 180.34 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -10030,7 +10065,7 @@
 		(dnp no)
 		(uuid "03031c92-8ced-4939-a8b7-d03af2d28593")
 		(property "Reference" "#PWR099"
-			(at 132.08 185.42 0)
+			(at 132.08 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10039,7 +10074,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 132.08 182.88 0)
+			(at 132.08 184.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10047,7 +10082,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 132.08 179.07 0)
+			(at 132.08 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10056,7 +10091,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 132.08 179.07 0)
+			(at 132.08 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10065,7 +10100,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 132.08 179.07 0)
+			(at 132.08 180.34 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10175,7 +10210,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 27.94 30.48 0)
 			(effects
 				(font
@@ -10184,12 +10219,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 29.972 33.782 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 27.94 30.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 27.94 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -10262,6 +10307,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 58.42 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 58.42 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 58.42 137.16 0)
 			(effects
 				(font
@@ -10364,7 +10427,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_Coaxial")
-		(at 132.08 173.99 0)
+		(at 132.08 175.26 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10373,7 +10436,7 @@
 		(fields_autoplaced yes)
 		(uuid "0b3b5759-fcdc-478b-8100-d94b3c903a62")
 		(property "Reference" "J12"
-			(at 135.89 173.0131 0)
+			(at 135.89 174.2831 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10382,7 +10445,7 @@
 			)
 		)
 		(property "Value" "73251-3140"
-			(at 135.89 175.5531 0)
+			(at 135.89 176.8231 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10391,7 +10454,7 @@
 			)
 		)
 		(property "Footprint" "PCM_Chili-chips:73251-3140"
-			(at 132.08 173.99 0)
+			(at 132.08 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10400,7 +10463,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 132.08 173.99 0)
+			(at 132.08 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10409,7 +10472,7 @@
 			)
 		)
 		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
-			(at 132.08 173.99 0)
+			(at 132.08 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10418,7 +10481,7 @@
 			)
 		)
 		(property "DigiKey" "0732513140-ND"
-			(at 132.08 173.99 0)
+			(at 132.08 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10426,8 +10489,26 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
-			(at 132.08 173.99 0)
+		(property "LCSC" "C3172263"
+			(at 132.08 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "538-73251-3140"
+			(at 132.08 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "MX-73251-3140"
+			(at 132.08 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10767,7 +10848,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "13-RC0603FR-1312K1LCT-ND"
+		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 76.2 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 76.2 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 76.2 134.62 0)
 			(effects
 				(font
@@ -11042,7 +11141,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "RMCF0603FT33R0CT-ND"
+		(property "DigiKey" "13-RC0603FR-1033RLCT-ND"
 			(at 116.84 160.02 0)
 			(effects
 				(font
@@ -11051,7 +11150,25 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "Mouser" "603-RC0603FR-1033RL"
+			(at 116.84 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-0733RL"
+			(at 116.84 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4298157"
 			(at 116.84 160.02 90)
 			(effects
 				(font
@@ -11130,7 +11247,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 78.74 55.88 0)
 			(effects
 				(font
@@ -11139,12 +11256,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 76.2 58.928 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 78.74 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 78.74 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -11290,6 +11417,24 @@
 				(hide yes)
 			)
 		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 55.88 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
+			(at 55.88 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "LCSC" ""
 			(at 55.88 154.94 0)
 			(effects
@@ -11344,7 +11489,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+		(property "Footprint" "PCM_EEZ_SMD:DBV5"
 			(at 50.8 45.72 0)
 			(effects
 				(font
@@ -11381,6 +11526,26 @@
 				(hide yes)
 			)
 		)
+		(property "Mouser" "595-TLV75801PDBVR"
+			(at 50.8 53.34 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "TLV75801PDBVR"
+			(at 50.8 55.88 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "MF" "Texas Instruments"
 			(at 50.8 30.48 0)
 			(effects
@@ -11408,7 +11573,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C2877852"
 			(at 50.8 50.8 0)
 			(show_name yes)
 			(effects
@@ -11496,7 +11661,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 63.5 0)
 			(effects
 				(font
@@ -11512,14 +11695,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 64.77 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -11592,7 +11767,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 48.26 55.88 0)
 			(effects
 				(font
@@ -11601,12 +11776,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 45.974 58.928 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 48.26 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 48.26 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -11679,7 +11864,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "13-RC0603FR-1312K1LCT-ND"
+		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 76.2 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 76.2 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 76.2 139.7 0)
 			(effects
 				(font
@@ -11757,6 +11960,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 20.32 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 20.32 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 20.32 104.14 0)
 			(effects
 				(font
@@ -12237,7 +12458,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 58.42 0)
 			(effects
 				(font
@@ -12253,14 +12492,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 59.69 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -12333,7 +12564,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 71.12 73.66 0)
 			(effects
 				(font
@@ -12342,12 +12573,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 68.834 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 71.12 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 71.12 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -12420,6 +12661,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 48.26 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 48.26 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 48.26 137.16 0)
 			(effects
 				(font
@@ -12510,7 +12769,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "RMCF0603FT33K0CT-ND"
+		(property "DigiKey" "13-RC0603FR-1333KLCT-ND"
 			(at 71.12 35.56 0)
 			(effects
 				(font
@@ -12519,7 +12778,25 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "Mouser" "603-RC0603FR-1333KL"
+			(at 71.12 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1333KL"
+			(at 71.12 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C6752479"
 			(at 71.12 35.56 0)
 			(effects
 				(font
@@ -12662,7 +12939,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 38.1 0)
 			(effects
 				(font
@@ -12678,14 +12973,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 39.37 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -12758,7 +13045,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 63.5 73.66 0)
 			(effects
 				(font
@@ -12767,12 +13054,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 60.96 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 63.5 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 63.5 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -12845,7 +13142,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 55.88 91.44 0)
 			(effects
 				(font
@@ -12854,12 +13151,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 53.594 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 55.88 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 55.88 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -12931,7 +13238,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 83.82 0)
 			(effects
 				(font
@@ -12947,14 +13272,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 85.09 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -13027,7 +13344,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 55.88 55.88 0)
 			(effects
 				(font
@@ -13036,12 +13353,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 53.34 58.928 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 55.88 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 55.88 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13179,7 +13506,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 48.26 91.44 0)
 			(effects
 				(font
@@ -13188,12 +13515,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 45.974 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 48.26 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 48.26 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13265,7 +13602,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 101.6 0)
 			(effects
 				(font
@@ -13281,14 +13636,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 102.87 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -13426,7 +13773,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 63.5 55.88 0)
 			(effects
 				(font
@@ -13435,12 +13782,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 61.214 58.674 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 63.5 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 63.5 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13578,7 +13935,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 40.64 73.66 0)
 			(effects
 				(font
@@ -13587,12 +13944,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 38.354 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 40.64 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 40.64 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13730,7 +14097,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 40.64 91.44 0)
 			(effects
 				(font
@@ -13739,12 +14106,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 38.354 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 40.64 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 40.64 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13757,6 +14134,103 @@
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
 					(reference "C57")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_passives:R-EU")
+		(at 76.2 129.54 90)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "968c3b15-8d31-4586-b489-4e6838aac885")
+		(property "Reference" "R34"
+			(at 78.105 127 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" "1K"
+			(at 77.47 128.905 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0a5ab268-344c-46cc-b202-9ee147244f07")
+		)
+		(pin "2"
+			(uuid "8691329a-7bf4-40c0-bf89-b0fa76379431")
+		)
+		(instances
+			(project "openpcie2-rc-bplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
+					(reference "R34")
 					(unit 1)
 				)
 			)
@@ -13817,7 +14291,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 78.74 91.44 0)
 			(effects
 				(font
@@ -13826,12 +14300,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 76.2 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 78.74 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 78.74 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -13968,7 +14452,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 88.9 0)
 			(effects
 				(font
@@ -13984,14 +14486,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 90.17 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -14129,7 +14623,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 55.88 73.66 0)
 			(effects
 				(font
@@ -14138,12 +14632,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 53.594 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 55.88 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 55.88 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -14228,84 +14732,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_EEZ_passives:R-EU")
-		(at 76.2 129.54 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "bba4c588-281a-497a-a2d2-7a0b596c0116")
-		(property "Reference" "R34"
-			(at 75.565 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "2K2"
-			(at 77.47 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
-			(at 76.2 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 76.2 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 76.2 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "311-2.20KHRCT-ND"
-			(at 76.2 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "383738f9-b118-45f0-ab62-9b804cfa0d99")
-		)
-		(pin "2"
-			(uuid "17294314-766d-4be3-9f5b-0604ec507956")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
-					(reference "R34")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
 		(at 71.12 91.44 0)
 		(mirror x)
@@ -14360,7 +14786,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 71.12 91.44 0)
 			(effects
 				(font
@@ -14369,12 +14795,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 68.834 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 71.12 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 71.12 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -14447,7 +14883,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 71.12 55.88 0)
 			(effects
 				(font
@@ -14456,12 +14892,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 68.834 58.674 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 71.12 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 71.12 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -14533,6 +14979,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 20.32 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 20.32 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 20.32 144.78 0)
 			(effects
 				(font
@@ -14622,7 +15086,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 106.68 0)
 			(effects
 				(font
@@ -14638,14 +15120,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.002 108.204 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -14783,7 +15257,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 78.74 73.66 0)
 			(effects
 				(font
@@ -14792,12 +15266,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 76.454 76.454 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 78.74 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 78.74 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -14879,7 +15363,25 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "Mouser" "603-RC0603FR-0739KL"
+			(at 76.2 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-0739KL"
+			(at 76.2 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C163424"
 			(at 76.2 30.48 0)
 			(effects
 				(font
@@ -14957,6 +15459,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 30.48 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 30.48 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 30.48 114.3 0)
 			(effects
 				(font
@@ -15054,6 +15574,24 @@
 				(hide yes)
 			)
 		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 30.48 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
+			(at 30.48 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(property "LCSC" ""
 			(at 30.48 134.62 0)
 			(effects
@@ -15135,7 +15673,25 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
+			(at 144.78 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 144.78 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
 			(at 144.78 43.18 0)
 			(effects
 				(font
@@ -15151,14 +15707,6 @@
 					(size 1.27 1.27)
 				)
 				(hide yes)
-			)
-		)
-		(property "Voltage" "10V"
-			(at 143.256 44.45 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(pin "1"
@@ -15231,7 +15779,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 40.64 55.88 0)
 			(effects
 				(font
@@ -15240,12 +15788,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 38.354 58.928 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 40.64 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 40.64 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -15330,7 +15888,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
-		(at 116.84 173.99 270)
+		(at 116.84 175.26 270)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -15339,7 +15897,7 @@
 		(dnp no)
 		(uuid "f3d56fa1-fb18-46fe-a56c-9d14600506f7")
 		(property "Reference" "R38"
-			(at 114.935 172.72 90)
+			(at 114.935 173.99 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15348,7 +15906,7 @@
 			)
 		)
 		(property "Value" "33R"
-			(at 114.935 176.53 90)
+			(at 114.935 177.8 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15357,7 +15915,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
-			(at 116.84 173.99 0)
+			(at 116.84 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15366,7 +15924,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 116.84 173.99 0)
+			(at 116.84 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15375,7 +15933,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 116.84 173.99 0)
+			(at 116.84 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15383,8 +15941,8 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "RMCF0603FT33R0CT-ND"
-			(at 116.84 173.99 0)
+		(property "DigiKey" "13-RC0603FR-1033RLCT-ND"
+			(at 116.84 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15392,8 +15950,26 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
-			(at 116.84 173.99 90)
+		(property "Mouser" "603-RC0603FR-1033RL"
+			(at 116.84 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-0733RL"
+			(at 116.84 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4298157"
+			(at 116.84 175.26 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15470,6 +16046,24 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 20.32 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "603-RC0603FR-1310KL"
+			(at 20.32 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "RC0603FR-1310KL"
 			(at 20.32 124.46 0)
 			(effects
 				(font
@@ -15635,7 +16229,25 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C3172263"
+			(at 132.08 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" "538-73251-3140"
+			(at 132.08 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "MX-73251-3140"
 			(at 132.08 160.02 0)
 			(effects
 				(font
@@ -15780,7 +16392,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1000-1-ND"
 			(at 63.5 91.44 0)
 			(effects
 				(font
@@ -15789,12 +16401,22 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
-			(at 60.96 94.234 0)
+		(property "Mouser" "187-CL10B104KB8NNNC "
+			(at 63.5 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+		(property "TME" "CL10B104KB8NNNC"
+			(at 63.5 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -15820,9 +16442,10 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "fd3ec5c2-2935-4a75-a8b5-970380f95912")
 		(property "Reference" "U7"
-			(at 102.87 44.196 0)
+			(at 102.87 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15830,7 +16453,7 @@
 			)
 		)
 		(property "Value" "ASM1184E"
-			(at 102.87 46.736 0)
+			(at 102.87 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15864,7 +16487,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" ""
+		(property "DigiKey" "-"
 			(at 88.9 48.26 0)
 			(effects
 				(font
@@ -15873,7 +16496,25 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "Mouser" "-"
+			(at 88.9 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" "-"
+			(at 88.9 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "-"
 			(at 88.9 48.26 0)
 			(effects
 				(font
