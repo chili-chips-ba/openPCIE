@@ -1,3 +1,5 @@
+# openBackplane PCB
+
 ## Design Outline
 **WIP:**
 @AnesVrce to elaborate
@@ -8,34 +10,39 @@
 
 Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
-## Use-case-1: Direct FPGA_RC to FPGA_EP (Gen1, x1)
+## Usage scenarios
+
+### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
 @AnesVrce to add illustration.
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in both "Slot" and M.2 form-factors. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations and scenarios.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in both "Slot" and M.2 form-factors. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
-## Use-case-2: Switched FPGA_RC to FPGA_EP (Gen1, x1)
+### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen1 x1)
 @AnesVrce to add illustration. 
 
-We intend to try testing the Root Complex interactions with End-Points through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the path open for **Gen2** testing.
+We intend to try testing the RootComplex interactions with EndPoints through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the door open for the **Gen2** testing.
 
-## Use-case-3: Switched RPi5_RC to FPGA_EP (Gen1, x1)
+### Usecase 3: Switched RPi5_RC to FPGA_EP (Gen1 x1)
 This scenario is for our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint design, to test its interoperability with RPi5. The backplane design allows trying both "Slot" and M.2 form-factor of GateMate PCIE cards.
 
 <p align="center" width="100%">
     <img width="50%" src="0.doc/images/PCIE-synergy-with-RPI5.png">
 </p>
 
-Our backplane is designed for RPi5 Standard FPC cable, which is with contacts on the **opposite sides**.
+Our backplane is designed for `RPi5 Standard FFC`, which is when contacts are on the `opposite sides`.
+
 <p align="center" width="100%">
     <img width="50%" src="0.doc/images/RPI5-PCIE-FFC.jpg">
 </p>
 
-Such cable is also known as **"B Type"**, see [this](https://www.amazon.com/iUniker-Contacts-Opposite-Raspberry-Peripheral/dp/B0F7HJL2QG/ref=pd_ci_mcx_di_int_sccai_cn_d_sccl_2_2/143-7699313-0639204?pd_rd_w=UVwz6&content-id=amzn1.sym.751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_p=751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_r=SSMC3DSGA2A09FFQH4YH&pd_rd_wg=RZodX&pd_rd_r=fb584b31-62bd-44e0-af8e-5133406dd983&pd_rd_i=B0F7HJL2QG&psc=1). Interestingly, many RPi5 HATs use the same-side contact, that is "A Type" cable, despite RaspberryPi explicit requirement not to do so. It is imperative to ensure you are using the correct orientation FPC before connecting up and powering up the system. [Here](https://www.jeffgeerling.com/blog/2023/testing-pcie-on-raspberry-pi-5) is another interesting read on the RPi5 PCIE connectivity.
+Such cable is also known as `"B Type"`, see [this](https://www.amazon.com/iUniker-Contacts-Opposite-Raspberry-Peripheral/dp/B0F7HJL2QG/ref=pd_ci_mcx_di_int_sccai_cn_d_sccl_2_2/143-7699313-0639204?pd_rd_w=UVwz6&content-id=amzn1.sym.751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_p=751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_r=SSMC3DSGA2A09FFQH4YH&pd_rd_wg=RZodX&pd_rd_r=fb584b31-62bd-44e0-af8e-5133406dd983&pd_rd_i=B0F7HJL2QG&psc=1).
 
-## Use-case-4: PCIE Expansion or Extension
-By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a Root Complex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specificaly to assess and compare the strength of GateMate SerDes to others, specifically Xilinx Artix-7 and off-the-shelf ASICs.
+Interestingly, many RPi5 HATs use the same-side contacts, that is the "A Type" cables, despite RaspberryPi explicit requirement not to do so. It is important to ensure that you are using the correct orientation FFC before connecting up and powering up the system. [Here](https://www.jeffgeerling.com/blog/2023/testing-pcie-on-raspberry-pi-5) is another interesting read on the RPi5 PCIE connectivity.
+
+### Usecase 4: PCIE Expansion or Extension
+By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specificaly to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
 
 <p align="center" width="100%">
     <img width="60%" src="0.doc/images/PCIE-Jumper-Cable-Male2Male.jpg">
@@ -43,30 +50,47 @@ By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard
 
 ## PCIE Layout Consideration
 
-The characteristic impedance of the differential pairs on our backplane is **100ohm+/-10% for both data and clock signals**. They are all routed as **microstrips**, i.e. with reference to ground or power plane from only one side and no more than **5 mils** P-to-N skew, and with minimal number of vias on the path. 
+The _characteristic impedance_ of the differential pairs on our backplane is `100ohm+/-10% for both data and clock signals`. They are all routed as `microstrips`, i.e. with reference to Ground/Power plane from only one side. The P-to-N skew is matched to no more than **5 mils**.
+
+The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. In that sense, the size of AC-decoupling capacitors is 0201, so that they don't stick out too much. The size of vias is **0.3mm**. The blind, burried, partial or any other advanced via technology is not used. That makes for a less expensive PCB and final product, but it also stresses the need to be super cautious about vias on the diff pairs -- Since they go through all layers, they are longer, bulkier and therefore more of a disturbance. 
 
 <p align="center" width="100%">
     <img width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
 </p>
 
-We don't use the "striplines", which is when high-speed traces are sandwiched between ground or power planes, as that requires more layers and necessitates the use of vias. We use **4-layer** stackup:
-- Microstrip (Top)
-- GND (L2)
-- 3V3 (L3)
-- Microstrip (Bottom)
+We don't use the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power). The _striplines_ necessitate the use of vias and may result in needing more layers. Our stackup is **4-layer**:
 
-The backplane does not use blind, burried or partial vias. Via size is **0.3mm**. Please, see [this](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf) for more routing guidelines.
+- `Top` - Microstrip for diff pairs and ordinary lines 
+- `L2` - Ground plane
+- `L3` - 3.3V Power plane
+- `Bottom` - Microstrip for diff pairs and ordinary lines 
+
+Check [this](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf) link for additional routing considerations.
 
 ## Signal Integrity (SI) Sims
-@prasimix @AnesVrce TODO.
+@AnesVrce TODO.
 
-The following four wiring topologies are to be examined in simulations:
-> 1) **one-to-one** (point-to-point) 100MHz clock diff pair
-> 2) **two-to-two** 5Gbps PCIE diff pair (one of the RC4=>EP4 pairs)
-> 3) **three-to-one** 5Gbps PCIE diff pairs (RC1 => SW)
-> 4) **one-to-two** 5Gbps PCEI diff pairs (SW => the logest SW_EP0/1/2/3)
-   
-## SI Test Results
+The following four wiring topologies are examined in Electro-Magnetic Simulations (EMS):
+- `One-2-One` **Point-to-Point**, this is the standard and simplest, i.e. the baseline case
+- `Two-2-Two` **Multipoint-to-Multipoint**. Unique for high-speed
+- `Three-2-One` **Multipoint-to-Point**. Unique for high-speed
+- `One-2-Two` **Point-to-Multipoint**. Unique for high-speed
+
+Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusal, probably **unique topologies** to deal with. All three representative combinations are analyzed and presented.
+
+### EMS topology 1: One-2-One (standard)
+- SWRC3_CLK_P/N 100MHz clock diff pair
+  
+### EMS topology 2: Two-2-Two (unique)
+- Pick one of the RC4 => EP4 5Gbps diff pairs
+  
+### EMS topology 3: Three-2-One (unique)
+- Pick one of the RC1 => SW 5Gbps diff pairs
+  
+### EMS topology 4: One-2-Two (unique)
+- Pick the longest 5Gbps diff pairs from the SW => SW_EP0/1/2/3 set
+  
+## SI Lab Measurements
 TODO
 
 -----
