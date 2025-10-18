@@ -18,7 +18,7 @@ Our long-term goal is to set the stage for the development of full opensource PC
 This first phase is about implementing an open source PCIE Root Complex (RC) for Artix7 FPGA, utilizing Xilinx Series7 PCIE HM and GTP IP blocks, along with their low-jitter PLL.
 
 #### References
-- [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell
+- [PCIE Primer](https://drive.google.com/file/d/1CECftcznLwcKDADtjpHhW13-IBHTZVXx/view) by Simon Southwell ✔
 
 --------------------
 
@@ -32,14 +32,14 @@ This dev activity is about creating the minimal PCIE infrastructure necessary fo
 
 Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
 
- - [x] Create requirements document.
- - [x] Select components. Schematic and PCB layout design.
+ - [x] ✔ Create requirements document.
+ - [x] ✔ Select components. Schematic and PCB layout design.
  - [ ] Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
  - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
  - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
 #### `PART 2. Project setup and preparatory activities`
- - [x] Procure FPGA development boards and PCIE accessories.
+ - [x] ✔ Procure FPGA development boards and PCIE accessories.
  - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
  
 #### `PART 3. Initial HW/SW implementation`
@@ -55,7 +55,7 @@ Their VProc can be used not only to faithfully model the RISC-V CPU and SW inter
 
 With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
 
- - [x] Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
+ - [x] ✔ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
  - [ ] Testbench development and build up. Execution and debug of sim testcases.
  - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
