@@ -5,7 +5,7 @@
     <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
-Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](0.doc/openpci2-backplane.pdf).
+Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
 ## Signal Integrity (SI) Sims
 @prasimix @AnesVrce TODO
