@@ -19,7 +19,7 @@ TODO
 **[1] ASMedia ASM1184e 1-to-4 single-lane PCIE/Gen2 Switch**
 - [Product Brief](https://www.asmedia.com.tw/product/556yQ9dSX7gP9Tuf/b7FyQBCxz2URbzg0)
 - [Technical Notes](https://crimier.github.io/posts/ASM118x)
-- [Design Example: CM4 NVME NAS](https://github.com/will127534/CM4-Nvme-NAS)
+- [Design Example: CM4 M2 (NVME) NAS](https://github.com/will127534/CM4-Nvme-NAS)
 
 **[2] RPi5 PCIE Connector Enigma**
 - [Reverse Engineering RPi5 PCIE](https://github.com/m1geo/Pi5_PCIe)
