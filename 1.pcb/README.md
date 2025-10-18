@@ -2,7 +2,7 @@
 ***WIP:** @AnesVrce to elaborate
 
 <p align="center" width="100%">
-    <img width="50%" src="../0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
+    <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
 Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](0.doc/openpci2-backplane.pdf).
@@ -32,7 +32,7 @@ TODO
 - [RPi5 4-port FPC HAT with ASM1184e, by Waveshare](https://www.waveshare.com/pcie-to-4-ch-pcie-hat.htm)
 
 **[4] Component datasheets**
-- Click [here](0.datasheets)
+- Click [here](1.datasheets)
   
 **[5] open-source SI Sim tools**
 - [openEMS](https://docs.openems.de)
