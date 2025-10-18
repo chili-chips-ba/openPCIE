@@ -255,15 +255,13 @@ After the hardware was prepared, the connection was verified using the **Vivado 
 </p>
 
 --------------------
-### Backplane PCB
+### openBackplane PCB
 
 <p align="center" width="100%">
-    <img width="80%" src="0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
+    <img width="50%" src="0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
 </p>
 
-#### References:
-- [AntMicro EMS Sim](https://antmicro.com/blog/2025/07/recent-improvements-to-antmicros-signal-integrity-simulation-flow)
-- [openEMS](https://docs.openems.de)
+Please, refer to [1.pcb](1.pcb) for additional detail.
 
 --------------------
 
