@@ -55,7 +55,7 @@ We don't use the "striplines", which is when high-speed traces are sandwiched be
 - 3V3 (L3)
 - Microstrip (Bottom)
 
-The backplane does not use blind, burried or partial vias. Via size is **0.3mm**. Please, see [this](0.doc/PCIE-Layout-Guidelined.TI-slaae45.pdf) for more routing guidelines.
+The backplane does not use blind, burried or partial vias. Via size is **0.3mm**. Please, see [this](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf) for more routing guidelines.
 
 ## Signal Integrity (SI) Sims
 @prasimix @AnesVrce TODO.
@@ -91,7 +91,7 @@ TODO
 
 **[5] [Component datasheets](1.datasheets)**
 
-**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelined.TI-slaae45.pdf)**
+**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf)**
 
 **[7] Open-source SI Sim tools**
 - [openEMS](https://docs.openems.de)
