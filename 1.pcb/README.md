@@ -5,6 +5,7 @@
     <img width="50%" src="../0.doc/1.pcb/openPCIE-BlockDiagram.jpg">
 </p>
 
+Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](0.doc/openpci2-backplane.pdf).
 
 ## Signal Integrity (SI) Sims
 @prasimix @AnesVrce TODO
@@ -29,9 +30,13 @@ TODO
 - [RPi5 PCIe "Slot"](https://52pi.com/collections/all-products/products/p02-pcie-slot-for-rpi5)
 - [RPi5 4-port HAT with ASM1184](https://52pi.com/products/b14-quad-fpc-pcie-hat-daisy-chaining-capability-for-raspberry-pi-5?_pos=3&_sid=c04b1eaf1&_ss=r)
 
-**[4] open-source SI Sim tools**
+**[4] Component datasheets**
+- Click [here](0.datasheets)
+  
+**[5] open-source SI Sim tools**
 - [openEMS](https://docs.openems.de)
 - [AntMicro EMS Sim](https://antmicro.com/blog/2025/07/recent-improvements-to-antmicros-signal-integrity-simulation-flow)
+
 
 -------
 #### End of Document
