@@ -46,16 +46,16 @@ By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard
 The characteristic impedance of the differential pairs on our backplane is **100ohm+/-10% for both data and clock signals**. They are all routed as **microstrips**, i.e. with reference to ground or power plane from only one side and no more than **5 mils** P-to-N skew, and with minimal number of vias on the path. 
 
 <p align="center" width="100%">
-    <img width="50%" src="PCIE-Trace-Impedance.jpg">
+    <img width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
 </p>
 
-We don't use the "striplines", which is when high-speed traces are sandwiched between ground or power planes, as that requires more layers and necessitates the use of vias. Our stackup is 4-layer:
+We don't use the "striplines", which is when high-speed traces are sandwiched between ground or power planes, as that requires more layers and necessitates the use of vias. We use **4-layer** stackup:
 - Microstrip (Top)
 - GND (L2)
 - 3V3 (L3)
 - Microstrip (Bottom)
 
-The backplane does not use blind, burried or partial vias. Via size is 0.3mm. Please, see [this](0.doc/PCIE-Layout-Guidelined.TI-slaae45.pdf) for more routing guidelines.
+The backplane does not use blind, burried or partial vias. Via size is **0.3mm**. Please, see [this](0.doc/PCIE-Layout-Guidelined.TI-slaae45.pdf) for more routing guidelines.
 
 ## Signal Integrity (SI) Sims
 @prasimix @AnesVrce TODO.
