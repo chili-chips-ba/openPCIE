@@ -7731,7 +7731,7 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 96.52) (xy 96.52 96.52)
+			(xy 91.44 96.52) (xy 127 96.52)
 		)
 		(stroke
 			(width 0)
@@ -7862,16 +7862,6 @@
 			(type default)
 		)
 		(uuid "4c43b2bc-65e9-435a-9e94-3538dfdb204a")
-	)
-	(wire
-		(pts
-			(xy 101.6 96.52) (xy 127 96.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4ce66299-bad5-46fe-a162-037eef96345a")
 	)
 	(wire
 		(pts
@@ -13675,7 +13665,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 175.26 137.16 0)
 			(effects
 				(font
@@ -13684,7 +13674,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 172.974 139.446 0)
 			(effects
 				(font
@@ -13894,7 +13884,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 160.02 116.84 0)
 			(effects
 				(font
@@ -13903,7 +13893,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 157.48 119.126 0)
 			(effects
 				(font
@@ -14283,92 +14273,6 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
 					(reference "#FLG05")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:NetTie_2")
-		(at 99.06 96.52 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "0fd69ca2-2782-49ce-b185-04ac9211718f")
-		(property "Reference" "NT2"
-			(at 99.06 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "NetTie_2"
-			(at 99.06 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_EEZ_SMD:NetTie-2_SMD_Pad0.2mm"
-			(at 99.06 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 99.06 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Net tie, 2 pins"
-			(at 99.06 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" ""
-			(at 99.06 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 99.06 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f7aa72a9-358c-4a6e-bcc8-4b5006ff2064")
-		)
-		(pin "2"
-			(uuid "7f376150-d84a-441c-b05e-d1a193bbcd3e")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "NT2")
 					(unit 1)
 				)
 			)
@@ -15385,7 +15289,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 200.66 33.02 0)
 			(effects
 				(font
@@ -15394,7 +15298,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 198.374 32.004 0)
 			(effects
 				(font
@@ -15566,7 +15470,7 @@
 				(justify right top)
 			)
 		)
-		(property "Value" "38K3"
+		(property "Value" "12K1"
 			(at 31.75 88.9 0)
 			(effects
 				(font
@@ -15602,7 +15506,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "311-38.3KHRCT-ND"
+		(property "DigiKey" "13-RC0603FR-1312K1LCT-ND"
 			(at 33.02 88.9 0)
 			(effects
 				(font
@@ -16030,7 +15934,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_01005_0402Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
 			(at 165.1 76.2 0)
 			(effects
 				(font
@@ -16057,7 +15961,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "478-KGU02ACG1C8R0CHCT-ND"
+		(property "DigiKey" "490-8230-1-ND"
 			(at 165.1 78.74 0)
 			(effects
 				(font
@@ -16066,7 +15970,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 163.068 78.232 0)
 			(effects
 				(font
@@ -16144,7 +16048,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 182.88 116.84 0)
 			(effects
 				(font
@@ -16153,7 +16057,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 180.086 119.126 0)
 			(effects
 				(font
@@ -17163,7 +17067,7 @@
 				(justify right top)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_01005_0402Metric"
+		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
 			(at 165.1 68.58 0)
 			(effects
 				(font
@@ -17190,7 +17094,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "478-KGU02ACG1C8R0CHCT-ND"
+		(property "DigiKey" "490-8230-1-ND"
 			(at 165.1 71.12 0)
 			(effects
 				(font
@@ -17199,12 +17103,39 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "16V"
+		(property "Voltage" "50V"
 			(at 166.878 70.612 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+			)
+		)
+		(property "Mouser" ""
+			(at 165.1 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" ""
+			(at 165.1 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 165.1 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(pin "1"
@@ -17277,7 +17208,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 160.02 96.52 0)
 			(effects
 				(font
@@ -17286,7 +17217,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 157.48 98.806 0)
 			(effects
 				(font
@@ -17920,7 +17851,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 175.26 116.84 0)
 			(effects
 				(font
@@ -17929,7 +17860,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 172.72 119.126 0)
 			(effects
 				(font
@@ -18102,7 +18033,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 167.64 116.84 0)
 			(effects
 				(font
@@ -18111,7 +18042,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 165.1 119.126 0)
 			(effects
 				(font
@@ -18282,7 +18213,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "174K"
+		(property "Value" "56K"
 			(at 49.53 110.4901 0)
 			(effects
 				(font
@@ -18318,7 +18249,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "311-174KHRCT-ND"
+		(property "DigiKey" "311-56KDCT-ND"
 			(at 50.8 109.22 0)
 			(effects
 				(font
@@ -19109,7 +19040,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 167.64 96.52 0)
 			(effects
 				(font
@@ -19118,7 +19049,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 165.1 98.806 0)
 			(effects
 				(font
@@ -19816,7 +19747,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 147.32 185.42 0)
 			(effects
 				(font
@@ -19825,7 +19756,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 150.114 186.436 0)
 			(effects
 				(font
@@ -20572,7 +20503,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 167.64 137.16 0)
 			(effects
 				(font
@@ -20581,7 +20512,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 165.1 139.446 0)
 			(effects
 				(font
@@ -20978,6 +20909,41 @@
 			)
 		)
 		(property "DigiKey" "13-RC0603FR-1310KLCT-ND"
+			(at 91.44 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 91.44 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Mouser" ""
+			(at 91.44 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" ""
+			(at 91.44 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
 			(at 91.44 91.44 0)
 			(effects
 				(font
@@ -22107,7 +22073,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 182.88 96.52 0)
 			(effects
 				(font
@@ -22116,7 +22082,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 180.848 99.06 0)
 			(effects
 				(font
@@ -23441,7 +23407,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 88.9 66.04 0)
 			(effects
 				(font
@@ -23450,7 +23416,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 90.932 69.088 90)
 			(effects
 				(font
@@ -23877,7 +23843,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "490-6321-1-ND"
+		(property "DigiKey" "1276-1043-1-ND"
 			(at 175.26 96.52 0)
 			(effects
 				(font
@@ -23886,7 +23852,7 @@
 				(hide yes)
 			)
 		)
-		(property "Voltage" "10V"
+		(property "Voltage" "25V"
 			(at 172.974 99.06 0)
 			(effects
 				(font
@@ -24168,21 +24134,21 @@
 		(dnp no)
 		(uuid "f37e5de4-d143-4d55-9bf9-89c23d46a5b1")
 		(property "Reference" "R4"
-			(at 24.13 71.628 90)
+			(at 25.4 72.39 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify top)
 			)
 		)
-		(property "Value" "174K"
-			(at 23.114 75.946 90)
+		(property "Value" "56K"
+			(at 25.4 74.93 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify bottom)
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
@@ -24212,7 +24178,7 @@
 				(hide yes)
 			)
 		)
-		(property "DigiKey" "311-174KHRCT-ND"
+		(property "DigiKey" "311-56KDCT-ND"
 			(at 25.4 73.66 0)
 			(effects
 				(font
@@ -24406,19 +24372,19 @@
 			)
 		)
 		(pin "5"
-			(uuid "d9ef84e5-9d2b-426b-89c1-b04ae20c2de3")
+			(uuid "d9ef84e5-9d2b-426b-89c1-b04ae20c2de4")
 		)
 		(pin "1"
-			(uuid "1d413a06-c6ea-4e6c-a0c2-de1e2d0d0fbf")
+			(uuid "1d413a06-c6ea-4e6c-a0c2-de1e2d0d0fc0")
 		)
 		(pin "4"
-			(uuid "cd080edf-150c-483d-81f1-ff680059500c")
+			(uuid "cd080edf-150c-483d-81f1-ff680059500d")
 		)
 		(pin "2"
-			(uuid "1c58c42d-b1a2-4b4c-87c6-1df488c7672e")
+			(uuid "1c58c42d-b1a2-4b4c-87c6-1df488c7672f")
 		)
 		(pin "3"
-			(uuid "22b08f54-733d-42b9-ad04-bdd6143aa8f5")
+			(uuid "22b08f54-733d-42b9-ad04-bdd6143aa8f6")
 		)
 		(instances
 			(project ""
