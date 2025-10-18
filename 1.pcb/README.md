@@ -67,7 +67,7 @@ Our stackup is **4-layer**:
 - `L3` - 3.3V Power plane
 - `Bottom` - Microstrip for diff pairs and ordinary lines 
 
-Check [this](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf) link for additional routing considerations.
+Check [this](0.doc/PCIE-Layout-Guidelines.SIG.pdf) link for additional physical and routing considerations.
 
 Since we have a unique feature with multiple connectors on the same line, special care is given to minimize the "stubs" at both the start and end of the transmission line. Here is an example of what not to do.
 
@@ -134,7 +134,7 @@ TODO
 
 **[5] [Component datasheets](1.datasheets)**
 
-**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelines.TI-slaae45.pdf)**
+**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelines.SIG.pdf)**
 
 **[7] Open-source SI Sim tools**
 - [openEMS](https://docs.openems.de)
