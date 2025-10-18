@@ -10,6 +10,12 @@ Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full sche
 ## Signal Integrity (SI) Sims
 @prasimix @AnesVrce TODO
 
+The following four wiring topologies are to be examined:
+1) **one-to-one** (point-to-point) 100MHz clock diff pair
+2) **two-to-two** 5Gbps PCIE diff pair (one of the RC4=>EP4 pairs)
+3) **three-to-one** 5Gbps PCIE diff pairs (RC1 => SW)
+4) **one-to-two** 5Gbps PCEI diff pairs (SW => the logest SW_EP0/1/2/3)
+   
 ## SI Test Results
 
 TODO
