@@ -1705,10 +1705,10 @@
 						)
 					)
 				)
-				(pin no_connect line
+				(pin power_in line
 					(at 20.32 -12.7 180)
 					(length 2.54)
-					(name "NC"
+					(name "VCC"
 						(effects
 							(font
 								(size 1.016 1.016)
@@ -8513,6 +8513,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "c912096b-8d92-4d0c-9824-d12cde12ef92")
+	)
+	(wire
+		(pts
+			(xy 241.3 116.84) (xy 246.38 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c92c3512-c77e-41af-bdd4-0bd1161da52c")
 	)
 	(wire
 		(pts
@@ -16965,6 +16975,72 @@
 			(project "openpcie2-rc-bplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
 					(reference "JP8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 246.38 116.84 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e80314a7-5ffa-4b7a-b1e5-fc069ad30ddf")
+		(property "Reference" "#PWR0157"
+			(at 242.57 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 252.095 116.84 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 246.38 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 246.38 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 246.38 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e142d69b-c240-4cb4-9a69-1276463f9110")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/c14e31b3-5f49-4318-a18f-f67eef2f143c"
+					(reference "#PWR0157")
 					(unit 1)
 				)
 			)
