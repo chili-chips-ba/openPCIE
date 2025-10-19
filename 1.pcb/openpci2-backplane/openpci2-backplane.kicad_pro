@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 2.75,
-          "height": 6.2,
-          "width": 6.2
+          "drill": 1.02,
+          "height": 1.6,
+          "width": 1.6
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -1095,6 +1095,12 @@
           "group_by": false,
           "label": "Pwr_1V8_min",
           "name": "Pwr_1V8_min",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Inductance",
+          "name": "Inductance",
           "show": false
         }
       ],
