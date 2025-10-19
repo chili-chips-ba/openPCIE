@@ -124,22 +124,22 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.127,
         "min_connection": 0.0,
-        "min_copper_edge_clearance": 0.5,
+        "min_copper_edge_clearance": 0.2,
         "min_groove_width": 0.0,
-        "min_hole_clearance": 0.25,
+        "min_hole_clearance": 0.2,
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.2,
         "min_microvia_drill": 0.1,
-        "min_resolved_spokes": 2,
+        "min_resolved_spokes": 1,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.8,
-        "min_text_thickness": 0.08,
+        "min_text_height": 0.6096,
+        "min_text_thickness": 0.1524,
         "min_through_hole_diameter": 0.3,
-        "min_track_width": 0.0,
-        "min_via_annular_width": 0.1,
-        "min_via_diameter": 0.5,
+        "min_track_width": 0.127,
+        "min_via_annular_width": 0.074,
+        "min_via_diameter": 0.4,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
@@ -189,6 +189,7 @@
       ],
       "track_widths": [
         0.0,
+        0.508,
         0.6096
       ],
       "tuning_pattern_settings": {
@@ -475,9 +476,9 @@
       {
         "bus_width": 12,
         "clearance": 0.1524,
-        "diff_pair_gap": 0.25,
+        "diff_pair_gap": 0.127,
         "diff_pair_via_gap": 0.25,
-        "diff_pair_width": 0.2,
+        "diff_pair_width": 0.1524,
         "line_style": 0,
         "microvia_diameter": 0.3,
         "microvia_drill": 0.1,
@@ -491,22 +492,14 @@
         "wire_width": 6
       },
       {
-        "name": "+12V",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 3,
-        "schematic_color": "rgba(0, 0, 0, 0.000)"
-      },
-      {
-        "name": "+3V3",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 2,
-        "schematic_color": "rgba(0, 0, 0, 0.000)"
-      },
-      {
-        "name": "diff",
+        "clearance": 0.127,
+        "diff_pair_gap": 0.127,
+        "diff_pair_width": 0.1524,
+        "name": "PCIe",
         "pcb_color": "rgb(255, 153, 0)",
         "priority": 1,
-        "schematic_color": "rgba(0, 0, 0, 0.000)"
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.1524
       },
       {
         "name": "diff_clk",
@@ -522,19 +515,11 @@
     "netclass_assignments": null,
     "netclass_patterns": [
       {
-        "netclass": "+12V",
-        "pattern": "+12V"
-      },
-      {
-        "netclass": "+3V3",
-        "pattern": "+3V3"
-      },
-      {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT0_RX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT0_RX_N"
       },
       {
@@ -546,19 +531,19 @@
         "pattern": "SW_SLOT0_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT0_TX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT0_TX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT1_RX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT1_RX_P"
       },
       {
@@ -570,19 +555,19 @@
         "pattern": "SW_SLOT1_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT1_TX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT1_TX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT2_RX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT2_RX_N"
       },
       {
@@ -594,19 +579,19 @@
         "pattern": "SW_SLOT2_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT2_TX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT2_TX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT3_RX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT3_RX_N"
       },
       {
@@ -618,83 +603,83 @@
         "pattern": "SW_SLOT3_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT3_TX_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SW_SLOT3_TX_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX2_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_TX3_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX3_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX2_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_RX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_CLK_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC_CLK_N"
       },
       {
@@ -722,99 +707,99 @@
         "pattern": "SW_RC_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX2_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_TX3_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX2_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "RC4_RX3_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX0_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX0_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX2_N"
       },
       {
@@ -826,35 +811,35 @@
         "pattern": "SWRC_CLK_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_TX3_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX1_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX1_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX2_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX2_N"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX3_P"
       },
       {
-        "netclass": "diff",
+        "netclass": "PCIe",
         "pattern": "SWRC_RX3_N"
       },
       {
@@ -1155,7 +1140,7 @@
     },
     "net_format_name": "",
     "page_layout_descr_file": "",
-    "plot_directory": "../../0.doc/1.pcb/",
+    "plot_directory": "./",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
