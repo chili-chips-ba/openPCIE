@@ -54,7 +54,7 @@ The _characteristic impedance_ of the differential pairs on our backplane is `10
 
 The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. As a matter of face, we have `only two vias per diff pair`, one at the start, another at the end of the signal path. The need for them comes from of our very unique feature with multiple connectors for the same line, placed on the opposite sides of the board. Since we must have at least two vias, We could have also used the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power). In a normal situation, the _'microstrips'_ are better as they allow getting away without any vias. 
 
-The size of our vias is the standard **0.3mm**. The blind, burried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be super cautious about the vias on the diff pairs. Since they go through all layers, they are longer, and also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
+The size of our vias is the standard **0.3mm**. The blind, burried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be super-cautious about the vias on the diff pairs. Such vias go through all layers, they are longer. They are also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
 
 <p align="center" width="100%">
     <img width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
@@ -67,6 +67,14 @@ Our stackup is **4-layer**:
 - `L3` - 3.3V Power plane
 - `Bottom` - Microstrip for diff pairs and ordinary lines 
 
+<p align="center" width="100%">
+    <img width="65%" src="0.doc/images/PCIE-stackup.jpg">
+    <img width="65%" src="0.doc/images/PCIE-trace-geometry.jpg">
+    <img width="65%" src="0.doc/images/PCIE-symmetry.jpg">
+    <img width="65%" src="0.doc/images/PCIE-ref-plane.jpg">
+    <img width="65%" src="0.doc/images/PCIE-no-stubs.jpg">
+</p>
+
 Check [this](0.doc/PCIE-Layout-Guidelines.SIG.pdf) link for additional physical and routing considerations.
 
 Since we have a unique feature with multiple connectors on the same line, special care is given to minimize the "stubs" at both the start and end of the transmission line. Here is an example of what not to do.
@@ -75,12 +83,12 @@ Since we have a unique feature with multiple connectors on the same line, specia
     <img width="65%" src="0.doc/images/PCB-Stubs-MustAvoid.png">
 </p>
 
-> [@AnesVrce, please translate this to English] Svi generatori signala trebaju biti postavljeni ekstremno blizu. Slicno tome, svi potrosaci signala trebaju biti vrlo blizu. Cilj je minimizirati "stub" na pocetku putanje (generatori) kao i "stub" na kraju putanje (potrosaci).
+> [@AnesVrce, please translate this section to English]
+> Model PCIE konekcija: Generatori -> Transport -> Potrosaci
+> Svi generatori signala trebaju biti postavljeni ekstremno blizu. Slicno tome, svi potrosaci signala trebaju biti vrlo blizu. Cilj je minimizirati "stub" na pocetku putanje (generatori) kao i "stub" na kraju putanje (potrosaci).
 >
 > A na gornjem primjeru, u slucaju kada je M.2 generator, a "Slot" potrosac, imamo vrlo dug "stub" na obje strane. Kako u taj "stub" takodje ide korisni signal, a "stub" nije terminiran, iz njega se signal reflektuje, tj. vrati nazad, i to sa znatnim kasnjenjem zbog duzine "stub"-a.
-Taj reflektovani val onda poremeti originalni signal na "Slot" poziciji, gdje ga primamo, i to u momentu kada se od njega ocekuje da bude stabilan. Slicno, reflektovani signal iz M.2 stub-a poremeti generator na M.2 poziciji, sto se nesto poslije toga odslika i na "Slot" lokaciji, gdje nam treba da je cist, a taj treci val se pocne mijesati sa prvim i drugim. Fora je sto je moguce vise eliminisati drugi, treci i ostale povratne valove (Reflected Waves), i u igri ostaviti samo prvi val (Incident Wave).
->
-> Anese, bila bi prava stvar prvo simularati ovaj gore slucaj, ako ilustraciji efekta "stub-a" i refleksije valova.
+Taj reflektovani val onda poremeti originalni signal na "Slot" poziciji, gdje ga primamo, i to u momentu kada se od njega ocekuje da bude stabilan. Slicno, reflektovani signal iz M.2 stub-a poremeti generator na M.2 poziciji, sto se nesto poslije toga odslika i na "Slot" lokaciji, gdje nam treba da je cist, a taj treci val se pocne mijesati sa prvim i drugim. Fora je sto je moguce vise eliminisati drugi, treci i ostale povratne valove (_Reflected Waves_), i u igri ostaviti samo prvi val (_Incident Wave_).
 
 ## Signal Integrity (SI) Sims
 @AnesVrce TODO.
@@ -111,6 +119,11 @@ Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the s
   
 ## SI Lab Measurements
 TODO
+
+<p align="center" width="100%">
+    <img width="65%" src="0.doc/images/PCIE-Eye-Measurements.jpg">
+</p>
+
 
 -----
 
