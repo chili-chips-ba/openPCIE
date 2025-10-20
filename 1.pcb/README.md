@@ -1,8 +1,96 @@
 # openBackplane PCB
 
 ## Design Outline
-**WIP:**
-@AnesVrce to elaborate
+The board is designed for flexible PCIe system development and testing, featuring two distinct logical *islands*:  
+- a **4-lane direct connection**, and  
+- a **1-to-4 switched connection**.
+
+---
+
+##  Key Features
+
+- **Modular Design:** Two independent “islands” for different PCIe topologies.  
+- **Flexible Connectivity:** Supports standard PCIe slots and M.2 (M-key, PCIe) connectors.  
+- **Centralized Power:** Single 6-pin PCIe power connector supplies the entire board (up to 70 W total).  
+- **On-board Signal Generation:** Integrated 100 MHz REFCLK generator and reset (PERST#) distribution circuits.  
+- **Innovative RC Connector Design:** Allows native Endpoint cards to function as a Root Complex without hardware modification.
+
+---
+
+##  Board Architecture
+
+The board consists of shared resources (power, clock, reset) and two main functional blocks.
+
+### Common Resources
+
+####  Power Delivery
+- Powered by a standard **6-pin PCIe power connector** (3 × +12 V, 3 × GND).  
+- On-board **DC-DC** and **LDO** converters provide the required **+3.3 V** and **+12 V** rails for all slots.  
+- Total power budget: **≈ 70 W**, with a guideline of **10 W per slot**.
+
+####  Clock Distribution
+- On-board **100 MHz PCIe-approved REFCLK Generator** provides the reference clock.
+- The clock is distributed to all slots via differential buffers (**REFCLK+ / REFCLK-**).
+- The **REFCLK** is only distributed to a slot (both RC and EP) after a device has been inserted and asserts the **CLKREQ#** signal (by driving it to logic low). This feature ensures that clocks are only active when and where needed.
+- The clock for the PCIe switch, and therefore for its downstream x1 Endpoint slots, is **always active**, as the presence of a RPi cannot be reliably detected.
+- As the Root Complex, the **Raspberry Pi** provides its own reference clock. The rest of the backplane does not need this clock, as all downstream PCIe devices receive their reference clock from the onboard generator.
+
+####  Reset Logic
+The system-wide PERST# reset signal is distributed to all slots and can be triggered by three sources:
+
+- **Automatic**: Triggers a reset whenever a supply voltage is outside its specified range.
+- **Manual**: A push-button for user-initiated resets.
+- **External**: An active-low reset signal from the Raspberry Pi. To handle its unspecified output type, the signal is converted to open-drain before being wired-OR'd with the other reset sources. 
+  
+---
+
+##  Functional Blocks
+
+### 4-lane “Direct” Island (RC4 ⇔ EP4)
+
+Provides a direct, point-to-point, 4-lane PCIe link between two connectors.
+
+**RC4 (Root Complex)**  
+- 4-lane connector intended for a card acting as the Root Complex.  
+- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+
+**EP4 (Endpoint)**  
+- 4-lane connector for a standard Endpoint card.  
+- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+
+---
+
+### 1-lane “Switched” Island (RC1 ⇔ SW ⇔ SW_EP0/1/2/3)
+
+Uses a PCIe switch to branch a single upstream lane into four downstream lanes.
+
+**RC1 (Root Complex)**  
+- 1-lane connector for the upstream Root Complex card.  
+- Mechanical options: *Standard PCIe Slot*, *M.2 (M-key, PCIe)*, or *1-lane RPi connector (FPC 16-pin, 0.5 mm, 100 Ω)*.
+
+**PCIe Switch**  
+- Device: **Asmedia ASM1184e** (PCIe 2.0 switch).  
+- Configuration: **1 × Upstream → 4 × Downstream** (1-to-4).
+
+**SW_EP0 – SW_EP3 (Endpoints)**  
+- Four 1-lane connectors for downstream Endpoint cards.  
+- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+
+---
+
+## Note on “RC Connectors”
+
+A key design feature of this backplane is the implementation of the **RC (Root Complex)** connectors.
+
+Most FPGA development boards or other plug-in cards are natively designed with an **Endpoint (EP) pinout**.  
+The backplane swaps the connector pins on the RC slots so that:
+
+- The **Transmit (Tx)** differential pairs from the plug-in card connect to the **Receive (Rx)** pairs on the opposite side, and  
+- The **Receive (Rx)** pairs connect to the **Transmit (Tx)** pairs on the other side.
+
+This pin-swapping allows the same physical FPGA plug-in card—always pinned as an Endpoint—to operate in either **EP** or **RC** role.
+
+---
 
 <p align="center" width="100%">
     <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
