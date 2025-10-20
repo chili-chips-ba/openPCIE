@@ -3929,7 +3929,7 @@
 		(effects
 			(font
 				(size 0.889 0.889)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 			(justify left)
 		)
@@ -3941,7 +3941,7 @@
 		(effects
 			(font
 				(size 0.889 0.889)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 			(justify left)
 		)
@@ -3953,6 +3953,8 @@
 		(effects
 			(font
 				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
 				(color 194 194 194 1)
 			)
 			(justify left bottom)
@@ -3961,10 +3963,12 @@
 	)
 	(text "1-lane PCIe for Root Complex"
 		(exclude_from_sim no)
-		(at 13.716 16.51 0)
+		(at 17.78 17.78 0)
 		(effects
 			(font
 				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
 				(color 194 194 194 1)
 			)
 			(justify left bottom)
@@ -9545,7 +9549,7 @@
 				)
 			)
 		)
-		(property "Value" "X3113WVS-36-9TV01"
+		(property "Value" "???"
 			(at 81.915 85.09 0)
 			(effects
 				(font
@@ -9553,7 +9557,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_Chili-chips:10061913-110PLF"
+		(property "Footprint" "PCM_Chili-chips:AMPHENOL_10018784-10210TLF"
 			(at 76.2 88.9 0)
 			(effects
 				(font
@@ -9591,9 +9595,35 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5711223"
+		(property "LCSC" ""
 			(at 76.2 96.52 0)
 			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 76.2 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Mouser" ""
+			(at 76.2 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" ""
+			(at 76.2 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)

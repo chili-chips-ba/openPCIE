@@ -5402,7 +5402,7 @@
 		(effects
 			(font
 				(size 1.016 1.016)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 		)
 		(uuid "1569c3b2-ccf4-4ad4-a397-0e7d9c6924d7")
@@ -5443,14 +5443,15 @@
 		)
 		(uuid "380e3b74-0013-41a6-9d6c-7437db2b69e3")
 	)
-	(text "OE7# is connected directly to GND to ensure this clock is always active, \nas the presence of a RPi cannot be reliably detected."
+	(text "~{OE7} is connected directly to GND to ensure this clock is always active, \nas the presence of a RPi cannot be reliably detected."
 		(exclude_from_sim no)
-		(at 245.11 145.542 0)
+		(at 208.28 144.78 0)
 		(effects
 			(font
-				(size 1.27 1.27)
-				(color 0 0 132 1)
+				(size 1.016 1.016)
+				(color 132 0 132 1)
 			)
+			(justify left)
 		)
 		(uuid "6c9f5d65-6c72-4bfe-8dc0-abbdd0a8714c")
 	)
@@ -5460,6 +5461,8 @@
 		(effects
 			(font
 				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
 				(color 194 194 194 1)
 			)
 			(justify left bottom)
@@ -5472,6 +5475,8 @@
 		(effects
 			(font
 				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
 				(color 194 194 194 1)
 			)
 			(justify left bottom)
@@ -5484,7 +5489,7 @@
 		(effects
 			(font
 				(size 1.016 1.016)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 		)
 		(uuid "d9a47aaf-13da-4543-a671-86683d34abd9")
@@ -5518,6 +5523,8 @@
 		(effects
 			(font
 				(size 1.524 1.524)
+				(thickness 0.3048)
+				(bold yes)
 				(color 194 194 194 1)
 			)
 			(justify left bottom)
