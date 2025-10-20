@@ -83,12 +83,13 @@ Since we have a unique feature with multiple connectors on the same line, specia
     <img width="65%" src="0.doc/images/PCB-Stubs-MustAvoid.png">
 </p>
 
-> [@AnesVrce, please translate this section to English]
-> Model PCIE konekcija: Generatori -> Transport -> Potrosaci
-> Svi generatori signala trebaju biti postavljeni ekstremno blizu. Slicno tome, svi potrosaci signala trebaju biti vrlo blizu. Cilj je minimizirati "stub" na pocetku putanje (generatori) kao i "stub" na kraju putanje (potrosaci).
->
-> A na gornjem primjeru, u slucaju kada je M.2 generator, a "Slot" potrosac, imamo vrlo dug "stub" na obje strane. Kako u taj "stub" takodje ide korisni signal, a "stub" nije terminiran, iz njega se signal reflektuje, tj. vrati nazad, i to sa znatnim kasnjenjem zbog duzine "stub"-a.
-Taj reflektovani val onda poremeti originalni signal na "Slot" poziciji, gdje ga primamo, i to u momentu kada se od njega ocekuje da bude stabilan. Slicno, reflektovani signal iz M.2 stub-a poremeti generator na M.2 poziciji, sto se nesto poslije toga odslika i na "Slot" lokaciji, gdje nam treba da je cist, a taj treci val se pocne mijesati sa prvim i drugim. Fora je sto je moguce vise eliminisati drugi, treci i ostale povratne valove (_Reflected Waves_), i u igri ostaviti samo prvi val (_Incident Wave_).
+## PCIe Connection Model: Generators → Transport → Consumers
+
+All signal generators should be placed as close as possible to each other. Likewise, all signal consumers should be grouped very close together. The goal is to minimize the stubs—both at the beginning of the transmission path (on the generator side) and at the end (on the consumer side).
+
+In the example above, when the M.2 connector acts as the signal generator and the Slot is the consumer, very long stubs appear on both ends. Since the active signal also propagates into these unterminated stubs, part of it gets reflected back with a noticeable delay proportional to the stub length. This reflected wave interferes with the original signal at the Slot receiver exactly when that signal should be stable. Similarly, the reflection from the M.2 stub disturbs the transmitter at the M.2 side, which then shows up again at the Slot and further mixes with the first and second waves.
+
+The key is to eliminate or minimize these second, third, and subsequent reflected waves—keeping only the primary, incident wave that carries the valid data.
 
 ## Signal Integrity (SI) Sims
 @AnesVrce TODO.
