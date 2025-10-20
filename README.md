@@ -140,57 +140,69 @@ The central component of the SQRL Acorn CLE-215+ system is the **Xilinx Artix-7 
 The key specifications are summarized below:
 
 <div align="center">
-  <table>
-    <thead>
-      <tr>
-        <th>Specification</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Family</td>
-        <td>Xilinx Artix-7</td>
-      </tr>
-      <tr>
-        <td>Speed Grade</td>
-        <td>-3</td>
-      </tr>
-      <tr>
-        <td>Logic Cells (LUT4-Equivalent)¹</td>
-        <td>215,360</td>
-      </tr>
-      <tr>
-        <td>LUT6</td>
-        <td>134,600</td>
-      </tr>
-      <tr>
-        <td>Flip-Flops</td>
-        <td>269,200</td>
-      </tr>
-      <tr>
-        <td>Block RAM</td>
-        <td>13 Mbit</td>
-      </tr>
-      <tr>
-        <td>DSP Slices</td>
-        <td>740</td>
-      </tr>
-      <tr>
-        <td>GTP Transceivers</td>
-        <td>4 (up to 6.6 Gbit/s)</td>
-      </tr>
-      <tr>
-        <td>DDR3 SDRAM (Board)</td>
-        <td>1 GB, 16-bit</td>
-      </tr>
-      <tr>
-        <td>QSPI Flash (Board)</td>
-        <td>32 MB</td>
-      </tr>
-    </tbody>
-  </table>
-  <p><small>¹ The 'Logic Cells' count is a Xilinx metric derived from the physical 6-input LUTs to provide an estimated equivalent in simpler 4-input LUTs for comparison purposes. The number of physical LUTs and other resources are the exact counts for the XC7A200T chip.</small></p>
+<table>
+<thead>
+<tr>
+<th>Specification</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Family</td>
+<td>Xilinx Artix-7</td>
+</tr>
+<tr>
+<td>Speed Grade</td>
+<td>-3</td>
+</tr>
+<tr>
+<td>Logic Cells (LUT4-Equivalent)¹</td>
+<td>215,360</td>
+</tr>
+<tr>
+<td>LUT6</td>
+<td>134,600</td>
+</tr>
+<tr>
+<td>Flip-Flops</td>
+<td>269,200</td>
+</tr>
+<tr>
+<td>Block RAM</td>
+<td>13 Mbit</td>
+</tr>
+<tr>
+<td>DSP Slices</td>
+<td>740</td>
+</tr>
+<tr>
+<td>GTP Transceivers</td>
+<td>4 (up to 6.6 Gbit/s)</td>
+</tr>
+<tr>
+<td>DDR3 SDRAM (Board)</td>
+<td>1 GB, 16-bit</td>
+</tr>
+<tr>
+<td>QSPI Flash (Board)</td>
+<td>32 MB</td>
+</tr>
+<tr>
+<td>User LEDs</td>
+<td>4</td>
+</tr>
+<tr>
+<td>General Purpose IOs</td>
+<td>4</td>
+</tr>
+<tr>
+<td>LVDS Pairs</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<p><small>¹ The 'Logic Cells' count is a Xilinx metric derived from the physical 6-input LUTs to provide an estimated equivalent in simpler 4-input LUTs for comparison purposes. The number of physical LUTs and other resources are the exact counts for the XC7A200T chip.</small></p>
 </div>
 
 ### FPGA Board Setup
@@ -324,7 +336,7 @@ The generated IP core functions as a "black box" with a standard AXI4-Stream int
 
 **3. Physical Constraints (XDC File)**
 
-To map the logical design onto the physical FPGA chip, a manual **XDC (Xilinx Design Constraints) file** is crucial. This file is not automatically generated and serves as the bridge between RTL and the physical world. It must define:
+To map the logical design onto the physical FPGA chip, a manual **XDC (Xilinx Design Constraints) file** is crucial. It must define:
 *   The precise pin locations on the FPGA for the PCIe differential pairs (TX/RX lanes).
 *   The pin location and timing characteristics of the reference clock.
 *   The location of the system reset signal.
@@ -386,29 +398,38 @@ This setup created a safe and controlled environment to perform direct, low-leve
 
 ### 3. Functional Verification: Direct Memory Read/Write
 
-With the FPGA passed through to the VM, the final test was to verify the end-to-end communication path. This was done using the `devmem2` utility to perform direct PIO (Programmed I/O) on the memory space mapped by the card's BAR0 register.
+With the FPGA passed through to the VM, the final test was to verify the end-to-end communication path. This was done using the `devmem` utility to perform direct PIO (Programmed I/O) on the memory space mapped by the card's BAR0 register.
 
-The process was simple and effective:
-1.  The base physical address of BAR0 (e.g., `fc500000`) was identified using `lspci -v`.
-2.  A test value (`0xB`) was **written** to this base address.
-3.  The same address was immediately **read back**.
+**1. Finding the Device's Memory Address**
 
-<div align="center">
-  <table width="100%">
-    <tr>
-      <td align="center" width="50%">
-        <b>1. Writing a value (0xB) to the BAR0 address</b><br>
-        <img src="0.doc/pictures/Writing a value to the BAR0 address.png" style="max-width:90%; height:auto;">
-      </td>
-      <td align="center" width="50%">
-        <b>2. Reading back the value from the same address</b><br>
-        <img src="0.doc/pictures/Reading back the value from the same address.png" style="max-width:90%; height:auto;">
-      </td>
-    </tr>
-  </table>
-</div>
+After the FPGA is programmed and the system boots, the operating system will enumerate it on the PCIe bus and assign a memory-mapped I/O region, also known as a Base Address Register (BAR).
+To find this address, you can use the `lspci -v` command. The image below shows the output for our target device. The key information is the `Memory at ...` line, which indicates the base physical address that the host system will use to communicate with the device.
+In this example, the assigned base address is 0xfc500000.
 
-The successful readback of the value `0xB` confirms that the entire communication chain is functional: from the user-space application, through the OS kernel and PCIe fabric, to the FPGA's internal memory and back.
+<p align="center">
+  <img src="0.doc/pictures/Physical Address fc500000 Assigned to PCIe Device.png" style="width:60%; height:60%;">
+  <br><em>Physical Address fc500000 Assigned to PCIe Device.</em>
+</p>
+
+**2. Testing Data Transfer with devmem**
+
+The devmem utility allows direct reading from and writing to physical memory addresses. We can use it to perform a simple write-then-read test to confirm that the data path to the FPGA's on-chip memory (BRAM) is working correctly.
+
+The test procedure is as follows:
+*  Write a value to the device's base address.
+*  Read the value back from the same address to ensure it was stored correctly.
+*  Repeat with a different value to confirm that the memory isn't "stuck" and is dynamically updating.
+
+The image below demonstrates this process.
+*  First, the hexadecimal value 0xA is written to the address 0xFC500000. A subsequent read confirms that 0x0000000A is returned.
+*  Next, the value is changed to 0xB. A final read confirms that 0x0000000B is returned, proving the write operation was successful.
+
+<p align="center">
+  <img src="0.doc/pictures/Data Read and Write Test Using devmem.png" style="width:60%; height:60%;">
+  <br><em>Data Read and Write Test Using devmem.png</em>
+</p>
+
+This test confirms that the entire communication chain is functional: from the user-space application, through the OS kernel and PCIe fabric, to the FPGA's internal memory and back.
 
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
