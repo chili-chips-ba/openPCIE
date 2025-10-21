@@ -101,7 +101,10 @@ Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full sche
 ## Usage scenarios
 
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
-@AnesVrce to add illustration.
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP.JPG">
+</p>
 
 This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
 
