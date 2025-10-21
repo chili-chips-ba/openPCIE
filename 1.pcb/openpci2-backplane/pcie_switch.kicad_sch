@@ -5,7 +5,7 @@
 	(uuid "0b8e5f97-03cb-4466-8d11-5c2a0c360436")
 	(paper "A4")
 	(title_block
-		(date "2025-10-20")
+		(date "2025-10-21")
 		(rev "r1B1")
 		(company "Chili.CHIPS")
 	)
@@ -2195,12 +2195,12 @@
 			(in_bom no)
 			(on_board yes)
 			(property "Reference" "JP"
-				(at -3.81 3.175 0)
+				(at 0 1.905 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left bottom)
+					(justify bottom)
 				)
 			)
 			(property "Value" ""
@@ -2213,7 +2213,7 @@
 				)
 			)
 			(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
-				(at 0 0 90)
+				(at 0 -5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -2241,8 +2241,8 @@
 			)
 			(symbol "JP3 shorted with 0R_0_1"
 				(rectangle
-					(start -0.635 1.524)
-					(end -1.905 0.762)
+					(start -1.5982 1.7277)
+					(end -0.3282 0.9657)
 					(stroke
 						(width 0)
 						(type default)
@@ -2275,78 +2275,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(arc
-					(start -2.032 0)
-					(mid -1.8832 0.3592)
-					(end -1.524 0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start -1.524 -0.508)
-					(mid -1.8832 -0.3592)
-					(end -2.032 0)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start -1.016 0.508)
-					(mid -0.5102 0)
-					(end -1.016 -0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 0.508 0)
-					(mid 0.6568 0.3592)
-					(end 1.016 0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 1.016 -0.508)
-					(mid 0.6568 -0.3592)
-					(end 0.508 0)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 1.524 0.508)
-					(mid 2.03 0)
-					(end 1.524 -0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
 					)
 				)
 				(polyline
@@ -2418,8 +2346,19 @@
 			)
 			(symbol "JP3 shorted with 0R_1_1"
 				(rectangle
-					(start -1.651 1.524)
-					(end -1.905 0.762)
+					(start -1.905 0.635)
+					(end -1.27 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start -1.3442 1.7277)
+					(end -1.5982 0.9657)
 					(stroke
 						(width 0)
 						(type default)
@@ -2429,11 +2368,33 @@
 					)
 				)
 				(rectangle
-					(start -0.635 1.524)
-					(end -0.889 0.762)
+					(start -0.635 0.635)
+					(end 0.635 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start -0.3282 1.7277)
+					(end -0.5822 0.9657)
 					(stroke
 						(width 0)
 						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 1.27 0.635)
+					(end 1.905 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
 					)
 					(fill
 						(type outline)
@@ -2447,12 +2408,12 @@
 			(in_bom no)
 			(on_board yes)
 			(property "Reference" "JP"
-				(at -3.81 3.175 0)
+				(at 0 1.905 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left bottom)
+					(justify bottom)
 				)
 			)
 			(property "Value" ""
@@ -2494,7 +2455,7 @@
 			(symbol "JP3 shorted with 0R (2-3)_0_1"
 				(polyline
 					(pts
-						(xy -0.635 0) (xy 0.635 0)
+						(xy 0.635 0) (xy -0.635 0)
 					)
 					(stroke
 						(width 0)
@@ -2505,8 +2466,8 @@
 					)
 				)
 				(rectangle
-					(start 0.6489 1.5193)
-					(end 1.9189 0.7573)
+					(start 1.5982 1.7277)
+					(end 0.3282 0.9657)
 					(stroke
 						(width 0)
 						(type default)
@@ -2527,78 +2488,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(arc
-					(start -2.032 0)
-					(mid -1.8832 0.3592)
-					(end -1.524 0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start -1.524 -0.508)
-					(mid -1.8832 -0.3592)
-					(end -2.032 0)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start -1.016 0.508)
-					(mid -0.5102 0)
-					(end -1.016 -0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 0.508 0)
-					(mid 0.6568 0.3592)
-					(end 1.016 0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 1.016 -0.508)
-					(mid 0.6568 -0.3592)
-					(end 0.508 0)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 1.524 0.508)
-					(mid 2.03 0)
-					(end 1.524 -0.508)
-					(stroke
-						(width 0.0001)
-						(type solid)
-					)
-					(fill
-						(type outline)
 					)
 				)
 				(polyline
@@ -2670,8 +2559,19 @@
 			)
 			(symbol "JP3 shorted with 0R (2-3)_1_1"
 				(rectangle
-					(start 0.6489 1.5193)
-					(end 0.9029 0.7573)
+					(start -1.27 0.635)
+					(end -1.905 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 0.3282 1.7277)
+					(end 0.5822 0.9657)
 					(stroke
 						(width 0)
 						(type default)
@@ -2681,11 +2581,33 @@
 					)
 				)
 				(rectangle
-					(start 1.9189 1.5193)
-					(end 1.6649 0.7573)
+					(start 0.635 0.635)
+					(end -0.635 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 1.3442 1.7277)
+					(end 1.5982 0.9657)
 					(stroke
 						(width 0)
 						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 1.905 0.635)
+					(end 1.27 -0.635)
+					(stroke
+						(width 0)
+						(type solid)
 					)
 					(fill
 						(type outline)
@@ -3169,7 +3091,7 @@
 		(effects
 			(font
 				(size 0.889 0.889)
-				(color 0 0 132 1)
+				(color 132 0 132 1)
 			)
 			(justify left top)
 		)
@@ -11012,12 +10934,12 @@
 		(dnp no)
 		(uuid "061c02da-0830-458f-a53c-42fc43c9155d")
 		(property "Reference" "JP9"
-			(at 62.865 134.62 90)
+			(at 59.69 134.62 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" "1K"
@@ -11164,10 +11086,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "0b3b5759-fcdc-478b-8100-d94b3c903a62")
 		(property "Reference" "J10"
-			(at 135.89 173.0131 0)
+			(at 134.62 172.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11176,7 +11097,7 @@
 			)
 		)
 		(property "Value" "73251-3140"
-			(at 135.89 175.5531 0)
+			(at 134.62 175.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12032,12 +11953,12 @@
 		(dnp no)
 		(uuid "31727143-ed8b-425b-ab87-2ef7e02d766c")
 		(property "Reference" "JP8"
-			(at 60.325 152.4 90)
+			(at 57.15 152.4 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" "1K"
@@ -12523,7 +12444,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R (0603)"
+		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
 			(at 20.32 104.14 90)
 			(effects
 				(font
@@ -13236,12 +13157,12 @@
 		(dnp no)
 		(uuid "623629ff-b16a-4da1-949c-6d2189850ce9")
 		(property "Reference" "JP7"
-			(at 52.705 134.62 90)
+			(at 49.53 134.62 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" "1K"
@@ -15544,7 +15465,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R (0603)"
+		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
 			(at 20.32 144.78 90)
 			(effects
 				(font
@@ -16080,7 +16001,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R (0603)"
+		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
 			(at 30.48 114.3 90)
 			(effects
 				(font
@@ -16169,7 +16090,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R (0603)"
+		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
 			(at 30.48 134.62 90)
 			(effects
 				(font
@@ -16925,7 +16846,7 @@
 				)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R (0603)"
+		(property "Footprint" "PCM_EEZ_SMD:JP3 shorted with 0R"
 			(at 20.32 124.46 90)
 			(effects
 				(font
@@ -17062,10 +16983,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "f6604678-2d41-4582-b4ab-bfbcad7568f4")
 		(property "Reference" "J9"
-			(at 135.89 159.0431 0)
+			(at 134.62 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17074,7 +16994,7 @@
 			)
 		)
 		(property "Value" "73251-3140"
-			(at 135.89 161.5831 0)
+			(at 134.62 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
