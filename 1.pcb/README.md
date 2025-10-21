@@ -52,11 +52,11 @@ Provides a direct, point-to-point, 4-lane PCIe link between two connectors.
 
 **RC4 (Root Complex)**  
 - 4-lane connector intended for a card acting as the Root Complex.  
-- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+- Mechanical option: Standard PCIe slot.
 
 **EP4 (Endpoint)**  
 - 4-lane connector for a standard Endpoint card.  
-- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+- Mechanical option: Standard PCIe slot.
 
 ---
 
@@ -103,7 +103,7 @@ Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full sche
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
 @AnesVrce to add illustration.
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in both "Slot" and M.2 form-factors. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
