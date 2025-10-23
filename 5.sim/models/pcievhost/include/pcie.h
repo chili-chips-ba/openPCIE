@@ -48,6 +48,10 @@
 #include "VProc.h"
 #endif
 
+#if defined(OSVVM)
+#include "OsvvmVUserVPrint.h"
+#endif
+
 #if defined(PCIEDPI)
 #include "pcie_dpi.h"
 #endif
@@ -61,7 +65,7 @@
 
 #define PCIE_MAJOR_VER                    1
 #define PCIE_MINOR_VER                    6
-#define PCIE_PATCH_VER                    1
+#define PCIE_PATCH_VER                    7
 
 // Used in macros
 #define BYTE_MASK                         0xff
@@ -441,6 +445,9 @@ enum config_e {
     CONFIG_DISABLE_ECRC_CMPL,
     CONFIG_ENABLE_ECRC_CMPL,
 
+    CONFIG_DISABLE_CRC_CHK,
+    CONFIG_ENABLE_CRC_CHK,
+
     CONFIG_DISABLE_INTERNAL_MEM,
     CONFIG_ENABLE_INTERNAL_MEM,
 
@@ -516,6 +523,8 @@ EXTERN pPktData_t IoReadDigest         (const uint64_t addr, const int length, c
 EXTERN pPktData_t MessageDigest        (const int code, const PktData_t *data, const int length, const int tag, const uint32_t rid, const bool digest,
                                         const bool queue, const int node);
 
+EXTERN pPktData_t MessageVendorDigest  (const int code, const PktData_t *data, const int length, const int tag, const uint32_t rid, const uint64_t vend_data,
+                                        const bool digest, const bool queue, const int node);
 
 // Flow control initialisation
 EXTERN void       InitFc               (const int node);
@@ -558,9 +567,6 @@ EXTERN void       getPcieVersionString (char*     sbuf, const int bufsize);
 # ifdef OSVVM
 EXTERN int        VWrite               (unsigned int addr, unsigned int  data, int delta, unsigned int node);
 EXTERN int        VRead                (unsigned int addr, unsigned int *data, int delta, unsigned int node);
-#define VPrint printf
-#define DebugVPrint //
-//#define DebugVPrint printf
 # endif
 
 #endif
