@@ -16,29 +16,33 @@
 
 `timescale 1ps/1ps
 
-module top  (
+module top
+#(parameter int DataWidth = 64  // 8, 16, 32 or 64 only
+)
+(
    // Clocks and reset
-   input          clk_p,
-   input          clk_n,
-   input          rst_n,
+   input                     clk_p,
+   input                     clk_n,
+   input                     rst_n,
 
-   input          pcieclk,
+   input                     pclk,
+   input                     pcieclk,
 
-   // PCie PIPE data
-   output [7:0]   txdata,
-   output         txdatak,
-   input  [7:0]   rxdata,
-   input          rxdatak,
+   // PCIe PIPE data
+   output [DataWidth-1:0]    txdata,
+   output [DataWidth/8-1:0]  txdatak,
+   input  [DataWidth-1:0]    rxdata,
+   input  [DataWidth/8-1:0]  rxdatak,
 
    // UART
-   input          uart_rx,
-   output         uart_tx,
+   input                     uart_rx,
+   output                    uart_tx,
 
    // Keys
-   input  [1:0]   key_in,
+   input  [1:0]              key_in,
 
    // LEDs
-   output  [1:0]  led
+   output  [1:0]             led
 );
 
 //--------------------------------------------------------------
@@ -79,11 +83,13 @@ assign led                             = 2'b00;
 //--------------------------------------------------------------
 
   pcieVHostPipex1 #(
-    .NodeNum                           (2),
-    .EndPoint                          (0)
+    .NodeNum                           (1),
+    .EndPoint                          (1),
+    .DataWidth                         (DataWidth)
   ) bfm_pcie
   (
-    .pclk                              (pcieclk),
+    .pclk                              (pclk),
+    .pcieclk                           (pcieclk),
     .nreset                            (rst_n),
 
     .TxData                            (txdata),
