@@ -17,7 +17,9 @@
 `timescale 1ps/1ps
 
 module tb #(
-   parameter int RUN_SIM_US     = 10000
+   parameter RUN_SIM_US     = 10000,
+             PIPE_DATAWIDTH = 64   
+   
 )();
 
    // glbl glbl();
@@ -28,13 +30,15 @@ module tb #(
 
   // Generate clocks and run sim for the specified amount of time
   localparam  HALF_CLK_P_PERIOD_PS      = 2_500; // 200MHz
-  localparam  HALF_PCIE_PERIOD_PS       = 1_000; // 500MHz
+  localparam  HALF_PCIE_PERIOD_PS       = 2_000; // 250MHz (GEN1)
+  localparam  HALF_PIPE_PERIOD_PS       = HALF_PCIE_PERIOD_PS*8;
   localparam  RST_CYLES                 = 10;
 
   logic       clk_p;
   wire        clk_n;
   logic       rst_n;
   logic       pcieclk;
+  logic       pclk;
   logic [2:1] key;
 
   initial begin
@@ -42,6 +46,7 @@ module tb #(
     //clk_n      = 1'b0;
     rst_n      = 1'b0;
     pcieclk    = 1'b0;
+    pclk        = 1'b0;
 
     key        = 2'b0;
 
@@ -59,6 +64,11 @@ module tb #(
       forever begin: pcie_clock_gen
         #(HALF_PCIE_PERIOD_PS * 1ps)
           pcieclk = ~pcieclk;
+      end
+      
+      forever begin: pipe_clock_gen
+        #(HALF_PIPE_PERIOD_PS * 1ps)
+          pclk = ~pclk;
       end
 
       begin: run_sim
@@ -78,18 +88,24 @@ module tb #(
   logic        uart_rx, uart_tx;
   logic [3:2]  led;
 
-  logic [7:0]  downdata;
-  logic        downdatak;
-  logic [7:0]  updata;
-  logic        updatak;
+  logic [PIPE_DATAWIDTH-1:0]           downdata;
+  logic [PIPE_DATAWIDTH/8-1:0]         downdatak;
+  logic [PIPE_DATAWIDTH-1:0]           updata;
+  logic [PIPE_DATAWIDTH/8-1:0]         updatak;
 
-  top dut (
+  top #(
+    .DataWidth                         (PIPE_DATAWIDTH)
+  ) dut
+  (
     .clk_p                             (clk_p),
     .clk_n                             (clk_n),
     .rst_n                             (rst_n),
 
+    .pclk                              (pclk),
+    
+    // Test purposes only, whilst pcievhost component in stub DUT stand-in
     .pcieclk                           (pcieclk),
-
+ 
     // PCie PIPE data
     .txdata                            (downdata),
     .txdatak                           (downdatak),
@@ -112,11 +128,13 @@ module tb #(
 //--------------------------------------------------------------
 
   pcieVHostPipex1 #(
-    .NodeNum                           (1),
-    .EndPoint                          (1)
+    .NodeNum                           (2),
+    .EndPoint                          (0),
+    .DataWidth                         (PIPE_DATAWIDTH)
   ) bfm_pcie
   (
-    .pclk                              (pcieclk),
+    .pcieclk                           (pcieclk),
+    .pclk                              (pclk),
     .nreset                            (rst_n),
 
     .TxData                            (updata),
