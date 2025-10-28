@@ -1,48 +1,47 @@
 # openBackplane PCB
 
-## Design Outline
 The board is designed for flexible PCIe system development and testing, featuring two distinct logical *islands*:  
-- a **4-lane direct connection**, and  
-- a **1-to-4 switched connection**.
+- **(1-to-1) 4-lane Direct connection**
+- **(1-to-4) 1-lane Switched connection**.
 
----
+<p align="center" width="100%">
+    <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
+</p>
 
-##  Key Features
+####  Key Features
 
-- **Modular Design:** Two independent “islands” for different PCIe topologies.  
-- **Flexible Connectivity:** Supports standard PCIe slots and M.2 (M-key, PCIe) connectors.  
-- **Centralized Power:** Single 6-pin PCIe power connector supplies the entire board (up to 70 W total).  
-- **On-board Signal Generation:** Integrated 100 MHz REFCLK generator and reset (PERST#) distribution circuits.  
-- **Innovative RC Connector Design:** Allows native Endpoint cards to function as a Root Complex without hardware modification.
+- Modular Design:
+  - Two independent “islands” for different PCIe topologies.  
+- Flexible Connectivity:
+  - Supports standard PCIe Slots and M.2 (M-key, PCIe) connectors.  
+- Power, Clock and Reser generation:
+  - Single 6-pin PCIe power connector supplies the entire board (up to 70 W total).  
+  - Integrated 100 MHz REFCLK generator and reset (PERST#) distribution circuits.  
+- Innovative RC Connector Design:
+  - Allows natively EndPoint cards to function as a RootComplex without hardware modification.
 
----
-
-##  Board Architecture
-
-The board consists of shared resources (power, clock, reset) and two main functional blocks.
+Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
 ### Common Resources
 
-####  Power Delivery
-- Powered by a standard **6-pin PCIe power connector** (3 × +12 V, 3 × GND).  
-- On-board **DC-DC** and **LDO** converters provide the required **+3.3 V** and **+12 V** rails for all slots.  
-- Total power budget: **≈ 70 W**, with a guideline of **10 W per slot**.
+#### Power Delivery
+- Powered by a standard **6-pin PCIe power connector** (3 × **+12V**, 3 × **GND**).  
+- On-board **DC-DC** and **LDO** converters provide the required **+3.3V** and **+12V** rails for all slots.  
+- Total power budget: **~70W**, with a guideline of **10W per slot**.
 
-####  Clock Distribution
-- On-board **100 MHz PCIe-approved REFCLK Generator** provides the reference clock.
+#### Clock Distribution
+- On-board **100MHz PCIe-approved REFCLK Generator** provides the reference clock.
 - The clock is distributed to all slots via differential buffers (**REFCLK+ / REFCLK-**).
-- The **REFCLK** is only distributed to a slot (both RC and EP) after a device has been inserted and asserts the **CLKREQ#** signal (by driving it to logic low). This feature ensures that clocks are only active when and where needed.
+- The **REFCLK** is only distributed to a slot (both RC and EP) after a device has been inserted and asserts the **CLKREQ#** signal (by driving it to logic low). This feature ensures that clocks are only active when and where needed, thus reducing the power and EMI.
 - The clock for the PCIe switch, and therefore for its downstream x1 Endpoint slots, is **always active**, as the presence of a RPi cannot be reliably detected.
-- As the Root Complex, the **Raspberry Pi** provides its own reference clock. The rest of the backplane does not need this clock, as all downstream PCIe devices receive their reference clock from the onboard generator.
+- **Raspberry Pi** functions as a Root Complex and provides its own reference clock. Our backplane does not need this clock, as all downstream PCIe devices receive their reference clock from the onboard generator. This means that the End-Points will in the RPi5 RC case have to be configured for `Async RefClock`.
 
-####  Reset Logic
+#### Reset Logic
 The system-wide PERST# reset signal is distributed to all slots and can be triggered by three sources:
 
 - **Automatic**: Triggers a reset whenever a supply voltage is outside its specified range.
 - **Manual**: A push-button for user-initiated resets.
 - **External**: An active-low reset signal from the Raspberry Pi. To handle its unspecified output type, the signal is converted to open-drain before being wired-OR'd with the other reset sources. 
-  
----
 
 ##  Functional Blocks
 
@@ -59,7 +58,6 @@ Provides a direct, point-to-point, 4-lane PCIe link between two connectors.
 - Mechanical option: Standard PCIe slot.
 
 ---
-
 ### 1-lane “Switched” Island (RC1 ⇔ SW ⇔ SW_EP0/1/2/3)
 
 Uses a PCIe switch to branch a single upstream lane into four downstream lanes.
@@ -76,9 +74,7 @@ Uses a PCIe switch to branch a single upstream lane into four downstream lanes.
 - Four 1-lane connectors for downstream Endpoint cards.  
 - Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
 
----
-
-## Note on “RC Connectors”
+#### Note on “RC Connectors”
 
 A key design feature of this backplane is the implementation of the **RC (Root Complex)** connectors.
 
@@ -91,13 +87,6 @@ The backplane swaps the connector pins on the RC slots so that:
 This pin-swapping allows the same physical FPGA plug-in card—always pinned as an Endpoint—to operate in either **EP** or **RC** role.
 
 ---
-
-<p align="center" width="100%">
-    <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
-</p>
-
-Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
-
 ## Usage scenarios
 
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
@@ -106,7 +95,7 @@ Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full sche
     <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP.JPG">
 </p>
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in the Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
@@ -143,9 +132,9 @@ By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard
 
 The _characteristic impedance_ of the differential pairs on our backplane is `100ohm+/-10% for both data and clock signals`. They are all routed as `microstrips`, i.e. with reference to Ground/Power plane from only one side. The P-to-N skew is matched to no more than **5 mils**.
 
-The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. As a matter of face, we have `only two vias per diff pair`, one at the start, another at the end of the signal path. The need for them comes from of our very unique feature with multiple connectors for the same line, placed on the opposite sides of the board. Since we must have at least two vias, We could have also used the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power). In a normal situation, the _'microstrips'_ are better as they allow getting away without any vias. 
+The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. We use Through-Hole (TH) slot connectors for mechanical stability and better routability. The M.2 and RPi connectors are Surface-Mount Devices (SMD). All components are on the top side of the board. We did not use the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power), as they require vias and are typically used in setups with 6 or more layers. We used the _'microstrips'_, as they allowed getting away without any vias. 
 
-The size of our vias is the standard **0.3mm**. The blind, burried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be super-cautious about the vias on the diff pairs. Such vias go through all layers, they are longer. They are also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
+The size of our vias is the standard **0.3mm**. The blind, burried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be cautious about placing vias on the diff pairs. Such vias go through all layers, they are longer. They are also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
 
 <p align="center" width="100%">
     <img width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
@@ -176,11 +165,11 @@ Since we have a unique feature with multiple connectors on the same line, specia
 
 ## PCIe Connection Model: Generators → Transport → Consumers
 
-All signal generators should be placed as close as possible to each other. Likewise, all signal consumers should be grouped very close together. The goal is to minimize the stubs—both at the beginning of the transmission path (on the generator side) and at the end (on the consumer side).
+All signal generators should be placed as close as possible to each other. Likewise, all signal consumers should be grouped very close together. The goal is to minimize the stubs, both at the beginning of the transmission path (on the generator side) and at the end (on the consumer side).
 
-In the example above, when the M.2 connector acts as the signal generator and the Slot is the consumer, very long stubs appear on both ends. Since the active signal also propagates into these unterminated stubs, part of it gets reflected back with a noticeable delay proportional to the stub length. This reflected wave interferes with the original signal at the Slot receiver exactly when that signal should be stable. Similarly, the reflection from the M.2 stub disturbs the transmitter at the M.2 side, which then shows up again at the Slot and further mixes with the first and second waves.
+In the example above, when the M.2 connector acts as the signal generator and the Slot is the consumer, very long stubs appear on both ends. Since the active signal also propagates into these unterminated stubs, part of it gets reflected back with a noticeable delay proportional to the stub length. This reflected wave interferes with the original signal at the Slot receiver when that signal should be stable. Similarly, the reflection from the M.2 stub disturbs the transmitter at the M.2 side, which then shows up again at the Slot and superimposes with the first and second waves.
 
-The key is to eliminate or minimize these second, third, and subsequent reflected waves—keeping only the primary, incident wave that carries the valid data.
+The key is to eliminate or minimize the second, third, and subsequent `reflected waves`, keeping only the primary, `incident wave` that carries the valid data.
 
 ## Signal Integrity (SI) Sims
 @AnesVrce TODO.
@@ -188,26 +177,23 @@ The key is to eliminate or minimize these second, third, and subsequent reflecte
 The following five wiring topologies are examined in Electro-Magnetic Simulations (EMS):
 - `Bad` **Long stubs**. For understanding of _Incident_ and _Reflected_ waves
 - `One-2-One` **Point-to-Point**. This is the standard and simplest, i.e. the baseline case
-- `Two-2-Two` **Multipoint-to-Multipoint**. Unique for high-speed
-- `Three-2-One` **Multipoint-to-Point**. Unique for high-speed
 - `One-2-Two` **Point-to-Multipoint**. Unique for high-speed
+- `Three-2-One` **Multipoint-to-Point**. Unique for high-speed
 
-Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusal, probably **unique topologies** to deal with. All three representative combinations are analyzed and presented.
+Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusal, probably **unique topologies** to deal with. All representative combinations are analyzed and presented.
 
 ### EMS topology 0: Bad (just for learning, not for using)
-- long stubs on both sides
+- long stubs on both sides. @AnesVrce, use the analysis of the Rx and Tx SMA connectors for this case. Also show why it is better to place them at the end of their line, close to the Rx input termination.
   
 ### EMS topology 1: One-2-One (standard)
 - SWRC3_CLK_P/N 100MHz clock diff pair
   
-### EMS topology 2: Two-2-Two (unique)
-- Pick one of the RC4 => EP4 5Gbps diff pairs
-  
-### EMS topology 3: Three-2-One (unique)
-- Pick one of the RC1 => SW 5Gbps diff pairs
-  
-### EMS topology 4: One-2-Two (unique)
+### EMS topology 2: One-2-Two (unique)
 - Pick the longest 5Gbps diff pairs from the SW => SW_EP0/1/2/3 set
+    
+### EMS topology 3: Three-2-One (unique)
+- Pick one of the RC1 => SW 5Gbps diff pairs. We have RPi5 FFC, Slot and M.2 here.
+
   
 ## SI Lab Measurements
 TODO
