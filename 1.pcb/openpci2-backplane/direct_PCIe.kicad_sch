@@ -10,6 +10,176 @@
 		(company "Chili.CHIPS")
 	)
 	(lib_symbols
+		(symbol "Connector:Conn_Coaxial"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0.254 3.048 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_Coaxial"
+				(at 2.921 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Conn_Coaxial_0_1"
+				(polyline
+					(pts
+						(xy -2.54 0) (xy -0.508 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.778 0)
+					(mid 0.222 -1.8079)
+					(end -1.778 -0.508)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.778 0.508)
+					(mid 0.2221 1.8084)
+					(end 1.778 0)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0 0)
+					(radius 0.508)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Conn_Coaxial_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "In"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -5.08 90)
+					(length 2.54)
+					(name "Ext"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "PCM_Chili-chips:10061913-111PLF"
 			(pin_names
 				(offset 1.016)
@@ -1590,6 +1760,141 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "PCM_EEZ_passives:R-EU"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at -1.905 -1.905 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R-EU_1_0"
+				(polyline
+					(pts
+						(xy -0.889 2.54) (xy -0.889 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.889 2.54) (xy -0.889 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.889 -2.54) (xy -0.889 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.889 -2.54) (xy 0.889 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type solid)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 5.08 270)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -5.08 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0 0)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "power:+12V"
 			(power)
 			(pin_numbers
@@ -1991,6 +2296,27 @@
 			(justify left bottom)
 		)
 		(uuid "b49769aa-1378-4aca-bc5c-7be62429ea91")
+	)
+	(text_box "R and Connector must be placed right next to the trace to eliminate the stub."
+		(exclude_from_sim no)
+		(at 100.33 160.02 0)
+		(size 44.45 6.35)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width -0.0001)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 132 0 132 1)
+			)
+			(justify left top)
+		)
+		(uuid "4f083331-f105-4f74-a63a-d76ee629b05d")
 	)
 	(junction
 		(at 172.72 119.38)
@@ -3554,6 +3880,16 @@
 		)
 		(uuid "2df0e67e-e6be-47d6-a3d8-17443cc7f239")
 	)
+	(wire
+		(pts
+			(xy 60.96 138.43) (xy 66.04 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2e0000c6-27fc-45da-b201-80d33fec97cb")
+	)
 	(polyline
 		(pts
 			(xy 74.93 95.25) (xy 75.565 95.25)
@@ -3902,6 +4238,16 @@
 			(type default)
 		)
 		(uuid "3ff50184-45b7-40d0-abf5-5dfd048dc2a9")
+	)
+	(wire
+		(pts
+			(xy 48.26 138.43) (xy 50.8 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "40ff761f-b1b0-4a07-85af-73385316ca16")
 	)
 	(polyline
 		(pts
@@ -5287,6 +5633,16 @@
 		)
 		(uuid "80b766f0-0ab5-423b-b67d-b0477309d5bc")
 	)
+	(wire
+		(pts
+			(xy 147.32 138.43) (xy 149.86 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81ba80d9-e1fd-41c7-b9f1-23cab190700b")
+	)
 	(polyline
 		(pts
 			(xy 173.99 69.85) (xy 174.625 69.85)
@@ -5972,6 +6328,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "9529eefb-e882-4f9c-bc1e-069ed482c089")
+	)
+	(wire
+		(pts
+			(xy 160.02 138.43) (xy 165.1 138.43)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "956d2068-ad1c-45d8-a8ec-6faa071e0481")
 	)
 	(polyline
 		(pts
@@ -13600,6 +13966,28 @@
 			"TkSuQmCC"
 		)
 	)
+	(global_label "RC4_TX3_N"
+		(shape input)
+		(at 48.26 138.43 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right)
+		)
+		(uuid "071fc614-b634-414e-b007-829a89ad7f75")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 38.8892 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "RC4_RX3_P"
 		(shape output)
 		(at 38.1 109.22 180)
@@ -13688,7 +14076,7 @@
 			)
 		)
 	)
-	(global_label "RC4_CLK1_N"
+	(global_label "RC4_CLK_N"
 		(shape input)
 		(at 38.1 71.12 180)
 		(fields_autoplaced yes)
@@ -13700,7 +14088,7 @@
 		)
 		(uuid "15766920-5415-45d6-a8d1-85ca150a5225")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 27.7555 71.12 0)
+			(at 28.6022 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13996,7 +14384,7 @@
 			)
 		)
 	)
-	(global_label "~{RC4_CLK1REQ}"
+	(global_label "~{RC4_CLKREQ}"
 		(shape output)
 		(at 81.28 66.04 0)
 		(fields_autoplaced yes)
@@ -14008,7 +14396,7 @@
 		)
 		(uuid "94403c02-1e34-4d48-9e35-9b70f4a2bcbd")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 92.6405 66.04 0)
+			(at 91.7938 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14018,7 +14406,7 @@
 			)
 		)
 	)
-	(global_label "EP4_CLK1_P"
+	(global_label "EP4_CLK_P"
 		(shape input)
 		(at 137.16 68.58 180)
 		(fields_autoplaced yes)
@@ -14030,7 +14418,7 @@
 		)
 		(uuid "9ce309fb-9ea3-48b9-9509-c3d5b432288e")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 126.9425 68.58 0)
+			(at 127.7892 68.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14106,7 +14494,7 @@
 			)
 		)
 	)
-	(global_label "RC4_CLK1_P"
+	(global_label "RC4_CLK_P"
 		(shape input)
 		(at 38.1 68.58 180)
 		(fields_autoplaced yes)
@@ -14118,7 +14506,7 @@
 		)
 		(uuid "aa1ba763-9b90-43c7-b3ca-68d503ed9df5")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 27.7978 68.58 0)
+			(at 28.6445 68.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14207,6 +14595,28 @@
 		(uuid "c1223133-941a-44b9-a56c-84f174572e6f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 127.7892 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RC4_RX3_N"
+		(shape input)
+		(at 147.32 138.43 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 0.889 0.889)
+			)
+			(justify right)
+		)
+		(uuid "c37caedc-4e5d-4586-ace6-a66d4813e961")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 137.7375 138.43 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14326,7 +14736,7 @@
 			)
 		)
 	)
-	(global_label "EP4_CLK1_N"
+	(global_label "EP4_CLK_N"
 		(shape input)
 		(at 137.16 71.12 180)
 		(fields_autoplaced yes)
@@ -14338,7 +14748,7 @@
 		)
 		(uuid "d7f53848-8a74-489d-a35f-ccdaa0e367bc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 126.9002 71.12 0)
+			(at 127.7469 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14392,7 +14802,7 @@
 			)
 		)
 	)
-	(global_label "~{EP4_CLK1REQ}"
+	(global_label "~{EP4_CLKREQ}"
 		(shape output)
 		(at 180.34 66.04 0)
 		(fields_autoplaced yes)
@@ -14404,7 +14814,7 @@
 		)
 		(uuid "dcd33655-bef0-4686-9255-b6219427a2b7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 191.6158 66.04 0)
+			(at 190.7691 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14477,6 +14887,186 @@
 				)
 				(justify right)
 				(hide yes)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 170.18 143.51 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "03031c92-8ced-4939-a8b7-d03af2d28593")
+		(property "Reference" "#PWR093"
+			(at 170.18 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 170.18 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 170.18 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 170.18 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 170.18 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fe3cc381-3cd7-4001-a32c-e5e479dd2055")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "#PWR093")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_Coaxial")
+		(at 170.18 138.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0b3b5759-fcdc-478b-8100-d94b3c903a62")
+		(property "Reference" "J10"
+			(at 172.72 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "73251-3140"
+			(at 172.72 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Chili-chips:73251-3140"
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "0732513140-ND"
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" ""
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" ""
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Label" "SWRC_TX0-"
+			(at 170.18 138.43 0)
+			(effects
+				(font
+					(size 0.889 0.889)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "b05020cd-3998-4cff-9068-018a8f30a2cb")
+		)
+		(pin "1"
+			(uuid "64fb6255-c5a9-4963-9859-14fe927089d8")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "J10")
+					(unit 1)
+				)
 			)
 		)
 	)
@@ -14626,6 +15216,160 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
 					(reference "#PWR043")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 71.12 143.51 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2769a0f3-d3d8-4ca5-a4a8-505da4fc0f0b")
+		(property "Reference" "#PWR092"
+			(at 71.12 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 71.12 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 71.12 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 71.12 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ffc61238-5a01-4a1b-89e1-098bedced3ef")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "#PWR092")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_passives:R-EU")
+		(at 55.88 138.43 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2a9aefac-6b53-4007-8ffa-97719e376747")
+		(property "Reference" "R35"
+			(at 53.975 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" "33R"
+			(at 53.975 140.97 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+			(at 55.88 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 55.88 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 55.88 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "RMCF0603FT33R0CT-ND"
+			(at 55.88 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 55.88 138.43 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2c98e7dd-3415-4a18-94e5-59cf0caa3e79")
+		)
+		(pin "2"
+			(uuid "ddfd4f31-d8d8-4a99-a813-8af0bcdb0c15")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "R35")
 					(unit 1)
 				)
 			)
@@ -16486,6 +17230,208 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
 					(reference "#PWR052")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_passives:R-EU")
+		(at 154.94 138.43 270)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f3d56fa1-fb18-46fe-a56c-9d14600506f7")
+		(property "Reference" "R36"
+			(at 153.035 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" "33R"
+			(at 153.035 140.97 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
+			(at 154.94 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 154.94 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 154.94 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "RMCF0603FT33R0CT-ND"
+			(at 154.94 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 154.94 138.43 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dfbd8f19-d5ec-438f-96e7-9c019e7f207e")
+		)
+		(pin "2"
+			(uuid "a5b3e25c-ecf2-4c17-afd9-21dae13029cf")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "R36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_Coaxial")
+		(at 71.12 138.43 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f6604678-2d41-4582-b4ab-bfbcad7568f4")
+		(property "Reference" "J9"
+			(at 73.66 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "73251-3140"
+			(at 73.66 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "PCM_Chili-chips:73251-3140"
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DigiKey" "0732513140-ND"
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser" ""
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "TME" ""
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Label" "SWRC_TX0+"
+			(at 71.12 138.43 0)
+			(effects
+				(font
+					(size 0.889 0.889)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "10dfbd19-fc32-48ec-91f2-9b4b4508e406")
+		)
+		(pin "1"
+			(uuid "9aa7b2e2-91a0-412d-b7d1-d218145cf067")
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/b7158e1f-2a6b-49fc-b6fc-fb29a3ff5105"
+					(reference "J9")
 					(unit 1)
 				)
 			)
