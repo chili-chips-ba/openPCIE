@@ -231,5 +231,7 @@ TODO
 - [openEMS](https://docs.openems.de)
 - [AntMicro EMS Sim](https://antmicro.com/blog/2025/07/recent-improvements-to-antmicros-signal-integrity-simulation-flow)
 
+**[8] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
+
 -------
 #### End of Document
