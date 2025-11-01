@@ -7,7 +7,7 @@
 	(title_block
 		(date "2025-10-21")
 		(rev "r1B1")
-		(company "Chili.CHIPS")
+		(company "Chili.CHIPS*ba")
 	)
 	(lib_symbols
 		(symbol "PCM_Chili-chips:10061913-111PLF"
@@ -4652,12 +4652,6 @@
 		(uuid "361dace8-e45d-487e-843d-f09b4e58e6ab")
 	)
 	(junction
-		(at 138.43 86.36)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "397acf87-befb-4f60-8578-ca1be17943bb")
-	)
-	(junction
 		(at 247.65 109.22)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -8470,6 +8464,16 @@
 		)
 		(uuid "75345d6d-4f8d-4abf-8a55-ee37497597ad")
 	)
+	(wire
+		(pts
+			(xy 119.38 86.36) (xy 138.43 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "75e29492-bb72-4e22-a63a-582ddc9b02f0")
+	)
 	(polyline
 		(pts
 			(xy 122.555 108.2675) (xy 121.92 108.2675)
@@ -11435,16 +11439,6 @@
 		)
 		(uuid "e66351b0-6cf6-4d56-8e44-f6c5553ac35b")
 	)
-	(wire
-		(pts
-			(xy 139.7 86.36) (xy 138.43 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e742d787-507a-47a7-933a-ab5e0ad473c1")
-	)
 	(polyline
 		(pts
 			(xy 125.095 49.53) (xy 125.73 49.53)
@@ -11487,16 +11481,6 @@
 			(type default)
 		)
 		(uuid "e9007a42-508c-403b-8873-2679d69cdd8b")
-	)
-	(wire
-		(pts
-			(xy 138.43 86.36) (xy 119.38 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e949bb24-c19e-4a3f-9f3d-d58d4ade0525")
 	)
 	(polyline
 		(pts
@@ -12325,7 +12309,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_RX0_P"
+	(global_label "SWRC1_RX_P"
 		(shape output)
 		(at 212.09 104.14 180)
 		(fields_autoplaced yes)
@@ -12337,7 +12321,7 @@
 		)
 		(uuid "101585b3-5467-47e9-adb2-aaa591a856d8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 200.6871 104.14 0)
+			(at 201.5338 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12347,7 +12331,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_TX0_P"
+	(global_label "SWRC1_TX_P"
 		(shape output)
 		(at 158.75 121.92 0)
 		(fields_autoplaced yes)
@@ -12359,7 +12343,7 @@
 		)
 		(uuid "1798e487-6600-487f-b5e0-bf6baa0bd7b9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 169.9412 121.92 0)
+			(at 169.0945 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12479,7 +12463,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_RX0_N"
+	(global_label "SWRC1_RX_N"
 		(shape input)
 		(at 157.48 129.54 0)
 		(fields_autoplaced yes)
@@ -12491,7 +12475,7 @@
 		)
 		(uuid "2c524854-4c3d-4ae3-a5a1-b48ad1c9be0c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 168.9252 129.54 0)
+			(at 168.0785 129.54 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12721,7 +12705,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_TX0_N"
+	(global_label "SWRC1_TX_N"
 		(shape input)
 		(at 255.27 101.6 0)
 		(fields_autoplaced yes)
@@ -12733,7 +12717,7 @@
 		)
 		(uuid "65476318-0144-4b1d-9f7d-b59b5575559a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 266.5035 101.6 0)
+			(at 265.6568 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12897,7 +12881,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_RX0_P"
+	(global_label "SWRC1_RX_P"
 		(shape input)
 		(at 157.48 127 0)
 		(fields_autoplaced yes)
@@ -12909,7 +12893,7 @@
 		)
 		(uuid "a1332630-a98c-41dc-8ce6-b232ef1681dc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 168.8829 127 0)
+			(at 168.0362 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12941,7 +12925,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_RX0_N"
+	(global_label "SWRC1_RX_N"
 		(shape output)
 		(at 212.09 106.68 180)
 		(fields_autoplaced yes)
@@ -12953,7 +12937,7 @@
 		)
 		(uuid "a997bb3c-7714-43eb-9224-acae55ff045c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 200.6448 106.68 0)
+			(at 201.4915 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12985,7 +12969,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_TX0_P"
+	(global_label "SWRC1_TX_P"
 		(shape input)
 		(at 255.27 99.06 0)
 		(fields_autoplaced yes)
@@ -12997,7 +12981,7 @@
 		)
 		(uuid "b743c72e-498c-4229-93e4-a75611307c19")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 266.4612 99.06 0)
+			(at 265.6145 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13073,7 +13057,7 @@
 			)
 		)
 	)
-	(global_label "SWRC1_TX0_N"
+	(global_label "SWRC1_TX_N"
 		(shape output)
 		(at 158.75 124.46 0)
 		(fields_autoplaced yes)
@@ -13085,7 +13069,7 @@
 		)
 		(uuid "d7a14937-91b2-441c-88de-a2056bfc7a9a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 169.9835 124.46 0)
+			(at 169.1368 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
