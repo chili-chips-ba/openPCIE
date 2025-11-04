@@ -2,7 +2,7 @@ Computing is about communicating. Some would also say about networking. Digital 
 
 
 <p align="center" width="100%">
-  <img width="25%" src="0.doc/artwork/PCIE2-RootC.logo.png">
+  <img width="30%" src="0.doc/artwork/openpcie.sticker.png">
 </p>
 
 This project looks to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
@@ -34,7 +34,7 @@ Such approach is less work and less risk than to design our own PCIE motherboard
 
  - [x] ✔ Create requirements document.
  - [x] ✔ Select components. Schematic and PCB layout design.
- - [ ] Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
+ - [x] ✔ Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
  - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
  - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
@@ -56,7 +56,7 @@ Their VProc can be used not only to faithfully model the RISC-V CPU and SW inter
 With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
 
  - [x] ✔ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
- - [ ] Testbench development and build up. Execution and debug of sim testcases.
+ - [x] ✔ Testbench development and build up. Execution and debug of sim testcases.
  - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
 #### `PART 5. Integration, testing and iterative design refinements`
