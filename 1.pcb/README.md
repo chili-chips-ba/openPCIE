@@ -87,6 +87,17 @@ The backplane swaps the connector pins on the RC slots so that:
 This pin-swapping allows the same physical FPGA plug-in card—always pinned as an Endpoint—to operate in either **EP** or **RC** role.
 
 ---
+## 3D Viewer
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_left.JPG">
+</p>
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_right.JPG">
+</p>
+
+---
 ## Usage scenarios
 
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
@@ -172,6 +183,16 @@ In the example above, when the M.2 connector acts as the signal generator and th
 The key is to eliminate or minimize the second, third, and subsequent `reflected waves`, keeping only the primary, `incident wave` that carries the valid data.
 
 ## Signal Integrity (SI) Sims
+The following videos demonstrate signal reflections on a transmission line in two different cases:
+
+- **Transmission line with stub** – see video below
+
+https://github.com/user-attachments/assets/f051aea8-5269-4e07-8074-357f93c2e468
+
+- **Transmission line without stub** – see video below
+
+https://github.com/user-attachments/assets/b43a36d0-c9cd-4929-85f8-a3717680f151
+  
 @AnesVrce TODO.
 
 The following five wiring topologies are examined in Electro-Magnetic Simulations (EMS):
