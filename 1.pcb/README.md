@@ -103,7 +103,11 @@ This pin-swapping allows the same physical FPGA plug-in card—always pinned as 
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP.JPG">
+    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
+</p>
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 2.JPG">
 </p>
 
 This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in the Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
