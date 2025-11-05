@@ -186,13 +186,13 @@ The key is to eliminate or minimize the second, third, and subsequent `reflected
 The following videos demonstrate signal reflections on a transmission line in two different cases:
 
 - **Transmission line with stub** – see video below
-  
-▶️ [Watch: Transmission line with stub](0.doc/videos/Transmission_line_with_stub.mp4)
+
+https://github.com/user-attachments/assets/f051aea8-5269-4e07-8074-357f93c2e468
 
 - **Transmission line without stub** – see video below
-  
-▶️ [Watch: Transmission line without stub](0.doc/videos/Transmission_line_without_stub.mp4)
 
+https://github.com/user-attachments/assets/b43a36d0-c9cd-4929-85f8-a3717680f151
+  
 @AnesVrce TODO.
 
 The following five wiring topologies are examined in Electro-Magnetic Simulations (EMS):
