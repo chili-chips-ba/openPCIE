@@ -33,15 +33,12 @@ Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full sche
 - On-board **100MHz PCIe-approved REFCLK Generator** provides the reference clock.
 - The clock is distributed to all slots via differential buffers (**REFCLK+ / REFCLK-**).
 - The **REFCLK** is only distributed to a slot (both RC and EP) after a device has been inserted and asserts the **CLKREQ#** signal (by driving it to logic low). This feature ensures that clocks are only active when and where needed, thus reducing the power and EMI.
-- The clock for the PCIe switch, and therefore for its downstream x1 Endpoint slots, is **always active**, as the presence of a RPi cannot be reliably detected.
-- **Raspberry Pi** functions as a Root Complex and provides its own reference clock. Our backplane does not need this clock, as all downstream PCIe devices receive their reference clock from the onboard generator. This means that the End-Points will in the RPi5 RC case have to be configured for `Async RefClock`.
 
 #### Reset Logic
-The system-wide PERST# reset signal is distributed to all slots and can be triggered by three sources:
+The system-wide PERST# reset signal is distributed to all slots and can be triggered by two sources:
 
 - **Automatic**: Triggers a reset whenever a supply voltage is outside its specified range.
 - **Manual**: A push-button for user-initiated resets.
-- **External**: An active-low reset signal from the Raspberry Pi. To handle its unspecified output type, the signal is converted to open-drain before being wired-OR'd with the other reset sources. 
 
 ##  Functional Blocks
 
@@ -51,11 +48,11 @@ Provides a direct, point-to-point, 4-lane PCIe link between two connectors.
 
 **RC4 (Root Complex)**  
 - 4-lane connector intended for a card acting as the Root Complex.  
-- Mechanical option: Standard PCIe slot.
+- Mechanical option: *M.2 (M-key, PCIe)*.
 
 **EP4 (Endpoint)**  
 - 4-lane connector for a standard Endpoint card.  
-- Mechanical option: Standard PCIe slot.
+- Mechanical option: *Standard PCIe slot*.
 
 ---
 ### 1-lane “Switched” Island (RC1 ⇔ SW ⇔ SW_EP0/1/2/3)
@@ -64,7 +61,7 @@ Uses a PCIe switch to branch a single upstream lane into four downstream lanes.
 
 **RC1 (Root Complex)**  
 - 1-lane connector for the upstream Root Complex card.  
-- Mechanical options: *Standard PCIe Slot*, *M.2 (M-key, PCIe)*, or *1-lane RPi connector (FPC 16-pin, 0.5 mm, 100 Ω)*.
+- Mechanical option: *Standard PCIe Slot*.
 
 **PCIe Switch**  
 - Device: **Asmedia ASM1184e** (PCIe 2.0 switch).  
@@ -103,7 +100,11 @@ This pin-swapping allows the same physical FPGA plug-in card—always pinned as 
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP.JPG">
+    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
+</p>
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 2.JPG">
 </p>
 
 This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in the Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
@@ -115,24 +116,7 @@ This same scenario is also envisioned for testing the interoperability of our [o
 
 We intend to try testing the RootComplex interactions with EndPoints through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the door open for the **Gen2** testing.
 
-### Usecase 3: Switched RPi5_RC to FPGA_EP (Gen1 x1)
-This scenario is for our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint design, to test its interoperability with RPi5. The backplane design allows trying both "Slot" and M.2 form-factor of GateMate PCIE cards.
-
-<p align="center" width="100%">
-    <img width="50%" src="0.doc/images/PCIE-synergy-with-RPI5.png">
-</p>
-
-Our backplane is designed for `RPi5 Standard FFC`, which is when contacts are on the `opposite sides`.
-
-<p align="center" width="100%">
-    <img width="50%" src="0.doc/images/RPI5-PCIE-FFC.jpg">
-</p>
-
-Such cable is also known as `"B Type"`, see [this](https://www.amazon.com/iUniker-Contacts-Opposite-Raspberry-Peripheral/dp/B0F7HJL2QG/ref=pd_ci_mcx_di_int_sccai_cn_d_sccl_2_2/143-7699313-0639204?pd_rd_w=UVwz6&content-id=amzn1.sym.751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_p=751acc83-5c05-42d0-a15e-303622651e1e&pf_rd_r=SSMC3DSGA2A09FFQH4YH&pd_rd_wg=RZodX&pd_rd_r=fb584b31-62bd-44e0-af8e-5133406dd983&pd_rd_i=B0F7HJL2QG&psc=1).
-
-Interestingly, many RPi5 HATs use the same-side contacts, that is the "A Type" cables, despite RaspberryPi explicit requirement not to do so. It is important to ensure that you are using the correct orientation FFC before connecting up and powering up the system. [Here](https://www.jeffgeerling.com/blog/2023/testing-pcie-on-raspberry-pi-5) is another interesting read on the RPi5 PCIE connectivity.
-
-### Usecase 4: PCIE Expansion or Extension
+### Usecase 3: PCIE Expansion or Extension
 By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specificaly to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
 
 <p align="center" width="100%">
