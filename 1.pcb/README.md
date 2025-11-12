@@ -84,7 +84,7 @@ The backplane swaps the connector pins on the RC slots so that:
 This pin-swapping allows the same physical FPGA plug-in card—always pinned as an Endpoint—to operate in either **EP** or **RC** role.
 
 ---
-## 3D Viewer
+## PCB Views
 
 <p align="center" width="100%">
     <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_left.JPG">
@@ -92,6 +92,10 @@ This pin-swapping allows the same physical FPGA plug-in card—always pinned as 
 
 <p align="center" width="100%">
     <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_right.JPG">
+</p>
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/openPCIE-Bare-PCB.png">
 </p>
 
 ---
@@ -156,6 +160,15 @@ Since we have a unique feature with multiple connectors on the same line, specia
 
 <p align="center" width="100%">
     <img width="65%" src="0.doc/images/PCB-Stubs-MustAvoid.png">
+</p>
+
+
+## The P and N Swaps
+
+While the PCIE requirements stipulate that, in order to simplify the PCB layout, the electronics should be capable of internally swapping the P and N leads of differential pairs, we did not want to take chances, and have taken extra steps not to depend on the plug-in electronics -- All Ps are routed to the Ps, and all Ns to the Ns, even if that called for a via. 
+
+<p align="center" width="100%">
+    <img width="65%" src="0.doc/images/PCIE-P-and-N-swaps.png">
 </p>
 
 ## PCIe Connection Model: Generators → Transport → Consumers
@@ -236,7 +249,9 @@ TODO
 - [openEMS](https://docs.openems.de)
 - [AntMicro EMS Sim](https://antmicro.com/blog/2025/07/recent-improvements-to-antmicros-signal-integrity-simulation-flow)
 
-**[8] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
+**[8] [Saturn PCB Tools](https://saturnpcb.com/saturn-pcb-toolkit)**
+
+**[9] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
 
 -------
 #### End of Document
