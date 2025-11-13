@@ -253,7 +253,9 @@ TODO
 
 **[9] [JLC DFM Tool](https://jlcdfm.com)**
 
-**[10] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
+**[10] [JLC Impedance Calculator Tool](https://jlcpcb.com/pcb-impedance-calculator)**
+
+**[11] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
 
 -------
 #### End of Document
