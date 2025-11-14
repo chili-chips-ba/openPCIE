@@ -98,6 +98,14 @@ This pin-swapping allows the same physical FPGA plug-in card—always pinned as 
     <img width="70%" src="0.doc/images/openPCIE-Bare-PCB.png">
 </p>
 
+
+Impedance-controlled traces:
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/Impedance-controlled-traces.png">
+</p>
+
+
 ---
 ## Usage scenarios
 
