@@ -124,7 +124,6 @@ This scenario is the bread-and-butter, the meat of this project. That's what it 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
 ### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen1 x1)
-@AnesVrce to add illustration. 
 
 We intend to try testing the RootComplex interactions with EndPoints through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the door open for the **Gen2** testing.
 
@@ -198,8 +197,6 @@ https://github.com/user-attachments/assets/f051aea8-5269-4e07-8074-357f93c2e468
 
 https://github.com/user-attachments/assets/b43a36d0-c9cd-4929-85f8-a3717680f151
   
-@AnesVrce TODO.
-
 The following five wiring topologies are examined in Electro-Magnetic Simulations (EMS):
 - `Bad` **Long stubs**. For understanding of _Incident_ and _Reflected_ waves
 - `One-2-One` **Point-to-Point**. This is the standard and simplest, i.e. the baseline case
@@ -209,7 +206,7 @@ The following five wiring topologies are examined in Electro-Magnetic Simulation
 Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusal, probably **unique topologies** to deal with. All representative combinations are analyzed and presented.
 
 ### EMS topology 0: Bad (just for learning, not for using)
-- long stubs on both sides. @AnesVrce, use the analysis of the Rx and Tx SMA connectors for this case. Also show why it is better to place them at the end of their line, close to the Rx input termination.
+- long stubs on both sides. We can use the analysis of the Rx and Tx SMA connectors for this case to show why it is better to place them at the end of their line, close to the Rx input termination.
   
 ### EMS topology 1: One-2-One (standard)
 - SWRC3_CLK_P/N 100MHz clock diff pair
