@@ -468,7 +468,9 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [],
+    "pinned_footprint_libs": [
+      "PCM_av_lib"
+    ],
     "pinned_symbol_libs": []
   },
   "meta": {
@@ -952,7 +954,7 @@
       "exclude_dnp": false,
       "fields_ordered": [
         {
-          "group_by": false,
+          "group_by": true,
           "label": "Reference",
           "name": "Reference",
           "show": true
