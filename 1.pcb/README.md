@@ -134,7 +134,7 @@ By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard
     <img width="60%" src="0.doc/images/PCIE-Jumper-Cable-Male2Male.jpg">
 </p>
 
-## PCIE Layout Consideration
+## PCIE Layout Considerations
 
 The _characteristic impedance_ of the differential pairs on our backplane is `100ohm+/-10% for both data and clock signals`. They are all routed as `microstrips`, i.e. with reference to Ground/Power plane from only one side. The P-to-N skew is matched to no more than **5 mils**.
 
@@ -225,6 +225,22 @@ TODO
     <img width="65%" src="0.doc/images/PCIE-Eye-Measurements.jpg">
 </p>
 
+
+## 30 Amp DC/DC Buck Layout Considerations
+
+The layout of the PCIE backplane is not only about the 5Gbps differential pairs. The backplane also hosts a powerfull 12V-to-3.3V DC/DC. Given its 30 Amps(!) current capacity, the buck layout calls for special attention. While we have followed the TI recommendations to the letter, the question was also raised about the stability of the `long Remote Sense` wires:
+   1) Will they incentivize the buck to oscillate?
+   2) Is the far-off Remote Sense really needed?
+
+The argument is that the digital logic can tolerate +/-10% voltage inaccuracy. Remote Sense, while allowing fine voltage tracking at the very load point, creates a long loop that opens the Pandora box of potential closed-loop instability. The digital logic is more sensitive to transients than to the absolute voltage levels. The argument goes that the design should therefore focus on providing fast dynamic response rather than the static accuracy. 
+
+<p align="center" width="100%">
+    <img width="65%" src="0.doc/images/Buck-Remote-Sense.0.JPG">
+    <img width="65%" src="0.doc/images/Buck-Remote-Sense.1.JPG">
+    <img width="65%" src="0.doc/images/Buck-Remote-Sense.2.png">
+</p>
+
+Check [here](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/1588097/tps54kc23-tps54kc23-remote-sense-stability-or-not) to see what the TI experts had to say on this question.
 
 -----
 
