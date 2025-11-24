@@ -276,7 +276,9 @@ Check [here](https://e2e.ti.com/support/power-management-group/power-management/
 
 **[10] [JLC Impedance Calculator Tool](https://jlcpcb.com/pcb-impedance-calculator)**
 
-**[11] [PMOD Interface Spec](PMOD-interface-spec.V1_2_0.pdf)**
+**[11] [DCDC-How-To-Measure-Loop-Stability](0.doc/How-To-Measure-Loop-Stability.snva364a.pdf)**
+
+**[12] [PMOD Interface Spec](0.doc/PMOD-interface-spec.V1_2_0.pdf)**
 
 -------
 #### End of Document
