@@ -278,7 +278,7 @@ Check [here](https://e2e.ti.com/support/power-management-group/power-management/
 
 **[11] [DCDC-How-To-Measure-Loop-Stability](0.doc/How-To-Measure-Loop-Stability.snva364a.pdf)**
 
-**[12] [DCDC-How-To-Implement-Remote-Sense](0.doc/How-To-Implement-Remote-Sense.ssztam1.pdf)**
+**[12] DCDC-How-To-Implement-Remote-Sense: [Part1](0.doc/How-To-Implement-Remote-Sense.ssztam1.pdf), [Part2](0.doc/How-To-Implement-Remote-Sense.2.slyt467.pdf)**
 
 **[13] [PMOD Interface Spec](0.doc/PMOD-interface-spec.V1_2_0.pdf)**
 
