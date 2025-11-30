@@ -242,6 +242,12 @@ The argument is that the digital logic can tolerate +/-10% voltage inaccuracy. R
 
 Check [here](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/1588097/tps54kc23-tps54kc23-remote-sense-stability-or-not) to see what the TI experts had to say on this question.
 
+
+# First Functional Check
+
+When the backplane comes out of the reflow oven with all components soldered, and before loading it with boards for the full functional testing, we first must check the basic power, reset and clock generation circuits. See our [PCBA_Functional_Test_Procedure](0.doc/PCBA_Functional_Test_Procedure.pdf) documents for the complete detail on how to go about it.
+
+
 -----
 
 ### References:
