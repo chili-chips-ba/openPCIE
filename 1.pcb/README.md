@@ -288,5 +288,8 @@ When the backplane comes out of the reflow oven with all components soldered, an
 
 **[13] [PMOD Interface Spec](0.doc/PMOD-interface-spec.V1_2_0.pdf)**
 
+**[14] Auto-routers: [Haas](https://github.com/drandyhaas/Ti375G529_projects/tree/main/LVDS_LPDDR4_G529/kicad/autorouter), [Ortho](https://bbenchoff.github.io/pages/OrthoRoute.html), [JITX (proprietary)](https://www.jitx.com)**
+
+
 -------
 #### End of Document
