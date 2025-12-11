@@ -290,6 +290,7 @@ When the backplane comes out of the reflow oven with all components soldered, an
 
 **[14] Auto-routers: [Haas](https://github.com/drandyhaas/Ti375G529_projects/tree/main/LVDS_LPDDR4_G529/kicad/autorouter), [Ortho](https://bbenchoff.github.io/pages/OrthoRoute.html), [JITX (proprietary)](https://www.jitx.com)**
 
+**[15] [KiCanvas](https://kicanvas.org)**: Browser-based, interactive viewer for KiCAD schematics and boards
 
--------
+------
 #### End of Document
