@@ -454,6 +454,7 @@ This test confirms that the entire communication chain is functional: from the u
 - [PCIe network simulator](https://github.com/antmicro/warp-pipe)
 - [An interesting PCIE tidbit: Peer-to-Peer communicaton](https://xilinx.github.io/XRT/master/html/p2p.html). Also see [this](https://xillybus.com/tutorials/pci-express-tlp-pcie-primer-tutorial-guide-1)
 - [NetTLP - An invasive method for intercepting PCIE TLPs](https://haeena.dev/nettlp)
+- [PCIe on STM32MP257 with ngscopeclient](https://www.youtube.com/watch?v=qxdK3mjHNBM)
 
 
 --------------------
