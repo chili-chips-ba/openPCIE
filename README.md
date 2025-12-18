@@ -270,6 +270,7 @@ After the hardware was prepared, the connection was verified using the **Vivado 
 ### openBackplane PCB
 
 <p align="center" width="100%">
+    <img width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
     <img width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
