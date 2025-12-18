@@ -2,7 +2,7 @@ Computing is about communicating. Some would also say about networking. Digital 
 
 
 <p align="center" width="100%">
-  <img width="30%" src="0.doc/artwork/openpcie.sticker.png">
+  <img width="20%" src="0.doc/artwork/openpcie.sticker.png">
 </p>
 
 This project looks to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
@@ -270,8 +270,8 @@ After the hardware was prepared, the connection was verified using the **Vivado 
 ### openBackplane PCB
 
 <p align="center" width="100%">
-    <img width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
-    <img width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
+    <img width="65%" src="1.pcb/0.doc/openPCIE-backplane.png">
+    <img width="65%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
 Please, refer to [1.pcb](1.pcb) for additional detail.
