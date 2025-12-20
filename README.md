@@ -2,7 +2,7 @@ Computing is about communicating. Some would also say about networking. Digital 
 
 
 <p align="center" width="100%">
-  <img width="20%" src="0.doc/artwork/pcie2rootc.hex.png">
+  <img width="25%" src="0.doc/artwork/pcie2rootc.hex.png">
 </p>
 
 This project looks to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
