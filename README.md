@@ -376,13 +376,13 @@ This step was non-trivial due to a common hardware issue: **IOMMU grouping**. Th
 
 The solution involved a multi-step configuration of the host system:
 
-**1. BIOS/UEFI Configuration**
+**2.1. BIOS/UEFI Configuration**
 
 The first step was to enable hardware virtualization support in the system's BIOS/UEFI:
 *   **AMD-V (SVM - Secure Virtual Machine Mode):** This option enables the core CPU virtualization extensions necessary for KVM.
 *   **IOMMU (Input-Output Memory Management Unit):** This is critical for securely isolating device memory. Enabling it is a prerequisite for VFIO and safe PCI passthrough.
 
-**2. Host OS Kernel and Boot Configuration**
+**2.2. Host OS Kernel and Boot Configuration**
 
 A standard Linux kernel was not sufficient due to the IOMMU grouping issue. To resolve this, the following steps were taken:
 *   **Install XanMod Kernel:** A custom kernel, **XanMod**, was installed because it includes the necessary **ACS Override patch**. This patch forces the kernel to break up problematic IOMMU groups.
@@ -391,7 +391,7 @@ A standard Linux kernel was not sufficient due to the IOMMU grouping issue. To r
     *   `pcie_acs_override=downstream,multifunction`: Activates the ACS patch to resolve the grouping problem.
     *   `vfio-pci.ids=10ee:7014`: This crucial parameter instructs the VFIO driver to automatically claim our Xilinx device (Vendor ID `10ee`, Device ID `7014`) at boot, effectively hiding it from the host OS.
 
-**3. KVM Virtual Machine Setup**
+**2.3. KVM Virtual Machine Setup**
 
 With the host system properly prepared, the final step was to assign the device to a KVM virtual machine using `virt-manager`. Thanks to the correct VFIO configuration, the Xilinx card appeared as an available "PCI Host Device" and was successfully passed through.
 
@@ -401,7 +401,7 @@ This setup created a safe and controlled environment to perform direct, low-leve
 
 With the FPGA passed through to the VM, the final test was to verify the end-to-end communication path. This was done using the `devmem` utility to perform direct PIO (Programmed I/O) on the memory space mapped by the card's BAR0 register.
 
-**1. Finding the Device's Memory Address**
+**3.1. Finding the Device's Memory Address**
 
 After the FPGA is programmed and the system boots, the operating system will enumerate it on the PCIe bus and assign a memory-mapped I/O region, also known as a Base Address Register (BAR).
 To find this address, you can use the `lspci -v` command. The image below shows the output for our target device. The key information is the `Memory at ...` line, which indicates the base physical address that the host system will use to communicate with the device.
@@ -412,7 +412,7 @@ In this example, the assigned base address is 0xfc500000.
   <br><em>Physical Address fc500000 Assigned to PCIe Device.</em>
 </p>
 
-**2. Testing Data Transfer with devmem**
+**3.2. Testing Data Transfer with devmem**
 
 The devmem utility allows direct reading from and writing to physical memory addresses. We can use it to perform a simple write-then-read test to confirm that the data path to the FPGA's on-chip memory (BRAM) is working correctly.
 
@@ -431,6 +431,23 @@ The image below demonstrates this process.
 </p>
 
 This test confirms that the entire communication chain is functional: from the user-space application, through the OS kernel and PCIe fabric, to the FPGA's internal memory and back.
+
+### 4. Functional Verification: Backplane
+
+**4.1. Direct Connection**
+<p align="center">
+  <img width="70%" src="1.pcb/0.doc/images/Proto.2026-01-12.DirecTalk.jpg">
+</p>
+
+**4.2. Through PCIE Switch**
+
+Here Artix7 in the RootComplex role talking to the same Artix7 in an EndPoint role, but this time through a PCIE Switch, all at Gen2 5Gbps speeds. The Switch is for some reason overheating, hence the massive fan above it. The test shows value six (binary 0110, watch 4 LEDs) written into EndPoint memory from the RootComplex FPGA.
+
+What we learned in the process is how to configure the RootComplex for each of these two distinct topologies: Direct and Switched. The next step is to integrate the RC into our eduSOC, which thus turns it into a memory-mapped "peripheral". We shall then drive the PCIE transactions with bare-metal C program instead of current RTL FSM. In other words, our soft, deeply embedded RISC-V will take on the role of a "host", thus extending the PCIE reach from standard PC and RPi settings to custom-tailored soft SOCs.
+
+What we learned in the process is how to configure the RC for Switched vs Direct topology. Our next step is to integrate the RC into a soft RISC-V SOC, thus making it into a memory-mapped "peripheral". We shall then drive the PCIe transactions with bare-metal C program, so that the CPU takes on the role of a "host", furthering the PCIe reach from proprietary PC and RPi to the custom-made opensource systems.
+
+https://github.com/user-attachments/assets/c2a9d7df-ceba-4681-99d1-6d1c968afb57
 
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
@@ -465,22 +482,23 @@ We are grateful to **NLnet Foundation** for their sponsorship of this developmen
 
 <p align="center">
    <img src="https://github.com/chili-chips-ba/openeye/assets/67533663/18e7db5c-8c52-406b-a58e-8860caa327c2">
-   <img width="115" alt="NGI-Entrust-Logo" src="https://github.com/chili-chips-ba/openeye-CamSI/assets/67533663/013684f5-d530-42ab-807d-b4afd34c1522">
+   <img width="25%" alt="NGI-Entrust-Logo" src="https://github.com/chili-chips-ba/openeye-CamSI/assets/67533663/013684f5-d530-42ab-807d-b4afd34c1522">
 </p>
 
 The **wyvernSemi**'s wisdom and contribution made a great deal of difference -- Thank you, we are honored to have you on the project.
 
 <p align="center">
- <img width="115" alt="wyvernSemi-Logo" src="https://github.com/user-attachments/assets/94858fce-081a-43b4-a593-d7d79ef38e13">
+ <img width="15%" alt="wyvernSemi-Logo" src="https://github.com/user-attachments/assets/94858fce-081a-43b4-a593-d7d79ef38e13">
 </p>
 
 The **Envox**, our next-door buddy, is responsible for the birth of our backplane, which we like to call BB (not to be mistaked for their gorgeous blue beauty [BB3](https://www.envox.eu/eez-bb3))
 
 <p align="center">
-  <img width=250 src="0.doc/artwork/EEZ-web-logo.png">
+  <img width="25%" src="0.doc/artwork/EEZ-web-logo.png">
 </p>
 
 ### Public posts:
+- [2026-01-26](https://www.linkedin.com/posts/chili-chips_fpga-pcie-riscv-activity-7421756737285734400-Lzlv?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2025-12-19](https://www.linkedin.com/posts/chili-chips_opensource-fpga-gatemate-activity-7407180369269223424-laCE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2025-08-17](https://www.linkedin.com/pulse/pcie-model-c-simon-southwell-m2fve/?trackingId=CA4nW3if5DVRR%2BXN%2FIkQoQ%3D%3D)
 - [2025-07-22](https://www.linkedin.com/posts/simon-southwell-7684482_pcie-vhdl-nvc-activity-7354160318052220929-K0Ku?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
