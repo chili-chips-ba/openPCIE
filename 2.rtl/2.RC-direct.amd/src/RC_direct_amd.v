@@ -84,7 +84,7 @@
 `timescale 1ns/1ns
 
 (* DowngradeIPIdentifiedWarnings = "yes" *)
-module xilinx_pcie_2_1_rport_7x
+module RC_direct_amd
   #(
     parameter TCQ                = 1,
     parameter SIMULATION         = 0,
