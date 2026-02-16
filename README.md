@@ -326,7 +326,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 # Debug, Bringup, Testing
 
 ### Hardware Infrastructure
-- **PCB:** **openPCIE Backplane** (see [1.pcb](../1.pcb/README.md))  which provides slots for the RC, EP, and the Switch.
+- **PCB:** **openPCIE Backplane** (see [1.pcb](../1.pcb/))  which provides slots for the RC, EP, and the Switch.
 - **FPGA Boards:** Two **SQRL Acorn CLE-215+** (Artix-7) boards.
 - **JTAG Programmers:** Two **Xilinx Platform Cable USB** units are used, each equipped with a **custom adapter cable**.
     
