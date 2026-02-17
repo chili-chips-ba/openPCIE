@@ -339,6 +339,16 @@ We used a **two-PC** setup to streamline development:
 - **Speed and Efficiency:** This setup avoids the repetitive task of manually swapping the JTAG cable between boards and eliminates the time-consuming process of flashing onboard memory for every test iteration.
 - **Simultaneous Debugging:** This allows us to run two instances of **Vivado Hardware Manager** (ILA - Integrated Logic Analyzer) at the same time. We can trigger on the RC and EP simultaneously to view the transaction from both sides of the link.
 
+### Testing Procedure
+
+To bring up the system and verify the PCIe link, follow these steps:
+
+*   **Hardware Assembly:** Insert the FPGA cards into their designated slots on the **openPCIE Backplane** (RC and EP) and connect the external **12V power supply**.
+*   **Bitstream Programming:** Program both FPGAs using Vivado Hardware Manager. **PC 1** is used to program the Root Complex, while **PC 2** programs the EndPoint.
+*   **Manual Reset:** Once both devices are programmed, press the **manual reset button** on the backplane.
+*   **Enumeration:** Upon releasing the reset button, the Root Complex initiates the **enumeration process** and establishes the link with the EndPoint.
+*   **Re-Initialization:** Every subsequent press of the reset button triggers a full re-initialization of the PCIe connection, allowing for repeated testing and debugging without the need to re-program the FPGAs.
+
 ---
 
 ### Part 1: Direct Connection (RC ⇔ EP)
