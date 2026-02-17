@@ -35,4 +35,24 @@ The projects are organized into subfolders based on the role and the implementat
 
 ---
 
-- WIP
+### Common Physical Constraints (XDC)
+
+The **XDC file** is critical for mapping the logical PCIe signals to the specific physical pins on the `Acorn CLE-215+` board and the `openPCIE Backplane`. The following key elements are mandatory in all designs:
+
+1.  **Clock Request (CRITICAL):**
+    The backplane's clock generator will **NOT** output the 100 MHz reference clock unless the `CLKREQ#` pin (Pin **G1**) is actively driven **LOW**. If this is missing from the constraints, the FPGA will receive no clock, and the link will never establish.
+
+2.  **Reference Clock & Reset:**
+    - **REFCLK:** Configured for **100 MHz** via the differential pair (Pins **F6/E6**).
+    - **PERST#:** The system reset (Pin **J1**) is active low.
+3.  **Transceiver (GTP) Placement:**
+    Defining `PACKAGE_PIN` constraints for RX/TX pairs alone is **insufficient**. The logical lane **must be explicitly locked** to the corresponding physical **GTP Channel Primitive** (e.g., `GTPE2_CHANNEL_X0Y...`). Without this, the design will not route correctly.
+
+    **Procedure to identify the correct channel:**
+    1.  **Schematic Check:** Consult the [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master) schematic to map the physical M.2 or PCIe connector pins to the specific FPGA **Package Pins**.
+    2.  **Vivado Device View:** Open the **Device Window** in Vivado, locate those specific RX/TX package pins, and identify the **GTP Channel Primitive** associated with them.
+       
+> **Note:** The provided XDC file includes configuration blocks for all 4 potential lanes. The specific lane(s) intended for the active topology must be **uncommented**, while the unused lanes should remain **commented**
+    
+5.  **Visual Debug (LEDs):**
+    Internal status signals—such as `user_lnk_up` or received data payloads—are mapped to the 4 onboard **User LEDs** (Pins **G3, H3, G4, H4**) to provide immediate visual feedback during testing.
