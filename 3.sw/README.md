@@ -105,6 +105,8 @@ The driver interacts with the custom PCIe Bridge RTL via **Memory Mapped I/O (MM
 ### Register Map
 The following addresses map directly to the RTL bridge inputs/outputs:
 
+<div align="center">
+
 | Register Name | Address | R/W | Description |
 | :--- | :--- | :--- | :--- |
 | `PCIE_TX_HEADER0` | `0x30000000` | W | TLP Header DW0 (Type, Fmt, Length). |
@@ -116,6 +118,8 @@ The following addresses map directly to the RTL bridge inputs/outputs:
 | `PCIE_RX_HEADER_INFO`| `0x30000018` | R | **Completion Info:** Contains Requester ID and Tag for matching. |
 | `PCIE_ERR_STATUS` | `0x3000001C` | R | **Error Flags:** Physical layer errors.|
 | `PCIE_PHY_STATUS` | `0x30000020` | R | Physical Link Status (used to check TX buffers). |
+
+</div>
 
 ---
 
@@ -135,8 +139,13 @@ The firmware performs a standard PCIe Bring-up sequence:
 ### 3. Self-Test & Debug Codes
 The driver reports its execution status by writing specific "Magic Numbers" to the `PCIE_TX_DATA` register. These values serve as debug markers that can be monitored via the **Vivado ILA**.
 
+<div align="center">
+
 | Magic Number | Meaning |
 | :--- | :--- |
 | **`0x0000FACE`** | **PASS:** Data `0x6` was written and successfully read back. |
 | **`0x0000DEAD`** | **FAIL:** Readback data did not match the written value. |
 | **`0xBAD00000`** | **ERROR:** Device ID read failed (Link down or device not found). |
+
+</div>
+
