@@ -366,26 +366,12 @@ To bring up the system and verify the PCIe link, follow these steps:
 *   **Enumeration:** Upon releasing the reset button, the Root Complex initiates the **enumeration process** and establishes the link with the EndPoint.
 *   **Re-Initialization:** Every subsequent press of the reset button triggers a full re-initialization of the PCIe connection, allowing for repeated testing and debugging without the need to re-program the FPGAs.
 
----
-
-### Part 1: Direct Connection (RC ⇔ EP)
-
-This scenario tests a direct, point-to-point link between the Root Complex and the EndPoint.
-
-#### Objective
+### Objective
 The goal of this test is to verify that the Root Complex can successfully enumerate the link and perform both **Memory Write** and **Memory Read** transactions.
 1. **Write:** The RC sends a data payload to the EP.
 2. **Transfer:** The EP receives the TLP and writes it into its internal Block RAM (BRAM).
 3. **Read:** The RC requests to read the data back from the EP memory.
 
-### Part 2: Switched Connection (RC ⇔ Switch ⇔ EP)
-
-This scenario introduces the **ASMedia ASM1184e** PCIe Switch into the signal path.
-
-#### Key Differences
-- **Objective:** The functional goal remains the same.
-- **Topology:** The physical connection changes from a 4-lane direct link to a **1-lane switched link**.
-- **Configuration:** The primary change is in the **Root Complex Configuration**
 ---
 
 # Functional Verification: 
