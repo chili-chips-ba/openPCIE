@@ -6,6 +6,8 @@ This project implements a **Programmed I/O (PIO)** PCIe Endpoint using the propr
 
 The following table summarizes the key parameters configured in the Vivado IP Generator for this design:
 
+<div align="center">
+
 | Parameter | Value | Description |
 | :--- | :--- | :--- |
 | **Device Port Type** | **Endpoint** | Acts as a peripheral device. |
@@ -17,6 +19,8 @@ The following table summarizes the key parameters configured in the Vivado IP Ge
 | **Class Code** | **`0x058000`** | Memory Controller. |
 | **BAR0** | **2 KB** | 32-bit Memory-Mapped I/O space. |
 | **Ref Clock** | **100 MHz** | Provided by the openBackplane. |
+
+</div>
 
 ---
 
