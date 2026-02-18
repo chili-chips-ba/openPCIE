@@ -51,7 +51,18 @@ The **XDC file** is critical for mapping the logical PCIe signals to the specifi
     **Procedure to identify the correct channel:**
     1.  **Schematic Check:** Consult the [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master) schematic to map the physical M.2 or PCIe connector pins to the specific FPGA **Package Pins**.
     2.  **Vivado Device View:** Open the **Device Window** in Vivado, locate those specific RX/TX package pins, and identify the **GTP Channel Primitive** associated with them.
-       
+
+    <div align="center">
+
+    | Logical Lane | Physical Pin (RX) | Physical Pin (TX) | GT Location |
+    | :--- | :--- | :--- | :--- |
+    | Lane 0 | B10 / A10 | B6 / A6 | X0Y6 |
+    | Lane 1 | B8 / A8 | B4 / A4 | X0Y4 |
+    | Lane 2 | D11 / C11 | D5 / C5 | X0Y5 |
+    | Lane 3 | D9 / C9 | D7 / C7 | X0Y7 |
+
+    </div>
+    
 > **Note:** The provided XDC file includes configuration blocks for all 4 potential lanes. The specific lane(s) intended for the active topology must be **uncommented**, while the unused lanes should remain **commented**
     
 5.  **Visual Debug (LEDs):**
