@@ -314,9 +314,26 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 --------------------
 
 # SW Architecture
-- WIP
+
+The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIe enumeration automatically in the background, hiding the complexity from the developer. In this project, our **open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIe Host.
+
+The architecture follows a layered approach:
+
+1.  **Application Layer (The "User" Logic)**: 
+    - The final stage of the program that executes the high-level task.
+    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
+
+2.  **PCIe Driver (Enumeration & Setup)**:
+    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
+    - It manually performs device discovery, probes BAR sizes, assigns memory addresses, and configures the **Command Register** to enable the device for communication.
+      
+3.  **HAL (Hardware Abstraction Layer)**:
+    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
+
+> **Note:** This structure allows developers to treat PCIe devices just like any other local peripheral, abstracting away the complexities of the physical link.
 
 --------------------
+
 # Implementation Workflow
 
 - WIP
