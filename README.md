@@ -64,7 +64,7 @@ With the full end-to-end simulation thus in place, we hope that the need for har
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
- - [ ] Develop our opensource PIO TestApp software and representative Demo.
+ - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
  - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
 Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
