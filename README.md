@@ -35,17 +35,17 @@ Such approach is less work and less risk than to design our own PCIE motherboard
  - [x] ✔ Create requirements document.
  - [x] ✔ Select components. Schematic and PCB layout design.
  - [x] ✔ Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
- - [ ] Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
+ - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
  - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
 #### `PART 2. Project setup and preparatory activities`
  - [x] ✔ Procure FPGA development boards and PCIE accessories.
- - [ ] Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
+ - [x] ✔ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
  
 #### `PART 3. Initial HW/SW implementation`
  - [ ] HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
- - [ ] SW development of opensource driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
- - [ ] Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
+ - [x] ✔ SW development of opensource driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
+ - [x] ✔ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
 
 #### `PART 4. HW/SW co-simulation using full PCIE EP model`
 
@@ -64,7 +64,7 @@ With the full end-to-end simulation thus in place, we hope that the need for har
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
- - [ ] Develop our opensource PIO TestApp software and representative Demo.
+ - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
  - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
 Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
@@ -314,140 +314,83 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 --------------------
 
 # SW Architecture
-- WIP
+
+The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIe enumeration automatically in the background, hiding the complexity from the developer. In this project, our **open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIe Host.
+
+The architecture follows a layered approach:
+
+1.  **Application Layer (The "User" Logic)**: 
+    - The final stage of the program that executes the high-level task.
+    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
+
+2.  **PCIe Driver (Enumeration & Setup)**:
+    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
+    - It manually performs device discovery, probes BAR sizes, assigns memory addresses, and configures the **Command Register** to enable the device for communication.
+      
+3.  **HAL (Hardware Abstraction Layer)**:
+    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
+
+> **Note:** This structure allows developers to treat PCIe devices just like any other local peripheral, abstracting away the complexities of the physical link.
 
 --------------------
+
 # Implementation Workflow
 
-The design was implemented using the **Xilinx Vivado Design Suite**. The process follows a standard but critical workflow to ensure a functional PCIe Endpoint.
-
-**1. PCIe IP Core Generation**
-
-The foundation of the design is the PCIe Endpoint core, created using the Vivado **IP Generator**. This powerful tool abstracts the immense complexity of the PCIe protocol. Within the generator, all fundamental parameters are configured:
-*   Link settings (e.g., Lane Width, Max Speed).
-*   Device identifiers (Vendor ID, Device ID, Class Code).
-*   Base Address Register (BAR) memory space requirements.
-
-**2. Custom RTL Application Logic (Wrapper)**
-
-The generated IP core functions as a "black box" with a standard AXI4-Stream interface. To bring it to life, a custom RTL module (Verilog wrapper) was developed. This application logic is responsible for:
-*   Parsing incoming TLP packets from the host (e.g., Memory Read/Write requests).
-*   Handling the actual data access to the FPGA's internal Block RAM.
-*   Constructing and sending `Completion` TLP packets back to the host in response to read requests.
-
-**3. Physical Constraints (XDC File)**
-
-To map the logical design onto the physical FPGA chip, a manual **XDC (Xilinx Design Constraints) file** is crucial. It must define:
-*   The precise pin locations on the FPGA for the PCIe differential pairs (TX/RX lanes).
-*   The pin location and timing characteristics of the reference clock.
-*   The location of the system reset signal.
+- WIP
 
 --------------------
 
 # Debug, Bringup, Testing
 
-After programming the FPGA with the generated bitstream, the system was tested in a real-world environment to verify its functionality. The verification process was conducted in three main stages.
+### Hardware Infrastructure
+- **PCB:** **openPCIE Backplane** (see [1.pcb](1.pcb/))  which provides slots for the RC, EP, and the Switch.
+- **FPGA Boards:** Two **SQRL Acorn CLE-215+** (Artix-7) boards.
+- **JTAG Programmers:** Two **Xilinx Platform Cable USB** units are used, each equipped with a **custom adapter cable**.
+    
+### The "Dual-PC" Debugging Approach 
+We used a **two-PC** setup to streamline development:
+-  **PC 1:** Connected to the **Root Complex (RC)** FPGA via JTAG.
+-  **PC 2:** Connected to the **EndPoint (EP)** FPGA via JTAG.
+   
+**Why this setup?**
+- **Speed and Efficiency:** This setup avoids the repetitive task of manually swapping the JTAG cable between boards and eliminates the time-consuming process of flashing onboard memory for every test iteration.
+- **Simultaneous Debugging:** This allows us to run two instances of **Vivado Hardware Manager** (ILA - Integrated Logic Analyzer) at the same time. We can trigger on the RC and EP simultaneously to view the transaction from both sides of the link.
 
-### 1. Device Enumeration
+### Testing Procedure
 
-The first and most fundamental test was to confirm that the host operating system could correctly detect and enumerate the FPGA as a PCIe device. This was successfully verified on both Windows and Linux.
+To bring up the system and verify the PCIe link, follow these steps:
 
-*   On **Windows**, the device appeared in the Device Manager, confirming that the system recognized the new hardware.
-*   On **Linux**, the `lspci` command was used to list all devices on the PCIe bus. The output clearly showed the Xilinx card with the correct Vendor and Device IDs, classified as a "Memory controller".
+*   **Hardware Assembly:** Insert the FPGA cards into their designated slots on the **openPCIE Backplane** (RC and EP) and connect the external **12V power supply**.
+*   **Bitstream Programming:** Program both FPGAs using Vivado Hardware Manager. **PC 1** is used to program the Root Complex, while **PC 2** programs the EndPoint.
+*   **Manual Reset:** Once both devices are programmed, press the **manual reset button** on the backplane.
+*   **Enumeration:** Upon releasing the reset button, the Root Complex initiates the **enumeration process** and establishes the link with the EndPoint.
+*   **Re-Initialization:** Every subsequent press of the reset button triggers a full re-initialization of the PCIe connection, allowing for repeated testing and debugging without the need to re-program the FPGAs.
 
-<table align="center" width="100%">
-  <tr>
-    <td align="center" width="50%">
-      <b>Device detected in Windows Device Manager</b><br>
-      <img src="0.doc/pictures/Device detected in Windows Device Manager.png" style="max-width:90%; height:auto;">
-    </td>
-    <td align="center" width="50%">
-      <b>`lspci` output on Linux, identifying the device.</b><br>
-      <img src="0.doc/pictures/`lspci` output on Linux, identifying the device.png" style="width:100%; height:100%;">
-    </td>
-  </tr>
-</table>
+### Objective
+The goal of this test is to verify that the Root Complex can successfully enumerate the link and perform both **Memory Write** and **Memory Read** transactions.
+1. **Write:** The RC sends a data payload to the EP.
+2. **Transfer:** The EP receives the TLP and writes it into its internal Block RAM (BRAM).
+3. **Read:** The RC requests to read the data back from the EP memory.
 
-### 2. Advanced Setup for Low-Level Testing: PCI Passthrough
+---
 
-While enumeration confirms device presence, directly testing read/write functionality required an isolated environment to prevent conflicts with the host OS. A Virtual Machine (VM) with **PCI Passthrough** was configured for this purpose.
+# Functional Verification: 
 
-This step was non-trivial due to a common hardware issue: **IOMMU grouping**. The standard Linux kernel grouped our FPGA card with other critical system devices (like USB and SATA controllers), making it unsafe to pass it through directly.
+### Verification Methods
 
-The solution involved a multi-step configuration of the host system:
+**1. Visual Verification (LEDs)**
+Visual feedback is provided via the **4 user LEDs** on both FPGA boards:
+- **RC Board:** The LEDs indicate the **Link Status**, confirming that the physical connection is established and the devices are ready to communicate.
+- **EP Board:** The LEDs display the data received by the EP.
 
-**2.1. BIOS/UEFI Configuration**
+**2. Internal Signal Monitoring (ILA)**
+Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed monitoring of internal signals to see exactly what data was sent and received, its precise timing, and the low-level transaction details.
 
-The first step was to enable hardware virtualization support in the system's BIOS/UEFI:
-*   **AMD-V (SVM - Secure Virtual Machine Mode):** This option enables the core CPU virtualization extensions necessary for KVM.
-*   **IOMMU (Input-Output Memory Management Unit):** This is critical for securely isolating device memory. Enabling it is a prerequisite for VFIO and safe PCI passthrough.
 
-**2.2. Host OS Kernel and Boot Configuration**
+### Verification Results
 
-A standard Linux kernel was not sufficient due to the IOMMU grouping issue. To resolve this, the following steps were taken:
-*   **Install XanMod Kernel:** A custom kernel, **XanMod**, was installed because it includes the necessary **ACS Override patch**. This patch forces the kernel to break up problematic IOMMU groups.
-*   **Modify GRUB Boot Parameters:** The kernel's bootloader (GRUB) was configured to activate all required features on startup. The following parameters were added to the `GRUB_CMDLINE_LINUX_DEFAULT` line:
-    *   `amd_iommu=on`: Explicitly enables the IOMMU on AMD systems.
-    *   `pcie_acs_override=downstream,multifunction`: Activates the ACS patch to resolve the grouping problem.
-    *   `vfio-pci.ids=10ee:7014`: This crucial parameter instructs the VFIO driver to automatically claim our Xilinx device (Vendor ID `10ee`, Device ID `7014`) at boot, effectively hiding it from the host OS.
+- WIP
 
-**2.3. KVM Virtual Machine Setup**
-
-With the host system properly prepared, the final step was to assign the device to a KVM virtual machine using `virt-manager`. Thanks to the correct VFIO configuration, the Xilinx card appeared as an available "PCI Host Device" and was successfully passed through.
-
-This setup created a safe and controlled environment to perform direct, low-level memory operations on the FPGA without risking host system instability.
-
-### 3. Functional Verification: Direct Memory Read/Write
-
-With the FPGA passed through to the VM, the final test was to verify the end-to-end communication path. This was done using the `devmem` utility to perform direct PIO (Programmed I/O) on the memory space mapped by the card's BAR0 register.
-
-**3.1. Finding the Device's Memory Address**
-
-After the FPGA is programmed and the system boots, the operating system will enumerate it on the PCIe bus and assign a memory-mapped I/O region, also known as a Base Address Register (BAR).
-To find this address, you can use the `lspci -v` command. The image below shows the output for our target device. The key information is the `Memory at ...` line, which indicates the base physical address that the host system will use to communicate with the device.
-In this example, the assigned base address is 0xfc500000.
-
-<p align="center">
-  <img src="0.doc/pictures/Physical Address fc500000 Assigned to PCIe Device.png" style="width:60%; height:60%;">
-  <br><em>Physical Address fc500000 Assigned to PCIe Device.</em>
-</p>
-
-**3.2. Testing Data Transfer with devmem**
-
-The devmem utility allows direct reading from and writing to physical memory addresses. We can use it to perform a simple write-then-read test to confirm that the data path to the FPGA's on-chip memory (BRAM) is working correctly.
-
-The test procedure is as follows:
-*  Write a value to the device's base address.
-*  Read the value back from the same address to ensure it was stored correctly.
-*  Repeat with a different value to confirm that the memory isn't "stuck" and is dynamically updating.
-
-The image below demonstrates this process.
-*  First, the hexadecimal value 0xA is written to the address 0xFC500000. A subsequent read confirms that 0x0000000A is returned.
-*  Next, the value is changed to 0xB. A final read confirms that 0x0000000B is returned, proving the write operation was successful.
-
-<p align="center">
-  <img src="0.doc/pictures/Data Read and Write Test Using devmem.png" style="width:60%; height:60%;">
-  <br><em>Data Read and Write Test Using devmem.png</em>
-</p>
-
-This test confirms that the entire communication chain is functional: from the user-space application, through the OS kernel and PCIe fabric, to the FPGA's internal memory and back.
-
-### 4. Functional Verification: Backplane
-
-**4.1. Direct Connection**
-<p align="center">
-  <img width="70%" src="1.pcb/0.doc/images/Proto.2026-01-12.DirecTalk.jpg">
-</p>
-
-**4.2. Through PCIE Switch**
-
-Here Artix7 in the RootComplex role talking to the same Artix7 in an EndPoint role, but this time through a PCIE Switch, all at Gen2 5Gbps speeds. The Switch is for some reason overheating, hence the massive fan above it. The test shows value six (binary 0110, watch 4 LEDs) written into EndPoint memory from the RootComplex FPGA.
-
-What we learned in the process is how to configure the RootComplex for each of these two distinct topologies: Direct and Switched. The next step is to integrate the RC into our eduSOC, which thus turns it into a memory-mapped "peripheral". We shall then drive the PCIE transactions with bare-metal C program instead of current RTL FSM. In other words, our soft, deeply embedded RISC-V will take on the role of a "host", thus extending the PCIE reach from standard PC and RPi settings to custom-tailored soft SOCs.
-
-What we learned in the process is how to configure the RC for Switched vs Direct topology. Our next step is to integrate the RC into a soft RISC-V SOC, thus making it into a memory-mapped "peripheral". We shall then drive the PCIe transactions with bare-metal C program, so that the CPU takes on the role of a "host", furthering the PCIe reach from proprietary PC and RPi to the custom-made opensource systems.
-
-https://github.com/user-attachments/assets/c2a9d7df-ceba-4681-99d1-6d1c968afb57
 
 #### References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
