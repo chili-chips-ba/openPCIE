@@ -15,18 +15,18 @@ set_property PULLTYPE PULLUP [get_ports sys_rst_n]
 #set_property LOC GTPE2_CHANNEL_X0Y6 [get_cells {pcie_inst/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
 #LANE1
-set_property PACKAGE_PIN B8 [get_ports {RXN[0]}]
-set_property PACKAGE_PIN A8 [get_ports {RXP[0]}]
-set_property PACKAGE_PIN B4 [get_ports {TXN[0]}]
-set_property PACKAGE_PIN A4 [get_ports {TXP[0]}]
-set_property LOC GTPE2_CHANNEL_X0Y4 [get_cells {pcie_inst/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
+#set_property PACKAGE_PIN B8 [get_ports {RXN[0]}]
+#set_property PACKAGE_PIN A8 [get_ports {RXP[0]}]
+#set_property PACKAGE_PIN B4 [get_ports {TXN[0]}]
+#set_property PACKAGE_PIN A4 [get_ports {TXP[0]}]
+#set_property LOC GTPE2_CHANNEL_X0Y4 [get_cells {pcie_inst/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
 #LANE2
-#set_property PACKAGE_PIN D11 [get_ports {RXN[0]}]
-#set_property PACKAGE_PIN C11 [get_ports {RXP[0]}]
-#set_property PACKAGE_PIN D5 [get_ports {TXN[0]}]
-#set_property PACKAGE_PIN C5 [get_ports {TXP[0]}]
-#set_property LOC GTPE2_CHANNEL_X0Y5 [get_cells {pcie_inst/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
+set_property PACKAGE_PIN D11 [get_ports {RXN[0]}]
+set_property PACKAGE_PIN C11 [get_ports {RXP[0]}]
+set_property PACKAGE_PIN D5 [get_ports {TXN[0]}]
+set_property PACKAGE_PIN C5 [get_ports {TXP[0]}]
+set_property LOC GTPE2_CHANNEL_X0Y5 [get_cells {pcie_inst/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
 #LANE3
 #set_property PACKAGE_PIN D9 [get_ports {RXN[0]}]
