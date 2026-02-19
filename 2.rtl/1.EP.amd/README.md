@@ -40,3 +40,8 @@ This wrapper manages the interface between the FPGA fabric and the dedicated PCI
 *   **RX Engine:** Decodes incoming TLPs (MemWr, MemRd).
 *   **TX Engine:** Generates Completion TLPs (CplD) to return data to the Host during read requests.
 *   **Memory Access:** The actual storage logic where data is read from or written to, utilizing internal Block RAM as the device memory.
+
+---
+
+### Visual Status
+*   **User LEDs:** These LEDs display the lower 4 bits of the received data payload to visually confirm successful Memory Write transactions.
