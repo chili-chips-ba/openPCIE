@@ -22,13 +22,14 @@ module RC_direct_opensource
 
     input wire  sys_rst_n,
     
-    output wire led_link_up,
+    output wire [3:0]   led_link_up,
+    
     output wire clk_req
   );
 
   wire   user_clk;           
   wire   user_reset;         
-  wire   user_lnk_up;
+  wire   user_lnk_up;  
   
   wire   sys_clk;
   wire   rp_reset_n;
@@ -307,7 +308,8 @@ module RC_direct_opensource
     .tx_buf_av                  ( rport_tx_buf_av ) 
   );
   
-  assign led_link_up = user_lnk_up;
+  assign led_link_up = {1'b1, ~user_lnk_up, 2'b11};
+  
   assign clk_req = 1'b0;
 
 endmodule
