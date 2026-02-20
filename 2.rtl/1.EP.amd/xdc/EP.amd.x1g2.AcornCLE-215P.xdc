@@ -34,17 +34,17 @@ set_property LOC GTPE2_CHANNEL_X0Y5 [get_cells {pcie_7x_0_support_i/pcie_7x_0_i/
 #set_property PACKAGE_PIN C7 [get_ports {pci_exp_txp[0]}]
 #set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {pcie_7x_0_support_i/pcie_7x_0_i/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
-set_property PACKAGE_PIN G3 [get_ports {led_debug_out[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {led_debug_out[0]}]
+set_property PACKAGE_PIN G3 [get_ports {led_data_payload[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_data_payload[0]}]
 
-set_property PACKAGE_PIN H3 [get_ports {led_debug_out[1]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {led_debug_out[1]}]
+set_property PACKAGE_PIN H3 [get_ports {led_data_payload[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_data_payload[1]}]
 
-set_property PACKAGE_PIN G4 [get_ports {led_debug_out[2]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {led_debug_out[2]}]
+set_property PACKAGE_PIN G4 [get_ports {led_data_payload[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_data_payload[2]}]
 
-set_property PACKAGE_PIN H4 [get_ports {led_debug_out[3]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {led_debug_out[3]}]
+set_property PACKAGE_PIN H4 [get_ports {led_data_payload[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_data_payload[3]}]
 
 set_property PACKAGE_PIN G1 [get_ports clk_req]
 set_property IOSTANDARD LVCMOS33 [get_ports clk_req]

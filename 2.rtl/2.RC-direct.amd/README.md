@@ -55,7 +55,7 @@ An automated test engine that triggers immediately after enumeration finishes.
 *  No software or CPU intervention is required. Upon releasing the system reset button on the `openPCIE Backplane`, the hardware logic automatically trains the link and configures the Endpoint.
 
 ### Visual Status
-*   **`led_link_up`:** This LED is connected directly to the PCIe core status signal. It lights up as soon as the physical link is established and the devices are ready to communicate.
+*   **`led_data_payload`:** This LED is connected directly to the PCIe core status signal. It lights up as soon as the physical link is established and the devices are ready to communicate.
 
 ---
 
