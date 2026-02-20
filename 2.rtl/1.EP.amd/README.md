@@ -44,4 +44,4 @@ This wrapper manages the interface between the FPGA fabric and the dedicated PCI
 ---
 
 ### Visual Status
-*   **User LEDs:** These LEDs display the lower 4 bits of the received data payload to visually confirm successful Memory Write transactions.
+*   **led_data_payload:** These LEDs display the lower 4 bits of the received data payload to visually confirm successful Memory Write transactions.
