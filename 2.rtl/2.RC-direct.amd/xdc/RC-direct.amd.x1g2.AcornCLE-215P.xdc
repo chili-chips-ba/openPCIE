@@ -35,8 +35,17 @@ set_property LOC GTPE2_CHANNEL_X0Y5 [get_cells {cgator_wrapper_i/pcie_7x_0_suppo
 #set_property PACKAGE_PIN C7 [get_ports {TXP[0]}]
 #set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {cgator_wrapper_i/pcie_7x_0_support_i/rport/inst/inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
-set_property PACKAGE_PIN H3 [get_ports led_link_up]
-set_property IOSTANDARD LVCMOS33 [get_ports led_link_up]
+set_property PACKAGE_PIN G3 [get_ports {led_link_up[0]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[0]}]
+
+set_property PACKAGE_PIN H3 [get_ports {led_link_up[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[1]}]
+
+set_property PACKAGE_PIN G4 [get_ports {led_link_up[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[2]}]
+
+set_property PACKAGE_PIN H4 [get_ports {led_link_up[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[3]}]
 
 set_property PACKAGE_PIN G1 [get_ports clk_req]
 set_property IOSTANDARD LVCMOS33 [get_ports clk_req]
