@@ -110,7 +110,7 @@ module RC_direct_amd
     // System-level reset input
     input wire  sys_rst_n,
     
-    output wire led_link_up,
+    output wire [3:0]   led_link_up,
     
     output wire clk_req
   );
@@ -118,8 +118,6 @@ module RC_direct_amd
   //-------------------------------------------------------
   // 0. Configurator Control/Status Interface
   //-------------------------------------------------------
-  
-  
 
   wire                      start_config;    // in
   wire                      finished_config; // out
@@ -527,7 +525,7 @@ module RC_direct_amd
  
   assign rp_reset_n = sys_rst_n;
   
-  assign led_link_up = user_lnk_up;
+  assign led_link_up = {1'b1, ~user_lnk_up, 2'b11};
   
   assign clk_req = 1'b0;
 
