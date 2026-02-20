@@ -189,7 +189,7 @@ module PIO_EP_MEM_ACCESS  #(
           if (wr_en)    
           begin // read state
            
-            led_debug_out <= wr_data[3:0];
+            led_debug_out <= ~wr_data[3:0];
             
             wr_mem_state <= #TCQ PIO_MEM_ACCESS_WR_WAIT; //Pipelining happens in RAM's internal output reg.
           end

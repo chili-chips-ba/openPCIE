@@ -78,7 +78,7 @@ module EP_amd # (
   
   output clk_req,
   
-  output [3:0] led_debug_out
+  output [3:0] led_data_payload
 );
 
   assign clk_req = 1'b0;
@@ -481,7 +481,7 @@ pcie_app_7x  #(
   .TCQ( TCQ )
 
 ) app (
-  .led_debug_out(),
+  .led_debug_out(led_data_payload),
   //----------------------------------------------------------------------------------------------------------------//
   // AXI-S Interface                                                                                                //
   //----------------------------------------------------------------------------------------------------------------//
