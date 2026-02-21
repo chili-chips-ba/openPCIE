@@ -112,8 +112,8 @@ The system consists of two main components:
     </td>
   </tr>
   <tr style="border: none;">
-    <td align="center" style="border: none;"><b>(a) M.2 FPGA Module (Top View)</b></td>
-    <td align="center" style="border: none;"><b>(b) M.2 FPGA Module (Bottom View)</b></td>
+    <td align="center" style="border: none;"><b>M.2 FPGA Module (Top View)</b></td>
+    <td align="center" style="border: none;"><b>M.2 FPGA Module (Bottom View)</b></td>
   </tr>
 </table>
 
@@ -129,7 +129,7 @@ The system consists of two main components:
     </td>
   </tr>
   <tr style="border: none;">
-    <td align="center" style="border: none;"><b>(a) PCIe Adapter Board (Top View)</b></td>
+    <td align="center" style="border: none;"><b>PCIe Adapter Board (Top View)</b></td>
     <td align="center" style="border: none;"><b>PCIe Adapter Board (Bottom View)</b></td>
   </tr>
 </table>
@@ -392,6 +392,13 @@ Before diving into the results, here is the complete hardware validation setup u
 
 Dual **Xilinx Platform Cable USB** units are connected via custom adapters to allow simultaneous debugging and bitstream loading from two separate host workstations.
 
+<p align="center">
+  <img src="0.doc/pictures/openPCIE-direct-connection-validation-environment.jpg" width="100%">
+  <br>
+  <em>The complete hardware validation environment for the Direct connection test.</em>
+</p>
+
+
 ### Verification Methods
 
 **1. Visual Verification (LEDs)**
@@ -410,15 +417,15 @@ Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed mo
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img src="0.doc/pictures/led_data_payload.jpg" width="80%">
+       <img src="0.doc/pictures/led_link_up.jpg" width="82%">
     </td>
     <td align="center" style="border: none;">
-      <img src="0.doc/pictures/led_link_up.jpg" width="82%">
+       <img src="0.doc/pictures/led_data_payload.jpg" width="80%">
     </td>
   </tr>
   <tr style="border: none;">
-    <td align="center" style="border: none;"><b>Custom JTAG Cable connecting the Xilinx Programmer to the board</b></td>
-    <td align="center" style="border: none;"><b>JTAG Connector Pinout on the Board</b></td>
+    <td align="center" style="border: none;"><b>RC-LED-Link-Up</b></td>
+    <td align="center" style="border: none;"><b>EP-LED-Data-Payload</b></td>
   </tr>
 </table>
 
