@@ -74,6 +74,13 @@ Given that PCIE is an advanced, high-speed design, and our accute awareness of _
 
 # HW Architecture
 
+The project relies on a modular hardware ecosystem that combines our custom-designed openPCIE Backplane with SQRL Acorn CLE-215+ FPGA modules and various PCIe adapters to create a flexible testing platform.
+
+<p align="center">
+ <img src="0.doc/pictures/openPCIE-hardware-ecosystem.jpg" width="80%">
+</p>
+
+
 #### References:
 - [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
 - [Regymm PCIE](https://github.com/regymm/pcie_7x)
@@ -95,43 +102,44 @@ The system consists of two main components:
 
 *  **M.2 FPGA Module (Acorn CLE-215+):** This is the core of the system, a compact board in an M.2 form factor. It houses the **Xilinx Artix-7 XC7A200T FPGA** and is designed to be plugged into a standard M.2 M-key slot.
 
-<table align="center">
-  <tr>
-    <td align="center">
-      <b>(a) M.2 FPGA Module (Top View)</b><br>
+<table align="center" style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
       <img src="0.doc/pictures/M.2 FPGA Module (Top View).png" width="100%">
     </td>
-    <td align="center">
-      <b>(b) M.2 FPGA Module (Bottom View)</b><br>
+    <td align="center" style="border: none;">
       <img src="0.doc/pictures/M.2 FPGA Module (Bottom View).png" width="90%">
     </td>
   </tr>
+  <tr style="border: none;">
+    <td align="center" style="border: none;"><b>M.2 FPGA Module (Top View)</b></td>
+    <td align="center" style="border: none;"><b>M.2 FPGA Module (Bottom View)</b></td>
+  </tr>
 </table>
-
 
 *  **PCIe Adapter Board (Acorn Baseboard Mini):** A carrier board that holds the M.2 FPGA module. Its primary function is to adapt the M.2 interface to a standard **PCIe x4 edge connector**, allowing the entire assembly to be installed and tested in a regular PC motherboard slot.
 
-<table align="center">
-  <tr>
-    <td align="center">
-      <b>(a) PCIe Adapter Board (Top View)</b><br>
+<table align="center" style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
       <img src= "0.doc/pictures/PCIe Adapter Board (Top View).png" width="100%">
     </td>
-    <td align="center">
-      <b>(b) PCIe Adapter Board (Bottom View)</b><br>
+    <td align="center" style="border: none;">
       <img src="0.doc/pictures/PCIe Adapter Board (Bottom View).png" width="90%">
     </td>
   </tr>
-</table>
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <b> The fully assembled Acorn CLE-215+ development board, ready for use in a PCIe slot.</b><br>
-      <img src="0.doc/pictures/The fully assembled Acorn CLE-215+.png" width="80%">
-    </td>
+  <tr style="border: none;">
+    <td align="center" style="border: none;"><b>PCIe Adapter Board (Top View)</b></td>
+    <td align="center" style="border: none;"><b>PCIe Adapter Board (Bottom View)</b></td>
   </tr>
 </table>
+
+
+<p align="center">
+  <img src="0.doc/pictures/The fully assembled Acorn CLE-215+.png" width="80%">
+  <br>
+  <b>The fully assembled Acorn CLE-215+ development board, ready for use in a PCIe slot.</b>
+</p>
 
 It is important to note that the Acorn CLE-215+ is functionally identical to the more widely known NiteFury board, with the primary difference being the amount of onboard memory. The Acorn model features 1 GB of DDR3 RAM, while the standard NiteFury has 512 MB. Therefore, the [NiteFury schematic](https://github.com/chili-chips-ba/openPCIE/blob/main/0.doc/Reference-SCH/Schematic.FPGA-NiteFury.pdf) serves as a direct and accurate reference for the board's hardware layout.
 
@@ -213,16 +221,18 @@ Properly programming and operating the Artix-7 FPGA on the SQRL board required t
 
 The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
-<table align="center" width="100%">
-  <tr>
-    <td align="center" width="60%">
-      <b>Custom JTAG Cable connecting the Xilinx Programmer to the board</b><br>
-      <img src=0.doc/pictures/FPGA-JTAG.jpg style="max-width:90%; height:auto;">
+<<table align="center" style="border: none; border-collapse: collapse; width: 100%;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;" width="70%">
+      <img src="0.doc/pictures/FPGA-JTAG.jpg" width="100%">
     </td>
-    <td align="center" width="30%">
-      <b>JTAG Connector Pinout on the Board</b><br>
-      <img src="0.doc/pictures/JTAG Connector Pinout on the Board.png" style="width:50%; height:50%;">
+    <td align="center" style="border: none;" width="30%">
+      <img src="0.doc/pictures/JTAG Connector Pinout on the Board.png" width="59%">
     </td>
+  </tr>
+  <tr style="border: none;">
+    <td align="center" style="border: none;"><b>Custom JTAG Cable connecting the Xilinx Programmer to the board</b></td>
+    <td align="center" style="border: none;"><b>JTAG Connector Pinout on the Board</b></td>
   </tr>
 </table>
 
@@ -376,6 +386,19 @@ The goal of this test is to verify that the Root Complex can successfully enumer
 
 # Functional Verification: 
 
+### Verification Environment
+
+Before diving into the results, here is the complete hardware validation setup used for the Direct (Point-to-Point) connection scenario. It features the **openPCIE Backplane** powered by an external 12V supply, populated with two **Acorn CLE-215+** FPGA modules (one configured as RC, the other as EP).
+
+Dual **Xilinx Platform Cable USB** units are connected via custom adapters to allow simultaneous debugging and bitstream loading from two separate host workstations.
+
+<p align="center">
+  <img src="0.doc/pictures/openPCIE-direct-connection-validation-environment.jpg" width="100%">
+  <br>
+  <em>The complete hardware validation environment for the Direct connection test.</em>
+</p>
+
+
 ### Verification Methods
 
 **1. Visual Verification (LEDs)**
@@ -390,6 +413,21 @@ Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed mo
 ### Verification Results
 
 - WIP
+
+<table align="center" style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
+       <img src="0.doc/pictures/led_link_up.jpg" width="82%">
+    </td>
+    <td align="center" style="border: none;">
+       <img src="0.doc/pictures/led_data_payload.jpg" width="80%">
+    </td>
+  </tr>
+  <tr style="border: none;">
+    <td align="center" style="border: none;"><b>RC-LED-Link-Up</b></td>
+    <td align="center" style="border: none;"><b>EP-LED-Data-Payload</b></td>
+  </tr>
+</table>
 
 
 #### References
