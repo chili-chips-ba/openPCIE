@@ -119,11 +119,37 @@ Impedance-controlled traces:
     <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 2.JPG">
 </p>
 
+<table align="center" style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
+      <img src="0.doc/images/openPCIE-direct2.jpg" width="100%">
+    </td>
+    <td align="center" style="border: none;">
+      <img src="0.doc/images/openPCIE-direct1.jpg" width="100%">
+    </td>
+  </tr>
+</table>
+
 This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in the Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
 ### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen1 x1)
+
+<p align="center" width="100%">
+    <img width="70%" src="0.doc/images/openPCIE-switched-all-slots-populated.jpg">
+</p>
+
+<table align="center" style="border: none; border-collapse: collapse;">
+  <tr style="border: none;">
+    <td align="center" style="border: none;">
+      <img src="0.doc/images/openPCIE-switched-one-slot-populated1.jpg" width="100%">
+    </td>
+    <td align="center" style="border: none;">
+      <img src="0.doc/images/openPCIE-switched-one-slot-populated2.jpg" width="100%">
+    </td>
+  </tr>
+</table>
 
 We intend to try testing the RootComplex interactions with EndPoints through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the door open for the **Gen2** testing.
 
