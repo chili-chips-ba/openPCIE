@@ -143,7 +143,7 @@ This same scenario is also envisioned for testing the interoperability of our [o
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img src="0.doc/images/openPCIE-switched-one-slot-populated1.jpg" width="100%">
+      <img src="0.doc/images/openPCIE-switched-one-slot-populated1.jpg" width="95%">
     </td>
     <td align="center" style="border: none;">
       <img src="0.doc/images/openPCIE-switched-one-slot-populated2.jpg" width="100%">
