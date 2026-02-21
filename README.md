@@ -221,13 +221,13 @@ Properly programming and operating the Artix-7 FPGA on the SQRL board required t
 
 The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
-<table align="center" style="border: none; border-collapse: collapse;">
+<<table align="center" style="border: none; border-collapse: collapse; width: 100%;">
   <tr style="border: none;">
-    <td align="center" style="border: none;">
-      <img src="0.doc/pictures/FPGA-JTAG.jpg" width="87%">
+    <td align="center" style="border: none;" width="70%">
+      <img src="0.doc/pictures/FPGA-JTAG.jpg" width="100%">
     </td>
-    <td align="center" style="border: none;">
-      <img src="0.doc/pictures/JTAG Connector Pinout on the Board.png" width="100%">
+    <td align="center" style="border: none;" width="30%">
+      <img src="0.doc/pictures/JTAG Connector Pinout on the Board.png" width="59%">
     </td>
   </tr>
   <tr style="border: none;">
