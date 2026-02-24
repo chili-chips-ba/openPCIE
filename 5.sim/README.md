@@ -462,6 +462,7 @@ The second consideration is the use of delay functions. This can be in the form 
 - [VProc](https://github.com/wyvernSemi/vproc)
 - [mem_model](https://github.com/wyvernSemi/mem_model)
 - [PCIe VHost Model](https://github.com/wyvernSemi/pcievhost)
+- [Logic sim using pcieVHost and 3rd Party PCIe](https://www.linkedin.com/pulse/case-study-logic-simulation-environment-using-third-party-southwell-tyere)
 - [rv32 RISC-V ISS](https://github.com/wyvernSemi/riscV/tree/main/iss)
 - [SystemRDL](https://www.accellera.org/downloads/standards/systemrdl)
 - [PeakRDL and SystemRDLcompiler](https://github.com/SystemRDL)
