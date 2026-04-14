@@ -95,7 +95,7 @@ The project relies on a modular hardware ecosystem that combines our custom-desi
 #### References:
 - [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
 - [NightFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
-- [fpgas.online-test-designs PCIE ENUMERATION by RPI, for Acorn-CLE215+ EP](https://github.com/fpgas-online/fpgas.online-test-designs/tree/main/designs/pcie-enumeration)
+- [fpgas.online-test-designs](https://github.com/fpgas-online/fpgas.online-test-designs/tree/main/designs/pcie-enumeration) PCIE ENUMERATION by RPI, for Acorn-CLE215+ EP
   
 The hardware platform for this project is the **SQRL Acorn CLE-215+**, a versatile FPGA development board. Although originally designed as a crypto-accelerator, its powerful Artix-7 FPGA and modular design make it an excellent choice for general-purpose PCIe development.
 
