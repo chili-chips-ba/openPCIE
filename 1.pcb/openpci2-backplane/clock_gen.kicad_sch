@@ -5641,18 +5641,6 @@
 		)
 		(uuid "46e2b892-fab1-46be-9b90-921b6ca9d2d8")
 	)
-	(text " BODE1"
-		(exclude_from_sim no)
-		(at 114.3 88.9 0)
-		(effects
-			(font
-				(size 0.889 0.889)
-				(thickness 0.1111)
-				(color 132 0 132 1)
-			)
-		)
-		(uuid "91096625-467d-44e7-ad4a-b363a19ac18f")
-	)
 	(text "+12V Power input"
 		(exclude_from_sim no)
 		(at 15.24 17.78 0)
@@ -6190,12 +6178,6 @@
 		(uuid "89ed7681-1004-49ae-bc37-930ad9b08855")
 	)
 	(junction
-		(at 109.22 83.82)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8c19ef46-bf3c-47c0-9b76-b481b8337f2a")
-	)
-	(junction
 		(at 182.88 88.9)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6464,12 +6446,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "da501765-2a45-49ed-9432-47e02a4d9bce")
-	)
-	(junction
-		(at 120.65 83.82)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "dc159579-9faa-40d0-9b46-72206afa75a2")
 	)
 	(junction
 		(at 43.18 55.88)
@@ -8883,7 +8859,7 @@
 	)
 	(wire
 		(pts
-			(xy 119.38 83.82) (xy 120.65 83.82)
+			(xy 119.38 83.82) (xy 121.92 83.82)
 		)
 		(stroke
 			(width 0)
@@ -9123,16 +9099,6 @@
 			(type default)
 		)
 		(uuid "7c8fe83f-b999-40f5-98a1-59d6ada5ce34")
-	)
-	(wire
-		(pts
-			(xy 120.65 83.82) (xy 121.92 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7d0d9cc1-56df-4ea3-bded-07606406f6f5")
 	)
 	(polyline
 		(pts
@@ -15949,118 +15915,6 @@
 		)
 	)
 	(symbol
-		(lib_id "PCM_EEZ_unsorted:PCB test point")
-		(at 120.65 86.36 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "2ab59321-a106-4a5c-bbcb-8ba5faf45974")
-		(property "Reference" "TP8"
-			(at 122.174 88.9 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "Test"
-			(at 118.11 84.4551 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:5000"
-			(at 118.11 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "36-5000-ND"
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser" ""
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "TME" ""
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Label" "+3V3"
-			(at 120.65 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f383a8ce-2841-46f5-a57a-f4cf02c5f66b")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "TP8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
 		(at 200.66 33.02 0)
 		(mirror y)
@@ -21268,118 +21122,6 @@
 			(project "openpci2-backplane"
 				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
 					(reference "R3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "PCM_EEZ_unsorted:PCB test point")
-		(at 109.22 86.36 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9ccc8df3-a1a5-4f45-8207-35e6d717e531")
-		(property "Reference" "TP7"
-			(at 110.744 89.154 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "Test"
-			(at 106.68 84.4551 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PCM_Chili-chips:5000"
-			(at 106.68 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DigiKey" "36-5000-ND"
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser" ""
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "TME" ""
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" ""
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Label" "+3V3"
-			(at 109.22 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "168418c4-0fbd-4a35-804d-f7c1eeb7d591")
-		)
-		(instances
-			(project "openpci2-backplane"
-				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e/2b2b44eb-2b8f-4d72-b207-bb17ce77e810"
-					(reference "TP7")
 					(unit 1)
 				)
 			)
