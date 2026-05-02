@@ -2,7 +2,9 @@
 
 This is an opensource variant of what was first tested with [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd).
 
-Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is one of the three core delivarables of the project. The objective of this dev track is to:
+Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three core delivarables`** of the project.
+
+The objectives of this dev track are to:
  - first design the opensource RC-direct core
  - then validate and showcase its operation in a direct RC-to-EP configuration.
 
