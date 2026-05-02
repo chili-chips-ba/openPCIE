@@ -79,4 +79,10 @@ make -f MakefileSW program
 
 ## HW Compilation
 
-Hardware synthesis is currently supported through the Vivado GUI, using the prepared [project file](/4.build/hw_build.Vivado/openpcie2-rc.xpr) located at `4.build/hw_build.Vivado`.
+Hardware synthesis is for the proprietary AMD project branch supported through Vivado GUI, using the prepared project files in each of the corresponding design directories, which are all located within `amd-rtl-with-Vivado-build`, e.g. [2.RC-direct.amd/xbuild.Vivado-v2024.2](../2.amd-rtl-with-Vivado-build/2.RC-direct.amd/xbuild.Vivado-v2024.2).
+
+For the opensource build, please descend to [hw_build.openXC7](./hw_build.openXC7) directory and follow Makefile and README in it.
+
+
+-----------
+#### End-of-Document
