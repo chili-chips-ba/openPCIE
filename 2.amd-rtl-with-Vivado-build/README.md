@@ -5,7 +5,7 @@ This is a replica of the AMD-provided examples. They are handy for:
 
 - creation of a robust set of test procedures that can be applied to the opensource variant that is to be developed
 
-- and, in general, gathering the knowledge of **WHAT IS NEEDED** and **WHAT TO EXPECT** in the follow on development phases
+- and, in general, gathering the knowledge of **WHAT IS NEEDED** and **WHAT TO EXPECT** in that dev course
 
 ------
 #### End-of-Document
