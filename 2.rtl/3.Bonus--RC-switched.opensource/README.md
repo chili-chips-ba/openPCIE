@@ -1,6 +1,8 @@
-This is a bonus deliverable, above and beyond our original plan. [Here](https://github.com/chili-chips-ba/openPCIE/tree/main/1.pcb#usecase-2-switched-fpga_rc-to-fpga_ep-gen1-x1) is the corresponding hardware setup. 
+This is an opensource variant of what was first tested with AMD-proprietary IP stack, see [../../2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd](../../2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd). It is a bonus activity, above and beyond our original plan. 
 
-In order to make it possible, we had to get to the root of what looked like ASM1184e overheating problem, see slide 17 [here](https://github.com/chili-chips-ba/openPCIE/blob/main/1.pcb/0.doc/OpenPCIE%20backplane%20presentation.pptx), but turned out to be an undersized LDO. We are replacing with a DC/DC buck on the RevB openBackplane.
+The objective of this extra dev track is to validate and showcase the operation of opensource RC design in a Switched PCIE context.
+
+With both [direct](../2.RC-direct.opensource) and this indirect use-case thus tried and proven to be true, we will have established a nicely rounded set of opensource examples and cores -- A solid foundation for the makers to build their applications upon...
 
 ----
 End-of-Document
