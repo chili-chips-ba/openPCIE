@@ -2,7 +2,7 @@
 
 This is an opensource variant of what was first tested with [AMD-proprietary RC-switched IP stack](../../2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd). It is a bonus activity, above and beyond our original plan. 
 
-The objective of this extra dev track is to:
+The objectives of this extra dev track are to:
  - first design the opensource RC-switched core
  - then validate and showcase its operation in a Switched PCIE context.
 
