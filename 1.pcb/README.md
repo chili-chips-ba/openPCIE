@@ -1,4 +1,4 @@
-# openBackplane PCB
+# openPCIE Backplane PCB
 
 The board is designed for flexible PCIe system development and testing, featuring two distinct logical *islands*:  
 - **(1-to-1) 4-lane Direct connection**
