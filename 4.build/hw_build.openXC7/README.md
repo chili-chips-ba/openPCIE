@@ -15,9 +15,9 @@ Once the openXC7 tools are installed, such as by following our instructions [her
 % source /opt/openxc7/setup_env.sh
 ```
 
-The build is then as simple as:
+Provided you use openXC7 version that includes all bug fixes we've identified in the course of this project (see [openXC7 issues](https://github.com/chili-chips-ba/openPCIE/issues?q=is%3Aissue%20label%3AopenXC7)), the build is then as simple as:
 ```bash
 % make
 ```
-  
+
 #### End-of-Document
