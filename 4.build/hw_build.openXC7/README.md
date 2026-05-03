@@ -1,6 +1,5 @@
 # opensource openXC7 build flow
 
-WIP for @kerimbavcic to elaborate
 ## openXC7 Installation
 
 Complete installation instructions for the openXC7 toolchain are available here:
