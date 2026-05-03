@@ -2,17 +2,22 @@
 
 ## openXC7 Installation
 
-Complete installation instructions for the openXC7 toolchain are available here:
-https://github.com/chili-chips-ba/openeye-CamSI/blob/main/3.build/openXC7/README.md
+The **`openXC7`** toolchain is an open-source build flow for Xilinx 7-series FPGAs.
 
-The openXC7 toolchain provides open-source FPGA synthesis and place-and-route tools for Xilinx 7-series FPGAs, including:
+It includes:
 - **Yosys** - RTL synthesis
 - **nextpnr-xilinx** - Place and route
 - **Project X-Ray** - FPGA bitstream generation tools
 
-Make sure to source the environment setup script before building:
+Once the openXC7 tools are installed, such as by following our instructions [here](https://github.com/chili-chips-ba/openeye-CamSI/blob/main/3.build/openXC7/README.md), or per the [openXC7](https://github.com/openxc7) home page, also make sure to source the environment setup script before building:
+
 ```bash
-source /opt/openxc7/setup_env.sh
+% source /opt/openxc7/setup_env.sh
 ```
 
+The build is then as simple as:
+```bash
+% make
+```
+  
 #### End-of-Document
