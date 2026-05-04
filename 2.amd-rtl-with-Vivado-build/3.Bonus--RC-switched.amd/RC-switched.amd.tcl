@@ -85,7 +85,7 @@ if { [info exists ::origin_dir_loc] } {
 }
 
 # Set the project name
-set _xil_proj_name_ "temp"
+set _xil_proj_name_ "Vivado-v2024.2"
 
 # Use project name variable, if specified in the tcl shell
 if { [info exists ::user_project_name] } {
@@ -155,7 +155,7 @@ if { $validate_required } {
 }
 
 # Create project
-create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part xc7a200tfbg484-3
+create_project ${_xil_proj_name_} ./xbuild.Vivado-v2024.2 -part xc7a200tfbg484-3
 
 # Set the directory path for the new project
 set proj_dir [get_property directory [current_project]]
