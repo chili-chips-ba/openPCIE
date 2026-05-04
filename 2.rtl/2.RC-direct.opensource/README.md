@@ -1,6 +1,6 @@
 # Opensource RC-direct core 
 
-This is an opensource variant of what was first tested with [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd).
+This is an opensource variant of what was first tested with [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd). It is still **WIP**.
 
 Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three core delivarables`** of the project.
 
