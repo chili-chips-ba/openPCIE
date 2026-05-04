@@ -1,4 +1,4 @@
-# Opensource RC-switched core (bonus)
+# WIP -- Under Construction: Opensource RC-switched core (bonus)
 
 This is an opensource variant of what was first tested with [AMD-proprietary RC-switched IP stack](../../2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd). It is a bonus activity, above and beyond our original plan. 
 
