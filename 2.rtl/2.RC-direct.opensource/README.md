@@ -5,7 +5,7 @@ This is an opensource variant of what was first tested with [AMD-proprietary RC-
 - [ ] Replacement of the PCIE IP core is ongoing
 - [ ] we also plan to upgrade the current simple SOC with version that uses PeakRDL for CSR generation 
 
-Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three core delivarables`** of the project.
+Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three core deliverables`** of the project.
 
 The objectives of this dev track are to:
  - first design the opensource RC-direct core
