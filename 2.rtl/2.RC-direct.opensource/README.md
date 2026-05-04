@@ -1,6 +1,9 @@
 # Opensource RC-direct core 
 
-This is an opensource variant of what was first tested with [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd). It is still **WIP**.
+This is an opensource variant of what was first tested with [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd). It is still **WIP**:
+- [x] ✔️ Hardware FSM is replaced with opensource RISC-V based SOC 
+- [ ] Replacement of the PCIE IP core is ongoing
+- [ ] we also plan to upgrade the current simple SOC with version that uses PeakRDL for CSR generation 
 
 Together with our [openPCIE backplane](../../1.pcb) and Simon's unique [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three core delivarables`** of the project.
 
