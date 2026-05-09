@@ -296,7 +296,7 @@ When the backplane comes out of the reflow oven with all components soldered, an
 
 **[5] [Component datasheets](1.datasheets)**
 
-**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelines.SIG.pdf)**
+**[6] [PCB Layout Guidelines](0.doc/PCIE-Layout-Guidelines.SIG.pdf). The [USB3](0.doc/High-Speed-PCB-Guidelines-for-USB3.slla414a.pdf) rules are also fully applicable**
 
 **[7] Open-source SI Sim tools**
 - [openEMS](https://docs.openems.de)
