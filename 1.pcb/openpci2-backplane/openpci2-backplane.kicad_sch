@@ -7825,16 +7825,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 170.18 187.96 0)
+		(at 166.37 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0424888e-19af-4cad-aafc-dcdcdbea207a")
 		(property "Reference" "H6"
-			(at 172.72 187.9599 0)
+			(at 168.91 186.6899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7842,8 +7842,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 172.72 189.2299 0)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 168.91 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7853,7 +7853,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 170.18 187.96 0)
+			(at 166.37 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7862,7 +7862,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 170.18 187.96 0)
+			(at 166.37 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7871,7 +7871,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 170.18 187.96 0)
+			(at 166.37 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 166.37 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 166.37 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7963,16 +7980,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 149.86 187.96 0)
+		(at 156.21 191.77 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "1c5b1391-b5f1-4c79-bf23-a5bc30ccc9b0")
-		(property "Reference" "H4"
-			(at 152.4 187.9599 0)
+		(uuid "1158b6be-a073-4c64-b523-283f52f3f334")
+		(property "Reference" "H11"
+			(at 158.75 191.7699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7980,8 +7997,172 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 152.4 189.2299 0)
+		(property "Value" "Nylon Screw M3x6"
+			(at 158.75 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 156.21 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 156.21 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 156.21 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 156.21 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 146.05 191.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "12428d3d-9d06-4864-8be6-12be380d181f")
+		(property "Reference" "H10"
+			(at 148.59 191.7699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Screw M3x6"
+			(at 148.59 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 146.05 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 146.05 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 146.05 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 146.05 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 146.05 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 146.05 186.69 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1c5b1391-b5f1-4c79-bf23-a5bc30ccc9b0")
+		(property "Reference" "H4"
+			(at 148.59 186.6899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 148.59 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7991,7 +8172,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 149.86 187.96 0)
+			(at 146.05 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8000,7 +8181,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 149.86 187.96 0)
+			(at 146.05 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8009,7 +8190,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 149.86 187.96 0)
+			(at 146.05 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 146.05 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 146.05 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8173,16 +8371,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 119.38 187.96 0)
+		(at 115.57 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3e204ea3-0775-4a0b-bac5-7ec6fee2890e")
 		(property "Reference" "H1"
-			(at 121.92 187.9599 0)
+			(at 118.11 186.6899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8190,8 +8388,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 121.92 189.2299 0)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 118.11 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8201,7 +8399,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 119.38 187.96 0)
+			(at 115.57 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8210,7 +8408,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 119.38 187.96 0)
+			(at 115.57 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8219,7 +8417,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 119.38 187.96 0)
+			(at 115.57 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 115.57 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 115.57 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8238,16 +8453,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 129.54 187.96 0)
+		(at 125.73 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "59b0abf7-0359-4315-bd65-9a4a4e7f9e9a")
 		(property "Reference" "H2"
-			(at 132.08 187.9599 0)
+			(at 128.27 186.6899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8255,8 +8470,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 132.08 189.2299 0)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 128.27 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8266,7 +8481,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 129.54 187.96 0)
+			(at 125.73 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8275,7 +8490,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 129.54 187.96 0)
+			(at 125.73 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8284,7 +8499,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 129.54 187.96 0)
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 125.73 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 125.73 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8376,16 +8608,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 160.02 187.96 0)
+		(at 156.21 186.69 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6c0be71f-c6dd-4dd0-9d75-7a6d320135ac")
 		(property "Reference" "H5"
-			(at 162.56 187.9599 0)
+			(at 158.75 186.6899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8393,8 +8625,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 162.56 189.2299 0)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 158.75 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8404,7 +8636,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 160.02 187.96 0)
+			(at 156.21 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8413,7 +8645,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 160.02 187.96 0)
+			(at 156.21 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8422,7 +8654,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 160.02 187.96 0)
+			(at 156.21 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 156.21 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 156.21 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8523,16 +8772,16 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:MountingHole")
-		(at 139.7 187.96 0)
+		(at 115.57 191.77 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom no)
+		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "df4855e4-5bfc-473f-96cb-a44c7676acb0")
-		(property "Reference" "H3"
-			(at 142.24 187.9599 0)
+		(uuid "7a557421-ece5-4a6b-b728-4d34a2543752")
+		(property "Reference" "H7"
+			(at 118.11 191.7699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8540,8 +8789,336 @@
 				(justify left)
 			)
 		)
-		(property "Value" "MountingHole"
-			(at 142.24 189.2299 0)
+		(property "Value" "Nylon Screw M3x6"
+			(at 118.11 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 115.57 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 115.57 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 115.57 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 115.57 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 166.37 191.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8fe218b9-b114-4259-ac3f-4b2be15975f3")
+		(property "Reference" "H12"
+			(at 168.91 191.7699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Screw M3x6"
+			(at 168.91 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 166.37 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 166.37 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 166.37 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 166.37 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 166.37 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 125.73 191.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "bc7f5f22-4533-4aa8-84d1-e6a306469ebb")
+		(property "Reference" "H8"
+			(at 128.27 191.7699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Screw M3x6"
+			(at 128.27 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 125.73 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 125.73 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 125.73 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 125.73 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 125.73 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 135.89 191.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d4eb9773-9a5b-4103-ac31-d0eba60a426a")
+		(property "Reference" "H9"
+			(at 138.43 191.7699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Screw M3x6"
+			(at 138.43 193.0399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 135.89 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 135.89 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Mounting Hole without connection"
+			(at 135.89 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 135.89 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C194618"
+			(at 135.89 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(instances
+			(project "openpci2-backplane"
+				(path "/4049bf06-3ac2-49e6-a199-57d4e4e4797e"
+					(reference "H9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "PCM_EEZ_unsorted:MountingHole")
+		(at 135.89 186.69 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "df4855e4-5bfc-473f-96cb-a44c7676acb0")
+		(property "Reference" "H3"
+			(at 138.43 186.6899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Nylon Standoff M3x11"
+			(at 138.43 187.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8551,7 +9128,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_THT:Mounting_hole 3.2_5.5mm_NO_NET"
-			(at 139.7 187.96 0)
+			(at 135.89 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8560,7 +9137,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 139.7 187.96 0)
+			(at 135.89 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8569,7 +9146,24 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 139.7 187.96 0)
+			(at 135.89 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Voltage" ""
+			(at 135.89 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C123698"
+			(at 135.89 186.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
