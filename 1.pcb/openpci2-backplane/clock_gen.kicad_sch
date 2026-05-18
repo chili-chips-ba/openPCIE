@@ -17304,6 +17304,14 @@
 				(hide yes)
 			)
 		)
+		(property "Voltage" ""
+			(at 170.18 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "0560deb2-c387-45f3-83c4-9ea2ae6e7171")
 		)
@@ -20602,7 +20610,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "88ebe455-2838-4a8b-87b1-90fa43f2350a")
 		(property "Reference" "J4"
 			(at 256.8332 40.64 90)
