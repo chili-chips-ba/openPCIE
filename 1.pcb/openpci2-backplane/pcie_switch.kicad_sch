@@ -7,7 +7,9 @@
 	(title_block
 		(date "2025-10-21")
 		(rev "r1B1")
-		(company "Chili.CHIPS*ba")
+		(company "COPYRIGHT (C) Chili.CHIPS.ba doo")
+		(comment 1 "https://cern-ohl.web.cern.ch")
+		(comment 2 "Licensed under CERN-OHL-P v2")
 	)
 	(lib_symbols
 		(symbol "Device:L"
@@ -9729,16 +9731,6 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 30.48) (xy 213.36 30.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8bcf5822-2d7e-4c30-ae30-971d760fcde1")
-	)
-	(wire
-		(pts
 			(xy 83.82 53.34) (xy 86.36 53.34)
 		)
 		(stroke
@@ -10944,16 +10936,6 @@
 		)
 		(uuid "bb48585c-93ee-4220-a945-ef6b32c4d476")
 	)
-	(wire
-		(pts
-			(xy 213.36 33.02) (xy 220.98 33.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "bb50cc5c-bf7a-4e44-8c6d-21695f6e42ef")
-	)
 	(polyline
 		(pts
 			(xy 125.095 130.81) (xy 125.73 130.81)
@@ -10964,6 +10946,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "bb5f7002-b415-4d4a-9440-3dcda0cbd6f3")
+	)
+	(wire
+		(pts
+			(xy 213.36 33.02) (xy 220.98 33.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bb9f51aa-0c5d-4abf-b08b-91c58ce5ee8c")
 	)
 	(wire
 		(pts
@@ -11583,6 +11575,16 @@
 			(color 132 0 132 1)
 		)
 		(uuid "cfd9be5e-1ec3-4c11-86ed-8c6ef88812fb")
+	)
+	(wire
+		(pts
+			(xy 213.36 30.48) (xy 220.98 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cff16391-29da-428f-a1f3-339a3e9e107c")
 	)
 	(wire
 		(pts
@@ -14419,7 +14421,8 @@
 	)
 	(symbol
 		(lib_id "New_Library:470531000")
-		(at 233.68 29.21 0)
+		(at 233.68 34.29 0)
+		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -14427,7 +14430,7 @@
 		(dnp yes)
 		(uuid "0e919e0e-3317-4dce-8843-b6f99958f917")
 		(property "Reference" "J9"
-			(at 231.902 27.94 0)
+			(at 231.902 22.86 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -14436,7 +14439,7 @@
 			)
 		)
 		(property "Value" "M2510V-04P-N3"
-			(at 223.774 25.146 0)
+			(at 223.52 36.83 0)
 			(effects
 				(font
 					(size 1.524 1.524)
@@ -14445,7 +14448,7 @@
 			)
 		)
 		(property "Footprint" "Library:M2510V-04P-N3"
-			(at 231.394 48.768 0)
+			(at 231.394 14.732 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14455,7 +14458,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 235.966 44.704 0)
+			(at 235.966 18.796 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14465,7 +14468,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 233.68 29.21 0)
+			(at 233.68 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14474,7 +14477,7 @@
 			)
 		)
 		(property "Voltage" ""
-			(at 233.68 29.21 0)
+			(at 233.68 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
