@@ -1,0 +1,265 @@
+// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
+//==========================================================================
+// openPCIE * NLnet-sponsored open-source implementation
+//--------------------------------------------------------------------------
+//                   Copyright (C) 2026 Chili.CHIPS*ba
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived
+// from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//              https://opensource.org/license/bsd-3-clause
+//--------------------------------------------------------------------------
+
+`timescale 1ns / 1ps
+
+module riscv_pcie_soc (
+    input  logic        clk,
+    input  logic        resetn,
+
+    output logic [63:0] s_axis_tx_tdata,
+    output logic [7:0]  s_axis_tx_tkeep,
+    output logic        s_axis_tx_tlast,
+    output logic        s_axis_tx_tvalid,
+    input  logic        s_axis_tx_tready,
+
+    input  logic [63:0] m_axis_rx_tdata,
+    input  logic [7:0]  m_axis_rx_tkeep,
+    input  logic        m_axis_rx_tlast,
+    input  logic        m_axis_rx_tvalid,
+    output logic        m_axis_rx_tready,
+
+    input  logic [15:0] cfg_status,
+    input  logic [15:0] cfg_command,
+    input  logic        cfg_msg_received_err_fatal,
+
+    input  logic [5:0]  tx_buf_av
+);
+
+    logic        mem_valid;
+    logic        mem_ready;
+    logic [31:0] mem_addr;
+    logic [31:0] mem_wdata;
+    logic [3:0]  mem_wstrb;
+    logic [31:0] mem_rdata;
+
+    logic        ram_ready;
+    logic [31:0] ram_rdata;
+
+    logic [31:0] tx_packet_counter;
+
+    logic is_ram;
+    logic is_bridge;
+
+    assign is_ram    = (mem_addr[31:24] == 8'h00);
+    assign is_bridge = (mem_addr[31:24] == 8'h30);
+
+    picorv32 #(
+        .PROGADDR_RESET(32'h0000_0000),
+        .STACKADDR(32'h0000_2000),
+        .BARREL_SHIFTER(1),
+        .ENABLE_COUNTERS(1)
+    ) cpu (
+        .clk       (clk),
+        .resetn    (resetn),
+        .mem_valid (mem_valid),
+        .mem_ready (mem_ready),
+        .mem_addr  (mem_addr),
+        .mem_wdata (mem_wdata),
+        .mem_wstrb (mem_wstrb),
+        .mem_rdata (mem_rdata)
+    );
+
+    logic [31:0] ram [0:2047];
+    initial begin
+        $readmemh("firmware.hex", ram);
+    end
+    logic [31:0] ram_rdata_reg;
+    logic        ram_ready_reg;
+
+    always_ff @(posedge clk) begin
+        ram_ready_reg <= 1'b0;
+        if (mem_valid && is_ram) begin
+            if (mem_wstrb == '0) begin
+                ram_rdata_reg <= ram[mem_addr[12:2]];
+                ram_ready_reg <= 1'b1;
+            end else begin
+                if (mem_wstrb[0]) ram[mem_addr[12:2]][7:0]   <= mem_wdata[7:0];
+                if (mem_wstrb[1]) ram[mem_addr[12:2]][15:8]  <= mem_wdata[15:8];
+                if (mem_wstrb[2]) ram[mem_addr[12:2]][23:16] <= mem_wdata[23:16];
+                if (mem_wstrb[3]) ram[mem_addr[12:2]][31:24] <= mem_wdata[31:24];
+                ram_ready_reg <= 1'b1;
+            end
+        end
+    end
+    assign ram_rdata = ram_rdata_reg;
+    assign ram_ready = ram_ready_reg;
+
+    logic [31:0] tx_header0;
+    logic [31:0] tx_header1;
+    logic [31:0] tx_header2;
+    logic [31:0] tx_data;
+
+    logic [31:0] rx_status_reg;
+    logic [31:0] rx_data_reg;
+    logic [31:0] rx_header_info_reg;
+    logic [31:0] pcie_err_status_reg;
+
+    logic [31:0] pcie_phy_status_reg;
+
+    typedef enum logic [1:0] {
+        IDLE         = 2'd0,
+        SEND_CYCLE_1 = 2'd1,
+        SEND_CYCLE_2 = 2'd2
+    } tx_state_e;
+    tx_state_e tx_state;
+
+    logic rx_phase;
+
+    logic bridge_ready_reg;
+
+    always_ff @(posedge clk) begin
+        if (!resetn) begin
+            pcie_err_status_reg <= '0;
+            pcie_phy_status_reg <= '0;
+        end else begin
+            pcie_err_status_reg <= {15'b0, cfg_msg_received_err_fatal, cfg_status};
+            pcie_phy_status_reg <= {24'b0, tx_state, tx_buf_av};
+        end
+    end
+
+    always_ff @(posedge clk) begin
+        if (!resetn) begin
+            tx_state           <= IDLE;
+            bridge_ready_reg   <= 1'b0;
+            s_axis_tx_tvalid   <= 1'b0;
+            rx_status_reg      <= '0;
+            rx_data_reg        <= '0;
+            rx_header_info_reg <= '0;
+            rx_phase           <= 1'b0;
+
+            tx_packet_counter  <= '0;
+
+        end else begin
+            bridge_ready_reg <= 1'b0;
+
+            if (mem_valid && is_bridge && !bridge_ready_reg) begin
+                bridge_ready_reg <= 1'b1;
+
+                if (mem_wstrb != '0) begin
+                    case (mem_addr[4:2])
+                        3'b000: tx_header0 <= mem_wdata;
+                        3'b001: tx_header1 <= mem_wdata;
+                        3'b010: tx_header2 <= mem_wdata;
+                        3'b011: begin
+                                tx_data  <= mem_wdata;
+                                tx_state <= SEND_CYCLE_1;
+
+                                tx_packet_counter <= tx_packet_counter + 32'd1;
+                                end
+                        default: ;
+                    endcase
+                end
+            end
+
+            case (tx_state)
+                IDLE: begin
+                    s_axis_tx_tvalid <= 1'b0;
+                end
+                SEND_CYCLE_1: begin
+                    s_axis_tx_tdata  <= {tx_header1, tx_header0};
+                    s_axis_tx_tkeep  <= 8'hFF;
+                    s_axis_tx_tvalid <= 1'b1;
+                    s_axis_tx_tlast  <= 1'b0;
+                    if (s_axis_tx_tready) tx_state <= SEND_CYCLE_2;
+                end
+                SEND_CYCLE_2: begin
+                    s_axis_tx_tdata  <= {tx_data, tx_header2};
+                    s_axis_tx_tkeep  <= (tx_header0[30] == 1'b1) ? 8'hFF : 8'h0F;
+                    s_axis_tx_tvalid <= 1'b1;
+                    s_axis_tx_tlast  <= 1'b1;
+
+                    if (s_axis_tx_tready) begin
+                        tx_state <= IDLE;
+                    end
+                end
+                default: ;
+            endcase
+
+            if (m_axis_rx_tvalid) begin
+                if (rx_phase == 1'b0) begin
+                    if (m_axis_rx_tdata[28:24] == 5'b01010) begin
+                         rx_status_reg <= {29'b0, m_axis_rx_tdata[47:45]};
+                         rx_phase <= 1'b1;
+                    end
+                end
+                else begin
+                    rx_header_info_reg <= m_axis_rx_tdata[31:0];
+                    rx_data_reg        <= m_axis_rx_tdata[63:32];
+                    if (m_axis_rx_tlast) begin
+                        rx_phase <= 1'b0;
+                    end
+                end
+            end
+        end
+    end
+
+    assign m_axis_rx_tready = 1'b1;
+
+    always_comb begin
+        if (is_ram) begin
+            mem_rdata = ram_rdata;
+        end else if (is_bridge) begin
+            if (mem_addr[5]) begin
+                 mem_rdata = pcie_phy_status_reg;
+            end else begin
+
+                case (mem_addr[4:2])
+                    3'b100:  mem_rdata = rx_status_reg;
+                    3'b101:  mem_rdata = rx_data_reg;
+                    3'b110:  mem_rdata = rx_header_info_reg;
+                    3'b111:  mem_rdata = pcie_err_status_reg;
+                    default: mem_rdata = '0;
+                endcase
+            end
+        end else begin
+            mem_rdata = 32'hDEADBEEF;
+        end
+    end
+
+    assign mem_ready = ram_ready || bridge_ready_reg;
+
+endmodule
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------
