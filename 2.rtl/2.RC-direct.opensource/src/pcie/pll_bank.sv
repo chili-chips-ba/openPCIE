@@ -1,0 +1,202 @@
+// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
+//==========================================================================
+// openPCIE * NLnet-sponsored open-source implementation
+//--------------------------------------------------------------------------
+//                   Copyright (C) 2026 Chili.CHIPS*ba
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived
+// from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//              https://opensource.org/license/bsd-3-clause
+//--------------------------------------------------------------------------
+
+(* DowngradeIPIdentifiedWarnings = "yes" *)
+module pll_bank #
+(
+    
+    localparam PCIE_SIM_MODE = "FALSE",
+    localparam PCIE_GT_DEVICE = "GTP",
+    localparam PCIE_USE_MODE = "1.0",
+    localparam PCIE_PLL_SEL = "CPLL",
+    localparam PCIE_REFCLK_FREQ = 0
+ )
+
+(    
+    
+    input               QPLL_CPLLPDREFCLK,
+    input               QPLL_GTGREFCLK,
+    input               QPLL_QPLLLOCKDETCLK,
+    
+    output              QPLL_QPLLOUTCLK,
+    output              QPLL_QPLLOUTREFCLK,
+    output              QPLL_QPLLLOCK,
+    
+    input               QPLL_QPLLPD,
+    input               QPLL_QPLLRESET,
+
+    input               QPLL_DRPCLK,
+    input       [ 7:0]  QPLL_DRPADDR,
+    input               QPLL_DRPEN,
+    input       [15:0]  QPLL_DRPDI,
+    input               QPLL_DRPWE,
+    
+    output      [15:0]  QPLL_DRPDO,
+    output              QPLL_DRPRDY
+    
+);
+
+
+
+    localparam QPLL_FBDIV = (PCIE_REFCLK_FREQ == 2) && (PCIE_PLL_SEL == "QPLL") ? 10'b0010000000 : 
+                            (PCIE_REFCLK_FREQ == 1) && (PCIE_PLL_SEL == "QPLL") ? 10'b0100100000 : 
+                            (PCIE_REFCLK_FREQ == 0) && (PCIE_PLL_SEL == "QPLL") ? 10'b0101110000 : 
+                            (PCIE_REFCLK_FREQ == 2) && (PCIE_PLL_SEL == "CPLL") ? 10'b0001100000 : 
+                            (PCIE_REFCLK_FREQ == 1) && (PCIE_PLL_SEL == "CPLL") ? 10'b0011100000 : 10'b0100100000;
+    
+    localparam GTP_QPLL_FBDIV  = (PCIE_REFCLK_FREQ == 2) ? 3'd2 :
+                                 (PCIE_REFCLK_FREQ == 1) ? 3'd4 : 3'd5;
+
+    localparam BIAS_CFG = ((PCIE_USE_MODE == "1.0") && (PCIE_PLL_SEL == "CPLL")) ? 64'h0000042000001000 : 64'h0000040000001000;
+
+
+    wire cpllpd;        
+    wire cpllrst;       
+
+generate if (PCIE_GT_DEVICE == "GTP") 
+
+    begin : hm_cmn
+
+    GTPE2_COMMON #
+    (
+       
+        .SIM_PLL0REFCLK_SEL             (3'b001),
+        .SIM_PLL1REFCLK_SEL             (3'b001),
+        .SIM_RESET_SPEEDUP              (PCIE_SIM_MODE),
+        .SIM_VERSION                    (PCIE_USE_MODE),
+                                                                                                                                     
+        .PLL0_CFG                       (27'h01F024C),
+        .PLL1_CFG                       (27'h01F024C),
+        .PLL_CLKOUT_CFG                 (8'd0),
+        .PLL0_DMON_CFG                  (1'b0),
+        .PLL1_DMON_CFG                  (1'b0),
+        .PLL0_FBDIV                     (GTP_QPLL_FBDIV),
+        .PLL1_FBDIV                     (GTP_QPLL_FBDIV),
+        .PLL0_FBDIV_45                  (5),
+        .PLL1_FBDIV_45                  (5),
+        .PLL0_INIT_CFG                  (24'h00001E),
+        .PLL1_INIT_CFG                  (24'h00001E),
+        .PLL0_LOCK_CFG                  ( 9'h1E8),
+        .PLL1_LOCK_CFG                  ( 9'h1E8),
+        .PLL0_REFCLK_DIV                (1),
+        .PLL1_REFCLK_DIV                (1),
+                                                                                                                                     
+        .BIAS_CFG                       (64'h0000000000050001),
+        .RSVD_ATTR0                     (16'd0),
+        .RSVD_ATTR1                     (16'd0)
+    
+    )
+    gtpe2_common_i 
+    (
+           
+        .GTGREFCLK0                     ( 1'd0),
+        .GTGREFCLK1                     ( 1'd0),
+        .GTREFCLK0                      (QPLL_GTGREFCLK),
+        .GTREFCLK1                      ( 1'd0),
+        .GTEASTREFCLK0                  ( 1'd0),
+        .GTEASTREFCLK1                  ( 1'd0),
+        .GTWESTREFCLK0                  ( 1'd0),
+        .GTWESTREFCLK1                  ( 1'd0),
+        .PLL0LOCKDETCLK                 (QPLL_QPLLLOCKDETCLK),
+        .PLL1LOCKDETCLK                 (QPLL_QPLLLOCKDETCLK),
+        .PLL0LOCKEN                     ( 1'd1),
+        .PLL1LOCKEN                     ( 1'd1),
+        .PLL0REFCLKSEL                  ( 3'd1),
+        .PLL1REFCLKSEL                  ( 3'd1),
+        .PLLRSVD1                       (16'd0),
+        .PLLRSVD2                       ( 5'd0),
+        
+        .PLL0OUTCLK                     (QPLL_QPLLOUTCLK),
+        .PLL1OUTCLK                     (),
+        .PLL0OUTREFCLK                  (QPLL_QPLLOUTREFCLK),
+        .PLL1OUTREFCLK                  (),
+        .PLL0LOCK                       (QPLL_QPLLLOCK),
+        .PLL1LOCK                       (),
+        .PLL0FBCLKLOST                  (),
+        .PLL1FBCLKLOST                  (),
+        .PLL0REFCLKLOST                 (),
+        .PLL1REFCLKLOST                 (),
+        .DMONITOROUT                    (),
+                                                                                                         
+        .PLL0PD                         (cpllpd | QPLL_QPLLPD),
+        .PLL1PD                         ( 1'd1),
+        .PLL0RESET                      (cpllrst | QPLL_QPLLRESET),
+        .PLL1RESET                      ( 1'd1),
+                                                                                                   
+        .DRPCLK                         (QPLL_DRPCLK),
+        .DRPADDR                        (QPLL_DRPADDR),
+        .DRPEN                          (QPLL_DRPEN),
+        .DRPDI                          (QPLL_DRPDI),
+        .DRPWE                          (QPLL_DRPWE),
+                                                                                                         
+        .DRPDO                          (QPLL_DRPDO),
+        .DRPRDY                         (QPLL_DRPRDY),
+                                                                                                         
+        .BGBYPASSB                      ( 1'd1),
+        .BGMONITORENB                   ( 1'd1),
+        .BGPDB                          ( 1'd1),
+        .BGRCALOVRD                     ( 5'd31),
+        .BGRCALOVRDENB                  ( 1'd1),
+        
+        .PMARSVD                        ( 8'd0),
+        .RCALENB                        ( 1'd1),
+                                                                               
+        .REFCLKOUTMONITOR0              (),
+        .REFCLKOUTMONITOR1              (),
+        .PMARSVDOUT                     ()
+    
+    );
+   
+    end
+
+endgenerate
+
+wake_timer wake_timer_i (                                                                                   
+        .i_ibufds_gte2(QPLL_CPLLPDREFCLK),                                                                                 
+        .o_cpllpd_ovrd(cpllpd),                                                                                       
+        .o_cpllreset_ovrd(cpllrst));                       
+
+
+endmodule
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

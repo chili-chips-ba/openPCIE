@@ -1,33 +1,6 @@
-/*
- *  PicoRV32 -- A Small RISC-V (RV32I) Processor Core
- *
- *  Copyright (C) 2015  Claire Xenia Wolf <claire@yosyshq.com>
- *
- *  Permission to use, copy, modify, and/or distribute this software for any
- *  purpose with or without fee is hereby granted, provided that the above
- *  copyright notice and this permission notice appear in all copies.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- *  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- *  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- *  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- *  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
 
-/* verilator lint_off WIDTH */
-/* verilator lint_off PINMISSING */
-/* verilator lint_off CASEOVERLAP */
-/* verilator lint_off CASEINCOMPLETE */
 
 `timescale 1 ns / 1 ps
-// `default_nettype none
-// `define DEBUGNETS
-// `define DEBUGREGS
-// `define DEBUGASM
-// `define DEBUG
 
 `ifdef DEBUG
   `define debug(debug_command) debug_command
@@ -47,17 +20,10 @@
   `define assert(assert_expr) empty_statement
 `endif
 
-// uncomment this for register file in extra module
-// `define PICORV32_REGS picorv32_regs
 
-// this macro can be used to check if the verilog files in your
-// design are read in the correct order.
 `define PICORV32_V
 
 
-/***************************************************************
- * picorv32
- ***************************************************************/
 
 module picorv32 #(
 	parameter [ 0:0] ENABLE_COUNTERS = 1,
@@ -99,14 +65,12 @@ module picorv32 #(
 	output reg [ 3:0] mem_wstrb,
 	input      [31:0] mem_rdata,
 
-	// Look-Ahead Interface
 	output            mem_la_read,
 	output            mem_la_write,
 	output     [31:0] mem_la_addr,
 	output reg [31:0] mem_la_wdata,
 	output reg [ 3:0] mem_la_wstrb,
 
-	// Pico Co-Processor Interface (PCPI)
 	output reg        pcpi_valid,
 	output reg [31:0] pcpi_insn,
 	output     [31:0] pcpi_rs1,
@@ -116,7 +80,6 @@ module picorv32 #(
 	input             pcpi_wait,
 	input             pcpi_ready,
 
-	// IRQ Interface
 	input      [31:0] irq,
 	output reg [31:0] eoi,
 
@@ -154,7 +117,6 @@ module picorv32 #(
 	output reg [63:0] rvfi_csr_minstret_wdata,
 `endif
 
-	// Trace Interface
 	output reg        trace_valid,
 	output reg [35:0] trace_data
 );
@@ -212,8 +174,6 @@ module picorv32 #(
 `endif
 
 	task empty_statement;
-		// This task is used by the `assert directive in non-formal mode to
-		// avoid empty statement (which are unsupported by plain Verilog syntax).
 		begin end
 	endtask
 
@@ -252,7 +212,6 @@ module picorv32 #(
 	wire [31:0] dbg_reg_x31 = cpuregs[31];
 `endif
 
-	// Internal PCPI Cores
 
 	wire        pcpi_mul_wr;
 	wire [31:0] pcpi_mul_rd;
@@ -346,7 +305,6 @@ module picorv32 #(
 	end
 
 
-	// Memory Interface
 
 	reg [1:0] mem_state;
 	reg [1:0] mem_wordsize;
@@ -435,55 +393,55 @@ module picorv32 #(
 
 		if (COMPRESSED_ISA && mem_done && (mem_do_prefetch || mem_do_rinst)) begin
 			case (mem_rdata_latched[1:0])
-				2'b00: begin // Quadrant 0
+				2'b00: begin
 					case (mem_rdata_latched[15:13])
-						3'b000: begin // C.ADDI4SPN
+						3'b000: begin
 							mem_rdata_q[14:12] <= 3'b000;
 							mem_rdata_q[31:20] <= {2'b0, mem_rdata_latched[10:7], mem_rdata_latched[12:11], mem_rdata_latched[5], mem_rdata_latched[6], 2'b00};
 						end
-						3'b010: begin // C.LW
+						3'b010: begin
 							mem_rdata_q[31:20] <= {5'b0, mem_rdata_latched[5], mem_rdata_latched[12:10], mem_rdata_latched[6], 2'b00};
 							mem_rdata_q[14:12] <= 3'b 010;
 						end
-						3'b 110: begin // C.SW
+						3'b 110: begin
 							{mem_rdata_q[31:25], mem_rdata_q[11:7]} <= {5'b0, mem_rdata_latched[5], mem_rdata_latched[12:10], mem_rdata_latched[6], 2'b00};
 							mem_rdata_q[14:12] <= 3'b 010;
 						end
 					endcase
 				end
-				2'b01: begin // Quadrant 1
+				2'b01: begin
 					case (mem_rdata_latched[15:13])
-						3'b 000: begin // C.ADDI
+						3'b 000: begin
 							mem_rdata_q[14:12] <= 3'b000;
 							mem_rdata_q[31:20] <= $signed({mem_rdata_latched[12], mem_rdata_latched[6:2]});
 						end
-						3'b 010: begin // C.LI
+						3'b 010: begin
 							mem_rdata_q[14:12] <= 3'b000;
 							mem_rdata_q[31:20] <= $signed({mem_rdata_latched[12], mem_rdata_latched[6:2]});
 						end
 						3'b 011: begin
-							if (mem_rdata_latched[11:7] == 2) begin // C.ADDI16SP
+							if (mem_rdata_latched[11:7] == 2) begin
 								mem_rdata_q[14:12] <= 3'b000;
 								mem_rdata_q[31:20] <= $signed({mem_rdata_latched[12], mem_rdata_latched[4:3],
 										mem_rdata_latched[5], mem_rdata_latched[2], mem_rdata_latched[6], 4'b 0000});
-							end else begin // C.LUI
+							end else begin
 								mem_rdata_q[31:12] <= $signed({mem_rdata_latched[12], mem_rdata_latched[6:2]});
 							end
 						end
 						3'b100: begin
-							if (mem_rdata_latched[11:10] == 2'b00) begin // C.SRLI
+							if (mem_rdata_latched[11:10] == 2'b00) begin
 								mem_rdata_q[31:25] <= 7'b0000000;
 								mem_rdata_q[14:12] <= 3'b 101;
 							end
-							if (mem_rdata_latched[11:10] == 2'b01) begin // C.SRAI
+							if (mem_rdata_latched[11:10] == 2'b01) begin
 								mem_rdata_q[31:25] <= 7'b0100000;
 								mem_rdata_q[14:12] <= 3'b 101;
 							end
-							if (mem_rdata_latched[11:10] == 2'b10) begin // C.ANDI
+							if (mem_rdata_latched[11:10] == 2'b10) begin
 								mem_rdata_q[14:12] <= 3'b111;
 								mem_rdata_q[31:20] <= $signed({mem_rdata_latched[12], mem_rdata_latched[6:2]});
 							end
-							if (mem_rdata_latched[12:10] == 3'b011) begin // C.SUB, C.XOR, C.OR, C.AND
+							if (mem_rdata_latched[12:10] == 3'b011) begin
 								if (mem_rdata_latched[6:5] == 2'b00) mem_rdata_q[14:12] <= 3'b000;
 								if (mem_rdata_latched[6:5] == 2'b01) mem_rdata_q[14:12] <= 3'b100;
 								if (mem_rdata_latched[6:5] == 2'b10) mem_rdata_q[14:12] <= 3'b110;
@@ -491,13 +449,13 @@ module picorv32 #(
 								mem_rdata_q[31:25] <= mem_rdata_latched[6:5] == 2'b00 ? 7'b0100000 : 7'b0000000;
 							end
 						end
-						3'b 110: begin // C.BEQZ
+						3'b 110: begin
 							mem_rdata_q[14:12] <= 3'b000;
 							{ mem_rdata_q[31], mem_rdata_q[7], mem_rdata_q[30:25], mem_rdata_q[11:8] } <=
 									$signed({mem_rdata_latched[12], mem_rdata_latched[6:5], mem_rdata_latched[2],
 											mem_rdata_latched[11:10], mem_rdata_latched[4:3]});
 						end
-						3'b 111: begin // C.BNEZ
+						3'b 111: begin
 							mem_rdata_q[14:12] <= 3'b001;
 							{ mem_rdata_q[31], mem_rdata_q[7], mem_rdata_q[30:25], mem_rdata_q[11:8] } <=
 									$signed({mem_rdata_latched[12], mem_rdata_latched[6:5], mem_rdata_latched[2],
@@ -505,35 +463,35 @@ module picorv32 #(
 						end
 					endcase
 				end
-				2'b10: begin // Quadrant 2
+				2'b10: begin
 					case (mem_rdata_latched[15:13])
-						3'b000: begin // C.SLLI
+						3'b000: begin
 							mem_rdata_q[31:25] <= 7'b0000000;
 							mem_rdata_q[14:12] <= 3'b 001;
 						end
-						3'b010: begin // C.LWSP
+						3'b010: begin
 							mem_rdata_q[31:20] <= {4'b0, mem_rdata_latched[3:2], mem_rdata_latched[12], mem_rdata_latched[6:4], 2'b00};
 							mem_rdata_q[14:12] <= 3'b 010;
 						end
 						3'b100: begin
-							if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] == 0) begin // C.JR
+							if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] == 0) begin
 								mem_rdata_q[14:12] <= 3'b000;
 								mem_rdata_q[31:20] <= 12'b0;
 							end
-							if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] != 0) begin // C.MV
+							if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] != 0) begin
 								mem_rdata_q[14:12] <= 3'b000;
 								mem_rdata_q[31:25] <= 7'b0000000;
 							end
-							if (mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin // C.JALR
+							if (mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin
 								mem_rdata_q[14:12] <= 3'b000;
 								mem_rdata_q[31:20] <= 12'b0;
 							end
-							if (mem_rdata_latched[12] != 0 && mem_rdata_latched[6:2] != 0) begin // C.ADD
+							if (mem_rdata_latched[12] != 0 && mem_rdata_latched[6:2] != 0) begin
 								mem_rdata_q[14:12] <= 3'b000;
 								mem_rdata_q[31:25] <= 7'b0000000;
 							end
 						end
-						3'b110: begin // C.SWSP
+						3'b110: begin
 							{mem_rdata_q[31:25], mem_rdata_q[11:7]} <= {4'b0, mem_rdata_latched[8:7], mem_rdata_latched[12:9], 2'b00};
 							mem_rdata_q[14:12] <= 3'b 010;
 						end
@@ -641,7 +599,6 @@ module picorv32 #(
 	end
 
 
-	// Instruction Decoder
 
 	reg instr_lui, instr_auipc, instr_jal, instr_jalr;
 	reg instr_beq, instr_bne, instr_blt, instr_bge, instr_bltu, instr_bgeu;
@@ -884,10 +841,10 @@ module picorv32 #(
 			decoded_rs2 <= mem_rdata_latched[24:20];
 
 			if (mem_rdata_latched[6:0] == 7'b0001011 && mem_rdata_latched[31:25] == 7'b0000000 && ENABLE_IRQ && ENABLE_IRQ_QREGS)
-				decoded_rs1[regindex_bits-1] <= 1; // instr_getq
+				decoded_rs1[regindex_bits-1] <= 1;
 
 			if (mem_rdata_latched[6:0] == 7'b0001011 && mem_rdata_latched[31:25] == 7'b0000010 && ENABLE_IRQ)
-				decoded_rs1 <= ENABLE_IRQ_QREGS ? irqregs_offset : 3; // instr_retirq
+				decoded_rs1 <= ENABLE_IRQ_QREGS ? irqregs_offset : 3;
 
 			compressed_instr <= 0;
 			if (COMPRESSED_ISA && mem_rdata_latched[1:0] != 2'b11) begin
@@ -900,48 +857,48 @@ module picorv32 #(
 				  decoded_imm_j[7], decoded_imm_j[3:1], decoded_imm_j[5], decoded_imm_j[0] } <= $signed({mem_rdata_latched[12:2], 1'b0});
 
 				case (mem_rdata_latched[1:0])
-					2'b00: begin // Quadrant 0
+					2'b00: begin
 						case (mem_rdata_latched[15:13])
-							3'b000: begin // C.ADDI4SPN
+							3'b000: begin
 								is_alu_reg_imm <= |mem_rdata_latched[12:5];
 								decoded_rs1 <= 2;
 								decoded_rd <= 8 + mem_rdata_latched[4:2];
 							end
-							3'b010: begin // C.LW
+							3'b010: begin
 								is_lb_lh_lw_lbu_lhu <= 1;
 								decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 								decoded_rd <= 8 + mem_rdata_latched[4:2];
 							end
-							3'b110: begin // C.SW
+							3'b110: begin
 								is_sb_sh_sw <= 1;
 								decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 								decoded_rs2 <= 8 + mem_rdata_latched[4:2];
 							end
 						endcase
 					end
-					2'b01: begin // Quadrant 1
+					2'b01: begin
 						case (mem_rdata_latched[15:13])
-							3'b000: begin // C.NOP / C.ADDI
+							3'b000: begin
 								is_alu_reg_imm <= 1;
 								decoded_rd <= mem_rdata_latched[11:7];
 								decoded_rs1 <= mem_rdata_latched[11:7];
 							end
-							3'b001: begin // C.JAL
+							3'b001: begin
 								instr_jal <= 1;
 								decoded_rd <= 1;
 							end
-							3'b 010: begin // C.LI
+							3'b 010: begin
 								is_alu_reg_imm <= 1;
 								decoded_rd <= mem_rdata_latched[11:7];
 								decoded_rs1 <= 0;
 							end
 							3'b 011: begin
 								if (mem_rdata_latched[12] || mem_rdata_latched[6:2]) begin
-									if (mem_rdata_latched[11:7] == 2) begin // C.ADDI16SP
+									if (mem_rdata_latched[11:7] == 2) begin
 										is_alu_reg_imm <= 1;
 										decoded_rd <= mem_rdata_latched[11:7];
 										decoded_rs1 <= mem_rdata_latched[11:7];
-									end else begin // C.LUI
+									end else begin
 										instr_lui <= 1;
 										decoded_rd <= mem_rdata_latched[11:7];
 										decoded_rs1 <= 0;
@@ -949,42 +906,42 @@ module picorv32 #(
 								end
 							end
 							3'b100: begin
-								if (!mem_rdata_latched[11] && !mem_rdata_latched[12]) begin // C.SRLI, C.SRAI
+								if (!mem_rdata_latched[11] && !mem_rdata_latched[12]) begin
 									is_alu_reg_imm <= 1;
 									decoded_rd <= 8 + mem_rdata_latched[9:7];
 									decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 									decoded_rs2 <= {mem_rdata_latched[12], mem_rdata_latched[6:2]};
 								end
-								if (mem_rdata_latched[11:10] == 2'b10) begin // C.ANDI
+								if (mem_rdata_latched[11:10] == 2'b10) begin
 									is_alu_reg_imm <= 1;
 									decoded_rd <= 8 + mem_rdata_latched[9:7];
 									decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 								end
-								if (mem_rdata_latched[12:10] == 3'b011) begin // C.SUB, C.XOR, C.OR, C.AND
+								if (mem_rdata_latched[12:10] == 3'b011) begin
 									is_alu_reg_reg <= 1;
 									decoded_rd <= 8 + mem_rdata_latched[9:7];
 									decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 									decoded_rs2 <= 8 + mem_rdata_latched[4:2];
 								end
 							end
-							3'b101: begin // C.J
+							3'b101: begin
 								instr_jal <= 1;
 							end
-							3'b110: begin // C.BEQZ
+							3'b110: begin
 								is_beq_bne_blt_bge_bltu_bgeu <= 1;
 								decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 								decoded_rs2 <= 0;
 							end
-							3'b111: begin // C.BNEZ
+							3'b111: begin
 								is_beq_bne_blt_bge_bltu_bgeu <= 1;
 								decoded_rs1 <= 8 + mem_rdata_latched[9:7];
 								decoded_rs2 <= 0;
 							end
 						endcase
 					end
-					2'b10: begin // Quadrant 2
+					2'b10: begin
 						case (mem_rdata_latched[15:13])
-							3'b000: begin // C.SLLI
+							3'b000: begin
 								if (!mem_rdata_latched[12]) begin
 									is_alu_reg_imm <= 1;
 									decoded_rd <= mem_rdata_latched[11:7];
@@ -992,7 +949,7 @@ module picorv32 #(
 									decoded_rs2 <= {mem_rdata_latched[12], mem_rdata_latched[6:2]};
 								end
 							end
-							3'b010: begin // C.LWSP
+							3'b010: begin
 								if (mem_rdata_latched[11:7]) begin
 									is_lb_lh_lw_lbu_lhu <= 1;
 									decoded_rd <= mem_rdata_latched[11:7];
@@ -1000,30 +957,30 @@ module picorv32 #(
 								end
 							end
 							3'b100: begin
-								if (mem_rdata_latched[12] == 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin // C.JR
+								if (mem_rdata_latched[12] == 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin
 									instr_jalr <= 1;
 									decoded_rd <= 0;
 									decoded_rs1 <= mem_rdata_latched[11:7];
 								end
-								if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] != 0) begin // C.MV
+								if (mem_rdata_latched[12] == 0 && mem_rdata_latched[6:2] != 0) begin
 									is_alu_reg_reg <= 1;
 									decoded_rd <= mem_rdata_latched[11:7];
 									decoded_rs1 <= 0;
 									decoded_rs2 <= mem_rdata_latched[6:2];
 								end
-								if (mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin // C.JALR
+								if (mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0) begin
 									instr_jalr <= 1;
 									decoded_rd <= 1;
 									decoded_rs1 <= mem_rdata_latched[11:7];
 								end
-								if (mem_rdata_latched[12] != 0 && mem_rdata_latched[6:2] != 0) begin // C.ADD
+								if (mem_rdata_latched[12] != 0 && mem_rdata_latched[6:2] != 0) begin
 									is_alu_reg_reg <= 1;
 									decoded_rd <= mem_rdata_latched[11:7];
 									decoded_rs1 <= mem_rdata_latched[11:7];
 									decoded_rs2 <= mem_rdata_latched[6:2];
 								end
 							end
-							3'b110: begin // C.SWSP
+							3'b110: begin
 								is_sb_sh_sw <= 1;
 								decoded_rs1 <= 2;
 								decoded_rs2 <= mem_rdata_latched[6:2];
@@ -1167,7 +1124,6 @@ module picorv32 #(
 	end
 
 
-	// Main State Machine
 
 	localparam cpu_state_trap   = 8'b10000000;
 	localparam cpu_state_fetch  = 8'b01000000;
@@ -2029,15 +1985,15 @@ module picorv32 #(
 		end
 
 		casez (dbg_insn_opcode)
-			32'b 0000000_?????_000??_???_?????_0001011: begin // getq
+			32'b 0000000_?????_000??_???_?????_0001011: begin
 				rvfi_rs1_addr <= 0;
 				rvfi_rs1_rdata <= 0;
 			end
-			32'b 0000001_?????_?????_???_000??_0001011: begin // setq
+			32'b 0000001_?????_?????_???_000??_0001011: begin
 				rvfi_rd_addr <= 0;
 				rvfi_rd_wdata <= 0;
 			end
-			32'b 0000010_?????_00000_???_00000_0001011: begin // retirq
+			32'b 0000010_?????_00000_???_00000_0001011: begin
 				rvfi_rs1_addr <= 0;
 				rvfi_rs1_rdata <= 0;
 			end
@@ -2099,29 +2055,22 @@ module picorv32 #(
 	end
 `endif
 
-	// Formal Verification
 `ifdef FORMAL
 	reg [3:0] last_mem_nowait;
 	always @(posedge clk)
 		last_mem_nowait <= {last_mem_nowait, mem_ready || !mem_valid};
 
-	// stall the memory interface for max 4 cycles
 	restrict property (|last_mem_nowait || mem_ready || !mem_valid);
 
-	// resetn low in first cycle, after that resetn high
 	restrict property (resetn != $initstate);
 
-	// this just makes it much easier to read traces. uncomment as needed.
-	// assume property (mem_valid || !mem_ready);
 
 	reg ok;
 	always @* begin
 		if (resetn) begin
-			// instruction fetches are read-only
 			if (mem_valid && mem_instr)
 				assert (mem_wstrb == 0);
 
-			// cpu_state must be valid
 			ok = 0;
 			if (cpu_state == cpu_state_trap)   ok = 1;
 			if (cpu_state == cpu_state_fetch)  ok = 1;
@@ -2166,9 +2115,6 @@ module picorv32 #(
 `endif
 endmodule
 
-/***************************************************************
- * picorv32_pcpi_mul
- ***************************************************************/
 
 module picorv32_pcpi_mul #(
 	parameter STEPS_AT_ONCE = 1,
@@ -2221,7 +2167,6 @@ module picorv32_pcpi_mul #(
 	reg mul_finish;
 	integer i, j;
 
-	// carry save accumulator
 	always @* begin
 		next_rd = rd;
 		next_rdx = rdx;
@@ -2389,9 +2334,6 @@ module picorv32_pcpi_fast_mul #(
 endmodule
 
 
-/***************************************************************
- * picorv32_pcpi_div
- ***************************************************************/
 
 module picorv32_pcpi_div (
 	input clk, resetn,
