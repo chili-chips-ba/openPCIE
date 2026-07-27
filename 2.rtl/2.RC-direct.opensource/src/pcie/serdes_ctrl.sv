@@ -37,142 +37,108 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module serdes_ctrl #
+module serdes_ctrl
+  import link_pkg::*;
+#
 (
-
-    localparam PCIE_SIM_MODE                 = "FALSE",
-    localparam PCIE_SIM_SPEEDUP              = "FALSE",
-    localparam PCIE_SIM_TX_EIDLE_DRIVE_LEVEL = "1",
-    localparam PCIE_GT_DEVICE                = "GTP",
-    localparam PCIE_USE_MODE                 = "1.0",
-    localparam PCIE_PLL_SEL                  = "CPLL",
-    localparam PCIE_AUX_CDR_GEN3_EN          = "TRUE",
-    localparam PCIE_LPM_DFE                  = "LPM",
-    localparam PCIE_LPM_DFE_GEN3             = "DFE",
-    localparam PCIE_EXT_CLK                  = "FALSE",
-    localparam PCIE_EXT_GT_COMMON            = "FALSE",
     localparam EXT_CH_GT_DRP                 = "FALSE",
 
-    localparam TX_MARGIN_FULL_0              = 7'b1001111,
-    localparam TX_MARGIN_FULL_1              = 7'b1001110,
-    localparam TX_MARGIN_FULL_2              = 7'b1001101,
-    localparam TX_MARGIN_FULL_3              = 7'b1001100,
-    localparam TX_MARGIN_FULL_4              = 7'b1000011,
-    localparam TX_MARGIN_LOW_0               = 7'b1000101,
-    localparam TX_MARGIN_LOW_1               = 7'b1000110 ,
-    localparam TX_MARGIN_LOW_2               = 7'b1000011,
-    localparam TX_MARGIN_LOW_3               = 7'b1000010 ,
-    localparam TX_MARGIN_LOW_4               = 7'b1000000 ,
-
-    localparam PCIE_POWER_SAVING             = "TRUE",
-    localparam PCIE_ASYNC_EN                 = "FALSE",
-    localparam PCIE_TXBUF_EN                 = "FALSE",
-    localparam PCIE_RXBUF_EN                 = "TRUE",
     localparam PCIE_TXSYNC_MODE              = 0,
     localparam PCIE_RXSYNC_MODE              = 0,
     localparam PCIE_CHAN_BOND                = 1,
     localparam PCIE_CHAN_BOND_EN             = "TRUE",
-    localparam PCIE_LANE                     = 1,
-    localparam PCIE_LINK_SPEED               = 3,
-    localparam PCIE_REFCLK_FREQ              = 0,
-    localparam PCIE_USERCLK1_FREQ            = 2,
-    localparam PCIE_USERCLK2_FREQ            = 2,
-    localparam PCIE_TX_EIDLE_ASSERT_DELAY    = 3'd2,
-    localparam PCIE_RXEQ_MODE_GEN3           = 1,
     localparam PCIE_OOBCLK_MODE              = 1,
-    localparam PCIE_JTAG_MODE                = 0,
     localparam PCIE_DEBUG_MODE               = 0
-    
-)                                                     
+
+)
 (
     input                           PIPE_CLK,
     input                           PIPE_RESET_N,
    
     output                          PIPE_PCLK,
-    input       [(PCIE_LANE*32)-1:0]PIPE_TXDATA,
-    input       [(PCIE_LANE*4)-1:0] PIPE_TXDATAK,
+    input       [(PCIE_LANES*32)-1:0]PIPE_TXDATA,
+    input       [(PCIE_LANES*4)-1:0] PIPE_TXDATAK,
     
-    output      [PCIE_LANE-1:0]     PIPE_TXP,
-    output      [PCIE_LANE-1:0]     PIPE_TXN,
+    output      [PCIE_LANES-1:0]    PIPE_TXP,
+    output      [PCIE_LANES-1:0]    PIPE_TXN,
 
-    input       [PCIE_LANE-1:0]     PIPE_RXP,
-    input       [PCIE_LANE-1:0]     PIPE_RXN,
+    input       [PCIE_LANES-1:0]    PIPE_RXP,
+    input       [PCIE_LANES-1:0]    PIPE_RXN,
     
-    output      [(PCIE_LANE*32)-1:0]PIPE_RXDATA,
-    output      [(PCIE_LANE*4)-1:0] PIPE_RXDATAK,
+    output      [(PCIE_LANES*32)-1:0]PIPE_RXDATA,
+    output      [(PCIE_LANES*4)-1:0] PIPE_RXDATAK,
     
     input                           PIPE_TXDETECTRX,
-    input       [PCIE_LANE-1:0]     PIPE_TXELECIDLE,
-    input       [PCIE_LANE-1:0]     PIPE_TXCOMPLIANCE,
-    input       [PCIE_LANE-1:0]     PIPE_RXPOLARITY,
-    input       [(PCIE_LANE*2)-1:0] PIPE_POWERDOWN,
+    input       [PCIE_LANES-1:0]    PIPE_TXELECIDLE,
+    input       [PCIE_LANES-1:0]    PIPE_TXCOMPLIANCE,
+    input       [PCIE_LANES-1:0]    PIPE_RXPOLARITY,
+    input       [(PCIE_LANES*2)-1:0] PIPE_POWERDOWN,
     input       [ 1:0]              PIPE_RATE,
     
     input       [ 2:0]              PIPE_TXMARGIN,
     input                           PIPE_TXSWING,
-    input       [PCIE_LANE-1:0]     PIPE_TXDEEMPH,
-    input       [(PCIE_LANE*2)-1:0] PIPE_TXEQ_CONTROL,
-    input       [(PCIE_LANE*4)-1:0] PIPE_TXEQ_PRESET,
-    input       [(PCIE_LANE*4)-1:0] PIPE_TXEQ_PRESET_DEFAULT,
-    input       [(PCIE_LANE*6)-1:0] PIPE_TXEQ_DEEMPH,
+    input       [PCIE_LANES-1:0]    PIPE_TXDEEMPH,
+    input       [(PCIE_LANES*2)-1:0] PIPE_TXEQ_CONTROL,
+    input       [(PCIE_LANES*4)-1:0] PIPE_TXEQ_PRESET,
+    input       [(PCIE_LANES*4)-1:0] PIPE_TXEQ_PRESET_DEFAULT,
+    input       [(PCIE_LANES*6)-1:0] PIPE_TXEQ_DEEMPH,
                                                                             
-    input       [(PCIE_LANE*2)-1:0] PIPE_RXEQ_CONTROL,
-    input       [(PCIE_LANE*3)-1:0] PIPE_RXEQ_PRESET,
-    input       [(PCIE_LANE*6)-1:0] PIPE_RXEQ_LFFS,
-    input       [(PCIE_LANE*4)-1:0] PIPE_RXEQ_TXPRESET,
-    input       [PCIE_LANE-1:0]     PIPE_RXEQ_USER_EN,
-    input       [(PCIE_LANE*18)-1:0]PIPE_RXEQ_USER_TXCOEFF,
-    input       [PCIE_LANE-1:0]     PIPE_RXEQ_USER_MODE,
+    input       [(PCIE_LANES*2)-1:0] PIPE_RXEQ_CONTROL,
+    input       [(PCIE_LANES*3)-1:0] PIPE_RXEQ_PRESET,
+    input       [(PCIE_LANES*6)-1:0] PIPE_RXEQ_LFFS,
+    input       [(PCIE_LANES*4)-1:0] PIPE_RXEQ_TXPRESET,
+    input       [PCIE_LANES-1:0]    PIPE_RXEQ_USER_EN,
+    input       [(PCIE_LANES*18)-1:0]PIPE_RXEQ_USER_TXCOEFF,
+    input       [PCIE_LANES-1:0]    PIPE_RXEQ_USER_MODE,
                                                                            
     output      [ 5:0]              PIPE_TXEQ_FS,
     output      [ 5:0]              PIPE_TXEQ_LF,
-    output      [(PCIE_LANE*18)-1:0]PIPE_TXEQ_COEFF,
-    output      [PCIE_LANE-1:0]     PIPE_TXEQ_DONE,
+    output      [(PCIE_LANES*18)-1:0]PIPE_TXEQ_COEFF,
+    output      [PCIE_LANES-1:0]    PIPE_TXEQ_DONE,
                                                                            
-    output      [(PCIE_LANE*18)-1:0]PIPE_RXEQ_NEW_TXCOEFF,
-    output      [PCIE_LANE-1:0]     PIPE_RXEQ_LFFS_SEL,
-    output      [PCIE_LANE-1:0]     PIPE_RXEQ_ADAPT_DONE,
-    output      [PCIE_LANE-1:0]     PIPE_RXEQ_DONE,
+    output      [(PCIE_LANES*18)-1:0]PIPE_RXEQ_NEW_TXCOEFF,
+    output      [PCIE_LANES-1:0]    PIPE_RXEQ_LFFS_SEL,
+    output      [PCIE_LANES-1:0]    PIPE_RXEQ_ADAPT_DONE,
+    output      [PCIE_LANES-1:0]    PIPE_RXEQ_DONE,
     
-    output      [PCIE_LANE-1:0]     PIPE_RXVALID,
-    output      [PCIE_LANE-1:0]     PIPE_PHYSTATUS,
-    output      [PCIE_LANE-1:0]     PIPE_PHYSTATUS_RST,
-    output      [PCIE_LANE-1:0]     PIPE_RXELECIDLE,
-    output      [PCIE_LANE-1:0]     PIPE_EYESCANDATAERROR,
-    output      [(PCIE_LANE*3)-1:0] PIPE_RXSTATUS,
-    output      [PCIE_LANE-1:0]     PIPE_RXPMARESETDONE,
-    output      [(PCIE_LANE*3)-1:0] PIPE_RXBUFSTATUS,
-    output      [PCIE_LANE-1:0]     PIPE_TXPHALIGNDONE,
-    output      [PCIE_LANE-1:0]     PIPE_TXPHINITDONE,
-    output      [PCIE_LANE-1:0]     PIPE_TXDLYSRESETDONE,
-    output      [PCIE_LANE-1:0]     PIPE_RXPHALIGNDONE,
-    output      [PCIE_LANE-1:0]     PIPE_RXDLYSRESETDONE,
-    output      [PCIE_LANE-1:0]     PIPE_RXSYNCDONE,
-    output      [(PCIE_LANE*8)-1:0] PIPE_RXDISPERR,
-    output      [(PCIE_LANE*8)-1:0] PIPE_RXNOTINTABLE,
-    output      [PCIE_LANE-1:0]     PIPE_RXCOMMADET,
+    output      [PCIE_LANES-1:0]    PIPE_RXVALID,
+    output      [PCIE_LANES-1:0]    PIPE_PHYSTATUS,
+    output      [PCIE_LANES-1:0]    PIPE_PHYSTATUS_RST,
+    output      [PCIE_LANES-1:0]    PIPE_RXELECIDLE,
+    output      [PCIE_LANES-1:0]    PIPE_EYESCANDATAERROR,
+    output      [(PCIE_LANES*3)-1:0] PIPE_RXSTATUS,
+    output      [PCIE_LANES-1:0]    PIPE_RXPMARESETDONE,
+    output      [(PCIE_LANES*3)-1:0] PIPE_RXBUFSTATUS,
+    output      [PCIE_LANES-1:0]    PIPE_TXPHALIGNDONE,
+    output      [PCIE_LANES-1:0]    PIPE_TXPHINITDONE,
+    output      [PCIE_LANES-1:0]    PIPE_TXDLYSRESETDONE,
+    output      [PCIE_LANES-1:0]    PIPE_RXPHALIGNDONE,
+    output      [PCIE_LANES-1:0]    PIPE_RXDLYSRESETDONE,
+    output      [PCIE_LANES-1:0]    PIPE_RXSYNCDONE,
+    output      [(PCIE_LANES*8)-1:0] PIPE_RXDISPERR,
+    output      [(PCIE_LANES*8)-1:0] PIPE_RXNOTINTABLE,
+    output      [PCIE_LANES-1:0]    PIPE_RXCOMMADET,
     
     input                           PIPE_MMCM_RST_N,
-    input       [PCIE_LANE-1:0]     PIPE_RXSLIDE,
+    input       [PCIE_LANES-1:0]    PIPE_RXSLIDE,
     
-    output      [PCIE_LANE-1:0]     PIPE_CPLL_LOCK,
-    output      [(PCIE_LANE-1)>>2:0]PIPE_QPLL_LOCK,
+    output      [PCIE_LANES-1:0]    PIPE_CPLL_LOCK,
+    output      [(PCIE_LANES-1)>>2:0]PIPE_QPLL_LOCK,
     output                          PIPE_PCLK_LOCK,
-    output      [PCIE_LANE-1:0]     PIPE_RXCDRLOCK,
+    output      [PCIE_LANES-1:0]    PIPE_RXCDRLOCK,
     output                          PIPE_USERCLK1,
     output                          PIPE_USERCLK2,
     output                          PIPE_RXUSRCLK,
-    output      [PCIE_LANE-1:0]     PIPE_RXOUTCLK,
-    output      [PCIE_LANE-1:0]     PIPE_TXSYNC_DONE,
-    output      [PCIE_LANE-1:0]     PIPE_RXSYNC_DONE,
-    output      [PCIE_LANE-1:0]     PIPE_GEN3_RDY,
-    output      [PCIE_LANE-1:0]     PIPE_RXCHANISALIGNED,
-    output      [PCIE_LANE-1:0]     PIPE_ACTIVE_LANE,
+    output      [PCIE_LANES-1:0]    PIPE_RXOUTCLK,
+    output      [PCIE_LANES-1:0]    PIPE_TXSYNC_DONE,
+    output      [PCIE_LANES-1:0]    PIPE_RXSYNC_DONE,
+    output      [PCIE_LANES-1:0]    PIPE_GEN3_RDY,
+    output      [PCIE_LANES-1:0]    PIPE_RXCHANISALIGNED,
+    output      [PCIE_LANES-1:0]    PIPE_ACTIVE_LANE,
 
     output                          INT_PCLK_OUT_SLAVE,
     output                          INT_RXUSRCLK_OUT,
-    output  [PCIE_LANE-1:0  ]       INT_RXOUTCLK_OUT,
+    output  [PCIE_LANES-1:0  ]       INT_RXOUTCLK_OUT,
     output                          INT_DCLK_OUT,
     output                          INT_USERCLK1_OUT,
     output                          INT_USERCLK2_OUT,
@@ -181,13 +147,13 @@ module serdes_ctrl #
     output  [1:0]                   INT_QPLLLOCK_OUT,
     output  [1:0]                   INT_QPLLOUTCLK_OUT,
     output  [1:0]                   INT_QPLLOUTREFCLK_OUT,
-    input   [PCIE_LANE-1:0]         INT_PCLK_SEL_SLAVE,
+    input   [PCIE_LANES-1:0]        INT_PCLK_SEL_SLAVE,
 
  
     
     input                           PIPE_PCLK_IN,
     input                           PIPE_RXUSRCLK_IN,
-    input       [PCIE_LANE-1:0]     PIPE_RXOUTCLK_IN,
+    input       [PCIE_LANES-1:0]    PIPE_RXOUTCLK_IN,
     input                           PIPE_DCLK_IN,
     input                           PIPE_USERCLK1_IN,
     input                           PIPE_USERCLK2_IN,
@@ -195,8 +161,8 @@ module serdes_ctrl #
     input                           PIPE_MMCM_LOCK_IN,
     
     output                          PIPE_TXOUTCLK_OUT,
-    output      [PCIE_LANE-1:0]     PIPE_RXOUTCLK_OUT,
-    output      [PCIE_LANE-1:0]     PIPE_PCLK_SEL_OUT,
+    output      [PCIE_LANES-1:0]    PIPE_RXOUTCLK_OUT,
+    output      [PCIE_LANES-1:0]    PIPE_PCLK_SEL_OUT,
     output                          PIPE_GEN3_OUT,
     input       [11:0]              QPLL_DRP_CRSCODE,
     input       [17:0]              QPLL_DRP_FSM,
@@ -219,48 +185,48 @@ module serdes_ctrl #
     input                           PIPE_RXPRBSCNTRESET,
     input       [ 2:0]              PIPE_LOOPBACK,
     
-    output      [PCIE_LANE-1:0]     PIPE_RXPRBSERR,
-    input       [PCIE_LANE-1:0]     PIPE_TXINHIBIT,
+    output      [PCIE_LANES-1:0]    PIPE_RXPRBSERR,
+    input       [PCIE_LANES-1:0]    PIPE_TXINHIBIT,
     
     output      [4:0]               PIPE_RST_FSM,
     output      [11:0]              PIPE_QRST_FSM,
-    output      [(PCIE_LANE*5)-1:0] PIPE_RATE_FSM,
-    output      [(PCIE_LANE*6)-1:0] PIPE_SYNC_FSM_TX,
-    output      [(PCIE_LANE*7)-1:0] PIPE_SYNC_FSM_RX,
-    output      [(PCIE_LANE*7)-1:0] PIPE_DRP_FSM,
-    output      [(PCIE_LANE*6)-1:0] PIPE_TXEQ_FSM,
-    output      [(PCIE_LANE*6)-1:0] PIPE_RXEQ_FSM,
-    output      [((((PCIE_LANE-1)>>2)+1)*9)-1:0]PIPE_QDRP_FSM,
+    output      [(PCIE_LANES*5)-1:0] PIPE_RATE_FSM,
+    output      [(PCIE_LANES*6)-1:0] PIPE_SYNC_FSM_TX,
+    output      [(PCIE_LANES*7)-1:0] PIPE_SYNC_FSM_RX,
+    output      [(PCIE_LANES*7)-1:0] PIPE_DRP_FSM,
+    output      [(PCIE_LANES*6)-1:0] PIPE_TXEQ_FSM,
+    output      [(PCIE_LANES*6)-1:0] PIPE_RXEQ_FSM,
+    output      [((((PCIE_LANES-1)>>2)+1)*9)-1:0]PIPE_QDRP_FSM,
         
     output                          PIPE_RST_IDLE,
     output                          PIPE_QRST_IDLE,
     output                          PIPE_RATE_IDLE,
     
     output                            EXT_CH_GT_DRPCLK,
-    input        [(PCIE_LANE*9)-1:0] EXT_CH_GT_DRPADDR,
-    input        [PCIE_LANE-1:0]     EXT_CH_GT_DRPEN,
-    input        [(PCIE_LANE*16)-1:0]EXT_CH_GT_DRPDI,
-    input        [PCIE_LANE-1:0]     EXT_CH_GT_DRPWE,
+    input        [(PCIE_LANES*9)-1:0] EXT_CH_GT_DRPADDR,
+    input        [PCIE_LANES-1:0]    EXT_CH_GT_DRPEN,
+    input        [(PCIE_LANES*16)-1:0]EXT_CH_GT_DRPDI,
+    input        [PCIE_LANES-1:0]    EXT_CH_GT_DRPWE,
 
-    output       [(PCIE_LANE*16)-1:0]EXT_CH_GT_DRPDO,
-    output       [PCIE_LANE-1:0]     EXT_CH_GT_DRPRDY,
+    output       [(PCIE_LANES*16)-1:0]EXT_CH_GT_DRPDO,
+    output       [PCIE_LANES-1:0]    EXT_CH_GT_DRPRDY,
 
     input                           PIPE_JTAG_EN,
-    output      [PCIE_LANE-1:0]     PIPE_JTAG_RDY,
+    output      [PCIE_LANES-1:0]    PIPE_JTAG_RDY,
     
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_0,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_1,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_2,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_3,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_4,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_5,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_6,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_7,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_8,
-    output      [PCIE_LANE-1:0]     PIPE_DEBUG_9,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_0,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_1,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_2,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_3,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_4,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_5,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_6,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_7,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_8,
+    output      [PCIE_LANES-1:0]    PIPE_DEBUG_9,
     output      [31:0]              PIPE_DEBUG,
     
-    output      [(PCIE_LANE*15)-1:0] PIPE_DMONITOROUT
+    output      [(PCIE_LANES*15)-1:0] PIPE_DMONITOROUT
     
 );
 
@@ -269,7 +235,7 @@ module serdes_ctrl #
 
     wire                            clk_pclk;  
     wire                            clk_rxusrclk;
-    wire        [PCIE_LANE-1:0]     clk_rxoutclk;
+    wire        [PCIE_LANES-1:0]    clk_rxoutclk;
     wire                            clk_dclk;
     wire                            clk_oobclk;
     wire                            clk_mmcm_lock;
@@ -290,7 +256,7 @@ module serdes_ctrl #
     wire                            gtp_rst_qpllreset;
     wire                            gtp_rst_qpllpd;
     
-    wire        [(PCIE_LANE-1)>>2:0]qpllreset;          
+    wire        [(PCIE_LANES-1)>>2:0]qpllreset;          
     wire                            qpllpd;
     
     wire                            qrst_ovrd;
@@ -300,173 +266,170 @@ module serdes_ctrl #
     wire                            qrst_idle;
     wire        [3:0]               qrst_fsm;
     
-    wire        [(PCIE_LANE*37)-1:0] jtag_sl_iport;
-    wire        [(PCIE_LANE*17)-1:0] jtag_sl_oport;
+    wire        [(PCIE_LANES*37)-1:0] jtag_sl_iport;
+    wire        [(PCIE_LANES*17)-1:0] jtag_sl_oport;
     
-    wire [PCIE_LANE-1:0] gt_txpmareset_i;                 
-    wire [PCIE_LANE-1:0] gt_rxpmareset_i;                 
+    wire [PCIE_LANES-1:0] gt_txpmareset_i;                 
+    wire [PCIE_LANES-1:0] gt_rxpmareset_i;                 
 
-    wire        [PCIE_LANE-1:0]     user_oobclk;
-    wire        [PCIE_LANE-1:0]     user_resetovrd;
-    wire        [PCIE_LANE-1:0]     user_txpmareset;                 
-    wire        [PCIE_LANE-1:0]     user_rxpmareset;                
-    wire        [PCIE_LANE-1:0]     user_rxcdrreset;
-    wire        [PCIE_LANE-1:0]     user_rxcdrfreqreset;
-    wire [PCIE_LANE-1:0] user_rxdfelpmreset;
-    wire [PCIE_LANE-1:0] user_eyescanreset;
-    wire [PCIE_LANE-1:0] user_txpcsreset;                   
-    wire [PCIE_LANE-1:0] user_rxpcsreset;                 
-    wire [PCIE_LANE-1:0] user_rxbufreset;
-    wire        [PCIE_LANE-1:0]     user_resetovrd_done;
-    wire        [PCIE_LANE-1:0]     user_active_lane;
-    wire        [PCIE_LANE-1:0]     user_resetdone ;
-    wire        [PCIE_LANE-1:0]     user_rxcdrlock;
-    wire        [PCIE_LANE-1:0]     user_rx_converge; 
-    wire        [PCIE_LANE-1:0]     PIPE_RXEQ_CONVERGE; 
+    wire        [PCIE_LANES-1:0]    user_oobclk;
+    wire        [PCIE_LANES-1:0]    user_resetovrd;
+    wire        [PCIE_LANES-1:0]    user_txpmareset;                 
+    wire        [PCIE_LANES-1:0]    user_rxpmareset;                
+    wire        [PCIE_LANES-1:0]    user_rxcdrreset;
+    wire        [PCIE_LANES-1:0]    user_rxcdrfreqreset;
+    wire [PCIE_LANES-1:0] user_rxdfelpmreset;
+    wire [PCIE_LANES-1:0] user_eyescanreset;
+    wire [PCIE_LANES-1:0] user_txpcsreset;                   
+    wire [PCIE_LANES-1:0] user_rxpcsreset;                 
+    wire [PCIE_LANES-1:0] user_rxbufreset;
+    wire        [PCIE_LANES-1:0]    user_resetovrd_done;
+    wire        [PCIE_LANES-1:0]    user_active_lane;
+    wire        [PCIE_LANES-1:0]    user_resetdone ;
+    wire        [PCIE_LANES-1:0]    user_rxcdrlock;
+    wire        [PCIE_LANES-1:0]    user_rx_converge; 
+    wire        [PCIE_LANES-1:0]    PIPE_RXEQ_CONVERGE; 
     
-    wire        [PCIE_LANE-1:0]     rate_cpllpd;
-    wire        [PCIE_LANE-1:0]     rate_qpllpd;
-    wire        [PCIE_LANE-1:0]     rate_cpllreset;
-    wire        [PCIE_LANE-1:0]     rate_qpllreset;
-    wire        [PCIE_LANE-1:0]     rate_txpmareset;
-    wire        [PCIE_LANE-1:0]     rate_rxpmareset;
-    wire        [(PCIE_LANE*2)-1:0] rate_sysclksel;
-    wire        [PCIE_LANE-1:0]     rate_pclk_sel;
-    wire        [PCIE_LANE-1:0]     rate_drp_start;
-    wire        [PCIE_LANE-1:0]     rate_drp_x16x20_mode;
-    wire        [PCIE_LANE-1:0]     rate_drp_x16;
-    wire        [PCIE_LANE-1:0]     rate_gen3;
-    wire        [(PCIE_LANE*3)-1:0] rate_rate;
-    wire        [PCIE_LANE-1:0]     rate_resetovrd_start;
-    wire        [PCIE_LANE-1:0]     rate_txsync_start;
-    wire        [PCIE_LANE-1:0]     rate_done;
-    wire        [PCIE_LANE-1:0]     rate_rxsync_start;
-    wire        [PCIE_LANE-1:0]     rate_rxsync;
-    wire        [PCIE_LANE-1:0]     rate_idle;
-    wire        [(PCIE_LANE*5)-1:0] rate_fsm;
+    wire        [PCIE_LANES-1:0]    rate_cpllpd;
+    wire        [PCIE_LANES-1:0]    rate_qpllpd;
+    wire        [PCIE_LANES-1:0]    rate_cpllreset;
+    wire        [PCIE_LANES-1:0]    rate_qpllreset;
+    wire        [PCIE_LANES-1:0]    rate_txpmareset;
+    wire        [PCIE_LANES-1:0]    rate_rxpmareset;
+    wire        [(PCIE_LANES*2)-1:0] rate_sysclksel;
+    wire        [PCIE_LANES-1:0]    rate_pclk_sel;
+    wire        [PCIE_LANES-1:0]    rate_drp_start;
+    wire        [PCIE_LANES-1:0]    rate_drp_x16x20_mode;
+    wire        [PCIE_LANES-1:0]    rate_drp_x16;
+    wire        [PCIE_LANES-1:0]    rate_gen3;
+    wire        [(PCIE_LANES*3)-1:0] rate_rate;
+    wire        [PCIE_LANES-1:0]    rate_resetovrd_start;
+    wire        [PCIE_LANES-1:0]    rate_txsync_start;
+    wire        [PCIE_LANES-1:0]    rate_done;
+    wire        [PCIE_LANES-1:0]    rate_rxsync_start;
+    wire        [PCIE_LANES-1:0]    rate_rxsync;
+    wire        [PCIE_LANES-1:0]    rate_idle;
+    wire        [(PCIE_LANES*5)-1:0] rate_fsm;
 
-    wire        [PCIE_LANE-1:0]     sync_txphdlyreset;
-    wire        [PCIE_LANE-1:0]     sync_txphalign;    
-    wire        [PCIE_LANE-1:0]     sync_txphalignen; 
-    wire        [PCIE_LANE-1:0]     sync_txphinit;   
-    wire        [PCIE_LANE-1:0]     sync_txdlybypass; 
-    wire        [PCIE_LANE-1:0]     sync_txdlysreset;   
-    wire        [PCIE_LANE-1:0]     sync_txdlyen;      
-    wire        [PCIE_LANE-1:0]     sync_txsync_done;
-    wire        [(PCIE_LANE*6)-1:0] sync_fsm_tx;
+    wire        [PCIE_LANES-1:0]    sync_txphdlyreset;
+    wire        [PCIE_LANES-1:0]    sync_txphalign;    
+    wire        [PCIE_LANES-1:0]    sync_txphalignen; 
+    wire        [PCIE_LANES-1:0]    sync_txphinit;   
+    wire        [PCIE_LANES-1:0]    sync_txdlybypass; 
+    wire        [PCIE_LANES-1:0]    sync_txdlysreset;   
+    wire        [PCIE_LANES-1:0]    sync_txdlyen;      
+    wire        [PCIE_LANES-1:0]    sync_txsync_done;
+    wire        [(PCIE_LANES*6)-1:0] sync_fsm_tx;
     
-    wire        [PCIE_LANE-1:0]     sync_rxphalign;
-    wire        [PCIE_LANE-1:0]     sync_rxphalignen;
-    wire        [PCIE_LANE-1:0]     sync_rxdlybypass;
-    wire        [PCIE_LANE-1:0]     sync_rxdlysreset;
-    wire        [PCIE_LANE-1:0]     sync_rxdlyen;
-    wire        [PCIE_LANE-1:0]     sync_rxddien;
-    wire        [PCIE_LANE-1:0]     sync_rxsync_done; 
-    wire        [PCIE_LANE-1:0]     sync_rxsync_donem;      
-    wire        [(PCIE_LANE*7)-1:0] sync_fsm_rx;
+    wire        [PCIE_LANES-1:0]    sync_rxphalign;
+    wire        [PCIE_LANES-1:0]    sync_rxphalignen;
+    wire        [PCIE_LANES-1:0]    sync_rxdlybypass;
+    wire        [PCIE_LANES-1:0]    sync_rxdlysreset;
+    wire        [PCIE_LANES-1:0]    sync_rxdlyen;
+    wire        [PCIE_LANES-1:0]    sync_rxddien;
+    wire        [PCIE_LANES-1:0]    sync_rxsync_done; 
+    wire        [PCIE_LANES-1:0]    sync_rxsync_donem;      
+    wire        [(PCIE_LANES*7)-1:0] sync_fsm_rx;
  
-    wire        [PCIE_LANE-1:0]     txdlysresetdone;
-    wire        [PCIE_LANE-1:0]     txphaligndone;
-    wire        [PCIE_LANE-1:0]     rxdlysresetdone;
-    wire        [PCIE_LANE-1:0]     rxphaligndone_s;    
+    wire        [PCIE_LANES-1:0]    txdlysresetdone;
+    wire        [PCIE_LANES-1:0]    txphaligndone;
+    wire        [PCIE_LANES-1:0]    rxdlysresetdone;
+    wire        [PCIE_LANES-1:0]    rxphaligndone_s;    
     
     wire                            txsyncallin;
     wire                            rxsyncallin;
     
-    wire        [(PCIE_LANE*9)-1:0] drp_addr;
-    wire        [PCIE_LANE-1:0]     drp_en;
-    wire        [(PCIE_LANE*16)-1:0]drp_di;   
-    wire        [PCIE_LANE-1:0]     drp_we;
-    wire        [PCIE_LANE-1:0]     drp_done;
-    wire        [(PCIE_LANE*3)-1:0] drp_fsm;
+    wire        [(PCIE_LANES*9)-1:0] drp_addr;
+    wire        [PCIE_LANES-1:0]    drp_en;
+    wire        [(PCIE_LANES*16)-1:0]drp_di;   
+    wire        [PCIE_LANES-1:0]    drp_we;
+    wire        [PCIE_LANES-1:0]    drp_done;
+    wire        [(PCIE_LANES*3)-1:0] drp_fsm;
 
-    wire	      [(PCIE_LANE*17)-1:0]jtag_sl_addr;
-    wire        [PCIE_LANE-1:0]     jtag_sl_den;
-    wire        [PCIE_LANE-1:0]     jtag_sl_en;
-    wire        [(PCIE_LANE*16)-1:0]jtag_sl_di;
-    wire        [PCIE_LANE-1:0]     jtag_sl_we;
+    wire	      [(PCIE_LANES*17)-1:0]jtag_sl_addr;
+    wire        [PCIE_LANES-1:0]    jtag_sl_den;
+    wire        [PCIE_LANES-1:0]    jtag_sl_en;
+    wire        [(PCIE_LANES*16)-1:0]jtag_sl_di;
+    wire        [PCIE_LANES-1:0]    jtag_sl_we;
     
-    wire	      [(PCIE_LANE*9)-1:0] drp_mux_addr;
-    wire        [PCIE_LANE-1:0]     drp_mux_en;
-    wire        [(PCIE_LANE*16)-1:0]drp_mux_di;
-    wire        [PCIE_LANE-1:0]     drp_mux_we;
+    wire	      [(PCIE_LANES*9)-1:0] drp_mux_addr;
+    wire        [PCIE_LANES-1:0]    drp_mux_en;
+    wire        [(PCIE_LANES*16)-1:0]drp_mux_di;
+    wire        [PCIE_LANES-1:0]    drp_mux_we;
 
-    wire        [PCIE_LANE-1:0]     eq_txeq_deemph;
-    wire [(PCIE_LANE*5)-1:0] eq_txeq_precursor;
-    wire        [(PCIE_LANE*7)-1:0] eq_txeq_maincursor;
-    wire [(PCIE_LANE*5)-1:0] eq_txeq_postcursor;
+    wire        [PCIE_LANES-1:0]    eq_txeq_deemph;
+    wire [(PCIE_LANES*5)-1:0] eq_txeq_precursor;
+    wire        [(PCIE_LANES*7)-1:0] eq_txeq_maincursor;
+    wire [(PCIE_LANES*5)-1:0] eq_txeq_postcursor;
     
-    wire        [PCIE_LANE-1:0]     eq_rxeq_adapt_done;
+    wire        [PCIE_LANES-1:0]    eq_rxeq_adapt_done;
     
-    wire        [((((PCIE_LANE-1)>>2)+1)*8)-1:0]  qdrp_addr;
-    wire        [(PCIE_LANE-1)>>2:0]              qdrp_en;
-    wire        [((((PCIE_LANE-1)>>2)+1)*16)-1:0] qdrp_di;   
-    wire        [(PCIE_LANE-1)>>2:0]              qdrp_we;
-    wire        [(PCIE_LANE-1)>>2:0]              qdrp_done;
-    wire        [(PCIE_LANE-1)>>2:0]              qdrp_qpllreset;
-    wire        [((((PCIE_LANE-1)>>2)+1)*6)-1:0]  qdrp_crscode;
-    wire        [((((PCIE_LANE-1)>>2)+1)*9)-1:0]  qdrp_fsm;
+    wire        [((((PCIE_LANES-1)>>2)+1)*8)-1:0]  qdrp_addr;
+    wire        [(PCIE_LANES-1)>>2:0]             qdrp_en;
+    wire        [((((PCIE_LANES-1)>>2)+1)*16)-1:0] qdrp_di;   
+    wire        [(PCIE_LANES-1)>>2:0]             qdrp_we;
+    wire        [(PCIE_LANES-1)>>2:0]             qdrp_done;
+    wire        [(PCIE_LANES-1)>>2:0]             qdrp_qpllreset;
+    wire        [((((PCIE_LANES-1)>>2)+1)*6)-1:0]  qdrp_crscode;
+    wire        [((((PCIE_LANES-1)>>2)+1)*9)-1:0]  qdrp_fsm;
 
-    wire        [(PCIE_LANE-1)>>2:0]              qpll_qplloutclk;
-    wire        [(PCIE_LANE-1)>>2:0]              qpll_qplloutrefclk;
-    wire        [(PCIE_LANE-1)>>2:0]              qpll_qplllock;
-    wire        [((((PCIE_LANE-1)>>2)+1)*16)-1:0] qpll_do;
-    wire        [(PCIE_LANE-1)>>2:0]              qpll_rdy;
+    wire        [(PCIE_LANES-1)>>2:0]             qpll_qplloutclk;
+    wire        [(PCIE_LANES-1)>>2:0]             qpll_qplloutrefclk;
+    wire        [(PCIE_LANES-1)>>2:0]             qpll_qplllock;
+    wire        [((((PCIE_LANES-1)>>2)+1)*16)-1:0] qpll_do;
+    wire        [(PCIE_LANES-1)>>2:0]             qpll_rdy;
 
-    wire        [PCIE_LANE-1:0]     gt_txoutclk;
-    wire        [PCIE_LANE-1:0]     gt_rxoutclk;
-    wire        [PCIE_LANE-1:0] gt_cplllock;
-    wire        [PCIE_LANE-1:0]     gt_rxcdrlock;
-    wire        [PCIE_LANE-1:0]     gt_txresetdone;
-    wire        [PCIE_LANE-1:0]     gt_rxresetdone;
-    wire        [PCIE_LANE-1:0]     gt_eyescandataerror;
-    wire        [PCIE_LANE-1:0] gt_rxpmaresetdone;
-    wire        [(PCIE_LANE*8)-1:0]     gt_rxdisperr;
-    wire        [(PCIE_LANE*8)-1:0]     gt_rxnotintable;
-    wire        [PCIE_LANE-1:0]     gt_rxvalid;
-    wire        [PCIE_LANE-1:0]     gt_phystatus;
-    wire        [(PCIE_LANE*3)-1:0] gt_rxstatus;
-    wire        [(PCIE_LANE*3)-1:0] gt_rxbufstatus;
-    wire        [PCIE_LANE-1:0]     gt_rxelecidle;
-    wire        [PCIE_LANE-1:0]     gt_rxelecidle_i;
-    logic         [PCIE_LANE-1:0]     gt_rxrcvrdet_c;
-    wire        [PCIE_LANE-1:0]     gt_txratedone;
-    wire        [PCIE_LANE-1:0]     gt_rxratedone;
-    wire        [(PCIE_LANE*16)-1:0]gt_do;
-    wire        [PCIE_LANE-1:0]     gt_rdy;
-    wire        [PCIE_LANE-1:0] gt_txphinitdone;  
-    wire        [PCIE_LANE-1:0] gt_txdlysresetdone;
-    wire        [PCIE_LANE-1:0] gt_txphaligndone;
-    wire        [PCIE_LANE-1:0] gt_rxdlysresetdone;
-    wire        [PCIE_LANE:0] gt_rxphaligndone;
-    wire        [PCIE_LANE-1:0]     gt_txsyncout;
-    wire        [PCIE_LANE-1:0]     gt_txsyncdone;
-    wire        [PCIE_LANE-1:0]     gt_rxsyncout;
-    wire        [PCIE_LANE-1:0] gt_rxsyncdone;
-    wire        [PCIE_LANE-1:0] gt_rxcommadet;                        
-    wire        [(PCIE_LANE*4)-1:0] gt_rxchariscomma;                      
-    wire        [PCIE_LANE-1:0]     gt_rxbyteisaligned;                   
-    wire        [PCIE_LANE-1:0]     gt_rxbyterealign; 
-    wire        [ 4:0]              gt_rxchbondi [PCIE_LANE:0]; 
-    wire        [(PCIE_LANE*3)-1:0] gt_rxchbondlevel;
-    wire        [ 4:0]              gt_rxchbondo [PCIE_LANE:0];  
+    wire        [PCIE_LANES-1:0]    gt_txoutclk;
+    wire        [PCIE_LANES-1:0]    gt_rxoutclk;
+    wire        [PCIE_LANES-1:0] gt_cplllock;
+    wire        [PCIE_LANES-1:0]    gt_rxcdrlock;
+    wire        [PCIE_LANES-1:0]    gt_txresetdone;
+    wire        [PCIE_LANES-1:0]    gt_rxresetdone;
+    wire        [PCIE_LANES-1:0]    gt_eyescandataerror;
+    wire        [PCIE_LANES-1:0] gt_rxpmaresetdone;
+    wire        [(PCIE_LANES*8)-1:0]     gt_rxdisperr;
+    wire        [(PCIE_LANES*8)-1:0]     gt_rxnotintable;
+    wire        [PCIE_LANES-1:0]    gt_rxvalid;
+    wire        [PCIE_LANES-1:0]    gt_phystatus;
+    wire        [(PCIE_LANES*3)-1:0] gt_rxstatus;
+    wire        [(PCIE_LANES*3)-1:0] gt_rxbufstatus;
+    wire        [PCIE_LANES-1:0]    gt_rxelecidle;
+    wire        [PCIE_LANES-1:0]    gt_rxelecidle_i;
+    logic         [PCIE_LANES-1:0]    gt_rxrcvrdet_c;
+    wire        [PCIE_LANES-1:0]    gt_txratedone;
+    wire        [PCIE_LANES-1:0]    gt_rxratedone;
+    wire        [(PCIE_LANES*16)-1:0]gt_do;
+    wire        [PCIE_LANES-1:0]    gt_rdy;
+    wire        [PCIE_LANES-1:0] gt_txphinitdone;  
+    wire        [PCIE_LANES-1:0] gt_txdlysresetdone;
+    wire        [PCIE_LANES-1:0] gt_txphaligndone;
+    wire        [PCIE_LANES-1:0] gt_rxdlysresetdone;
+    wire        [PCIE_LANES:0] gt_rxphaligndone;
+    wire        [PCIE_LANES-1:0]    gt_txsyncout;
+    wire        [PCIE_LANES-1:0]    gt_txsyncdone;
+    wire        [PCIE_LANES-1:0]    gt_rxsyncout;
+    wire        [PCIE_LANES-1:0] gt_rxsyncdone;
+    wire        [PCIE_LANES-1:0] gt_rxcommadet;                        
+    wire        [(PCIE_LANES*4)-1:0] gt_rxchariscomma;                      
+    wire        [PCIE_LANES-1:0]    gt_rxbyteisaligned;                   
+    wire        [PCIE_LANES-1:0]    gt_rxbyterealign; 
+    wire        [ 4:0]              gt_rxchbondi [PCIE_LANES:0]; 
+    wire        [(PCIE_LANES*3)-1:0] gt_rxchbondlevel;
+    wire        [ 4:0]              gt_rxchbondo [PCIE_LANES:0];  
    
-    wire        [PCIE_LANE-1:0]     rxchbonden;
-    wire        [PCIE_LANE-1:0]     rxchbondmaster;
-    wire        [PCIE_LANE-1:0]     rxchbondslave;    
-    wire        [PCIE_LANE-1:0]     oobclk; 
+    wire        [PCIE_LANES-1:0]    rxchbonden;
+    wire        [PCIE_LANES-1:0]    rxchbondmaster;
+    wire        [PCIE_LANES-1:0]    rxchbondslave;    
+    wire        [PCIE_LANES-1:0]    oobclk; 
 
-    localparam                      TXEQ_FS = 6'd40;
-    localparam                      TXEQ_LF = 6'd15;
 
-    localparam GC_XSDB_SLAVE_TYPE = 16'h0400;
 
     genvar                          i;
     
     
     
 assign gt_rxchbondo[0]             = 5'd0;
-assign gt_rxphaligndone[PCIE_LANE] = 1'd1;
+assign gt_rxphaligndone[PCIE_LANES] = 1'd1;
 assign txsyncallin                 = &(gt_txphaligndone | (~user_active_lane));     
 assign rxsyncallin                 = &(gt_rxphaligndone | (~user_active_lane));  
 
@@ -499,7 +462,7 @@ end
 
         assign INT_PCLK_OUT_SLAVE= 1'b0;
         assign INT_RXUSRCLK_OUT  = 1'b0;
-        assign INT_RXOUTCLK_OUT  = {PCIE_LANE{1'b0}};
+        assign INT_RXOUTCLK_OUT  = {PCIE_LANES{1'b0}};
         assign INT_DCLK_OUT      = 1'b0;
         assign INT_USERCLK1_OUT  = 1'b0;
         assign INT_USERCLK2_OUT  = 1'b0;
@@ -567,14 +530,14 @@ pll_init_ctrl
         
         );
         
-assign jtag_sl_iport = {PCIE_LANE{37'd0}};
+assign jtag_sl_iport = {PCIE_LANES{37'd0}};
 
 
 wire gt_cpllpdrefclk;
 
 BUFG wake_refclk_bufg (.I (PIPE_CLK), .O (gt_cpllpdrefclk));
 
-generate for (i=0; i<PCIE_LANE; i=i+1) 
+generate for (i=0; i<PCIE_LANES; i=i+1) 
 
     begin : lane_gen
 
@@ -719,7 +682,7 @@ phase_align
     assign txdlysresetdone[i] = (PCIE_TXSYNC_MODE == 1) ? gt_txdlysresetdone[i] : &gt_txdlysresetdone;
     assign txphaligndone[i]   = (PCIE_TXSYNC_MODE == 1) ? gt_txphaligndone[i]   : &(gt_txphaligndone | (~user_active_lane));
     assign rxdlysresetdone[i] = (PCIE_RXSYNC_MODE == 1) ? gt_rxdlysresetdone[i] : &gt_rxdlysresetdone;
-    assign rxphaligndone_s[i] = (PCIE_LANE == 1)        ? 1'd0                  : &gt_rxphaligndone[PCIE_LANE:1];
+    assign rxphaligndone_s[i] = (PCIE_LANES == 1)        ? 1'd0                  : &gt_rxphaligndone[PCIE_LANES:1];
     
     
 chan_retune 
@@ -1042,7 +1005,7 @@ lane_xcvr
         end 
     else 
         begin : channel_bonding_ms_enable
-        assign rxchbonden[i]     = (PCIE_LANE > 1) && (PCIE_CHAN_BOND_EN == "TRUE") ? !rate_gen3[i] : 1'd0; 
+        assign rxchbonden[i]     = (PCIE_LANES > 1) && (PCIE_CHAN_BOND_EN == "TRUE") ? !rate_gen3[i] : 1'd0; 
         assign rxchbondmaster[i] =  rate_gen3[i] ? 1'd0 : (i == 0);
         assign rxchbondslave[i]  =  rate_gen3[i] ? 1'd0 : (i  > 0);
         end
@@ -1064,46 +1027,46 @@ lane_xcvr
             0 : 
                 begin
                 assign gt_rxchbondi[0]         = gt_rxchbondo[0];
-                assign gt_rxchbondlevel[2:0]   = (PCIE_LANE == 4'd8) ? 3'd4 : 
-                                                 (PCIE_LANE >  4'd5) ? 3'd3 : 
-                                                 (PCIE_LANE >  4'd3) ? 3'd2 : 
-                                                 (PCIE_LANE >  4'd1) ? 3'd1 : 3'd0; 
+                assign gt_rxchbondlevel[2:0]   = (PCIE_LANES == 4'd8) ? 3'd4 : 
+                                                 (PCIE_LANES >  4'd5) ? 3'd3 : 
+                                                 (PCIE_LANES >  4'd3) ? 3'd2 : 
+                                                 (PCIE_LANES >  4'd1) ? 3'd1 : 3'd0; 
                 end
             1 : 
                 begin
                 assign gt_rxchbondi[1]         = gt_rxchbondo[1];
-                assign gt_rxchbondlevel[5:3]   = (PCIE_LANE == 4'd8) ? 3'd3 : 
-                                                 (PCIE_LANE >  4'd5) ? 3'd2 : 
-                                                 (PCIE_LANE >  4'd3) ? 3'd1 : 3'd0; 
+                assign gt_rxchbondlevel[5:3]   = (PCIE_LANES == 4'd8) ? 3'd3 : 
+                                                 (PCIE_LANES >  4'd5) ? 3'd2 : 
+                                                 (PCIE_LANES >  4'd3) ? 3'd1 : 3'd0; 
                 end
             2 : 
                 begin
                 assign gt_rxchbondi[2]         = gt_rxchbondo[1];
-                assign gt_rxchbondlevel[8:6]   = (PCIE_LANE == 4'd8) ? 3'd3 : 
-                                                 (PCIE_LANE >  4'd5) ? 3'd2 : 
-                                                 (PCIE_LANE >  4'd3) ? 3'd1 : 3'd0; 
+                assign gt_rxchbondlevel[8:6]   = (PCIE_LANES == 4'd8) ? 3'd3 : 
+                                                 (PCIE_LANES >  4'd5) ? 3'd2 : 
+                                                 (PCIE_LANES >  4'd3) ? 3'd1 : 3'd0; 
                 end
             3 : 
                 begin
                 assign gt_rxchbondi[3]         = gt_rxchbondo[3];
-                assign gt_rxchbondlevel[11:9]  = (PCIE_LANE == 4'd8) ? 3'd2 : 
-                                                 (PCIE_LANE >  4'd5) ? 3'd1 : 3'd0;
+                assign gt_rxchbondlevel[11:9]  = (PCIE_LANES == 4'd8) ? 3'd2 : 
+                                                 (PCIE_LANES >  4'd5) ? 3'd1 : 3'd0;
                 end
             4 : 
                 begin
                 assign gt_rxchbondi[4]         = gt_rxchbondo[3];
-                assign gt_rxchbondlevel[14:12] = (PCIE_LANE == 4'd8) ? 3'd2 : 
-                                                 (PCIE_LANE >  4'd5) ? 3'd1 : 3'd0;
+                assign gt_rxchbondlevel[14:12] = (PCIE_LANES == 4'd8) ? 3'd2 : 
+                                                 (PCIE_LANES >  4'd5) ? 3'd1 : 3'd0;
                 end
             5 : 
                 begin
                 assign gt_rxchbondi[5]         = gt_rxchbondo[5];
-                assign gt_rxchbondlevel[17:15] = (PCIE_LANE == 4'd8) ? 3'd1 : 3'd0;
+                assign gt_rxchbondlevel[17:15] = (PCIE_LANES == 4'd8) ? 3'd1 : 3'd0;
                 end
             6 : 
                 begin
                 assign gt_rxchbondi[6]         = gt_rxchbondo[5];
-                assign gt_rxchbondlevel[20:18] = (PCIE_LANE == 4'd8) ? 3'd1 : 3'd0;
+                assign gt_rxchbondlevel[20:18] = (PCIE_LANES == 4'd8) ? 3'd1 : 3'd0;
                 end
             7 : 
                 begin
@@ -1124,7 +1087,7 @@ lane_xcvr
         
             begin : channel_bonding_b
             assign gt_rxchbondi[i]                 = (PCIE_CHAN_BOND == 1) ? gt_rxchbondo[i] : ((i == 0) ? gt_rxchbondo[0] : gt_rxchbondo[1]);
-            assign gt_rxchbondlevel[(3*i)+2:(3*i)] = (PCIE_CHAN_BOND == 1) ? (PCIE_LANE-1)-i  : ((PCIE_LANE > 1) && (i == 0));       
+            assign gt_rxchbondlevel[(3*i)+2:(3*i)] = (PCIE_CHAN_BOND == 1) ? (PCIE_LANES-1)-i  : ((PCIE_LANES > 1) && (i == 0));       
             end
         
         end 
@@ -1169,7 +1132,7 @@ assign PIPE_PCLK_SEL_OUT = rate_pclk_sel;
 assign PIPE_GEN3_OUT     = rate_gen3[0];
 
 assign PIPE_RXEQ_CONVERGE   = user_rx_converge;
-assign PIPE_RXEQ_ADAPT_DONE = {PCIE_LANE{1'd0}};
+assign PIPE_RXEQ_ADAPT_DONE = {PCIE_LANES{1'd0}};
 
 assign PIPE_EYESCANDATAERROR = gt_eyescandataerror;
 assign PIPE_RST_FSM      = rst_fsm;
@@ -1184,20 +1147,20 @@ assign PIPE_RST_IDLE     = &rst_idle;
 assign PIPE_QRST_IDLE    = &qrst_idle;
 assign PIPE_RATE_IDLE    = &rate_idle;
 
-assign EXT_CH_GT_DRPDO   =  gt_do[(PCIE_LANE*16)-1:0];
-assign EXT_CH_GT_DRPRDY  =  gt_rdy[(PCIE_LANE-1):0];
+assign EXT_CH_GT_DRPDO   =  gt_do[(PCIE_LANES*16)-1:0];
+assign EXT_CH_GT_DRPRDY  =  gt_rdy[(PCIE_LANES-1):0];
 assign EXT_CH_GT_DRPCLK  =  clk_dclk;
 
-assign PIPE_DEBUG_0      = (PCIE_DEBUG_MODE == 1) ? gt_txresetdone                  : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_1      = (PCIE_DEBUG_MODE == 1) ? gt_rxresetdone                  : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_2      = (PCIE_DEBUG_MODE == 1) ? gt_phystatus                    : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_3      = (PCIE_DEBUG_MODE == 1) ? gt_rxvalid                      : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_4      = (PCIE_DEBUG_MODE == 1) ? clk_dclk                        : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_5      = (PCIE_DEBUG_MODE == 1) ? drp_mux_en                      : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_6      = (PCIE_DEBUG_MODE == 1) ? drp_mux_we                      : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_7      = (PCIE_DEBUG_MODE == 1) ? gt_rdy                          : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_8      = (PCIE_DEBUG_MODE == 1) ? user_rx_converge                : {PCIE_LANE{1'b0}};
-assign PIPE_DEBUG_9      = (PCIE_DEBUG_MODE == 1) ? PIPE_TXELECIDLE                 : {PCIE_LANE{1'b0}};
+assign PIPE_DEBUG_0      = (PCIE_DEBUG_MODE == 1) ? gt_txresetdone                  : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_1      = (PCIE_DEBUG_MODE == 1) ? gt_rxresetdone                  : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_2      = (PCIE_DEBUG_MODE == 1) ? gt_phystatus                    : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_3      = (PCIE_DEBUG_MODE == 1) ? gt_rxvalid                      : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_4      = (PCIE_DEBUG_MODE == 1) ? clk_dclk                        : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_5      = (PCIE_DEBUG_MODE == 1) ? drp_mux_en                      : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_6      = (PCIE_DEBUG_MODE == 1) ? drp_mux_we                      : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_7      = (PCIE_DEBUG_MODE == 1) ? gt_rdy                          : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_8      = (PCIE_DEBUG_MODE == 1) ? user_rx_converge                : {PCIE_LANES{1'b0}};
+assign PIPE_DEBUG_9      = (PCIE_DEBUG_MODE == 1) ? PIPE_TXELECIDLE                 : {PCIE_LANES{1'b0}};
 
 assign PIPE_DEBUG[ 1:0]  = (PCIE_DEBUG_MODE == 1) ? PIPE_TXEQ_CONTROL[1:0] : 2'd0;
 assign PIPE_DEBUG[ 5:2]  = (PCIE_DEBUG_MODE == 1) ? PIPE_TXEQ_PRESET[3:0]  : 4'd0;

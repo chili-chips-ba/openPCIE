@@ -37,11 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module lane_keeper #(
-  localparam PCIE_SIM_MODE = "FALSE",
-  localparam PCIE_USE_MODE = "1.0",
-  localparam PCIE_OOBCLK_MODE = 1,
   localparam RXCDRLOCK_MAX = 4'd15,
   localparam RXVALID_MAX = 4'd15,
   localparam CONVERGE_MAX = 22'd3125000) (
@@ -89,7 +85,7 @@ module lane_keeper #(
   output              USER_RX_CONVERGE
 );
 
-  localparam [21:0] CONV_MAX = (PCIE_SIM_MODE == "TRUE") ? 22'd100 : CONVERGE_MAX;
+  localparam [21:0] CONV_MAX = CONVERGE_MAX;
 
   wire [7:0] tx_async = { USER_RXEQ_ADAPT_DONE, USER_RXCDRLOCK_IN, USER_TXCOMPLIANCE,
                           USER_TXELECIDLE, USER_RXRESETDONE, USER_TXRESETDONE,

@@ -40,19 +40,13 @@
 module host_bridge
   import link_pkg::*;
 #(
-  localparam int LINK_CAP_MAX_LINK_WIDTH = 1,
   localparam int C_DATA_WIDTH            = 64,
-  localparam int KEEP_WIDTH              = 8,
-  localparam int PCIE_REFCLK_FREQ        = 0,
-  localparam int PCIE_USERCLK1_FREQ      = 2,
-  localparam int PCIE_USERCLK2_FREQ      = 2,
-  localparam     PCIE_GT_DEVICE          = "GTP",
-  localparam     PCIE_USE_MODE           = "1.0"
+  localparam int KEEP_WIDTH              = 8
 ) (
-  output  [0:0]     pci_exp_txp,
-  output  [0:0]     pci_exp_txn,
-  input   [0:0]     pci_exp_rxp,
-  input   [0:0]     pci_exp_rxn,
+  output  [PCIE_LANES-1:0]  pci_exp_txp,
+  output  [PCIE_LANES-1:0]  pci_exp_txn,
+  input   [PCIE_LANES-1:0]  pci_exp_rxp,
+  input   [PCIE_LANES-1:0]  pci_exp_rxn,
 
   input             pipe_mmcm_rst_n,
 

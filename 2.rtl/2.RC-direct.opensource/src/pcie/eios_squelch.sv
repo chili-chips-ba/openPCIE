@@ -37,7 +37,6 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module eios_squelch (
   output logic [1:0]   USER_RXCHARISK,
   output logic [15:0]  USER_RXDATA,

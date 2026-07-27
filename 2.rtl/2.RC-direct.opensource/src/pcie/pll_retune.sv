@@ -37,10 +37,8 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module pll_retune #(
   localparam PCIE_GT_DEVICE = "GTP",
-  localparam PCIE_USE_MODE = "1.0",
   localparam PCIE_PLL_SEL = "CPLL",
   localparam PCIE_REFCLK_FREQ = 0,
   localparam LOAD_CNT_MAX = 2'd3,

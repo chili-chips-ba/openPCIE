@@ -40,9 +40,7 @@
 module txn_engine
   import link_pkg::*;
 #(
-  localparam     PL_FAST_TRAIN = "FALSE",
   localparam int C_DATA_WIDTH  = 64,
-  localparam int KEEP_WIDTH    = 8,
   localparam int REM_WIDTH     = 1
 ) (
   output                     user_clk_out,
@@ -211,7 +209,6 @@ module txn_engine
   input                      user_clk2
 );
 
-  localparam TCQ = 1;
 
   assign user_clk_out = user_clk;
 

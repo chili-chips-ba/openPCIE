@@ -37,12 +37,10 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module lane_xcvr #
+module lane_xcvr
+  import link_pkg::*;
+#
 (
-    localparam PCIE_SIM_MODE = "FALSE",
-    localparam PCIE_SIM_SPEEDUP = "FALSE",
-    localparam PCIE_SIM_TX_EIDLE_DRIVE_LEVEL = "1",
     localparam PCIE_GT_DEVICE = "GTP",
     localparam PCIE_USE_MODE = "1.0",
     localparam PCIE_PLL_SEL = "CPLL",
@@ -54,7 +52,6 @@ module lane_xcvr #
     localparam PCIE_RXSYNC_MODE = 0,
     localparam PCIE_CHAN_BOND = 1,
     localparam PCIE_CHAN_BOND_EN = "TRUE",
-    localparam PCIE_LANE = 1,
     localparam PCIE_REFCLK_FREQ = 0,
     localparam PCIE_TX_EIDLE_ASSERT_DELAY = 3'd2,
     localparam PCIE_OOBCLK_MODE = 1,
@@ -238,23 +235,15 @@ module lane_xcvr #
     wire cpllpd;
     wire cpllrst;
 
-    localparam          CPLL_REFCLK_DIV = 1;
-    localparam          CPLL_FBDIV_45   = 5;
-    localparam          CPLL_FBDIV      = (PCIE_REFCLK_FREQ == 2) ?  2 : 
-                                          (PCIE_REFCLK_FREQ == 1) ?  4 : 5;
-    localparam          OUT_DIV         = (PCIE_PLL_SEL == "QPLL") ? 4 : 2;                                                     
+    localparam          OUT_DIV         = (PCIE_PLL_SEL == "QPLL") ? 4 : 2;
     localparam          CLK25_DIV       = (PCIE_REFCLK_FREQ == 2) ? 10 : 
                                           (PCIE_REFCLK_FREQ == 1) ?  5 : 4;
-    
-    localparam          CLKMUX_PD = ((PCIE_USE_MODE == "1.0") || (PCIE_USE_MODE == "1.1")) ?  1'd0      :  1'd1;
-    
-    localparam          CPLL_CFG  = ((PCIE_USE_MODE == "1.0") || (PCIE_USE_MODE == "1.1")) ? 24'hB407CC : 24'hA407CC;
     
     localparam          TX_XCLK_SEL = (PCIE_TXBUF_EN == "TRUE") ? "TXOUT" : "TXUSR";
                                                    
     localparam          TX_RXDETECT_CFG = (PCIE_REFCLK_FREQ == 2) ? 14'd250 : 
                                           (PCIE_REFCLK_FREQ == 1) ? 14'd125 : 14'd100;
-    localparam          TX_RXDETECT_REF = (((PCIE_USE_MODE == "1.0") || (PCIE_USE_MODE == "1.1")) && (PCIE_SIM_MODE == "FALSE")) ? 3'b000 : 3'b011;                                                                 
+    localparam          TX_RXDETECT_REF = ((PCIE_USE_MODE == "1.0") || (PCIE_USE_MODE == "1.1")) ? 3'b000 : 3'b011;
                                                       
     localparam          OOBCLK_SEL    = (PCIE_OOBCLK_MODE == 0) ? 1'd0  : 1'd1;
     localparam          RXOOB_CLK_CFG = (PCIE_OOBCLK_MODE == 0) ? "PMA" : "FABRIC";
@@ -272,19 +261,7 @@ module lane_xcvr #
                              
     
     
-    localparam          RXCDR_CFG_GTX = ((PCIE_USE_MODE == "1.0") || (PCIE_USE_MODE == "1.1")) ? 
-                                        ((PCIE_ASYNC_EN == "TRUE") ? 72'b0000_0010_0000_0111_1111_1110_0010_0000_0110_0000_0010_0001_0001_0000_0000000000010000
-                                                                   : 72'h11_07FE_4060_0104_0000):
-                                        ((PCIE_ASYNC_EN == "TRUE") ? 72'h03_8000_23FF_1020_0020
-                                                                   : 72'h03_0000_23FF_1020_0020);
-                            
-    localparam          RXCDR_CFG_GTH = (PCIE_USE_MODE == "2.0") ? 
-                                        ((PCIE_ASYNC_EN == "TRUE") ? 83'h0_0011_07FE_4060_2104_1010   
-                                                                   : 83'h0_0011_07FE_4060_0104_1010):
-                                        ((PCIE_ASYNC_EN == "TRUE") ? 83'h0_0020_07FE_2000_C208_8018   
-                                                                   : 83'h0_0020_07FE_2000_C208_0018);
-                                                                                 
-    localparam          RXCDR_CFG_GTP = ((PCIE_ASYNC_EN == "TRUE") ? 83'h0_0001_07FE_4060_2104_1010
+    localparam          RXCDR_CFG_GTP =((PCIE_ASYNC_EN == "TRUE") ? 83'h0_0001_07FE_4060_2104_1010
                                                                    : 83'h0_0001_07FE_4060_0104_1010);
                    
                          
@@ -293,19 +270,19 @@ module lane_xcvr #
     localparam          TXSYNC_OVRD      = (PCIE_TXSYNC_MODE == 1) ? 1'd0 : 1'd1;                             
     localparam          RXSYNC_OVRD      = (PCIE_TXSYNC_MODE == 1) ? 1'd0 : 1'd1;     
                                                                           
-    localparam          TXSYNC_MULTILANE = (PCIE_LANE == 1) ? 1'd0 : 1'd1;  
-    localparam          RXSYNC_MULTILANE = (PCIE_LANE == 1) ? 1'd0 : 1'd1;                                             
+    localparam          TXSYNC_MULTILANE = (PCIE_LANES == 1) ? 1'd0 : 1'd1;  
+    localparam          RXSYNC_MULTILANE = (PCIE_LANES == 1) ? 1'd0 : 1'd1;                                             
                                        
    
     
-    localparam          CLK_COR_MIN_LAT = ((PCIE_LANE == 8) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 27 : 21) : 
-                                          ((PCIE_LANE == 7) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 25 : 19) : 
-                                          ((PCIE_LANE == 6) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 23 : 19) : 
-                                          ((PCIE_LANE == 5) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 21 : 18) : 
-                                          ((PCIE_LANE == 4) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 19 : 18) :
-                                          ((PCIE_LANE == 3) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 18 : 18) :
-                                          ((PCIE_LANE == 2) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 18 : 18) :
-                                          ((PCIE_LANE == 1)                          || (PCIE_CHAN_BOND_EN == "FALSE")) ? 13 : 18; 
+    localparam          CLK_COR_MIN_LAT = ((PCIE_LANES == 8) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 27 : 21) : 
+                                          ((PCIE_LANES == 7) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 25 : 19) : 
+                                          ((PCIE_LANES == 6) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 23 : 19) : 
+                                          ((PCIE_LANES == 5) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 21 : 18) : 
+                                          ((PCIE_LANES == 4) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 19 : 18) :
+                                          ((PCIE_LANES == 3) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 18 : 18) :
+                                          ((PCIE_LANES == 2) && (PCIE_CHAN_BOND != 0) && (PCIE_CHAN_BOND_EN == "TRUE"))  ? ((PCIE_CHAN_BOND == 1) ? 18 : 18) :
+                                          ((PCIE_LANES == 1)                          || (PCIE_CHAN_BOND_EN == "FALSE")) ? 13 : 18; 
                                            
     localparam          CLK_COR_MAX_LAT = CLK_COR_MIN_LAT + 2;                                                     
     
@@ -348,9 +325,9 @@ generate if (PCIE_GT_DEVICE == "GTP")
     GTPE2_CHANNEL #
     (
                 
-        .SIM_RESET_SPEEDUP              (PCIE_SIM_SPEEDUP),
+        .SIM_RESET_SPEEDUP              ("FALSE"),
         .SIM_RECEIVER_DETECT_PASS       ("TRUE"),
-        .SIM_TX_EIDLE_DRIVE_LEVEL       (PCIE_SIM_TX_EIDLE_DRIVE_LEVEL),
+        .SIM_TX_EIDLE_DRIVE_LEVEL       ("1"),
         .SIM_VERSION                    (PCIE_USE_MODE),
                                                                                  
         .TXOUT_DIV                      (OUT_DIV),
