@@ -39,8 +39,16 @@
 
 package link_pkg;
 
+  localparam int PCIE_LANES = 1;   
+  localparam int PCIE_GEN   = 2;   
+
+
   localparam int PIPE_MAX_LANES = 8;
-  localparam int PCIE_LANES     = 1;
+
+  localparam logic [5:0] LINK_CAP_MAX_LINK_WIDTH      = PCIE_LANES;
+  localparam logic [3:0] LINK_CAP_MAX_LINK_SPEED      = PCIE_GEN;
+  localparam logic [3:0] LINK_CTRL2_TARGET_LINK_SPEED = PCIE_GEN;
+  localparam logic [5:0] LTSSM_MAX_LINK_WIDTH         = PCIE_LANES;
 
   typedef struct packed {
     logic [1:0]  char_is_k;

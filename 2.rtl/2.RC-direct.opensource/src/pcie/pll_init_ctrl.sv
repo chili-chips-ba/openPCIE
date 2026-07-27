@@ -37,21 +37,21 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module pll_init_ctrl #(
+module pll_init_ctrl
+  import link_pkg::*;
+#(
   localparam PCIE_PLL_SEL = "CPLL",
   localparam PCIE_POWER_SAVING = "TRUE",
-  localparam PCIE_LANE = 1,
   localparam BYPASS_COARSE_OVRD = 1) (
   input                           QRST_CLK,
   input                           QRST_RST_N,
   input                           QRST_MMCM_LOCK,
-  input      [PCIE_LANE-1:0]      QRST_CPLLLOCK,
-  input      [(PCIE_LANE-1)>>2:0] QRST_DRP_DONE,
-  input      [(PCIE_LANE-1)>>2:0] QRST_QPLLLOCK,
+  input      [PCIE_LANES-1:0]     QRST_CPLLLOCK,
+  input      [(PCIE_LANES-1)>>2:0] QRST_DRP_DONE,
+  input      [(PCIE_LANES-1)>>2:0] QRST_QPLLLOCK,
   input      [1:0]                QRST_RATE,
-  input      [PCIE_LANE-1:0]      QRST_QPLLRESET_IN,
-  input      [PCIE_LANE-1:0]      QRST_QPLLPD_IN,
+  input      [PCIE_LANES-1:0]     QRST_QPLLRESET_IN,
+  input      [PCIE_LANES-1:0]     QRST_QPLLPD_IN,
 
   output                          QRST_OVRD,
   output                          QRST_DRP_START,
@@ -73,21 +73,21 @@ module pll_init_ctrl #(
   state_e state = ST_WAIT_LOCK, state_nx;
 
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 mmcm_r1, mmcm_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] cplllock_r1, cplllock_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [(PCIE_LANE-1)>>2:0] drp_done_r1, drp_done_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [(PCIE_LANE-1)>>2:0] qplllock_r1, qplllock_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] cplllock_r1, cplllock_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [(PCIE_LANES-1)>>2:0] drp_done_r1, drp_done_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [(PCIE_LANES-1)>>2:0] qplllock_r1, qplllock_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [1:0]           rate_r1, rate_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] qpllrst_in_r1, qpllrst_in_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] qpllpd_in_r1,  qpllpd_in_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] qpllrst_in_r1, qpllrst_in_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] qpllpd_in_r1,  qpllpd_in_r2;
 
   always_ff @(posedge QRST_CLK) begin
     if (!QRST_RST_N) begin
       mmcm_r1 <= 1'b0;                   mmcm_r2 <= 1'b0;
-      cplllock_r1 <= {PCIE_LANE{1'b1}};  cplllock_r2 <= {PCIE_LANE{1'b1}};
+      cplllock_r1 <= {PCIE_LANES{1'b1}};  cplllock_r2 <= {PCIE_LANES{1'b1}};
       drp_done_r1 <= '0;                 drp_done_r2 <= '0;
       qplllock_r1 <= '0;                 qplllock_r2 <= '0;
       rate_r1 <= 2'd0;                   rate_r2 <= 2'd0;
-      qpllrst_in_r1 <= {PCIE_LANE{1'b1}};qpllrst_in_r2 <= {PCIE_LANE{1'b1}};
+      qpllrst_in_r1 <= {PCIE_LANES{1'b1}};qpllrst_in_r2 <= {PCIE_LANES{1'b1}};
       qpllpd_in_r1 <= '0;                qpllpd_in_r2 <= '0;
     end else begin
       mmcm_r1 <= QRST_MMCM_LOCK;         mmcm_r2 <= mmcm_r1;

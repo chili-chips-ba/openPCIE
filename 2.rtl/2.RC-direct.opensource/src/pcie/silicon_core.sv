@@ -37,8 +37,9 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module silicon_core # (
+module silicon_core
+  import link_pkg::*;
+# (
   localparam [11:0] AER_BASE_PTR = 12'h000,
   localparam AER_CAP_ECRC_CHECK_CAPABLE = "FALSE",
   localparam AER_CAP_ECRC_GEN_CAPABLE = "FALSE",
@@ -66,7 +67,6 @@ module silicon_core # (
   localparam [6:0] CRM_MODULE_RSTS = 7'h00,
   localparam C_DATA_WIDTH = 64,
   localparam REM_WIDTH = (C_DATA_WIDTH == 128) ? 2 : 1,
-  localparam KEEP_WIDTH = C_DATA_WIDTH / 8,
   localparam DEV_CAP2_ARI_FORWARDING_SUPPORTED = "FALSE",
   localparam DEV_CAP2_ATOMICOP32_COMPLETER_SUPPORTED = "FALSE",
   localparam DEV_CAP2_ATOMICOP64_COMPLETER_SUPPORTED = "FALSE",
@@ -135,14 +135,11 @@ module silicon_core # (
   localparam integer LINK_CAP_L1_EXIT_LATENCY_GEN1 = 7,
   localparam integer LINK_CAP_L1_EXIT_LATENCY_GEN2 = 7,
   localparam LINK_CAP_LINK_BANDWIDTH_NOTIFICATION_CAP = "FALSE",
-  localparam [3:0] LINK_CAP_MAX_LINK_SPEED = 4'h2,
-  localparam [5:0] LINK_CAP_MAX_LINK_WIDTH = 6'h1,
   localparam integer LINK_CAP_RSVD_23 = 0,
   localparam LINK_CAP_SURPRISE_DOWN_ERROR_CAPABLE = "FALSE",
   localparam integer LINK_CONTROL_RCB = 0,
   localparam LINK_CTRL2_DEEMPHASIS = "FALSE",
   localparam LINK_CTRL2_HW_AUTONOMOUS_SPEED_DISABLE = "FALSE",
-  localparam [3:0] LINK_CTRL2_TARGET_LINK_SPEED = 4'h2,
   localparam LINK_STATUS_SLOT_CLOCK_CONFIG = "TRUE",
   localparam [14:0] LL_ACK_TIMEOUT = 15'h0000,
   localparam LL_ACK_TIMEOUT_EN = "FALSE",
@@ -150,7 +147,6 @@ module silicon_core # (
   localparam [14:0] LL_REPLAY_TIMEOUT = 15'h0000,
   localparam LL_REPLAY_TIMEOUT_EN = "FALSE",
   localparam integer LL_REPLAY_TIMEOUT_FUNC = 1,
-  localparam [5:0] LTSSM_MAX_LINK_WIDTH = 6'h1,
   localparam MPS_FORCE = "FALSE",
   localparam [7:0] MSIX_BASE_PTR = 8'h9C,
   localparam [7:0] MSIX_CAP_ID = 8'h11,
@@ -250,7 +246,6 @@ module silicon_core # (
   localparam [1:0] RP_AUTO_SPD = 2'h1,
   localparam [4:0] RP_AUTO_SPD_LOOPCNT = 5'h1f,
   localparam SELECT_DLL_IF = "FALSE",
-  localparam SIM_VERSION = "1.0",
   localparam SLOT_CAP_ATT_BUTTON_PRESENT = "FALSE",
   localparam SLOT_CAP_ATT_INDICATOR_PRESENT = "FALSE",
   localparam SLOT_CAP_ELEC_INTERLOCK_PRESENT = "FALSE",
@@ -319,14 +314,12 @@ module silicon_core # (
   localparam [3:0] VC_CAP_VERSION = 4'h1,
   localparam [11:0] VSEC_BASE_PTR = 12'h000,
   localparam [15:0] VSEC_CAP_HDR_ID = 16'h1234,
-  localparam [11:0] VSEC_CAP_HDR_LENGTH = 12'h018,
   localparam [3:0] VSEC_CAP_HDR_REVISION = 4'h1,
   localparam [15:0] VSEC_CAP_ID = 16'h000B,
   localparam VSEC_CAP_IS_LINK_VISIBLE = "TRUE",
   localparam [11:0] VSEC_CAP_NEXTPTR = 12'h000,
   localparam VSEC_CAP_ON = "FALSE",
-  localparam [3:0] VSEC_CAP_VERSION = 4'h1,
-  localparam ENABLE_JTAG_DBG = "FALSE"
+  localparam [3:0] VSEC_CAP_VERSION = 4'h1
 )
 (
   input wire [C_DATA_WIDTH-1:0]         trn_td,
@@ -732,7 +725,6 @@ module silicon_core # (
   output wire      [11:0]   pl_dbg_vec
 );
 
-  localparam        TCQ = 1;
 
   wire [3:0]        trn_tdst_rdy_bus;
 

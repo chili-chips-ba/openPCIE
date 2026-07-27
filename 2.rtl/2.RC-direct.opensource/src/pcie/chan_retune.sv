@@ -37,7 +37,6 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module chan_retune #(
   localparam LOAD_CNT_MAX = 2'd1,
   localparam INDEX_MAX = 1'd0) (

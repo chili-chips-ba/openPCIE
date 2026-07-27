@@ -39,33 +39,7 @@
 
 module serdes_front
   import link_pkg::*;
-#(
-  localparam         LINK_CAP_MAX_LINK_WIDTH = 1,
-  localparam         REF_CLK_FREQ            = 0,
-  localparam         USER_CLK2_DIV2          = "FALSE",
-  localparam int USER_CLK_FREQ           = 1,
-  localparam         PL_FAST_TRAIN           = "FALSE",
-  localparam         PCIE_EXT_CLK            = "FALSE",
-  localparam         PCIE_USE_MODE           = "1.0",
-  localparam         PCIE_GT_DEVICE          = "GTP",
-  localparam         PCIE_PLL_SEL            = "CPLL",
-  localparam         PCIE_ASYNC_EN           = "FALSE",
-  localparam         PCIE_TXBUF_EN           = "FALSE",
-  localparam         PCIE_EXT_GT_COMMON      = "FALSE",
-  localparam         EXT_CH_GT_DRP           = "FALSE",
-  localparam         TX_MARGIN_FULL_0        = 7'b1001111,
-  localparam         TX_MARGIN_FULL_1        = 7'b1001110,
-  localparam         TX_MARGIN_FULL_2        = 7'b1001101,
-  localparam         TX_MARGIN_FULL_3        = 7'b1001100,
-  localparam         TX_MARGIN_FULL_4        = 7'b1000011,
-  localparam         TX_MARGIN_LOW_0         = 7'b1000101,
-  localparam         TX_MARGIN_LOW_1         = 7'b1000110,
-  localparam         TX_MARGIN_LOW_2         = 7'b1000011,
-  localparam         TX_MARGIN_LOW_3         = 7'b1000010,
-  localparam         TX_MARGIN_LOW_4         = 7'b1000000,
-  localparam         PCIE_CHAN_BOND          = 1,
-  localparam         TCQ                     = 1
-) (
+(
   input  wire [5:0]                             pl_ltssm_state,
 
   phy_lanes_if.phy                              pipe,
@@ -98,13 +72,6 @@ module serdes_front
   output wire                                   phy_rdy_n
 );
 
-  localparam USERCLK2_FREQ  = (USER_CLK2_DIV2 == "FALSE") ? USER_CLK_FREQ :
-                              (USER_CLK_FREQ == 4) ? 3 :
-                              (USER_CLK_FREQ == 3) ? 2 : USER_CLK_FREQ;
-  localparam PCIE_LPM_DFE   = (PL_FAST_TRAIN == "TRUE") ? "DFE" : "LPM";
-  localparam PCIE_LINK_SPEED = (PL_FAST_TRAIN == "TRUE") ? 2 : 3;
-  localparam PCIE_OOBCLK_MODE_ENABLE = 1;
-  localparam PCIE_TX_EIDLE_ASSERT_DELAY = (PL_FAST_TRAIN == "TRUE") ? 3'd4 : 3'd2;
 
   wire [  7:0]                       gt_rx_phy_status_wire;
   wire [  7:0]                       gt_rxchanisaligned_wire;

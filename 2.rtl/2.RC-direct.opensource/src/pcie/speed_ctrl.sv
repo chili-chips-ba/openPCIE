@@ -37,9 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module speed_ctrl #(
-  localparam PCIE_SIM_SPEEDUP = "FALSE",
   localparam TXDATA_WAIT_MAX = 4'd15) (
   input               RATE_CLK,
   input               RATE_RST_N,
@@ -69,8 +67,6 @@ module speed_ctrl #(
 
   state_e state = ST_IDLE;
   state_e state_nx;
-
-  wire sim_fast = (PCIE_SIM_SPEEDUP == "TRUE");
 
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [1:0] rate_in_r1, rate_in_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic drp_done_r1,  drp_done_r2;
@@ -131,10 +127,10 @@ module speed_ctrl #(
     unique case (state)
       ST_IDLE       : state_nx = (rate_in_r2 != rate_in_r1) ? ST_TXDATA_WAIT : ST_IDLE;
       ST_TXDATA_WAIT: state_nx = txdata_wait_done            ? ST_PCLK_SEL    : ST_TXDATA_WAIT;
-      ST_PCLK_SEL   : state_nx = sim_fast ? ST_RATE_SEL : ST_DRP16_REQ;
+      ST_PCLK_SEL   : state_nx = ST_DRP16_REQ;
       ST_DRP16_REQ  : state_nx = (!drp_done_r2) ? ST_DRP16_ACK  : ST_DRP16_REQ;
       ST_DRP16_ACK  : state_nx =  drp_done_r2   ? ST_RATE_SEL   : ST_DRP16_ACK;
-      ST_RATE_SEL   : state_nx = sim_fast ? ST_RATE_WAIT : ST_RXPMA_DN;
+      ST_RATE_SEL   : state_nx = ST_RXPMA_DN;
       ST_RXPMA_DN   : state_nx = (!rxpma_r2)    ? ST_DRP20_REQ  : ST_RXPMA_DN;
       ST_DRP20_REQ  : state_nx = (!drp_done_r2) ? ST_DRP20_ACK  : ST_DRP20_REQ;
       ST_DRP20_ACK  : state_nx =  drp_done_r2   ? ST_RATE_WAIT  : ST_DRP20_ACK;

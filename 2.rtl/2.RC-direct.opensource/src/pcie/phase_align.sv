@@ -37,17 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module phase_align #(
-  localparam PCIE_GT_DEVICE = "GTP",
-  localparam PCIE_TXBUF_EN = "FALSE",
-  localparam PCIE_RXBUF_EN = "TRUE",
-  localparam PCIE_TXSYNC_MODE = 0,
-  localparam PCIE_RXSYNC_MODE = 0,
-  localparam PCIE_LANE = 1,
-  localparam PCIE_LINK_SPEED = 3,
-  localparam BYPASS_TXDELAY_ALIGN = 0,
-  localparam BYPASS_RXDELAY_ALIGN = 0) (
+module phase_align (
   input               SYNC_CLK,
   input               SYNC_RST_N,
   input               SYNC_SLAVE,

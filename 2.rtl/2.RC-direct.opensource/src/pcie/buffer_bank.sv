@@ -44,8 +44,7 @@ module buffer_bank #(
   parameter       NUM_BRAMS         = 0,
   parameter       RAM_RADDR_LATENCY = 1,
   parameter       RAM_RDATA_LATENCY = 1,
-  parameter       RAM_WRITE_LATENCY = 1,
-  parameter       TCQ               = 1
+  parameter       RAM_WRITE_LATENCY = 1
 ) (
   input          user_clk_i,
   input          reset_i,

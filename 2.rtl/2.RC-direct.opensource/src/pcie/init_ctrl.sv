@@ -37,25 +37,24 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module init_ctrl #(
-  localparam PCIE_SIM_SPEEDUP = "FALSE",
-  localparam PCIE_LANE = 1,
+module init_ctrl
+  import link_pkg::*;
+#(
   localparam CFG_WAIT_MAX = 6'd63,
   localparam BYPASS_RXCDRLOCK = 1) (
   input                       RST_CLK,
   input                       RST_RXUSRCLK,
   input                       RST_DCLK,
   input                       RST_RST_N,
-  input      [PCIE_LANE-1:0]  RST_DRP_DONE,
-  input      [PCIE_LANE-1:0]  RST_RXPMARESETDONE,
+  input      [PCIE_LANES-1:0] RST_DRP_DONE,
+  input      [PCIE_LANES-1:0] RST_RXPMARESETDONE,
   input                       RST_PLLLOCK,
-  input      [PCIE_LANE-1:0]  RST_RATE_IDLE,
-  input      [PCIE_LANE-1:0]  RST_RXCDRLOCK,
+  input      [PCIE_LANES-1:0] RST_RATE_IDLE,
+  input      [PCIE_LANES-1:0] RST_RXCDRLOCK,
   input                       RST_MMCM_LOCK,
-  input      [PCIE_LANE-1:0]  RST_RESETDONE,
-  input      [PCIE_LANE-1:0]  RST_PHYSTATUS,
-  input      [PCIE_LANE-1:0]  RST_TXSYNC_DONE,
+  input      [PCIE_LANES-1:0] RST_RESETDONE,
+  input      [PCIE_LANES-1:0] RST_PHYSTATUS,
+  input      [PCIE_LANES-1:0] RST_TXSYNC_DONE,
 
   output                      RST_CPLLRESET,
   output                      RST_CPLLPD,
@@ -79,15 +78,15 @@ module init_ctrl #(
   state_e state = ST_CFG_WAIT;
   state_e state_nx;
 
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] drp_done_r1,       drp_done_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] rxpma_r1,          rxpma_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] drp_done_r1,       drp_done_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rxpma_r1,          rxpma_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 plllock_r1,        plllock_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] rate_idle_r1,      rate_idle_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] rxcdrlock_r1,      rxcdrlock_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rate_idle_r1,      rate_idle_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rxcdrlock_r1,      rxcdrlock_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 mmcmlock_r1,       mmcmlock_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] resetdone_r1,      resetdone_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] phystatus_r1,      phystatus_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] txsyncdone_r1,     txsyncdone_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] resetdone_r1,      resetdone_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] phystatus_r1,      phystatus_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] txsyncdone_r1,     txsyncdone_r2;
 
   always_ff @(posedge RST_CLK) begin
     if (!RST_RST_N) begin
@@ -107,7 +106,6 @@ module init_ctrl #(
     end
   end
 
-  wire sim_fast     = (PCIE_SIM_SPEEDUP == "TRUE");
   wire pll_unlocked = ~plllock_r2;
   wire pll_locked   =  plllock_r2;
   wire resetdone_lo = &(~resetdone_r2);
@@ -140,8 +138,8 @@ module init_ctrl #(
       ST_DRP16_ACK  : state_nx = drp_ready                       ? ST_PLL_LOCK    : ST_DRP16_ACK;
       ST_PLL_LOCK   : state_nx = pll_locked                      ? ST_GT_RELEASE  : ST_PLL_LOCK;
       ST_GT_RELEASE : state_nx = ST_RXPMA_UP;
-      ST_RXPMA_UP   : state_nx = (rxpma_hi || sim_fast)          ? ST_RXPMA_DN    : ST_RXPMA_UP;
-      ST_RXPMA_DN   : state_nx = (rxpma_lo || sim_fast)          ? ST_DRP20_REQ   : ST_RXPMA_DN;
+      ST_RXPMA_UP   : state_nx = rxpma_hi                        ? ST_RXPMA_DN    : ST_RXPMA_UP;
+      ST_RXPMA_DN   : state_nx = rxpma_lo                        ? ST_DRP20_REQ   : ST_RXPMA_DN;
       ST_DRP20_REQ  : state_nx = drp_busy                        ? ST_DRP20_ACK   : ST_DRP20_REQ;
       ST_DRP20_ACK  : state_nx = drp_ready                       ? ST_LOCK_WAIT   : ST_DRP20_ACK;
       ST_LOCK_WAIT  : state_nx = locks_ok                        ? ST_RESET_DONE  : ST_LOCK_WAIT;

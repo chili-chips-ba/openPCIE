@@ -37,21 +37,22 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module RC_direct_opensource (
-    input  logic          sys_clk_p,
-    input  logic          sys_clk_n,
+module RC_direct_opensource
+  import link_pkg::*;
+(
+    input  logic                    sys_clk_p,
+    input  logic                    sys_clk_n,
 
-    input  logic  [0:0]   RXN,
-    input  logic  [0:0]   RXP,
-    output logic  [0:0]   TXN,
-    output logic  [0:0]   TXP,
+    input  logic [PCIE_LANES-1:0]   RXN,
+    input  logic [PCIE_LANES-1:0]   RXP,
+    output logic [PCIE_LANES-1:0]   TXN,
+    output logic [PCIE_LANES-1:0]   TXP,
 
-    input  logic          sys_rst_n,
+    input  logic                    sys_rst_n,
 
-    output logic  [3:0]   led_link_up,
+    output logic  [3:0]             led_link_up,
 
-    output logic          clk_req
+    output logic                    clk_req
   );
 
   localparam int C_DATA_WIDTH = 64;
@@ -88,10 +89,10 @@ module RC_direct_opensource (
 
   host_bridge pcie_inst (
 
-    .pci_exp_txp                    ( TXP[0:0] ),
-    .pci_exp_txn                    ( TXN[0:0] ),
-    .pci_exp_rxp                    ( RXP[0:0] ),
-    .pci_exp_rxn                    ( RXN[0:0] ),
+    .pci_exp_txp                    ( TXP ),
+    .pci_exp_txn                    ( TXN ),
+    .pci_exp_rxp                    ( RXP ),
+    .pci_exp_rxn                    ( RXN ),
 
     .sys_clk                        ( sys_clk ),
     .sys_rst_n                      ( rp_reset_n ),

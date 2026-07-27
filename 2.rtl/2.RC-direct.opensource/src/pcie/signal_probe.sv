@@ -37,9 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module signal_probe #(
-  localparam PCIE_SIM_MODE = "FALSE",
   localparam PCIE_GT_DEVICE = "GTP",
   localparam PCIE_RXEQ_MODE_GEN3 = 1,
   localparam CONVERGE_MAX = 22'd3125000,
@@ -62,8 +60,8 @@ module signal_probe #(
   output              RXEQSCAN_ADAPT_DONE
 );
 
-  localparam [21:0] CONV_MAX     = (PCIE_SIM_MODE == "TRUE") ? 22'd1000 : CONVERGE_MAX;
-  localparam [21:0] CONV_MAX_BYP = (PCIE_SIM_MODE == "TRUE") ? 22'd1000 : CONVERGE_MAX_BYPASS;
+  localparam [21:0] CONV_MAX     = CONVERGE_MAX;
+  localparam [21:0] CONV_MAX_BYP = CONVERGE_MAX_BYPASS;
 
   typedef enum logic [1:0] { ST_IDLE, ST_PRESET, ST_CONVERGE, ST_NEWCOEFF } state_e;
   state_e state = ST_IDLE, state_nx;

@@ -37,7 +37,6 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module stream_tx_gate #(
   localparam int C_DATA_WIDTH = 64
   ) (
@@ -81,7 +80,6 @@ localparam TBUF_GAP_TIME = (C_DATA_WIDTH == 128) ? 4 : 1;
 
 localparam TCFG_LATENCY_TIME = 2'd2;
 
-localparam TCFG_GNT_PIPE_STAGES = 3;
 
 logic        lnk_up_thrtl;
 wire       lnk_up_trig;
@@ -118,11 +116,7 @@ logic        reg_turnoff_ok;
 logic        tready_thrtl_mux;
 
 localparam LINKSTATE_L0             = 3'b000;
-localparam LINKSTATE_PPM_L1         = 3'b001;
 localparam LINKSTATE_PPM_L1_TRANS   = 3'b101;
-localparam LINKSTATE_PPM_L23R_TRANS = 3'b110;
-localparam PM_ENTER_L1              = 8'h20;
-localparam POWERSTATE_D0            = 2'b00;
 
 logic        ppm_L1_thrtl;
 wire       ppm_L1_trig;

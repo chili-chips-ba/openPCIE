@@ -37,7 +37,6 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module stream_rx_path #(
   localparam int C_DATA_WIDTH = 64,
   localparam int KEEP_WIDTH   = 8,

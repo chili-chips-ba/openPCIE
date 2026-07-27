@@ -37,11 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
-module margin_tuner #(
-  localparam PCIE_SIM_MODE = "FALSE",
-  localparam PCIE_GT_DEVICE = "GTP",
-  localparam PCIE_RXEQ_MODE_GEN3 = 1) (
+module margin_tuner (
   input               EQ_CLK,
   input               EQ_RST_N,
   input               EQ_GEN3,

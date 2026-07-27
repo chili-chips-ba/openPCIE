@@ -37,11 +37,9 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-(* DowngradeIPIdentifiedWarnings = "yes" *)
 module pll_bank #
 (
-    
-    localparam PCIE_SIM_MODE = "FALSE",
+
     localparam PCIE_GT_DEVICE = "GTP",
     localparam PCIE_USE_MODE = "1.0",
     localparam PCIE_PLL_SEL = "CPLL",
@@ -74,12 +72,6 @@ module pll_bank #
 
 
 
-    localparam QPLL_FBDIV = (PCIE_REFCLK_FREQ == 2) && (PCIE_PLL_SEL == "QPLL") ? 10'b0010000000 : 
-                            (PCIE_REFCLK_FREQ == 1) && (PCIE_PLL_SEL == "QPLL") ? 10'b0100100000 : 
-                            (PCIE_REFCLK_FREQ == 0) && (PCIE_PLL_SEL == "QPLL") ? 10'b0101110000 : 
-                            (PCIE_REFCLK_FREQ == 2) && (PCIE_PLL_SEL == "CPLL") ? 10'b0001100000 : 
-                            (PCIE_REFCLK_FREQ == 1) && (PCIE_PLL_SEL == "CPLL") ? 10'b0011100000 : 10'b0100100000;
-    
     localparam GTP_QPLL_FBDIV  = (PCIE_REFCLK_FREQ == 2) ? 3'd2 :
                                  (PCIE_REFCLK_FREQ == 1) ? 3'd4 : 3'd5;
 
@@ -98,7 +90,7 @@ generate if (PCIE_GT_DEVICE == "GTP")
        
         .SIM_PLL0REFCLK_SEL             (3'b001),
         .SIM_PLL1REFCLK_SEL             (3'b001),
-        .SIM_RESET_SPEEDUP              (PCIE_SIM_MODE),
+        .SIM_RESET_SPEEDUP              ("FALSE"),
         .SIM_VERSION                    (PCIE_USE_MODE),
                                                                                                                                      
         .PLL0_CFG                       (27'h01F024C),

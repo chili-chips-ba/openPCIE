@@ -37,29 +37,24 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module clk_synth #(
-  localparam PCIE_ASYNC_EN = "FALSE",
-  localparam PCIE_TXBUF_EN = "FALSE",
-  localparam PCIE_CLK_SHARING_EN = "FALSE",
-  localparam PCIE_LANE = 1,
-  localparam PCIE_LINK_SPEED = 3,
+module clk_synth
+  import link_pkg::*;
+#(
   localparam PCIE_REFCLK_FREQ = 0,
   localparam PCIE_USERCLK1_FREQ = 2,
-  localparam PCIE_USERCLK2_FREQ = 2,
-  localparam PCIE_OOBCLK_MODE = 1,
-  localparam PCIE_DEBUG_MODE = 0) (
+  localparam PCIE_USERCLK2_FREQ = 2) (
   input                        CLK_CLK,
   input                        CLK_TXOUTCLK,
-  input        [PCIE_LANE-1:0] CLK_RXOUTCLK_IN,
+  input        [PCIE_LANES-1:0] CLK_RXOUTCLK_IN,
   input                        CLK_RST_N,
-  input        [PCIE_LANE-1:0] CLK_PCLK_SEL,
-  input        [PCIE_LANE-1:0] CLK_PCLK_SEL_SLAVE,
+  input        [PCIE_LANES-1:0] CLK_PCLK_SEL,
+  input        [PCIE_LANES-1:0] CLK_PCLK_SEL_SLAVE,
   input                        CLK_GEN3,
 
   output                       CLK_PCLK,
   output                       CLK_PCLK_SLAVE,
   output                       CLK_RXUSRCLK,
-  output       [PCIE_LANE-1:0] CLK_RXOUTCLK_OUT,
+  output       [PCIE_LANES-1:0] CLK_RXOUTCLK_OUT,
   output                       CLK_DCLK,
   output                       CLK_OOBCLK,
   output                       CLK_USERCLK1,
@@ -95,8 +90,8 @@ module clk_synth #(
   wire pclk_1;
   wire pclk;
 
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] pclk_sel_reg1 = '0;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANE-1:0] pclk_sel_reg2 = '0;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] pclk_sel_reg1 = '0;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] pclk_sel_reg2 = '0;
   logic pclk_sel = 1'b0;
 
   always_ff @(posedge pclk) begin
@@ -215,7 +210,7 @@ module clk_synth #(
   assign CLK_PCLK         = pclk;
   assign CLK_PCLK_SLAVE   = 1'b0;
   assign CLK_RXUSRCLK     = pclk_1;
-  assign CLK_RXOUTCLK_OUT = {PCIE_LANE{1'b0}};
+  assign CLK_RXOUTCLK_OUT = {PCIE_LANES{1'b0}};
   assign CLK_OOBCLK       = pclk;
   assign CLK_USERCLK1     = userclk1_1;
   assign CLK_USERCLK2     = userclk2_1;
