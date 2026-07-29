@@ -514,7 +514,7 @@ pll_init_ctrl
             .QRST_CLK                       (clk_pclk),                 
             .QRST_RST_N                     (reset_n_reg2),
             .QRST_MMCM_LOCK                 (clk_mmcm_lock),
-            .QRST_CPLLLOCK                  (gt_cplllock),
+            .QRST_CPLLLOCK                  ({PCIE_LANES{&qpll_qplllock}}),
             .QRST_DRP_DONE                  (qdrp_done),
             .QRST_QPLLLOCK                  (qpll_qplllock),
             .QRST_RATE                      (PIPE_RATE),
@@ -535,7 +535,7 @@ assign jtag_sl_iport = {PCIE_LANES{37'd0}};
 
 wire gt_cpllpdrefclk;
 
-BUFG wake_refclk_bufg (.I (PIPE_CLK), .O (gt_cpllpdrefclk));
+assign gt_cpllpdrefclk = clk_dclk;
 
 generate for (i=0; i<PCIE_LANES; i=i+1) 
 
