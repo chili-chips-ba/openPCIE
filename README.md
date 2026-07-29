@@ -39,14 +39,14 @@ Such approach is less work and less risk than to design our own PCIE motherboard
  - [x] ✔ Select components. Schematic and PCB layout design.
  - [x] ✔ Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
  - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
- - [ ] Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
+ - [x] ✔ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
 #### `PART 2. Project setup and preparatory activities`
  - [x] ✔ Procure FPGA development boards and PCIE accessories.
  - [x] ✔ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
  
 #### `PART 3. Initial HW/SW implementation`
- - [ ] HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
+ - [x] ✔ HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
  - [x] ✔ SW development of opensource driver for the PCIE RC HW function. This may, or may not be done within Linux framework. 
  - [x] ✔ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
 
@@ -63,12 +63,12 @@ With the full end-to-end simulation thus in place, we hope that the need for har
  - [ ] Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
 #### `PART 5. Integration, testing and iterative design refinements`
- - [ ] One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
+ - [x] ✔ One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
  - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
- - [ ] Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
+ - [x] ✔ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
 Given that PCIE is an advanced, high-speed design, and our accute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expect to run into showstoppers on the timing closure front. We therefore hope that the upcoming _ScalePNR_ flow will be ready for heavy-duty testing within this project.
 
@@ -350,7 +350,39 @@ The architecture follows a layered approach:
 
 # Implementation Workflow
 
-- WIP
+The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
+
+## Prerequisites
+
+Before building the project, install and configure the required development tools. These include an FPGA toolchain such as **AMD Vivado** or **openXC7**, a bare-metal **RISC-V cross-compilation toolchain**, Python, and the project-specific dependencies listed in the corresponding directories.
+
+## Simulation (Hardware/Software Co-Simulation)
+
+Before deploying the design to physical hardware, run the available simulation environment to verify the interaction between the PCIe hardware design and the software components.
+
+The co-simulation flow is used to test essential operations such as device initialization, register access, PCIe link behavior, and data exchange between the Root Complex (RC) and Endpoint (EP). This stage helps identify hardware and software integration issues before synthesis and hardware deployment.
+
+## Software Build
+
+Compile the bare-metal RISC-V driver and test application using the configured cross-compilation toolchain.
+
+The software is responsible for initializing the required hardware components, configuring the PCIe communication flow, and transferring test payloads between the RC and EP. The generated executable can be used during simulation or deployed together with the FPGA design for hardware verification.
+
+## Hardware Synthesis and Bitstream Generation
+
+The FPGA design can be synthesized and implemented using either the commercial **AMD Vivado** toolchain or the open-source **openXC7** toolchain. Depending on the selected flow, the process includes design elaboration, synthesis, placement, routing, timing analysis, and final bitstream generation.
+
+The resulting `.bit` file contains the complete hardware configuration for the selected FPGA board. The appropriate board-specific constraints, build configuration, and target design must be selected depending on whether the board operates as the Root Complex (RC) or Endpoint (EP).
+
+Detailed build instructions for both the Vivado and openXC7 flows are provided in the corresponding project directories.
+
+## Flashing and Deployment
+
+Program the RC and EP FPGA boards with their corresponding bitstreams. After both designs have been loaded, start the software application and allow the boards to initialize the PCIe connection.
+
+The deployed system can then be verified by checking the PCIe link-status indicators and comparing the transmitted payload with the data displayed or received on the Endpoint.
+
+Detailed commands, configuration options, supported boards, and stage-specific instructions are provided in the corresponding project directories.
 
 --------------------
 
@@ -416,7 +448,13 @@ Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed mo
 
 ### Verification Results
 
-- WIP
+The implementation was verified on physical hardware by checking both PCIe link establishment and successful payload transfer between the Root Complex (RC) and Endpoint (EP).
+
+On the RC board, LED **A3** indicates the PCIe link status. When this LED is illuminated, the PCIe link has been successfully established. As shown in the verification setup, LED A3 is active, confirming that the link between the RC and EP is up.
+
+On the EP board, the LEDs display the received data payload. The RC transmitted the decimal value **6**, represented in binary as **`0110`**. The LED pattern on the EP matches this value, confirming that the payload was transferred and received correctly.
+
+These results confirm that PCIe link initialization and RC-to-EP data transfer operate successfully on physical hardware.
 
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
