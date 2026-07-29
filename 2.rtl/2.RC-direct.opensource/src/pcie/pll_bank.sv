@@ -117,14 +117,14 @@ generate if (PCIE_GT_DEVICE == "GTP")
     gtpe2_common_i 
     (
            
-        .GTGREFCLK0                     ( 1'd0),
-        .GTGREFCLK1                     ( 1'd0),
+        .GTGREFCLK0                     (     ),
+        .GTGREFCLK1                     (     ),
         .GTREFCLK0                      (QPLL_GTGREFCLK),
-        .GTREFCLK1                      ( 1'd0),
-        .GTEASTREFCLK0                  ( 1'd0),
-        .GTEASTREFCLK1                  ( 1'd0),
-        .GTWESTREFCLK0                  ( 1'd0),
-        .GTWESTREFCLK1                  ( 1'd0),
+        .GTREFCLK1                      (     ),
+        .GTEASTREFCLK0                  (     ),
+        .GTEASTREFCLK1                  (     ),
+        .GTWESTREFCLK0                  (     ),
+        .GTWESTREFCLK1                  (     ),
         .PLL0LOCKDETCLK                 (QPLL_QPLLLOCKDETCLK),
         .PLL1LOCKDETCLK                 (QPLL_QPLLLOCKDETCLK),
         .PLL0LOCKEN                     ( 1'd1),

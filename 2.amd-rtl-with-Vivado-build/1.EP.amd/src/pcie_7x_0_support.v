@@ -56,7 +56,7 @@
 //--
 //------------------------------------------------------------------------------
 
-`timescale 1ns / 1ps
+`timescale 1ns / 1ps 
 
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module pcie_7x_0_support # (

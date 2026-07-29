@@ -39,9 +39,8 @@
 
 package link_pkg;
 
-  localparam int PCIE_LANES = 1;   
-  localparam int PCIE_GEN   = 2;   
-
+  localparam int PCIE_LANES = 1;
+  localparam int PCIE_GEN   = 2;
 
   localparam int PIPE_MAX_LANES = 8;
 

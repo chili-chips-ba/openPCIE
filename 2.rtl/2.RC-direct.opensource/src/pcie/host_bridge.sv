@@ -37,7 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module host_bridge
+module host_bridge   
   import link_pkg::*;
 #(
   localparam int C_DATA_WIDTH            = 64,
