@@ -38,9 +38,6 @@ localparam int PCIE_LANES = 1;   // 1, 2, 4 or 8
 localparam int PCIE_GEN   = 2;   // 1 = Gen1, 2 = Gen2
 ```
 
-Everything downstream (`LINK_CAP_MAX_LINK_WIDTH`, `LINK_CAP_MAX_LINK_SPEED`,
-`LINK_CTRL2_TARGET_LINK_SPEED`, `LTSSM_MAX_LINK_WIDTH`) is derived from those two.
-
 ---
 
 ## Structure
@@ -74,9 +71,6 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 | Tuning | `chan_retune.sv`, `pll_retune.sv`, `speed_ctrl.sv`, `margin_tuner.sv`, `eios_squelch.sv` | DRP-based retuning on rate change, equalisation, electrical-idle detection |
 | Interfaces | `link_pkg.sv`, `stream_if.sv`, `phy_lanes_if.sv` | package and SystemVerilog interfaces |
 | Debug | `signal_probe.sv` | status/debug vector taps |
-
-`src/pcie/_catB_backup/` holds the original AMD wrapper files as `*.sv.orig`, kept
-for reference. They are not compiled - the `*.sv` wildcards do not match them.
 
 ### Clocking
 
@@ -117,33 +111,6 @@ It collects `src/`, `src/pcie/*.sv`, the XDC from `xdc/`, sets
 See [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7). Run the
 [firmware build](../../4.build/sw_build) first - `firmware.hex` is a hard
 dependency of both flows.
-
----
-
-## Notes for the opensource flow
-
-This RTL builds unmodified in Vivado. A handful of attributes are set explicitly
-that a Vivado-only design could have left to library defaults, because
-nextpnr substitutes its own defaults instead - almost always `0`, silently. Most
-of them are in `lane_xcvr.sv`:
-
-| What | Why |
-|---|---|
-| 17 `GTPE2_CHANNEL` attributes (`TX_CLKMUX_EN`, `RX_CLKMUX_EN`, `PMA_RSV`, `TXPI_PPMCLK_SEL`, `PD_TRANS_TIME_*`, …) | nextpnr's defaults differ from the `unisim` library, which left the transceiver misconfigured |
-| `TXPI_SYNFREQ_PPM (3'd1)` | nextpnr rejects the value `0` outright |
-| unused GT refclk inputs left unconnected in `pll_bank.sv` | nextpnr rejects a constant on a refclk input |
-| `gt_cpllpdrefclk` driven from `clk_dclk` in `serdes_ctrl.sv` | `IBUFDS_GTE2.O` -> `BUFG` yields a clock that does not toggle under nextpnr |
-
-One change is a **genuine fix to this design**, not a toolchain workaround.
-`ST_MMCM_LOCK` in `pll_init_ctrl.sv` requires `mmcm && (&cplllock)` to exit, but
-GTP has no per-channel CPLL and `lane_xcvr.sv` ties `GT_CPLLLOCK = 1'b0` - so the
-state had no exit. Vivado escapes it only because its wake path locks the QPLL
-before reset release, which is a race it happens to win rather than a guarantee.
-`serdes_ctrl.sv` now feeds the QPLL lock into that input, which for GTP is what
-"channel PLL locked" actually means.
-
-Full rationale, measurements and the toolchain findings are in
-[`hw_build.openXC7/README.md`](../../4.build/hw_build.openXC7/README.md).
 
 ----
 End-of-Document
