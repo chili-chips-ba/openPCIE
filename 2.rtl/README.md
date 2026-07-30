@@ -41,22 +41,6 @@ serves as the reference the opensource variant is measured against.
 
   [RC-switched.opensource Documentation](./3.Bonus--RC-switched.opensource/)
 
-### Build
-
-Both hardware flows, and the firmware build they both depend on, are driven from
-[`4.build`](../4.build):
-
-| Step | Directory |
-|---|---|
-| Firmware for the RISC-V SoC | [`4.build/sw_build`](../4.build/sw_build) |
-| Bitstream, opensource toolchain | [`4.build/hw_build.openXC7`](../4.build/hw_build.openXC7) |
-| Bitstream, Vivado | `RC-direct.opensource.tcl` inside the design directory |
-
-Run the firmware build first - `firmware.hex` is a hard dependency of both
-hardware flows.
-
-> **Note:** Regardless of whether you use the `.amd` or `.opensource` version of the Root Complex, the physical testing procedure and the end results remain the same.
-
 ---
 
 ### Common Physical Constraints (XDC)
