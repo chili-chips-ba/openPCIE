@@ -1,35 +1,59 @@
-# RTL Implementation: Root Complex & EndPoint
+# RTL Implementation: Opensource designs
 
-This directory contains the FPGA design files (**RTL**) for the project. The designs cover both the **Root Complex (RC)** and the **EndPoint (EP)** roles, implemented on Xilinx Artix-7 FPGAs.
+This directory contains the **opensource** FPGA designs for the project - those
+that wrap the Artix-7 hard macros with open logic instead of using the proprietary
+Vivado IP generator.
+
+The AMD/Vivado-IP counterparts live in a separate tree,
+[`2.amd-rtl-with-Vivado-build`](../2.amd-rtl-with-Vivado-build). Each opensource
+design here has an `.amd` sibling there that was built and proven first, and which
+serves as the reference the opensource variant is measured against.
 
 ### Directory Structure
 
-The projects are organized into subfolders based on the role and the implementation method:
+- **`1.EP.opensource`**
+  Opensource PCIe EndPoints, used as the link partner when testing our Root
+  Complex. Rather than duplicating them here, this directory points to the
+  existing upstream projects - LiteFury PCIe EP, regymm's pcie_7x and LitePCIe -
+  any of which can be built on the side and paired with our RC. The
+  [`1.EP.amd`](../2.amd-rtl-with-Vivado-build/1.EP.amd) replica is also available
+  for the same purpose.
 
-- **`1.EP.amd`**  
-  The PCIe EndPoint design. This design is consistent across all test scenarios (whether connected directly to an RC or via a Switch).
+  [EP.opensource Documentation](./1.EP.opensource/)
 
-  [Detailed EP.amd Documentation](./1.EP.amd/)
+- **`2.RC-direct.opensource`** — **implemented and working**
+  A Root Complex design for **Direct (Point-to-Point)** connection, and the core
+  of the project. It includes the full stack: the opensource PCIe logic around the
+  `PCIE_2_1` and `GTPE2_CHANNEL` hard macros, a RISC-V SoC, and the software
+  running on it.
 
-- **`2.RC-direct.amd`**  
-  A Root Complex design for **Direct (Point-to-Point)** connection.  
-  - **`.amd` suffix:** Indicates that this implementation relies primarily on the proprietary Xilinx/AMD Vivado IP Generator. It uses the "Integrated Block for PCI Express" with a thin wrapper, focusing on XDC constraints and IP configuration.
-  
-  [Detailed RC-direct.amd Documentation](./2.RC-direct.amd/)
-
-- **`2.RC-direct.opensource`**  
-  A Root Complex design for **Direct** connection.  
-  - **`.opensource` suffix:** This is the core of the project. It includes the full stack: a RISC-V SoC, a software driver, and a test application. It wraps the hard macros with open-source logic to create a functional system.
+  Verified on hardware: **PCIe Gen2 x1, link up and trained** in a direct RC-to-EP
+  configuration. It builds both with Vivado and with a
+  [fully opensource toolchain](../4.build/hw_build.openXC7) - sv2v, yosys,
+  nextpnr-xilinx and prjxray, with no proprietary tool in the chain.
 
   [Detailed RC-direct.opensource Documentation](./2.RC-direct.opensource/)
 
-- **`3.Bonus--RC-switched.amd`**  
-  A Root Complex design configured for a **Switched** topology (RC ⇔ Switch ⇔ EP).  
-  - While not strictly required for the initial project scope, this was added to prove the system works with standard PCIe Switches (ASM1184e).
+- **`3.Bonus--RC-switched.opensource`** — **implemented and working**
+  A Root Complex design for a **Switched** topology (RC ⇔ Switch ⇔ EP).
 
-  [Detailed RC-Switched Documentation](./3.Bonus--RC-switched.amd/)
+  Verified on hardware through a standard PCIe switch (ASM1184e).
 
+  [RC-switched.opensource Documentation](./3.Bonus--RC-switched.opensource/)
 
+### Build
+
+Both hardware flows, and the firmware build they both depend on, are driven from
+[`4.build`](../4.build):
+
+| Step | Directory |
+|---|---|
+| Firmware for the RISC-V SoC | [`4.build/sw_build`](../4.build/sw_build) |
+| Bitstream, opensource toolchain | [`4.build/hw_build.openXC7`](../4.build/hw_build.openXC7) |
+| Bitstream, Vivado | `RC-direct.opensource.tcl` inside the design directory |
+
+Run the firmware build first - `firmware.hex` is a hard dependency of both
+hardware flows.
 
 > **Note:** Regardless of whether you use the `.amd` or `.opensource` version of the Root Complex, the physical testing procedure and the end results remain the same.
 
