@@ -19,9 +19,8 @@ serves as the reference the opensource variant is measured against.
   [`1.EP.amd`](../2.amd-rtl-with-Vivado-build/1.EP.amd) replica is also available
   for the same purpose.
 
-  [EP.opensource Documentation](./1.EP.opensource/)
-
 - **`2.RC-direct.opensource`** — **implemented and working**
+  
   A Root Complex design for **Direct (Point-to-Point)** connection, and the core
   of the project. It includes the full stack: the opensource PCIe logic around the
   `PCIE_2_1` and `GTPE2_CHANNEL` hard macros, a RISC-V SoC, and the software
@@ -32,14 +31,12 @@ serves as the reference the opensource variant is measured against.
   [fully opensource toolchain](../4.build/hw_build.openXC7) - sv2v, yosys,
   nextpnr-xilinx and prjxray, with no proprietary tool in the chain.
 
-  [Detailed RC-direct.opensource Documentation](./2.RC-direct.opensource/)
-
 - **`3.Bonus--RC-switched.opensource`** — **implemented and working**
+  
   A Root Complex design for a **Switched** topology (RC ⇔ Switch ⇔ EP).
 
   Verified on hardware through a standard PCIe switch (ASM1184e).
 
-  [RC-switched.opensource Documentation](./3.Bonus--RC-switched.opensource/)
 
 ---
 
