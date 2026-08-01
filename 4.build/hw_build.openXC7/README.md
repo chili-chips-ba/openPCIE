@@ -1,7 +1,13 @@
 # opensource openXC7 build flow
 
-Builds `RC-direct.opensource` into an FPGA bitstream using **only open-source
-tools** - no Vivado anywhere in the chain.
+Builds the opensource RC into an FPGA bitstream using **only open-source tools** -
+no Vivado anywhere in the chain. `make` builds
+[`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource);
+`make VARIANT=switched` builds
+[`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource) instead.
+Everything below applies to both - the two differ by one `assign` in
+`riscv_pcie_soc.sv` and by the firmware they carry, and not at all in the
+toolchain or the constraints.
 
 | Stage | Tool | Input -> Output |
 |---|---|---|
@@ -244,9 +250,10 @@ the sw_build stage must have run first. The Makefile expects
 ## Building
 
 ```bash
-make check-env        # confirms tools present AND warns if nextpnr is the wrong version
-make check-sources    # confirms every RTL file and firmware.hex is present
-make                  # full build -> build_artifacts/top.bit
+make check-env         # confirms tools present AND warns if nextpnr is the wrong version
+make check-sources     # confirms every RTL file and firmware.hex is present
+make                   # full build -> build_artifacts/top.bit
+make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 ```
 
 | Target | Purpose |
@@ -255,6 +262,13 @@ make                  # full build -> build_artifacts/top.bit
 | `make info` | print resolved configuration |
 | `make clean` | remove `build_artifacts/` |
 | `make clean-all` | also remove `converted/` and `chipdb/` |
+
+`VARIANT=switched` gives the switched build its own `converted.switched/` and
+`build_artifacts.switched/`, so the two never overwrite each other and neither
+picks up the other one's stale intermediates. The `chipdb/` is shared - it
+depends on the part, not on the design. What is **not** separated is
+`../sw_build/firmware.hex`, so build the matching firmware first
+(`make clean && make VARIANT=switched` over in `sw_build/`).
 
 The first build generates the nextpnr chipdb for `xc7a200tfbg484-3` (317 MB,
 several minutes). It is cached in `chipdb/`.
@@ -392,10 +406,10 @@ build too, because it is a pulse, not a level.
 
 | # | Finding |
 |---|---|
-| 1 | **GT attribute defaults do not match the Xilinx library** - 17 mismatches on `GTPE2_CHANNEL` alone, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV` among them. Any design relying on library defaults gets a silently broken transceiver |
+| 1 | **GT attribute defaults do not match the Xilinx library** - **80 mismatches** on `GTPE2_CHANNEL`, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV`/`RX_XCLK_SEL` among them (17 of those affected this design). Any design relying on library defaults gets a silently broken transceiver |
 | 2 | **`IBUFDS_GTE2.O` -> `BUFG` yields a dead clock in fabric.** The net routes without error and the FASM looks correct, but the BUFG output does not toggle on hardware |
 | 3 | **`fasm.cc:2118` hardcodes `PLL0_CFG`/`PLL1_CFG`** to `0x1F03DC` instead of reading the cell parameter (this design asks for `0x1F024C`), and writes only bits [20:0] of a 27-bit attribute |
-| 4 | **Regression between `45a986b` and `bab26c2`** - `router2` infinite-loops in `route_xilinx_const` / `is_wire_undriveable`; gdb stack trace and constant RSS over 1.5 h |
+| 4 | **Regression between `45a986b` and `bab26c2`** - master cannot route `CARRY4_Ox` -> `xFFMUX_OUT` inside a slice, so any design with a counter fails; reproduced with a 4-line testcase. `common/router2.cc` is byte-identical between the two commits, so the change is in the xilinx packing code. On larger designs the same area instead runs for hours in `route_xilinx_const` |
 | 5 | snap 0.8.2 ships metadata missing `site_type_PCIE_2_1.json`, so PCIe designs cannot place at all |
 | 6 | An unconstrained clock silently gets a 12 MHz target, so timing failures on that domain are never reported |
 | 7 | `create_clock [get_nets ...]` drops the constraint **silently** when the net name does not match - no warning |
