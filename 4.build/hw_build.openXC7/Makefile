@@ -3,11 +3,17 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # =============================================================================
-# openXC7 build flow for RC-direct.opensource
+# openXC7 build flow for the opensource RC
 #
 # Run FROM THIS FOLDER:
 #   source /opt/openxc7/export.sh
-#   make
+#   make                      RC-direct   (default)
+#   make VARIANT=switched     RC-switched
+#
+# The two variants use separate converted/ and build_artifacts/ folders, so they
+# do not overwrite each other and neither picks up the other one's stale output.
+# What they DO share is ../sw_build/firmware.hex -- build the matching firmware
+# first (make VARIANT=switched over in sw_build/).
 #
 # Flow:  .sv --sv2v--> .v --yosys--> .json --nextpnr-xilinx--> .fasm
 #            --fasm2frames--> .frames --xc7frames2bit--> .bit
@@ -59,7 +65,29 @@ CHIPDB = chipdb
 # ---- Meta -------------------------------------------------------------------
 # Acorn CLE-215P carries xc7a200tfbg484-3 (same as the Vivado build)
 PART = xc7a200tfbg484-3
-TOP  = RC_direct_opensource
+
+# ---- Variant ----------------------------------------------------------------
+# direct   -> one endpoint on the far end of the link
+# switched -> ASM1184e switch with up to 4 endpoints behind it. The only RTL
+#             difference is in riscv_pcie_soc.sv, which derives the Type 0 /
+#             Type 1 code of a Configuration TLP from the target bus number.
+VARIANT ?= direct
+
+ifeq ($(VARIANT),switched)
+    TOP       = RC_switched_opensource
+    RTL_DIR   = ../../2.rtl/3.Bonus--RC-switched.opensource
+    RTL_XDC   = $(RTL_DIR)/xdc/RC-switched.sv.x1g2.AcornCLE-215P.xdc
+    XDC_FILE  = openxc7.switched.xdc
+    OUT_SFX   = .switched
+else ifeq ($(VARIANT),direct)
+    TOP       = RC_direct_opensource
+    RTL_DIR   = ../../2.rtl/2.RC-direct.opensource
+    RTL_XDC   = $(RTL_DIR)/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc
+    XDC_FILE  = openxc7.xdc
+    OUT_SFX   =
+else
+    $(error VARIANT must be "direct" or "switched", got "$(VARIANT)")
+endif
 
 # ---- THE nextpnr VERSION IS CRITICAL ----------------------------------------
 # This design builds ONLY with nextpnr-xilinx around commit 45a986b
@@ -85,21 +113,24 @@ TOP  = RC_direct_opensource
 NPNR_SRC ?= /opt/openxc7_extra/npnr_45a986b
 
 # ---- Paths (this Makefile lives in 4.build/hw_build.openXC7/) ---------------
-RTL_DIR  = ../../2.rtl/2.RC-direct.opensource
+# RTL_DIR is set by the variant block above.
 SRC_DIR  = $(RTL_DIR)/src
 PCIE_DIR = $(SRC_DIR)/pcie
 # nextpnr-xilinx accepts only [get_ports]/[get_nets] targets, so it CANNOT read
 # the full Vivado XDC from 2.rtl/. A reduced version lives here; what was left
-# out and why is documented in the header of that file.
-XDC_FILE = openxc7.xdc
+# out and why is documented in the header of that file. XDC_FILE is set by the
+# variant block above -- the two differ only in the GT lane:
+#   openxc7.xdc          C5/D5/C11/D11  -> GTP_CHANNEL_1 = GTPE2_CHANNEL_X0Y5  (lane 2)
+#   openxc7.switched.xdc A6/B6/A10/B10  -> GTP_CHANNEL_2 = GTPE2_CHANNEL_X0Y6  (lane 0)
+# The pin-to-channel mapping is straight out of prjxray package_pins.csv.
 
 # firmware.hex is a product of the sw_build stage; riscv_pcie_soc.sv reads it via
 # $readmemh with a bare name, so it must sit in Yosys' working directory.
 FIRMWARE = ../sw_build/firmware.hex
 
-CONV_DIR      = converted
+CONV_DIR      = converted$(OUT_SFX)
 EXTRACTED_DIR = $(CONV_DIR)/extracted
-BUILD_ARTIFACTS = build_artifacts
+BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)
 
 CONV_TIMESTAMP    = $(CONV_DIR)/.conversion_timestamp
 EXTRACT_TIMESTAMP = $(EXTRACTED_DIR)/.extraction_timestamp
@@ -148,20 +179,23 @@ all: $(BUILD_ARTIFACTS)/top.bit
 
 help:
 	@echo "================================================================"
-	@echo " openXC7 build -- RC-direct.opensource"
+	@echo " openXC7 build -- opensource RC  [$(VARIANT)]"
 	@echo "================================================================"
-	@echo " make               full build up to top.bit"
-	@echo " make convert       sv2v conversion + splitting only"
-	@echo " make check-env     verify the tools are present"
-	@echo " make check-sources verify all source files exist"
-	@echo " make info          print the configuration"
-	@echo " make clean         remove build_artifacts"
-	@echo " make clean-all     remove converted/ and chipdb/ as well"
+	@echo " make                 full build up to top.bit"
+	@echo " make VARIANT=switched  build the RC-switched variant"
+	@echo " make convert         sv2v conversion + splitting only"
+	@echo " make check-env       verify the tools are present"
+	@echo " make check-sources   verify all source files exist"
+	@echo " make info            print the configuration"
+	@echo " make clean           remove $(BUILD_ARTIFACTS)"
+	@echo " make clean-all       remove $(CONV_DIR)/ and chipdb/ as well"
 	@echo "================================================================"
 
 info:
+	@echo "VARIANT        : $(VARIANT)"
 	@echo "PART           : $(PART)"
 	@echo "TOP            : $(TOP)"
+	@echo "RTL_DIR        : $(RTL_DIR)"
 	@echo "PRJXRAY_DB_DIR : $(PRJXRAY_DB_DIR)"
 	@echo "BBAEXPORT      : $(BBAEXPORT)"
 	@echo "XDC            : $(XDC_FILE)"
@@ -214,7 +248,7 @@ check-sv2v:
 check-sources:
 	@missing=0; \
 	for f in $(SV_ORDERED) $(PURE_V_FILES) $(XDC_FILE) $(FIRMWARE) \
-	         $(RTL_DIR)/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc; do \
+	         $(RTL_XDC); do \
 	    if [ ! -f "$$f" ]; then echo "MISSING: $$f"; missing=$$((missing+1)); fi; \
 	done; \
 	if [ $$missing -gt 0 ]; then \
@@ -331,46 +365,6 @@ $(CHIPDB)/$(PART).bin:
 # 5) PLACE & ROUTE (nextpnr-xilinx)
 # =============================================================================
 
-# ---- THE SEED MATTERS -------------------------------------------------------
-# The pipe clock (pcie_inst.clk_oobclk, 250 MHz in Gen2) sits right at the edge
-# of what nextpnr achieves on this design. The critical path is not in the
-# datapath but a reset-counter feedback loop in
-# serdes_ctrl_i.lane_gen[0].lane_keeper_i:
-#     FF.Q -> LUT -> CARRY4 -> 3x LUT -> FF.SR
-#     4.5 ns  =  1.3 ns logic  +  3.2 ns routing
-# Routing carries 71% of the path because the placer scatters the counter across
-# ~11 rows.
-#
-# -----------------------------------------------------------------------------
-# WHY A TIMING FAILURE IS ALLOWED (--timing-allow-fail)
-# -----------------------------------------------------------------------------
-# The 250 MHz constraint is deliberately PESSIMISTIC. The Vivado XDC has
-# set_clock_groups -physically_exclusive on the two branches of the BUFGCTRL mux,
-# plus 14 set_false_path on asynchronous GT/PCIe status lines. nextpnr accepts
-# NONE of those commands, so it sees both mux branches as one clock and measures
-# them at the faster one, and it counts the false paths as real. The metric is
-# therefore stricter than the actual requirement.
-#
-# MEASURED ON HARDWARE -- every build that FAILS this metric works, while the
-# only one that CLOSED 250 MHz (250.94 MHz, seed 4) does NOT work on the board:
-#     probes on,  seed 3 -> 210 MHz    FAIL     link up, Gen2   OK
-#     probes on,  seed 3 -> 229 MHz    FAIL     link up, Gen2   OK
-#     probes on,  seed 4 -> 207 MHz    FAIL     link up, Gen2   OK
-#     probes off, seed 3 -> 230 MHz    FAIL     link up, Gen2   OK
-#     probes off, seed 4 -> 250.9 MHz  PASS     DOES NOT WORK
-#
-# Explanation: to squeeze the reset counter in lane_keeper_i (the tightest path),
-# the placer stretches something the constraint model does NOT cover -- precisely
-# what the missing set_false_path / set_clock_groups would have covered. Forcing
-# this metric to close therefore actively BREAKS the design.
-#
-# There used to be a loop here that tried seeds until timing closed -- REMOVED,
-# because it did exactly the wrong thing: it hunted for a placement that does not
-# work on hardware.
-#
-# Proper fix (for later, not required for operation): port the equivalent of the
-# missing set_false_path into openxc7.xdc, if/when nextpnr supports them. Only
-# then does this metric become meaningful as a pass/fail criterion.
 SEED ?= 3
 
 $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $(XDC_FILE)

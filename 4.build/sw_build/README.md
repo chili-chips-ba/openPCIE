@@ -1,6 +1,7 @@
 # firmware build
 
-Builds the firmware for the picorv32 core inside `RC-direct.opensource`.
+Builds the firmware for the picorv32 core inside the opensource RC, in either of
+its two variants - `RC-direct.opensource` or `RC-switched.opensource`.
 
 | Stage | Tool | Input -> Output |
 |---|---|---|
@@ -8,8 +9,13 @@ Builds the firmware for the picorv32 core inside `RC-direct.opensource`.
 | 2. Raw image | `riscv-none-elf-objcopy` | `.elf` -> `firmware.bin` |
 | 3. Hex for `$readmemh` | `python` | `.bin` -> `firmware.hex` |
 
-Sources live in `3.sw/` - this folder only builds them. All three outputs land
-here, next to the Makefile.
+Sources live in `3.sw/`, one subdirectory per variant - this folder only builds
+them. All three outputs land here, next to the Makefile.
+
+| `VARIANT` | Sources | Topology |
+|---|---|---|
+| `direct` (default) | `3.sw/RC-direct/` | one endpoint, straight RC-to-EP link |
+| `switched` | `3.sw/RC-switched/` | ASM1184e switch with up to 4 endpoints |
 
 ---
 
@@ -37,9 +43,14 @@ make
 
 | Target | Purpose |
 |---|---|
-| `make` | build `firmware.elf`, `firmware.bin`, `firmware.hex` |
+| `make` | build `firmware.elf`, `firmware.bin`, `firmware.hex` for RC-direct |
+| `make VARIANT=switched` | the same three files, but for RC-switched |
 | `make info` | print the resolved configuration |
 | `make clean` | remove the three generated files |
+
+Both variants write the same three output names, so switching between them needs
+a `make clean` first - otherwise make sees the outputs as up to date and does
+nothing.
 
 ## Outputs
 

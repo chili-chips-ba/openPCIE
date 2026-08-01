@@ -3,10 +3,11 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # =============================================================================
-# Firmware build for the picorv32 core inside RC-direct.opensource
+# Firmware build for the picorv32 core inside the opensource RC
 #
 # Run FROM THIS FOLDER:
-#   make
+#   make                      RC-direct   firmware (default)
+#   make VARIANT=switched     RC-switched firmware
 #
 # Flow:  start.S + main.c --gcc--> firmware.elf
 #                        --objcopy--> firmware.bin
@@ -15,11 +16,27 @@
 # All three outputs land in this folder. The hardware build consumes
 # firmware.hex -- riscv_pcie_soc.sv reads it with $readmemh("firmware.hex", ram),
 # one 32-bit word per line, hex, no prefix.
+#
+# The two variants share the output names, so switching variant means a clean
+# rebuild:  make clean && make VARIANT=switched
 # =============================================================================
+
+# ---- Variant ----------------------------------------------------------------
+# direct   -> 3.sw/RC-direct    : one endpoint, straight RC-to-EP link
+# switched -> 3.sw/RC-switched  : ASM1184e switch with up to 4 endpoints
+VARIANT ?= direct
+
+ifeq ($(VARIANT),switched)
+    SW_SUBDIR = RC-switched
+else ifeq ($(VARIANT),direct)
+    SW_SUBDIR = RC-direct
+else
+    $(error VARIANT must be "direct" or "switched", got "$(VARIANT)")
+endif
 
 # ---- Paths ------------------------------------------------------------------
 # Sources live in 3.sw/; this Makefile only builds, it does not hold sources.
-SW_DIR = ../../3.sw
+SW_DIR = ../../3.sw/$(SW_SUBDIR)
 
 # ---- Toolchain --------------------------------------------------------------
 # xPack GNU RISC-V Embedded GCC. Override CROSS if the prefix differs, e.g.
@@ -61,14 +78,16 @@ all: firmware.hex
 
 help:
 	@echo ================================================================
-	@echo  Firmware build -- RC-direct.opensource
+	@echo  Firmware build -- opensource RC
 	@echo ================================================================
-	@echo  make        build firmware.elf + .bin + .hex
-	@echo  make info   print the resolved configuration
-	@echo  make clean  remove the three generated files
+	@echo  make                     build firmware.elf + .bin + .hex
+	@echo  make VARIANT=switched    build the RC-switched firmware
+	@echo  make info                print the resolved configuration
+	@echo  make clean               remove the three generated files
 	@echo ================================================================
 
 info:
+	@echo VARIANT : $(VARIANT)
 	@echo SW_DIR  : $(SW_DIR)
 	@echo CC      : $(CC)
 	@echo OBJCOPY : $(OBJCOPY)
@@ -78,7 +97,7 @@ info:
 # ---- 1) link ----------------------------------------------------------------
 firmware.elf: $(DEPS)
 	@echo ================================================================
-	@echo  Compile + link  --^> firmware.elf
+	@echo  Compile + link  --^> firmware.elf   [$(VARIANT)]
 	@echo ================================================================
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRCS)
 	@echo OK -^> $@

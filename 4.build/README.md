@@ -14,9 +14,11 @@ step first - the hardware build embeds the firmware image into the bitstream.
 
 ## SW Compilation
 
-Sources are in [`3.sw`](../3.sw) (`start.S`, `main.c`, `sections.lds`); this step
-only builds them. A Makefile is provided as `4.build/sw_build/Makefile`. Running
-`make` in that directory produces the following files in `4.build/sw_build`:
+Sources are in [`3.sw`](../3.sw) (`start.S`, `main.c`, `sections.lds`), one
+subdirectory per RC variant - [`RC-direct`](../3.sw/RC-direct) and
+[`RC-switched`](../3.sw/RC-switched). This step only builds them. A Makefile is
+provided as `4.build/sw_build/Makefile`. Running `make` in that directory
+produces the following files in `4.build/sw_build`:
 
   * `firmware.elf`  : The ELF file for the RISC-V hardware target
   * `firmware.bin`  : The raw binary image
@@ -28,6 +30,14 @@ file is one 32-bit little-endian word per line, 8 hex digits, no `0x` prefix.
 
 The toolchain is xPack GNU RISC-V Embedded GCC (`riscv-none-elf-` prefix), built
 for `rv32i` only - picorv32 here is configured without the M and C extensions.
+
+`make` builds the RC-direct firmware. For the switched topology:
+
+```
+make clean && make VARIANT=switched
+```
+
+Both variants write the same three output names, hence the `clean`.
 
 > **Run this step on Windows** (`cmd` or PowerShell). The RISC-V toolchain and
 > Python are Windows programs, whereas the openXC7 step below runs in WSL because
@@ -48,7 +58,8 @@ which are all located within `amd-rtl-with-Vivado-build`, e.g.
 [2.RC-direct.amd/xbuild.Vivado-v2024.2](../2.amd-rtl-with-Vivado-build/2.RC-direct.amd/xbuild.Vivado-v2024.2).
 
 The opensource RTL can also be built with Vivado, via the project-generation
-script [`RC-direct.opensource.tcl`](../2.rtl/2.RC-direct.opensource/RC-direct.opensource.tcl).
+scripts [`RC-direct.opensource.tcl`](../2.rtl/2.RC-direct.opensource/RC-direct.opensource.tcl)
+and [`RC-switched.opensource.tcl`](../2.rtl/3.Bonus--RC-switched.opensource/RC-switched.opensource.tcl).
 
 ### Opensource openXC7 flow
 
@@ -58,9 +69,14 @@ no proprietary tool anywhere in it:
 
 ```bash
 cd hw_build.openXC7
-make check-env        # verifies the tools, and warns on a wrong nextpnr version
-make                  # -> build_artifacts/top.bit
+make check-env         # verifies the tools, and warns on a wrong nextpnr version
+make                   # -> build_artifacts/top.bit
+make VARIANT=switched  # -> build_artifacts.switched/top.bit
 ```
+
+The two variants keep separate output directories, so they never overwrite each
+other. They do share `../sw_build/firmware.hex`, so build the matching firmware
+first.
 
 **Verified on hardware:** the resulting bitstream brings the PCIe link up at
 **Gen2** against a second Artix-7 board acting as endpoint - the same state the
