@@ -236,9 +236,11 @@ extern "C" void VUserMain1(int node)
     // Make sure the link is out of electrical idle
     vp1->write(LINK_STATE, 0);
     
-    // Configure for a pipe
-    pcie->configurePcie(CONFIG_DISABLE_SCRAMBLING);
+    // Configure for a PIPE link. The PIPE interface carries decoded 8-bit
+    // symbols with a separate K flag, so the model must not do the line coding
+    // itself.
     pcie->configurePcie(CONFIG_DISABLE_8B10B);
+    pcie->configurePcie(CONFIG_DISABLE_SCRAMBLING);
     
     //Marke DUT as node 2
     pcie->configurePcie(CONFIG_DISP_BCK_NODE_NUM, 2);
@@ -265,7 +267,12 @@ extern "C" void VUserMain1(int node)
     // Initialise the link for 1 lane
     InitLink(1, node);
 
-    // Initialise DLLP flow control
+    // Initialise DLLP flow control.
+    //
+    // This has to happen promptly. The link partner reaches L0 at the physical
+    // layer at about the same moment InitLink() returns here, and from then on
+    // its data link layer is waiting for the InitFC1/InitFC2 exchange. If flow
+    // control does not complete, the partner's LTSSM retrains the link.
     pcie->initFc();
 
     // Send out idels forever

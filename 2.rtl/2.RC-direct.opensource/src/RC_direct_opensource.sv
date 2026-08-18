@@ -76,6 +76,13 @@ module RC_direct_opensource
   logic                     s_axis_tx_tvalid;
   logic [3:0]               s_axis_tx_tuser;
 
+  // Per-packet transmit qualifiers of the hard macro, none of which this
+  // design uses:
+  //   [0] source discard   [1] streamed   [2] error forward   [3] ECRC generate
+  // Leaving them undriven is harmless in synthesis, where the net is tied off,
+  // but in simulation it is X and the macro discards every TLP handed to it.
+  assign s_axis_tx_tuser = 4'b0000;
+
   logic [C_DATA_WIDTH-1:0]  m_axis_rx_tdata;
   logic [KEEP_WIDTH-1:0]    m_axis_rx_tkeep;
   logic                     m_axis_rx_tlast;

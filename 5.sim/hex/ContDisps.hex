@@ -6,6 +6,11 @@
 //  |,-->  7 - 4:    DispRawSym         DispPL         DispDL          DispTL
 //  ||,->  3 - 0:    Unused             DispStop       DispFinish      DispAll
 //  ||| ,-> Time (clock cycles, decimal)
-//  ||| |                          
-    570 000000000000
+//  ||| |
+// 0x530: endpoint display on, TX shown, DL + TL layers only.
+//        The physical layer (bit 6) is deliberately OFF: it prints every TS1
+//        and every SKP ordered set, which is tens of thousands of lines per
+//        millisecond and dominates the run time. Set 0x570 to turn it back on
+//        when debugging link training.
+    530 000000000000
     002 009999999999

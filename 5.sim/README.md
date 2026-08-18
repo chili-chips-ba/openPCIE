@@ -3,6 +3,14 @@
 ## Table of Contents
 
 * [Introduction](#introduction)
+* [Test Bench Structure](#test-bench-structure)
+  * [The PIPE PHY model](#the-pipe-phy-model)
+  * [Endpoint feature limitations](#endpoint-feature-limitations)
+  * [Prerequisites on Windows](#prerequisites-on-windows)
+  * [What the simulation does](#what-the-simulation-does)
+  * [Building and running](#building-and-running)
+* [The three CPU options](#the-three-cpu-options)
+  * [What they cost](#what-they-cost)
 * [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
 * [_VProc_ Software](#vproc-software)
   * [Other Software Use Cases](#other-software-use-cases)
@@ -11,7 +19,7 @@
 * [Building and Running Code](#building-and-running-code)
   * [Configuring ISS timing model](#configuring-iss-timing-model)
   * [Running ISS code](#running-iss-code)
-* [PicoRV32 RTL-Only Simulation Makefile](#picorv32-rtl-only-simulation-makefile)
+* [PicoRV32 RTL-Only Simulation](#picorv32-rtl-only-simulation)
 * [Debugging Code](#debugging-code)
   * [Natively Compiled Code](#natively-compiled-code)
   * [ISS Software](#iss-software)
@@ -31,11 +39,356 @@ The diagram below is a block diagram of the top level test bench showing the mai
 <img width=1000 src="images/openpcierc_tb.png">
 </p>
 
-The DUT PCIe link is connected to the _pcievhost_, instantiated in a wrapper x1 PIPE link (`pcieVHostePipex1.v`) configured as an endpoint, and running some user code  to generate PCIe traffic as required, though it will automatically respond to transactions requiring a completion. The model is capable of displaying link traffic on both the up- and downstream links to the console, configurable via a `ContDisps.hex` file. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device&mdash;in this case PCIe. A program can then be run on the virtual processor to access the device's memory mapped registers etc. and update the TX link signals and read from the RX link signals.
+The DUT PCIe link is connected to the _pcievhost_, instantiated in a wrapper x1 PIPE link (`pcieVHostPipex1.v`) configured as an endpoint, and running some user code  to generate PCIe traffic as required, though it will automatically respond to transactions requiring a completion. The model is capable of displaying link traffic on both the up- and downstream links to the console, configurable via a `ContDisps.hex` file. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device&mdash;in this case PCIe. A program can then be run on the virtual processor to access the device's memory mapped registers etc. and update the TX link signals and read from the RX link signals.
 
-The user software to run on the virtual processor is proposed to be a means to configure the model, such as setting the config space registers settings, do required link initialisation, and do any further modelling of a specific Endpoint implementation. This is TBD.
+The user software to run on the virtual processor is the means to configure the model, such as setting the config space register settings, doing the required link initialisation, and any further modelling of a specific Endpoint implementation. That software is [`usercode/VUserMain1.cpp`](usercode/VUserMain1.cpp): it builds a Type 0 configuration space with PCIe, MSI and Power Management capabilities, and calls `initFc()` to bring up flow control. What it does not model is device behaviour behind the BARs - see [Endpoint feature limitations](#endpoint-feature-limitations).
+
+## Test Bench Structure
+
+The test bench drives the **real** Root Complex RTL. `tb.sv` instantiates
+`RC_direct_opensource` out of `2.rtl/2.RC-direct.opensource` -- the same top
+level that goes into the bitstream -- and the whole design comes along with it:
+
+```
+tb.sv
+ |
+ +- RC_direct_opensource                            2.rtl/.../src/
+      |
+      +- host_bridge                                real RTL
+      |    +- clk_synth       MMCM                  real RTL
+      |    +- txn_engine                            real RTL
+      |    |    `- silicon_core -> PCIE_2_1         Xilinx hard macro (secureip)
+      |    `- serdes_front    <-- REPLACED -->      5.sim/models/serdes_front.PIPE.sv
+      |                                                +- PIPE PHY model
+      |                                                `- pcieVHostPipex1 (endpoint,
+      |                                                   VProc node 1, VUserMain1.cpp)
+      `- riscv_pcie_soc                             real RTL
+           +- picorv32                              real RTL, runs firmware.hex
+           `- soc_csr -> csr                        PeakRDL-generated CSR
+```
+
+Exactly **one** RTL file is swapped for the simulation, and one file is copied in:
+
+| Item | Why |
+|---|---|
+| `serdes_front.sv` becomes `models/serdes_front.PIPE.sv` | the 7-series GTP transceiver turns PIPE symbols into a 5 GT/s serial stream; _pcievhost_ models the link at PIPE symbol level, so the transceiver has to come out |
+| `firmware.hex` copied into `5.sim/` | `riscv_pcie_soc.sv` reads it with `$readmemh` and a bare file name |
+
+Everything else -- the hard macro, the transaction layer, the CPU, the CSR and
+the firmware -- is what goes into the FPGA. The swap needs no `ifdef` in the
+design: the module name and port list match, so the simulation file list
+(`tb.prj`) simply picks the other file. It is the same mechanism the test bench
+already used for the CPU with `soc_cpu.VPROC.sv`.
+
+Two simulation-only parameters ARE selected with defines, both set only in
+`5.sim/Makefile` and never by either synthesis flow:
+
+| Define | Effect | Why |
+|---|---|---|
+| `SIM_FAST_TRAIN` | `PL_FAST_TRAIN = "TRUE"` on the hard macro (`silicon_core.sv`) | shortens the LTSSM training timers. This is a simulation feature of the macro -- with the real 12/24 ms timers link training is longer than any practical run |
+| `SIM_GEN1_ONLY` | `PCIE_GEN = 1` (`link_pkg.sv`) | the endpoint VIP advertises Gen1 and its LTSSM helper cannot follow a Gen1 to Gen2 retrain |
+| `SIM_PIPE_CODING` | line coding of the hard macro (`silicon_core.sv`) | matches how the endpoint VIP is configured over PIPE |
+
+### The PIPE PHY model
+
+`models/serdes_front.PIPE.sv` stands in for the transceiver and carries the link
+partner on its far side. It provides the three things the `PCIE_2_1` LTSSM needs
+from a PHY:
+
+* **PHYSTATUS pulses** on exit from PIPE reset, on every power-state change and
+  on every rate change
+* **Receiver detection** -- a PHYSTATUS pulse together with `RXSTATUS = 3'b011`
+  in response to `TXDETECTRX`, which is what lets the LTSSM leave Detect
+* **RXVALID / RXELECIDLE**, asserted from the first K character the partner
+  sends, standing in for a squelch detector
+
+It also generates the clocks. `TXOUTCLK` is a behavioural 100 MHz oscillator and
+everything downstream is the real `clk_synth` MMCM, so the design sees its normal
+clock topology: PCLK at 125 MHz (Gen1) or 250 MHz (Gen2), USERCLK1/2 at 62.5 MHz.
+**The 100 MHz matters**: `clk_synth` is parameterised with `CLKIN1_PERIOD = 10 ns`
+and `CLKFBOUT_MULT_F = 10`, so any other input frequency scales every clock in
+the design, and the PIPE then over- or under-samples the link partner. Feeding it
+125 MHz, for instance, makes PCLK 156.25 MHz and duplicates one symbol in five.
+
+Two trace facilities are built in, both behind defines:
+
+```
+make USRSIMOPTS="--define PIPE_OS_TRACE"    # ordered sets, both directions, with link/lane numbers
+make USRSIMOPTS="--define PIPE_RAW_DUMP"    # raw PIPE symbols
+```
+
+The LTSSM state is printed on every transition without any define, and `tb.sv`
+reports `phy_lnk_up`, `trn_lnk_up`, `user_lnk_up` and `user_reset` as they change.
+
+### Endpoint feature limitations
+
+_pcievhost_ was written as a root complex model, and its endpoint side is a
+parameter on top of that -- `EndPoint = 1`, set where the model is instantiated
+in `models/serdes_front.PIPE.sv`. It is enough to train a link and answer
+Configuration and Memory requests, which is exactly what testing a root complex
+needs, but it is not a device model. What it does and does not give you:
+
+**What it provides**
+
+* A configuration space, built by [`usercode/VUserMain1.cpp`](usercode/VUserMain1.cpp)
+  through `writeConfigSpace()` / `writeConfigSpaceMask()`: a Type 0 header
+  (vendor `0x14fc`, device `0x0002`), and PCIe, MSI and Power Management
+  capability structures. The mask calls are what make the read-only bits behave
+  as read-only.
+* Automatic completions for Configuration and Memory requests, with Memory
+  traffic landing in the
+  [sparse memory model](#the-mem_model-co-simulation-sparse-memory-model).
+* A full LTSSM, flow control initialisation and DLLP handling.
+
+**What it does not**
+
+* **No device behaviour behind the BARs.** A memory write is stored and a read
+  returns it; nothing interprets the data, so there is no DMA, no interrupt
+  generation and no application logic to test against.
+* **No error injection.** Malformed TLPs, completion timeouts, retries and CRS
+  storms have to be provoked by editing the model, not by configuration.
+* **One lane.** The wrapper used here is `pcieVHostPipex1`, x1 with a 16-bit
+  PIPE datapath. Wider links need a different wrapper.
+* **The endpoint LTSSM paths were the least exercised part of the model**, since
+  its usual job is to be the root complex. Three of them turned out to be wrong
+  when driven by real silicon rather than by another copy of the same VIP. The
+  fixes are in `models/pcievhost/ltssm/ltssm.c`, with the original kept beside
+  it as `ltssm.c.orig`.
+
+For a link partner with real device behaviour the alternative is an RTL
+endpoint, which the project points at in
+[`2.rtl/1.EP.opensource`](../2.rtl/1.EP.opensource). That costs the decoded
+protocol logging and the controllability this model gives, so the two are
+complementary rather than interchangeable.
+
+### Prerequisites on Windows
+
+Do this once, before anything below will work. The commands to actually build
+and run are further down, in [Building and running](#building-and-running).
+
+**1. Use the right shell.** The C/C++ side needs a MinGW toolchain and the HDL
+side needs Vivado's `xsim`. Both work, but **only from a properly launched MSYS2
+MinGW64 shell** -- `C:\msys64\mingw64.exe`, or `msys2_shell.cmd -mingw64`.
+
+> `cmd.exe` and PowerShell have no `make` and no `gcc`. Git Bash has neither
+> either. And Vivado's `xvlog`, `xelab` and `xsim` launchers go through
+> `/usr/bin/cmd`, which needs the environment that shell sets up -- started from
+> a foreign shell they fail **silently**, with a non-zero exit and no output at
+> all. If a build seems to do nothing, this is why.
+
+Paths in that shell are POSIX: `C:\Users\you\openPCIE` is `/c/Users/you/openPCIE`.
+
+**2. Add one MSYS2 package:**
+
+```bash
+pacman -S mingw-w64-x86_64-dlfcn        # VProc.h includes <dlfcn.h>
+```
+
+**3. Put the tools on PATH.** A stock MinGW64 shell has `gcc`, `make` and
+`python3`, but **not** Vivado, the RISC-V compiler or `peakrdl` -- those are
+installed outside MSYS2 and have to be added. Adjust the paths to your install:
+
+```bash
+export PATH=$PATH:/c/Xilinx/Vivado/2024.2/bin
+export PATH=$PATH:/c/rv/xpack-riscv-none-elf-gcc-15.2.0-1/bin
+export PATH=$PATH:/c/Users/you/AppData/Local/Programs/Python/Python312/Scripts
+```
+
+Append those three lines to `~/.bashrc` and they are set for every new shell.
+Check with:
+
+```bash
+command -v make gcc riscv-none-elf-gcc xvlog
+```
+
+All four must print a path. (`peakrdl` is only needed if you edit `csr.rdl` --
+see [4.build/README.md](../4.build/README.md#csr-hal-compilation).)
+
+The make file separately puts `TMP`, `TEMP` and `TMPDIR` back, because GNU make
+on MSYS2 hands its recipes a shell with all three unset and gcc then tries to
+write its temporaries into `C:\WINDOWS\`.
+
+### What the simulation does
+
+A full run takes the design from power-up to a verified memory transaction, with
+no hardware involved:
+
+```
+                   0  TB     run length 3000 us
+              353000  LTSSM  0xxx -> 0x00 DETECT_QUIET
+             1000000  TB     PERST# released
+             3113000  LTSSM  0x00 -> 0x02 POLLING_ACTIVE
+             3353000  LTSSM  0x02 -> 0x04 POLLING_CONFIGURATION
+             4585000  LTSSM  0x04 -> 0x05 CONFIG_LINKWIDTH_START
+            70217000  LTSSM  0x05 -> 0x26      <- link number assigned
+            71161000  LTSSM  0x2a -> 0x2b      <- lane number assigned
+            72065000  LTSSM  0x2c -> 0x11      <- Configuration complete
+            73609001  TB     phy_lnk_up   = 1  <- physical layer up
+            73689000  TB     user_reset   = 0
+            74033000  LTSSM  0x15 -> 0x16 L0  (linkup)
+            74825001  TB     trn_lnk_up   = 1  <- data link layer up, flow control done
+            74841000  TB     ===> PCIe LINK UP -- SOC released from reset
+           302441000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+
+ openpcie2-rc co-simulation summary
+  PCIe link up ............ YES
+  LTSSM final state ....... 0x16
+  cfg_status .............. 0x0000
+  TLPs sent by firmware ... 9
+  Payload written to EP ... 0x00000006  (Memory Write TLP)
+  Payload read back ....... 0x00000006  (match)
+  FIRMWARE RESULT ......... PASS (0x0000face)
+```
+
+The last three lines are the actual result. `0x0000FACE` is only the verdict the
+firmware reports; the two above it are the dword that really crossed the link --
+written to the endpoint at `0x8000_0000` by a Memory Write TLP, then fetched
+back by a Memory Read and its completion.
+
+In between, the real firmware enumerates the endpoint model exactly as it does
+on the board. The endpoint's own decode of the traffic:
+
+```
+RC -> EP   TL Config read type 0   RID=10ee TAG=00 Bus=01 Dev=00 Func=0 Reg=00
+EP -> RC   TL Completion with data Successful  TAG=00 Byte Count=004
+RC -> EP   TL Config write type 0  TAG=01 Reg=04        BAR0 sizing
+RC -> EP   TL Config write type 0  TAG=02 Reg=05        BAR1 sizing
+RC -> EP   TL Config write type 0  TAG=03 Reg=04        BAR0 assign
+RC -> EP   TL Config write type 0  TAG=04 Reg=05        BAR1 assign
+RC -> EP   TL Config write type 0  TAG=05 Reg=01        Command: mem space + bus master
+RC -> EP   TL Mem write req  Addr=80000000 (32) TAG=06
+RC -> EP   TL Mem read  req  Addr=80000000 (32) TAG=07 Len=001
+EP -> RC   TL Completion with data Successful  TAG=07
+```
+
+and the CSR side of the same sequence, as the firmware sees it:
+
+```
+CSR RD [0x20] = 0000001e     status.phy -- Tx FSM idle, 30 buffers free
+CSR WR [0x00] = 04000001     tx.header0 -- CfgRd0, length 1
+CSR WR [0x04] = 10ee000f     tx.header1 -- requester 0x10EE, tag 0, BE 0xF
+CSR WR [0x08] = 01000000     tx.header2 -- bus 1, device 0, function 0, register 0
+CSR WR [0x0c] = 00000000     tx.data    -- the write strobe starts the transfer
+CSR RD [0x18] = ...          rx.header_info -- polled until the completion lands
+...
+CSR WR [0x0c] = 0000face     the pass marker
+```
+
+### Building and running
+
+On Windows, work through [Prerequisites](#prerequisites-on-windows) first -- the
+right shell and the `PATH` settings. Everything below assumes an MSYS2 MinGW64
+shell with the tools on `PATH`; from `cmd.exe` the first line fails with
+`'make' is not recognized`.
+
+```
+cd 4.build/sw_build && make SIM=1   # firmware with the short start-up delay
+cd ../../5.sim
+make                                # VProc.so + xvlog + xelab
+make run                            # -> the summary above
+make gui                            # same, with waveforms
+```
+
+`SIM=1` matters: `main()` opens with `wait_cycles(100000)`, which waits for the
+link to train. On hardware that costs nothing; in simulation, compiled without
+optimisation, it is about 80 ms of simulated time before the firmware does
+anything at all. `SIM=1` shortens it to 200 iterations and the whole run fits in
+3 ms. Without it the simulation still works, it just needs `make run RUN_US=100000`
+and a great deal of patience.
+
+Useful switches:
+
+```
+make run RUN_US=10000                        # longer run; read at time 0 from run_us.cfg
+make USRSIMOPTS="--define CPU_TRACE"         # CPU bus activity and every CSR access
+make USRSIMOPTS="--define PIPE_OS_TRACE"     # ordered sets both ways, with link/lane numbers
+make USRSIMOPTS="--define PIPE_RAW_DUMP"     # raw PIPE symbols
+```
+
+The LTSSM state, the link status bits and the firmware's result marker are
+always printed, with no define needed.
+
+
+## The three CPU options
+
+The SOC's CPU socket takes three different occupants, selected with `CPU=` on
+the make command line. The DUT is otherwise identical in all three -- the same
+CSR, the same PCIe stack, the same top level -- so the same test is being run
+each time, only the thing issuing the bus accesses changes.
+
+| `CPU=` | What sits on VProc node 0 | Executes |
+|---|---|---|
+| `rtl` (default) | nothing -- the real `picorv32` core | `firmware.hex`, the same image that goes into the bitstream |
+| `vproc` | VProc | [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp), compiled for the host |
+| `iss` | VProc + the [rv32](models/rv32) instruction set simulator | `firmware.elf`, interpreted -- real RISC-V instructions, no RTL core |
+
+```sh
+cd ../4.build/sw_build && make SIM=1   # firmware.hex AND firmware.elf
+cd ../../5.sim
+make run                  # CPU=rtl, the default
+make run CPU=vproc
+make run CPU=iss
+```
+
+The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/2.RC-direct.opensource/src/riscv_pcie_soc.sv)
+behind `` `ifdef SOC_CPU_VPROC ``, which the makefile passes to `xvlog` for the
+two VProc builds. The replacement module is
+[`models/soc_cpu.VPROC.picorv32.sv`](models/soc_cpu.VPROC.picorv32.sv): VProc
+dressed up as a picorv32, driving the core's *native* memory interface.
+
+> Note the difference from the inherited `models/soc_cpu.VPROC.sv`, which is
+> kept for reference. That one speaks the `soc_if` bus interface of the sibling
+> Chili.CHIPS SOC infrastructure. This design has no `soc_if` -- it instantiates
+> picorv32 directly -- so it needed its own wrapper.
+
+The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL
+generates from the same [`csr.rdl`](../4.build/csr_build/csr.rdl) that produces
+the register RTL and the firmware's `csr.h`. Hardware, firmware and the
+co-simulation CPU model therefore cannot drift apart. The ISS is configured in
+[`vusermain.cfg`](vusermain.cfg), where `-x`/`-X` place the CSR window on the
+simulated bus and leave code and data in the ISS's own memory, and `-V PICORV32`
+selects the matching instruction timing model.
+
+### What they cost
+
+Measured on a Ryzen 7 5800H (8 cores / 16 threads) **on mains power**, Vivado
+xsim 2024.2, all three producing the identical result -- link up, LTSSM `0x16`,
+9 TLPs, `PASS (0x0000face)`:
+
+| | `CPU=rtl` | `CPU=vproc` | `CPU=iss` |
+|---|---|---|---|
+| Build from clean | 51 s | 49 s | 55 s |
+| Result appears at | 302.4 µs | 99.0 µs | 311.7 µs |
+| Run to that result | 28 s | **13 s** | 28 s |
+| Run a fixed 400 µs | 33 s | 33 s | 33 s |
+
+Each figure is the median of three clean repetitions; the spread is under 2 s.
+Mains power is not a footnote: on battery, with the CPU clocked down from
+3.2 GHz to 1.9 GHz, the same 400 µs run takes 83 s instead of 33 s. Measure with
+the charger in, or the numbers are meaningless.
+
+Two things fall out of that last row. The wall-clock cost of a given amount of
+*simulated* time is the same whichever CPU is used, because the CPU is not what
+the simulator spends its time on -- the `PCIE_2_1` hard macro model and the PCIe
+stack around it are. Swapping the core out buys nothing by itself.
+
+What `CPU=vproc` does buy is *less simulated time to cover*: 99 µs instead of
+302 µs, because the native program does not pay the firmware's start-up delay
+and polls the CSR without burning instructions between reads. That is where its
+2x comes from, and it is why it is the one to reach for when iterating on the
+PCIe logic rather than on the firmware.
+
+`CPU=iss` lands within 3% of the RTL core's timing (311.7 µs against 302.4 µs),
+which is the `-V PICORV32` timing model doing its job. It is the useful middle
+ground: the real firmware binary, real RISC-V instructions, and a debuggable
+native process -- `-g` in `vusermain.cfg` opens a gdb port -- without the RTL
+core in the way.
 
 ## Auto-selection of soc_cpu Component
+
+> Historical note. This describes the arrangement in the sibling _openpcie2-rc_
+> project, where the CPU was selected by filtering a file list. Here the choice
+> is the `CPU=` switch above, and the file list is [`tb.prj`](tb.prj).
 
 The _openpcie2-rc_ top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the `soc_cpu`, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a verification model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the the HDL files for _VProc_ and _mem_model_ are in `5.sim/models/cosim`. These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
 
@@ -139,7 +492,9 @@ Compiling co-designed application code, either compiled for the native host mach
 
 #### Natively Compiled Application
 
-As well as the native test code case seen in the previous section, the _openpcie2-rc_ application can be compiled natively for the host machine, including the hardware access layer (HAL), generated from SystemRDL. The HAL software output from this is processed to generate a version that makes accesses to the _VProc_ and PCIe memory model APIs in place of accesses with pointers to and from memory (see the [Co-simulation HAL](#co-simulation-hal) section below). The rest of the application software has these details hidden away in the HAL and sees the same API as presented by the auto-generated code. In both cases transactions happen on the <tt>soc_if bus</tt> port of the <tt>soc_cpu</tt> component. The <tt>main</tt> entry point is also swapped for <tt>VUserMain0</tt>.
+As well as the native test code case seen in the previous section, the _openpcie2-rc_ application can be compiled natively for the host machine, including the hardware access layer (HAL), generated from SystemRDL. The HAL software output from this is processed to generate a version that makes accesses to the _VProc_ and PCIe memory model APIs in place of accesses with pointers to and from memory (see the [Co-simulation HAL](#co-simulation-hal) section below). The rest of the application software has these details hidden away in the HAL and sees the same API as presented by the auto-generated code. The <tt>main</tt> entry point is also swapped for <tt>VUserMain0</tt>.
+
+This is exactly the `CPU=vproc` build. In _openPCIE_ the transactions leave the CPU model on picorv32's native memory interface rather than on an <tt>soc_if</tt> port, since that is what this SOC instantiates -- see [The three CPU options](#the-three-cpu-options). The generated co-simulation HAL is `csr_cosim.h`, and [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp) is the application on top of it.
 
 #### RISC-V Compiled Application
 
@@ -204,7 +559,9 @@ This reflects the available models as detailed in the _Configuring ISS timing mo
 
 ## Building and Running Code
 
-A <tt>Makefile</tt> file is provided in the <tt>5.sim/</tt> directory to compile the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and to build and run the test bench HDL. The make file will compile all the user code or, where an ISS build is selected (see make file variables below) the provided `soc_cpu` user code that's the _rv32_ ISS integration software. By default, the make file will compile the <tt>VUserMain0.cpp</tt> user code for `soc_cpu` and `VUserMainPcie.cpp` for _pcieVHost__ located in <tt>5.sim/usercode</tt>, but the directory and list of files to compile can be specified on the command line (see below). The `VUserMainPcie.cpp` file contains the `VUserMain<n>` entry point for the instantiated _pcieVHost_ module (node 1). To alter which files to compile, the make file `USER_C` variable can be updated to list a set of C++ files for the `soc_cpu`. Similarly, the `PCIE_C` variable can be updated with a list of files for the PCie component. The location of the source files is in the variable `USRCODEDIR`, which may also be altered. Any modifications can be done to the make file itself, or on the command line. E.g., to add additional files to the `soc_cpu` build:
+A <tt>Makefile</tt> file is provided in the <tt>5.sim/</tt> directory to compile the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and to build and run the test bench HDL. The make file will compile all the user code or, where an ISS build is selected (see make file variables below) the provided `soc_cpu` user code that's the _rv32_ ISS integration software.
+
+In _openPCIE_ the node-1 (_pcieVHost_) entry point is <tt>VUserMain1.cpp</tt> in <tt>5.sim/usercode</tt>, named in the `PCIE_C` variable, and it is always compiled. What gets compiled for node 0 depends on the `CPU` variable: nothing for `CPU=rtl`, <tt>usercode/VUserMain0.cpp</tt> for `CPU=vproc`, and the ISS integration code in <tt>models/rv32/usercode</tt> for `CPU=iss`. To alter which files to compile, the make file `USER_C` variable can be updated to list a set of C++ files for the `soc_cpu`. Similarly, the `PCIE_C` variable can be updated with a list of files for the PCie component. The location of the source files is in the variable `USRCODEDIR`, which may also be altered. Any modifications can be done to the make file itself, or on the command line. E.g., to add additional files to the `soc_cpu` build:
 
 ```
 make USER_C="VUserMain0.cpp MyTest1Class.cpp"
@@ -212,7 +569,7 @@ make USER_C="VUserMain0.cpp MyTest1Class.cpp"
 
 If many variants of software build are required then either scripts can be constructed with the various command line variable modification calls to `make` or other make files which set these variables and call the common make file. This is useful in managing source code for multiple tests located in different directories, compiling for ISS (perhaps also calling the RISC-V application build), or for compiling application code natively which will have a different set of source files.
 
-The user software is compiled into a local static library, <tt>libuser.a</tt> which is linked to the simulation code within Verilator along with the precompiled <tt>libcosimlnx.a</tt> (or <tt>libcosimwin.a</tt> for MSYS2/mingw64 on Windows) located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc*. The headers for the *VProc* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openpcie2-rc_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
+The user software is compiled into a local static library, <tt>libuser.a</tt>, which is linked into the <tt>VProc.so</tt> shared object that the simulator loads (<tt>xelab -sv_lib</tt>), along with the precompiled <tt>libcosimlnx.a</tt> (or <tt>libcosimwin.a</tt> for MSYS2/mingw64 on Windows) located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc*. The headers for the *VProc* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openpcie2-rc_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
 
 The <tt>Makefile</tt> make file has a target <tt>help</tt>, which produces the following output:
 
@@ -224,26 +581,36 @@ make rungui/gui    Build and run GUI simulation
 make clean         clean previous build artefacts
 
 Command line configurable variables:
-  USER_C:       list of user source code files (default VUserMain0.cpp)
-  PCIE_C:       list of user source code files (default VUserMainPcie.cpp)
+  USER_C:       list of user source code files for soc_cpu (default VUserMain0.cpp)
+  PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp)
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
   SOCCPUMATCH:  string to match for soc_cpu filtering in h/w file list (default ip.cpu)
   USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
   BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
+  CPU:          CPU model on VProc node 0 (default rtl)
+                  rtl    the real picorv32, executing firmware.hex
+                  vproc  native C++ in usercode/VUserMain0.cpp
+                  iss    the rv32 ISS, executing firmware.elf
+  RUN_US:       simulated run length in microseconds (default 2000)
 ```
 
 By default, without a named target, the simulation executable will be built but not run. With a <tt>run</tt> target, the simulation executable is built and then executed in batch mode. To fire up waveforms after the run, a target of <tt>rungui</tt> or <tt>gui</tt> can be used. A target of <tt>clean</tt> removes all intermediate files of previous compilations.
 
-The make file has a set of variables (with default settings) that can be overridden on running <tt>make</tt>. E.g. <tt>make VAR=NewVal</tt>. The help output shows these variables with brief decriptions. Entries with multiple values should be enclosed in double quotes. By default native test code is built, but if <tt>BUILD</tt> is set to <tt>ISS</tt>, then the _rv32_ ISS and _VProc_ program is compiled and, in this case, the <tt>USER_C</tt> and <tt>USRCODEDIR</tt> are ignored as the make file compiles the supplied source code for the ISS.
+The make file has a set of variables (with default settings) that can be overridden on running <tt>make</tt>. E.g. <tt>make VAR=NewVal</tt>. The help output shows these variables with brief decriptions. Entries with multiple values should be enclosed in double quotes.
+
+The variable to reach for is <tt>CPU</tt>, which picks what occupies node 0 and sets everything else to match -- <tt>CPU=iss</tt> is what selects the ISS build, overriding <tt>USER_C</tt> and <tt>USRCODEDIR</tt> with the supplied ISS integration source. (The underlying <tt>BUILD=ISS</tt> switch is still there and still works, but it only changes the C side; without <tt>CPU=iss</tt> the HDL is still built with the RTL core, and the ISS would have no processor socket to occupy.)
 
 The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. The _openpcie2-rc_ <tt>top.filelist</tt> filename can be overridden to allow multiple configurations to be selected from, if required. The processing of this file to remove the listed <tt>soc_cpu</tt> HDL files is selected on a pattern (<tt>ip.cpu</tt>) but this can be changed using <tt>SOCCPUMATCH</tt>. If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
 
 ```
-make run                                                   # Build and run default VUserMain0.cpp code in usercode/
-make                                                       # Build but don't run default code
-make USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 run  # Build and run test1.cpp and subfuncs.cpp in test1/
-make BUILD=ISS gui                                         # Build and run ISS simulation and show waves
+make run                                                   # Build and run with the RTL picorv32 (the default)
+make                                                       # Build but don't run
+make run CPU=vproc                                         # Native C++ CPU model, usercode/VUserMain0.cpp
+make run CPU=iss                                           # rv32 ISS on the real firmware.elf
+make CPU=iss gui                                           # Build and run ISS simulation and show waves
+make run RUN_US=3000                                       # Longer simulated run
+make USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 CPU=vproc run
 make clean                                                 # Clean all intermediate files
 ```
 
@@ -263,7 +630,7 @@ As detailed in the _RISC-V Compiled Application_ section above, the ISS can be c
 
 ### Running ISS code
 
-When the test bench is built for the rv32 ISS, the actual 'user' application code is run on the RISC-V ISS model itself, and is compiled using the normal RISC-V GNU toochain to produce a binary file that the ISS can load and run. As described above, the code that is run is selected with the <tt>vusermain.cfg</tt> file and the <tt>-t</tt> option. The various flags configure the ISS and determines when the ISS is halted (if at all). An example assembly file is provided in <tt>3.sw/models/rv32/riscvtest/main.s</tt> (as well as a recompiled <tt>main.bin</tt>). This assembly code reproduces the functionality of the example <tt>VuserMain0.cpp</tt> program discussed previously, writing to memory, reading back and comparing for a mismatch. The example assembly code is compiled with:
+When the test bench is built for the rv32 ISS, the actual 'user' application code is run on the RISC-V ISS model itself, and is compiled using the normal RISC-V GNU toochain to produce a binary file that the ISS can load and run. As described above, the code that is run is selected with the <tt>vusermain.cfg</tt> file and the <tt>-t</tt> option. The various flags configure the ISS and determines when the ISS is halted (if at all). An example assembly file is provided in <tt>5.sim/models/rv32/riscvtest/main.s</tt> (as well as a recompiled <tt>main.bin</tt>). This assembly code reproduces the functionality of the example <tt>VUserMain0.cpp</tt> program discussed previously, writing to memory, reading back and comparing for a mismatch. The example assembly code is compiled with:
 
 ```
 $riscv64-unknown-elf-as.exe -fpic -march=rv32imafdc -aghlms=main.list -o main.o main.s
@@ -277,7 +644,7 @@ vusermain0 -x 0x10000000 -X 0x20000000 -rEHRca -t ./models/rv32/riscvtest/main.b
 This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed):
 
 ```
-$make BUILD=ISS run
+$make CPU=iss run
 
    .
    .
@@ -353,25 +720,40 @@ INFO: [Common 17-206] Exiting xsim at Tue Aug 19 16:03:05 2025...
 
 Note that the disassembled output is a mixture of 32-bit and compressed 16-bit instructions, with the compressed instruction hexadecimal values shown followed by a <tt>'</tt> character and the instruction heximadecimal value in the lower 16-bits. Unlike for the native compiled code use cases, unless the HDL has changed, the test bench does not need to be re-built when the RISC-V source code is changed or a different binary is to be run, just the RISC-V code is re-compiled or the <tt>vusermain.cfg</tt> updated to point to a different binary file.
 
-### PicoRV32 RTL-Only Simulation Makefile
+#### The openPCIE configuration
 
-A standalone Makefile (located in `5.sim/`) for cycle-accurate simulation using the real picoRV32 RTL core.
-It:
+The walk-through above is Simon's stand-alone assembler example, and its
+<tt>vusermain.cfg</tt> line is kept commented out in the file for checking the
+ISS on its own. What [`vusermain.cfg`](vusermain.cfg) actually selects is the
+real firmware:
 
-- Drives the PCie BFM (node 1) via `usercode/VUserMainPci.cpp`, using VProc’s DPI-C engine for the PCIe VIP.
-- Generates C++ sources with:
-  - `--cc -sv --timing --trace-fst --trace-structs`
-  - `+define+SIM_ONLY` and `+define+VPROC_SV`
-  - File lists `top.filelist` & `simple_tb.filelist` to pull in picoRV32 RTL.
-- Compiles into `output/` and links against:
-  - `libcosimlnx.a` (co-simulation)
-  - `libcpcie_lnx64.a` (PCIe VIP)
-  - DPI headers in `models/cosim/include` and `models/pcievhost/include`.
-- Provides standard targets:
-  - `compile` → generate & build
-  - `sim`     → run `./output/Vtb` (logs to `sim.log`)
-  - `wave`    → open `wave.fst` in GTKWave
-  - `clean`   → remove `output/`, `tb.xml`, `tb.stems`
+```
+vusermain0 -V PICORV32 -H -x 0x30000000 -X 0x3FFFFFFF -t ../4.build/sw_build/firmware.elf
+```
+
+`-x`/`-X` put **only** the CSR window on the simulated bus. Code and data at
+`0x0000_0000` are served from the ISS's own memory, which is why instruction
+fetch costs no simulation time at all. `-V PICORV32` makes the ISS reckon cycles
+the way the real core does -- and it works: the result lands at 311.7 µs against
+the RTL core's 302.4 µs, within 3%. Build the ELF first, with the short
+co-simulation start-up delay:
+
+```sh
+cd ../4.build/sw_build && make SIM=1
+```
+
+### PicoRV32 RTL-Only Simulation
+
+This is now simply the default build -- `make run`, with no variables set --
+and it uses the same `xsim` flow as everything else, driving the PCIe BFM on
+node 1 from [`usercode/VUserMain1.cpp`](usercode/VUserMain1.cpp). See
+[The three CPU options](#the-three-cpu-options).
+
+> Historical note. There was once a separate Verilator-based makefile here for
+> this case, producing `output/Vtb` and an FST trace for GTKWave. It is gone:
+> the DUT instantiates `PCIE_2_1`, a Xilinx `secureip` model that only the
+> Vivado simulator can elaborate, so the RTL core case had to move to `xsim`
+> along with the rest.
 
 ## Debugging Code
 
@@ -431,11 +813,34 @@ More details on the PCIe driver and _pcieVHost_ can be found in the [README.md](
 
 ### Using the HAL
 
-The HAL provides a hierarchical access to the registers via a set of pointer dereferencing and a final access method (for reads and writes of registers and their bit fields) that reflects the hierarchy of the RDL specification. The following shows some example accesses, based on the `4.build/csr_build/csr.rdl`:
+The HAL provides a hierarchical access to the registers via a set of pointer dereferencing and a final access method (for reads and writes of registers and their bit fields) that reflects the hierarchy of the RDL specification. The following are real accesses out of [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp), the `CPU=vproc` application, based on `4.build/csr_build/csr.rdl`:
 
+```c++
+#include "csr_cosim.h"
+
+// The root object, at the CSR base address in the SOC memory map
+csr_vp_t* csr = new csr_vp_t((uint32_t*)0x30000000);
+
+// Whole-register write. Writing tx.data is what launches the TLP,
+// because the field is marked swmod in the RDL.
+csr->tx->header0->full(h0);
+csr->tx->header1->full(h1);
+csr->tx->header2->full(h2);
+csr->tx->data->full(data);
+
+// Whole-register read, then fields picked out with the generated
+// masks and positions from csr.h -- one bus access, not two
+uint32_t phy = csr->status->phy->full();
+uint32_t state = (phy & CSR__STATUS__PHY__TX_STATE_bm)  >> CSR__STATUS__PHY__TX_STATE_bp;
+uint32_t avail = (phy & CSR__STATUS__PHY__TX_BUF_AV_bm) >> CSR__STATUS__PHY__TX_BUF_AV_bp;
+
+// Single-field read -- one bus access, field extracted for you
+uint32_t status = csr->rx->status->cpl_status();
 ```
-TBD
-```
+
+Each access becomes a real transaction on the CPU bus in the simulation, so the
+waveform and the `CPU_TRACE` output show them exactly as they show the RTL
+core's accesses.
 The above code will compile either natively for *VProc* or for the RISC-V hardware, with the appropriate header, as decribed above. Write accesses use a method with the final register bit field name with an appropriate argument (this is either a `uint64_t` or `uint32_t` as appropriate to the register's definition). A read access is done in the same manner but without an argument and returns a value (either a `uint64_t` or `uint32_t` as appropriate).
 
 A convention has been used where to access a whole register the 'bit field' access method is named `full`, with bit field accesses using their declared names, as normal. Some assumptions have been made with the script as it stands based on the current `csr.rdl` (but new features can be added). The main one currently is that arrays can't be multi-dimensional (hierarchy can be used to achieve the same thing) and an error is thrown if detected.
@@ -456,7 +861,7 @@ void PCIEMAIN (void)
 }
 ```
 
-The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `pcie_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to the equivalent of 80MHz that the test bench uses for the `soc_cpu`. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
+The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `pcie_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to 16000, i.e. the 62.5MHz `user_clk` that the PCIe hard macro hands to `riscv_pcie_soc` on an x1 Gen2 link with a 64-bit datapath. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
 
 ## References:
 - [VProc](https://github.com/wyvernSemi/vproc)

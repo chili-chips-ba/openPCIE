@@ -8,6 +8,7 @@ It is an extra / bonus deliverable, above and beyond our original plans.
 - [x] ✔️ PCIe IP core replaced with opensource RTL
 - [x] ✔️ Builds with a **fully opensource toolchain**
 - [x] ✔️ Enumerates an ASM1184e switch and the endpoints behind it
+- [x] ✔️ SOC uses PeakRDL for CSR generation, from the same `csr.rdl` as RC-direct
 
 The objectives of this dev track were to:
  - first design an opensource _RC-switched_ core, based on the already tested
@@ -154,6 +155,7 @@ skips the empty ones, so a partially populated backplane is fine. It reports
 src/
   RC_switched_opensource.sv  top level: refclk buffer, PCIe bridge, SOC, LEDs
   riscv_pcie_soc.sv          picorv32 SOC + the Type 0/Type 1 routing above
+  soc_csr.sv                 wrapper for the PeakRDL-generated CSR block
   picorv32.v                 the RISC-V core itself
   pcie/                      the opensource PCIe stack (identical to RC-direct)
 xdc/
@@ -164,6 +166,34 @@ RC-switched.opensource.tcl   regenerates the Vivado project from scratch
 For a file-by-file walk through the PCIe stack itself, see the
 [RC-direct README](../2.RC-direct.opensource/README.md), which applies here
 unchanged.
+
+### The CSR
+
+The register window the firmware drives (`0x3000_0000` in the SOC address map)
+is **generated**, not hand-written. The source of truth is a SystemRDL file,
+[`4.build/csr_build/csr.rdl`](../../4.build/csr_build/csr.rdl), out of which
+`peakrdl` produces the register block RTL (`csr_pkg.sv`, `csr.sv`) and the
+software headers (`csr.h`, `csr_hw.h`, `csr_cosim.h`) in
+`4.build/csr_build/generated-files/`. `src/soc_csr.sv` is the only hand-written
+piece: it bridges the picorv32 native memory interface to the "passthrough" CPU
+interface of the generated block.
+
+Regenerate after every edit of `csr.rdl`:
+
+```bash
+cd ../../4.build && make -f MakefileCSR
+```
+
+The original hand-written register block is still in `riscv_pcie_soc.sv`, behind
+`` `ifdef SOC_CSR_LEGACY ``. Which one gets built is set once, in
+[`4.build/config.mk`](../../4.build/config.mk), and read by every build step, so
+hardware and software are never built different ways. Override it for a single
+run with `make CSR=legacy` (openXC7 or firmware) or `set ::use_legacy_csr 1`
+before sourcing the tcl (Vivado).
+
+The two are functionally identical, down to the byte offsets. Nothing about the
+CSR differs between this variant and RC-direct - the same `csr.rdl` feeds both.
+Details: [`4.build/README.md`](../../4.build/README.md#csr-hal-compilation).
 
 ---
 

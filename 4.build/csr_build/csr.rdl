@@ -1,0 +1,267 @@
+// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
+//==========================================================================
+// openPCIE * NLnet-sponsored open-source implementation
+//--------------------------------------------------------------------------
+//                   Copyright (C) 2026 Chili.CHIPS*ba
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in the
+// documentation and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived
+// from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//              https://opensource.org/license/bsd-3-clause
+//--------------------------------------------------------------------------
+// Description:
+//   This file defines the Control and Status Registers (CSR) of the
+//   openPCIE Root Complex SOC -- the TLP transmit/receive window that the
+//   picorv32 firmware uses in place of the AMD-proprietary hardware FSM.
+//
+//   The byte offsets below are IDENTICAL to those of the hand-written
+//   register block in riscv_pcie_soc.sv, so both implementations present
+//   exactly the same map to the software:
+//
+//     0x3000_0000  tx.header0      TLP header DW0            (W)
+//     0x3000_0004  tx.header1      TLP header DW1            (W)
+//     0x3000_0008  tx.header2      TLP header DW2            (W)
+//     0x3000_000C  tx.data         TLP payload DW + SEND     (W, triggers)
+//     0x3000_0010  rx.status       Completion status         (R)
+//     0x3000_0014  rx.data         Completion payload DW     (R)
+//     0x3000_0018  rx.header_info  Completion header DW2     (R)
+//     0x3000_001C  status.err      cfg_status + fatal error  (R)
+//     0x3000_0020  status.phy      Tx FSM state + buffers    (R)
+//==========================================================================
+
+addrmap csr {
+   name = "csr";
+   desc = "openPCIE Root Complex CSR";
+
+   littleendian;
+   default accesswidth = 32;
+   default regwidth = 32;
+   default alignment = 4;
+   addressing = compact;
+
+   //-----------------------------------------------------------------------
+   // Tx -- the TLP the CPU hands over to the PCIe link
+   //-----------------------------------------------------------------------
+   regfile tx {
+      name = "csr.tx";
+      desc = "TLP Transmit CSR (CPU --> PCIe link)";
+
+      reg {
+         name = "csr.tx.header0";
+         desc = "TLP Header DW0 -- Fmt/Type, TC, attributes and Length";
+
+         field {
+            name = "csr.tx.header0.hdr[31:0]";
+            desc = "1st header DWORD of the outgoing TLP";
+            sw = rw;
+            hw = r;
+         } hdr[32] = 0;
+      } header0;
+
+      reg {
+         name = "csr.tx.header1";
+         desc = "TLP Header DW1 -- Requester ID, Tag and byte enables";
+
+         field {
+            name = "csr.tx.header1.hdr[31:0]";
+            desc = "2nd header DWORD of the outgoing TLP";
+            sw = rw;
+            hw = r;
+         } hdr[32] = 0;
+      } header1;
+
+      reg {
+         name = "csr.tx.header2";
+         desc = "TLP Header DW2 -- address, or Bus/Device/Function and register";
+
+         field {
+            name = "csr.tx.header2.hdr[31:0]";
+            desc = "3rd header DWORD of the outgoing TLP";
+            sw = rw;
+            hw = r;
+         } hdr[32] = 0;
+      } header2;
+
+      reg {
+         name = "csr.tx.data";
+         desc = "TLP Payload DWORD -- writing this register STARTS the transfer";
+
+         field {
+            name = "csr.tx.data.payload[31:0]";
+            desc = "Payload DWORD of the outgoing TLP. A software write to this
+                    register is what launches the Tx FSM, so it must be written
+                    LAST, after the three header registers. The write strobe is
+                    exported to logic as the 'swmod' output of this field.";
+            sw = rw;
+            hw = r;
+            swmod = true;
+         } payload[32] = 0;
+      } data;
+   } tx @ 0x00;
+
+   //-----------------------------------------------------------------------
+   // Rx -- the Completion TLP coming back from the link
+   //-----------------------------------------------------------------------
+   regfile rx {
+      name = "csr.rx";
+      desc = "TLP Receive CSR (PCIe link --> CPU)";
+
+      reg {
+         name = "csr.rx.status";
+         desc = "Completion Status Register";
+
+         field {
+            name = "csr.rx.status.cpl_status[2:0]";
+            desc = "Completion Status of the last received Completion TLP:
+                    0 = SC (Successful Completion), 1 = UR (Unsupported
+                    Request), 2 = CRS (Configuration Retry Status),
+                    4 = CA (Completer Abort)";
+            sw = r;
+            hw = w;
+            we;
+         } cpl_status[2:0] = 0;
+      } status;
+
+      reg {
+         name = "csr.rx.data";
+         desc = "Completion Payload Register";
+
+         field {
+            name = "csr.rx.data.payload[31:0]";
+            desc = "Payload DWORD of the last received Completion TLP";
+            sw = r;
+            hw = w;
+            we;
+         } payload[32] = 0;
+      } data;
+
+      reg {
+         name = "csr.rx.header_info";
+         desc = "Completion Header Register -- 3rd DWORD of the Completion TLP";
+
+         field {
+            name = "csr.rx.header_info.requester_id[15:0]";
+            desc = "Requester ID the Completion is addressed to. Software
+                    compares it against its own ID to filter foreign traffic.";
+            sw = r;
+            hw = w;
+            we;
+         } requester_id[31:16] = 0;
+
+         field {
+            name = "csr.rx.header_info.tag[7:0]";
+            desc = "Tag of the request this Completion belongs to";
+            sw = r;
+            hw = w;
+            we;
+         } tag[15:8] = 0;
+
+         field {
+            name = "csr.rx.header_info.lower_addr[6:0]";
+            desc = "Lower Address field of the Completion header";
+            sw = r;
+            hw = w;
+            we;
+         } lower_addr[6:0] = 0;
+      } header_info;
+   } rx @ 0x10;
+
+   //-----------------------------------------------------------------------
+   // Status -- what the PCIe hard macro and the Tx FSM report
+   //-----------------------------------------------------------------------
+   regfile status {
+      name = "csr.status";
+      desc = "PCIe Link Status CSR";
+
+      reg {
+         name = "csr.status.err";
+         desc = "PCIe Error Status Register";
+
+         field {
+            name = "csr.status.err.msg_err_fatal";
+            desc = "A fatal-error Message TLP has been received
+                    (cfg_msg_received_err_fatal)";
+            sw = r;
+            hw = w;
+         } msg_err_fatal[16:16] = 0;
+
+         field {
+            name = "csr.status.err.cfg_status[15:0]";
+            desc = "Configuration Space Status Register of the PCIe hard macro
+                    (cfg_status)";
+            sw = r;
+            hw = w;
+         } cfg_status[15:0] = 0;
+      } err;
+
+      reg {
+         name = "csr.status.phy";
+         desc = "PCIe PHY / Tx FSM Status Register";
+
+         field {
+            name = "csr.status.phy.tx_state[1:0]";
+            desc = "State of the Tx FSM: 0 = IDLE, 1 = SEND_CYCLE_1,
+                    2 = SEND_CYCLE_2. Software polls for 0 before it starts
+                    loading the next TLP.";
+            sw = r;
+            hw = w;
+         } tx_state[7:6] = 0;
+
+         field {
+            name = "csr.status.phy.tx_buf_av[5:0]";
+            desc = "Number of free transmit buffers in the PCIe hard macro
+                    (tx_buf_av). Software waits for a non-zero value.";
+            sw = r;
+            hw = w;
+         } tx_buf_av[5:0] = 0;
+      } phy;
+   } status @ 0x1C;
+};
+
+//==========================================================================
+// SOC top level -- the address map the picorv32 firmware sees
+//==========================================================================
+addrmap openpcie {
+   littleendian;
+   default accesswidth = 32;
+   default regwidth = 32;
+   default alignment = 4;
+   addressing = compact;
+
+   // 8 KB of unified instruction/data RAM, initialised from firmware.hex
+   external mem imem {
+      name = "imem";
+      desc = "CPU Program/Data Memory";
+      mementries = 2048;
+      memwidth = 32;
+   } imem @ 0x0000_0000;
+
+   csr csr @ 0x3000_0000;
+};

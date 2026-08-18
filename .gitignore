@@ -50,6 +50,33 @@
 1.pcb/openpci2-backplane/_autosave-openpci2-backplane.kicad_pcb
 
 #--------
+# Firmware build products (4.build/sw_build)
+#--------
+# Records the VARIANT/CSR/SIM the last build used, so make can tell that the
+# configuration changed. Purely local state.
+4.build/sw_build/.build-config
+4.build/hw_build.openXC7/.build-config
+4.build/hw_build.openXC7/.build-config.switched
+
+
+#--------
+# Sim build products (5.sim)
+#--------
+5.sim/obj/
+5.sim/xsim.dir/
+5.sim/work/
+5.sim/VProc.so
+5.sim/libuser.a
+5.sim/firmware.hex
+5.sim/run_us.cfg
+5.sim/*.wdb
+5.sim/*.pb
+5.sim/xelab.*
+5.sim/xvlog.*
+5.sim/xsim.*
+5.sim/webtalk*
+
+#--------
 # Misc
 #--------
 */Thumbs.db

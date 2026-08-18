@@ -6,7 +6,7 @@ This directory contains the integration code for the [rv32](https://github.com/w
 
 The code to integrate the ISS into the virtual processor is in the directory `usercode`. This contains the following files:
 
-* `VUserMain0.cpp` and `VUserMain.h`
+* `VUserMain0.cpp` and `VUserMain0.h`
 * `vuserutils.cpp` and `vuserutils.h`
 * `rv32_timing_config.h`
 * `rv32_cache.cpp` and `rv32_cache.h`

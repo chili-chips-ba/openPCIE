@@ -367,7 +367,7 @@ All the hooks are in place for the other paths through the LTSSM, but these are 
 
 ### C plus plus Support
 
-In addition to the C API functions described above, there is support for C++ via an API class, in `pcieModelClass.cpp`, called `pcieModelClass`, that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object. Note that the LTSSM model is implemented in separate source files (`ltssm.c` and `ltssm.h`) and the API for this (consisting of the `ConfigurePcieLtssm()` and `initLink()` functions) is not part of `pcieModeClass`.
+In addition to the C API functions described above, there is support for C++ via an API class, declared in `pcieModelClass.h` (the implementation is compiled into the supplied library), called `pcieModelClass`, that wraps up the low level C functions. It is basically a one-to-one mapping of the C functions to methods in the class, but with some defaulted values and the need to supply the node number abstracted away, being set on construction of the class object. Note that the LTSSM model is implemented in separate source files (`ltssm.c` and `ltssm.h`) and the API for this (consisting of the `ConfigurePcieLtssm()` and `initLink()` functions) is not part of `pcieModeClass`.
 
 ```C++
 class pcieModelClass
@@ -533,7 +533,7 @@ Here the model is initialised, registering a user callback function (`VUserInput
 
 #### Configuration Space Helper Structures
 
-The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pcie_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
+The _pcievhost_ model provides some basic helper structures to allow the building up of a valid endpoint Type 0 configuration space, in the `pci_express.h` header. These are limited to the PCI compatible region and comprise the minimal capability structures. For each type of capability a structure is defined with each of the fields, and a matching uinion is also defined with the structure and an array of 32-bit words to metch the size of the capability.
 
 | **Structure**                     | **Union**                   | **Description**                         |
 |-----------------------------------|-----------------------------|-----------------------------------------|

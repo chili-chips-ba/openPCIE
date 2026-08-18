@@ -1,0 +1,24 @@
+# Co-simulation models
+
+sv work models/cosim/mem_model.sv
+sv work models/cosim/f_VProc.v
+sv work models/pcievhost/verilog/pcieVHost/pcieVHost.v
+sv work models/pcievhost/verilog/pcieVHost/pcieVHostPipex1.v
+
+# VProc virtual processor based SoC CPU
+
+sv work models/soc_cpu.VPROC.sv
+
+# Uart driver test component
+
+sv work models/bfm_uart.sv
+
+# The following would normally be part of the DUT project file.
+# Remove when DUT RTL available
+
+sv work ../2.rtl/ip.infra/soc_pkg.sv
+sv work ../2.rtl/ip.infra/soc_if.sv
+sv work stubs/dut_stub.v
+
+# Top level test bench
+sv work tb.sv
