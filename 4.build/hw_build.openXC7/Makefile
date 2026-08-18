@@ -219,6 +219,12 @@ SV_ORDERED = $(SV_PKG) $(SV_CSR_PKG) $(SV_IF) $(SV_PCIE_REST) $(SV_CSR) $(SV_TOP
 .PHONY: all convert extract check-env check-sv2v check-sources \
         clean clean-converted clean-all info help FORCE
 
+# Must be explicit. The default goal is otherwise the first target in the file,
+# and that is the FORCE rule up in the BUILD_CFG section (.build-config is
+# skipped, make never picks a target starting with a period). Plain "make" then
+# answers "Nothing to be done for 'FORCE'" and builds nothing.
+.DEFAULT_GOAL := all
+
 all: $(BUILD_ARTIFACTS)/top.bit
 
 help:
