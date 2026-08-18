@@ -1,24 +1,85 @@
-# Co-simulation models
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# xsim source list for the openpcie2-rc co-simulation test bench.
+#
+# ORDER MATTERS: packages and interfaces first, then the modules that use them.
+#
+# The RTL is taken straight out of 2.rtl/2.RC-direct.opensource -- no copies,
+# no forks. Exactly two files are swapped for co-simulation models:
+#
+#   src/pcie/serdes_front.sv  ->  models/serdes_front.PIPE.sv
+#         the GT transceiver cannot talk to a PIPE-level VIP, so a behavioural
+#         PIPE PHY takes its place and carries the pcievhost endpoint
+#
+#   (nothing else)
+#
+# To go back to the old stand-alone stub test bench, use stubs/tb.STUB.prj.
 
+# ---------------------------------------------------------------------
+# Co-simulation models
+# ---------------------------------------------------------------------
 sv work models/cosim/mem_model.sv
 sv work models/cosim/f_VProc.v
+# VProc dressed up as a picorv32. Only reached when the design is analysed with
+# --define SOC_CPU_VPROC (make CPU=vproc / CPU=iss); otherwise it is compiled
+# but never instantiated, and xelab prunes it.
+sv work models/soc_cpu.VPROC.picorv32.sv
 sv work models/pcievhost/verilog/pcieVHost/pcieVHost.v
 sv work models/pcievhost/verilog/pcieVHost/pcieVHostPipex1.v
 
-# VProc virtual processor based SoC CPU
+# ---------------------------------------------------------------------
+# DUT: packages and interfaces
+# ---------------------------------------------------------------------
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/link_pkg.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/stream_if.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/phy_lanes_if.sv
 
-sv work models/soc_cpu.VPROC.sv
+# ---------------------------------------------------------------------
+# DUT: PeakRDL-generated CSR
+# ---------------------------------------------------------------------
+sv work ../4.build/csr_build/generated-files/csr_pkg.sv
+sv work ../4.build/csr_build/generated-files/csr.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/soc_csr.sv
 
-# Uart driver test component
+# ---------------------------------------------------------------------
+# DUT: PCIe stack
+# ---------------------------------------------------------------------
+# serdes_front.sv is DELIBERATELY absent -- models/serdes_front.PIPE.sv below
+# provides that module instead. serdes_ctrl.sv, lane_xcvr.sv, pll_bank.sv,
+# chan_retune.sv, pll_retune.sv, pll_init_ctrl.sv, phase_align.sv,
+# margin_tuner.sv, signal_probe.sv, wake_timer.sv, lane_keeper.sv and
+# init_ctrl.sv only exist to serve the transceiver, so they go with it.
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/buffer_bank.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/buffer_tile.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/clk_synth.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/eios_squelch.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/silicon_core.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/speed_ctrl.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/stream_bridge.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/stream_rx_path.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/stream_tx_gate.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/stream_tx_path.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/txn_engine.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/pcie/host_bridge.sv
 
-sv work models/bfm_uart.sv
+# PIPE PHY model, in place of src/pcie/serdes_front.sv
+sv work models/serdes_front.PIPE.sv
 
-# The following would normally be part of the DUT project file.
-# Remove when DUT RTL available
+# ---------------------------------------------------------------------
+# DUT: SOC and top level
+# ---------------------------------------------------------------------
+verilog work ../2.rtl/2.RC-direct.opensource/src/picorv32.v
+sv work ../2.rtl/2.RC-direct.opensource/src/riscv_pcie_soc.sv
+sv work ../2.rtl/2.RC-direct.opensource/src/RC_direct_opensource.sv
 
-sv work ../2.rtl/ip.infra/soc_pkg.sv
-sv work ../2.rtl/ip.infra/soc_if.sv
-sv work stubs/dut_stub.v
+# xpm_cdc_single, used twice in host_bridge.sv. Vivado supplies the XPM
+# library for synthesis; for xsim the open replacement from the openXC7 build
+# is simpler than compiling the XPM sources.
+verilog work ../4.build/hw_build.openXC7/xpm_shim.v
 
-# Top level test bench
+# ---------------------------------------------------------------------
+# Test bench
+# ---------------------------------------------------------------------
 sv work tb.sv

@@ -40,6 +40,25 @@ serves as the reference the opensource variant is measured against.
 
 ---
 
+### Common CSR
+
+Both Root Complex designs take their register block from the **same** SystemRDL
+specification, [`4.build/csr_build/csr.rdl`](../4.build/csr_build/csr.rdl).
+`peakrdl` turns it into the register RTL (`csr_pkg.sv`, `csr.sv`) and into the
+software headers, and each design's `src/soc_csr.sv` bridges that block to the
+picorv32 memory interface. Regenerate with `make -f MakefileCSR` in
+[`4.build`](../4.build); the details are in
+[`4.build/README.md`](../4.build/README.md#csr-hal-compilation).
+
+The hand-written register block that came first is still there, inside
+`riscv_pcie_soc.sv` behind `` `ifdef SOC_CSR_LEGACY ``. Which one is built is set
+once, in [`4.build/config.mk`](../4.build/config.mk), and read by every build
+step - Vivado, openXC7 and the firmware - so the hardware and the software are
+never built different ways. The two are functionally identical, down to the byte
+offsets.
+
+---
+
 ### Common Physical Constraints (XDC)
 
 The **XDC file** is critical for mapping the logical PCIe signals to the specific physical pins on the `Acorn CLE-215+` board and the `openPCIE Backplane`. The following key elements are mandatory in all designs:

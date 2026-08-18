@@ -1,6 +1,21 @@
-# _openpcie2-rc_ DUT stub
+# _openpcie2-rc_ DUT stub, and other superseded originals
 
-This folder contains a stub in lie of the DUT RTL in order to get the top level test bench running. Once the DUT is available this mdel may be discarded.
+This folder keeps the pieces that came before the real DUT was wired in. None of
+them is built any more; they are here so the earlier arrangement stays readable.
+
+| File | What it was |
+|---|---|
+| `dut_stub.v`, `tb.STUB.sv`, `tb.STUB.prj` | the stub DUT and its test bench, described below. The live test bench is [`../tb.sv`](../tb.sv) with [`../tb.prj`](../tb.prj). |
+| `VUserMain0.SANITY.cpp` | the original node-0 sanity program: a single write and read-back at `0x10001000`, an address this design does not have. Superseded by [`../usercode/VUserMain0.cpp`](../usercode/VUserMain0.cpp), which runs the real bring-up sequence for `make CPU=vproc`. |
+
+To go back to the stub test bench, analyse with `tb.STUB.prj` in place of
+`tb.prj`.
+
+---
+
+## The stub DUT
+
+This was a stub in lieu of the DUT RTL, in order to get the top level test bench running.
 
 It has the folloing features
 

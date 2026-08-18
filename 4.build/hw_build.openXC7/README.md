@@ -245,6 +245,38 @@ unzip sv2v-Linux.zip && install -Dm755 sv2v-Linux/sv2v /usr/local/bin/sv2v
 the sw_build stage must have run first. The Makefile expects
 `../sw_build/firmware.hex`.
 
+### 4. The generated CSR
+
+By default the SOC instantiates `soc_csr.sv`, which wraps the register block
+PeakRDL generates from `../csr_build/csr.rdl`. Two of the files that go into
+sv2v therefore come out of `../csr_build/generated-files/`:
+
+```bash
+cd ..                     # 4.build/
+make -f MakefileCSR       # -> csr_build/generated-files/{csr_pkg,csr}.sv
+```
+
+They are checked in, so this is only needed after editing `csr.rdl`.
+
+Which register block gets built is set once, in
+[`4.build/config.mk`](../config.mk), and read by this build, the Vivado project
+and the firmware alike, so hardware and software are never built different ways:
+
+```makefile
+CSR ?= peakrdl        # or: legacy
+```
+
+With `legacy` no generated file is needed at all. To override the file for a
+single build:
+
+```bash
+make CSR=legacy
+```
+
+That passes `-DSOC_CSR_LEGACY` to sv2v and drops `csr_pkg.sv`, `csr.sv` and
+`soc_csr.sv` from the file list. The two register blocks are functionally
+identical, down to the byte offsets, so the same firmware runs on either.
+
 ---
 
 ## Building
@@ -259,6 +291,7 @@ make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 | Target | Purpose |
 |---|---|
 | `make convert` | only sv2v conversion + module extraction |
+| `make CSR=legacy` | build the hand-written CSR instead of the PeakRDL one |
 | `make info` | print resolved configuration |
 | `make clean` | remove `build_artifacts/` |
 | `make clean-all` | also remove `converted/` and `chipdb/` |
@@ -268,7 +301,14 @@ make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 picks up the other one's stale intermediates. The `chipdb/` is shared - it
 depends on the part, not on the design. What is **not** separated is
 `../sw_build/firmware.hex`, so build the matching firmware first
-(`make clean && make VARIANT=switched` over in `sw_build/`).
+(`make VARIANT=switched` over in `sw_build/`).
+
+Switching `CSR` is different: it changes only the **file list**, not any file,
+so make on its own would see unchanged sources, decide the conversion is up to
+date and leave the previous bitstream in place. The configuration is therefore
+recorded in `.build-config`, which is a prerequisite of the sv2v step along with
+`../config.mk` - so a change to either rebuilds by itself, with no `make clean`
+needed.
 
 The first build generates the nextpnr chipdb for `xc7a200tfbg484-3` (317 MB,
 several minutes). It is cached in `chipdb/`.

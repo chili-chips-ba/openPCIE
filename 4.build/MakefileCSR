@@ -1,0 +1,116 @@
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
+# =============================================================================
+# CSR compilation for openPCIE -- SystemRDL in, RTL + HAL out
+#
+# Run FROM THIS FOLDER (4.build/):
+#   make -f MakefileCSR            regenerate everything
+#   make -f MakefileCSR clean      remove all generated files
+#
+# Single source of truth is  csr_build/csr.rdl. Everything below is derived
+# from it and lands in  csr_build/generated-files/ :
+#
+#   csr_cosim.rdl : filtered RDL, buffer-write commands removed
+#   csr.sv        : the CSR RTL for the hardware target
+#   csr_pkg.sv    : the hwif_in / hwif_out struct package for that RTL
+#   csr.h         : "peakrdl c-header" output, used by both HAL headers
+#   csr_hw.h      : HAL for the picorv32 target (and for the rv32 ISS)
+#   csr_cosim.h   : HAL for the VProc based co-simulation
+#   openpcie.md   : the register map as markdown
+#   html/         : the register map as a browsable HTML document
+#
+# Requires (pip install peakrdl peakrdl-regblock peakrdl-cheader \
+#                       peakrdl-html peakrdl-markdown systemrdl-compiler)
+#
+# "peakrdl" and PYTHON must come from the same install. On Windows they often do
+# not: MSYS2's python3 comes first on PATH and has no systemrdl-compiler, giving
+# "ModuleNotFoundError: No module named 'systemrdl'". Run "make -f MakefileCSR
+# tools" to see what was picked up, then override PYTHON.
+# =============================================================================
+
+# Interpreter for sysrdl_cosim.py, e.g.
+#   make -f MakefileCSR PYTHON=/c/Users/<you>/.../Python312/python.exe
+PYTHON   ?= python3
+
+RDLCSRTOP = csr
+RDLPCIETOP= openpcie
+RDLPREFIX = csr
+RDLDIR    = csr_build
+GENDIR    = $(RDLDIR)/generated-files
+RDLSRC    = $(RDLDIR)/$(RDLPREFIX).rdl
+
+COSIMRDL  = $(GENDIR)/$(RDLPREFIX)_cosim.rdl
+COSIMHDR  = $(GENDIR)/$(RDLPREFIX)_cosim.h
+PKRDLHDR  = $(GENDIR)/$(RDLPREFIX).h
+HWHDR     = $(GENDIR)/$(RDLPREFIX)_hw.h
+PKRDLRTL  = $(GENDIR)/
+PKRDLHTML = $(GENDIR)/html/
+PKRDLMD   = $(GENDIR)/$(RDLPCIETOP).md
+
+# ---- REUSE compliance -------------------------------------------------------
+# The tools do not emit SPDX headers, and the repository is REUSE-linted, so
+# every generated text file gets stamped right after it is written.
+# csr_cosim.rdl needs no stamping -- sed copies csr.rdl verbatim, header and all.
+define spdx_c
+@printf '%s\n' '// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba' \
+               '//' \
+               '// SPDX-License-Identifier: BSD-3-Clause' \
+               '' | cat - $(1) > $(1).spdx && mv $(1).spdx $(1)
+endef
+
+define spdx_md
+@printf '%s\n' '<!--' \
+               'SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba' \
+               '' \
+               'SPDX-License-Identifier: BSD-3-Clause' \
+               '-->' \
+               '' | cat - $(1) > $(1).spdx && mv $(1).spdx $(1)
+endef
+
+all: $(COSIMHDR) $(HWHDR) rtl $(PKRDLHTML) $(PKRDLMD)
+
+$(COSIMHDR): $(COSIMRDL) $(PKRDLHDR)
+	@$(PYTHON) sysrdl_cosim.py -c -r $< -o $@
+	$(call spdx_c,$@)
+
+$(HWHDR): $(COSIMRDL) $(PKRDLHDR)
+	@$(PYTHON) sysrdl_cosim.py -r $< -o $@
+	$(call spdx_c,$@)
+
+$(COSIMRDL): $(RDLSRC)
+	@sed -e "/buffer_writes/d" -e "/wbuffer_trigger/d" < $^ > $@
+
+$(PKRDLHDR): $(COSIMRDL)
+	@peakrdl c-header $^ -b ltoh -o $@
+	$(call spdx_c,$@)
+
+rtl: $(RDLSRC)
+	@peakrdl regblock $^ -o $(GENDIR)/ --cpuif passthrough --top $(RDLCSRTOP)
+	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP).sv)
+	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP)_pkg.sv)
+
+$(PKRDLHTML): $(RDLSRC)
+	@peakrdl html $^ -o $@ --top $(RDLPCIETOP)
+
+$(PKRDLMD): $(RDLSRC)
+	@peakrdl markdown $^ -o $@ --top $(RDLPCIETOP)
+	$(call spdx_md,$@)
+
+# Report what the generation flow would actually use. Run this first when
+# "make -f MakefileCSR" fails -- it says which interpreter was picked up and
+# whether the packages are in it.
+tools:
+	@echo "PYTHON   = $(PYTHON)"
+	@echo "  path   : $$(command -v $(PYTHON) 2>/dev/null || echo 'NOT FOUND')"
+	@$(PYTHON) -c "import systemrdl; print('  systemrdl-compiler: OK')" 2>/dev/null \
+	   || echo "  systemrdl-compiler: MISSING  <-- see the note at the top of this file"
+	@echo "peakrdl"
+	@echo "  path   : $$(command -v peakrdl 2>/dev/null || echo 'NOT FOUND')"
+	@peakrdl --version 2>/dev/null | sed 's/^/  version: /' || true
+
+clean:
+	@rm -rf $(COSIMRDL) $(COSIMHDR) $(HWHDR) $(PKRDLHDR) $(GENDIR)/*.sv $(PKRDLHTML) $(PKRDLMD)
+
+.PHONY: all rtl tools clean

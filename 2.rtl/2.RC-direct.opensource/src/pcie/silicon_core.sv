@@ -101,7 +101,13 @@ module silicon_core
   localparam DISABLE_PPM_FILTER = "FALSE",
   localparam DISABLE_RX_POISONED_RESP = "FALSE",
   localparam DISABLE_RX_TC_FILTER = "FALSE",
+  // Co-simulation override. Only 5.sim/Makefile defines it; both synthesis
+  // flows take the "FALSE" branch, unchanged.
+`ifdef SIM_PIPE_CODING
+  localparam DISABLE_SCRAMBLING = "TRUE",
+`else
   localparam DISABLE_SCRAMBLING = "FALSE",
+`endif
   localparam [7:0] DNSTREAM_LINK_NUM = 8'h00,
   localparam [11:0] DSN_BASE_PTR = 12'h100,
   localparam [15:0] DSN_CAP_ID = 16'h0003,
@@ -179,7 +185,17 @@ module silicon_core
   localparam PCIE_CAP_SLOT_IMPLEMENTED = "FALSE",
   localparam integer PCIE_REVISION = 2,
   localparam integer PL_AUTO_CONFIG = 0,
+  // PL_FAST_TRAIN shortens the LTSSM's training timers. It is a simulation-only
+  // feature of the hard macro -- AMD's own example designs turn it on for
+  // simulation and off for the bitstream, because with the real 12/24 ms timers
+  // link training takes longer than any practical simulation run. The
+  // co-simulation file list defines SIM_FAST_TRAIN; the synthesis flows never
+  // do, so the bitstream is unaffected.
+`ifdef SIM_FAST_TRAIN
+  localparam PL_FAST_TRAIN = "TRUE",
+`else
   localparam PL_FAST_TRAIN = "FALSE",
+`endif
   localparam [14:0] PM_ASPML0S_TIMEOUT = 15'h0000,
   localparam PM_ASPML0S_TIMEOUT_EN = "FALSE",
   localparam integer PM_ASPML0S_TIMEOUT_FUNC = 0,

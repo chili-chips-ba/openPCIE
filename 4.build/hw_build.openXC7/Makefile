@@ -89,6 +89,38 @@ else
     $(error VARIANT must be "direct" or "switched", got "$(VARIANT)")
 endif
 
+# ---- CSR back-end -----------------------------------------------------------
+# peakrdl -> riscv_pcie_soc.sv instantiates soc_csr.sv, which wraps the register
+#            block PeakRDL generates from 4.build/csr_build/csr.rdl. This is the
+#            default. Regenerate the RTL first if csr.rdl changed:
+#              cd .. && make -f MakefileCSR
+# legacy  -> the hand-written register block inside riscv_pcie_soc.sv, selected
+#            with `define SOC_CSR_LEGACY. Kept as the reference implementation.
+#
+# The two are functionally identical, down to the byte offsets, so the firmware
+# does not care which one is in the bitstream.
+# The choice lives in one place, ../config.mk, so that the hardware and the
+# firmware are always built the same way. Override it for a single build with
+#   make CSR=legacy
+# A command line assignment wins over the file.
+-include ../config.mk
+
+CSR ?= peakrdl
+
+CSR_GEN_DIR = ../csr_build/generated-files
+
+ifeq ($(CSR),peakrdl)
+    SV_CSR_PKG = $(CSR_GEN_DIR)/csr_pkg.sv
+    SV_CSR     = $(CSR_GEN_DIR)/csr.sv $(SRC_DIR)/soc_csr.sv
+    SV2V_DEFS  =
+else ifeq ($(CSR),legacy)
+    SV_CSR_PKG =
+    SV_CSR     =
+    SV2V_DEFS  = -DSOC_CSR_LEGACY
+else
+    $(error CSR must be "peakrdl" or "legacy", got "$(CSR)")
+endif
+
 # ---- THE nextpnr VERSION IS CRITICAL ----------------------------------------
 # This design builds ONLY with nextpnr-xilinx around commit 45a986b
 # (v0.8.2-79-g45a986b8, 2026-04-18).
@@ -135,6 +167,18 @@ BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)
 CONV_TIMESTAMP    = $(CONV_DIR)/.conversion_timestamp
 EXTRACT_TIMESTAMP = $(EXTRACTED_DIR)/.extraction_timestamp
 
+# Records the configuration the last build used, so that make can see a change
+# that lives only in a variable. Rewritten only when the signature really
+# changes, so an unchanged setup never re-triggers a build. One per variant,
+# matching the per-variant output directories.
+BUILD_CFG = .build-config$(OUT_SFX)
+BUILD_SIG := $(VARIANT)-$(CSR)
+
+$(BUILD_CFG): FORCE
+	@[ "$$(cat $@ 2>/dev/null)" = "$(BUILD_SIG)" ] || echo "$(BUILD_SIG)" > $@
+
+FORCE:
+
 # =============================================================================
 # SOURCE FILES
 # =============================================================================
@@ -166,23 +210,24 @@ SV_TOP = \
     $(SRC_DIR)/riscv_pcie_soc.sv \
     $(SRC_DIR)/$(TOP).sv
 
-SV_ORDERED = $(SV_PKG) $(SV_IF) $(SV_PCIE_REST) $(SV_TOP)
+SV_ORDERED = $(SV_PKG) $(SV_CSR_PKG) $(SV_IF) $(SV_PCIE_REST) $(SV_CSR) $(SV_TOP)
 
 # =============================================================================
 # PHONY
 # =============================================================================
 
 .PHONY: all convert extract check-env check-sv2v check-sources \
-        clean clean-converted clean-all info help
+        clean clean-converted clean-all info help FORCE
 
 all: $(BUILD_ARTIFACTS)/top.bit
 
 help:
 	@echo "================================================================"
-	@echo " openXC7 build -- opensource RC  [$(VARIANT)]"
+	@echo " openXC7 build -- opensource RC  [$(VARIANT), CSR=$(CSR)]"
 	@echo "================================================================"
 	@echo " make                 full build up to top.bit"
 	@echo " make VARIANT=switched  build the RC-switched variant"
+	@echo " make CSR=legacy      build with the hand-written CSR instead"
 	@echo " make convert         sv2v conversion + splitting only"
 	@echo " make check-env       verify the tools are present"
 	@echo " make check-sources   verify all source files exist"
@@ -193,6 +238,7 @@ help:
 
 info:
 	@echo "VARIANT        : $(VARIANT)"
+	@echo "CSR            : $(CSR)"
 	@echo "PART           : $(PART)"
 	@echo "TOP            : $(TOP)"
 	@echo "RTL_DIR        : $(RTL_DIR)"
@@ -265,12 +311,18 @@ check-sources:
 
 convert: $(EXTRACT_TIMESTAMP)
 
-$(CONV_TIMESTAMP): $(SV_ORDERED) | check-sv2v
+# Switching CSR changes only the FILE LIST, not any file, so without the two
+# extra prerequisites below make would compare the timestamp against unchanged
+# sources, decide it is up to date, and quietly leave the previous conversion --
+# and therefore the previous bitstream -- in place. See BUILD_SIG above.
+# (VARIANT needs no such guard: it selects a separate $(CONV_DIR) and
+# $(BUILD_ARTIFACTS), so the two variants never share an output.)
+$(CONV_TIMESTAMP): $(SV_ORDERED) $(wildcard ../config.mk) $(BUILD_CFG) | check-sv2v
 	@echo "================================================================"
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
 	@mkdir -p $(CONV_DIR)
-	@if sv2v -I$(PCIE_DIR) -I$(SRC_DIR) \
+	@if sv2v -I$(PCIE_DIR) -I$(SRC_DIR) $(SV2V_DEFS) \
 	        $(SV_ORDERED) > $(CONV_DIR)/all_converted.v 2> $(CONV_DIR)/sv2v.log; then \
 	    echo "  lines   : $$(wc -l < $(CONV_DIR)/all_converted.v)"; \
 	    echo "  modules : $$(grep -c '^module ' $(CONV_DIR)/all_converted.v)"; \
@@ -433,7 +485,7 @@ $(BUILD_ARTIFACTS)/top.bit: $(BUILD_ARTIFACTS)/top.frames
 # =============================================================================
 
 clean:
-	rm -rf $(BUILD_ARTIFACTS) firmware.hex
+	rm -rf $(BUILD_ARTIFACTS) firmware.hex $(BUILD_CFG)
 
 clean-converted:
 	rm -rf $(CONV_DIR)

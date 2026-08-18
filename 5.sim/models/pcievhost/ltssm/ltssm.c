@@ -263,9 +263,16 @@ static int Configuration(const int active_lanes, const int target_state, const i
     }
 
     ResetEventCount(TS1_ID, node);
+
+    // As above, an upstream port must not put a Link number on the wire before
+    // the downstream port has assigned one -- it echoes what it receives. Going
+    // straight to the configured link number races the downstream port, which
+    // is still in Configuration.Linkwidth.Start expecting Link = PAD.
+    int linknum_rcvd = 0;
+
     do
     {
-        SendTs(TS1_ID, PAD, ltssm_linknum[node], ltssm_n_fts[node], ltssm_ts_ctl[VP_MAX_NODES], false, node);
+        SendTs(TS1_ID, PAD, linknum_rcvd ? ltssm_linknum[node] : PAD, ltssm_n_fts[node], ltssm_ts_ctl[VP_MAX_NODES], false, node);
         ReadEventCount(TS1_ID, ts1_count, node);
         ts_status = GetTS(0, node);
 
@@ -273,6 +280,10 @@ static int Configuration(const int active_lanes, const int target_state, const i
         {
             ts1_count[0] = 0;
             ResetEventCount(TS1_ID, node);
+        }
+        else if (ts1_count[0])
+        {
+            linknum_rcvd = 1;
         }
         
     } while(ts1_count[0] < 2 || ts_status.linknum != ltssm_linknum[node]);
@@ -283,9 +294,19 @@ static int Configuration(const int active_lanes, const int target_state, const i
     // Lanenum.Wait
     if (!ltssm_disable_disp_state[node]) VPrint("---> Configuration Lanenum Wait (node %d)\n", node);
     ResetEventCount(TS1_ID, node);
+
+    // An upstream port must keep transmitting Lane = PAD until the downstream
+    // port has assigned lane numbers -- it is the downstream port that does the
+    // assigning (PCIe base spec, Configuration.Lanenum.Wait). Sending lane
+    // numbers straight away works when the link partner is another copy of this
+    // model, but deadlocks against a real downstream port: that port is still
+    // waiting for 2 consecutive TS1 with Link = N and Lane = PAD to confirm the
+    // link width, and a lane number in that field resets its count.
+    int lanenums_rcvd = 0;
+
     do
     {
-        SendTs(TS1_ID, ENABLE_LANENUMS, ltssm_linknum[node], ltssm_n_fts[node], ltssm_ts_ctl[VP_MAX_NODES], false, node);
+        SendTs(TS1_ID, lanenums_rcvd ? ENABLE_LANENUMS : PAD, ltssm_linknum[node], ltssm_n_fts[node], ltssm_ts_ctl[VP_MAX_NODES], false, node);
         for (i=0; i < lnkwidth; i++)
         {
             ts_status = GetTS(i, node);
@@ -295,15 +316,33 @@ static int Configuration(const int active_lanes, const int target_state, const i
                 ts1_count[0] = 0;
                 ResetEventCount(TS1_ID, node);
             }
+            else
+            {
+                lanenums_rcvd = 1;
+            }
         }
     } while (ts1_count[0] < 2);
 
     // Lanenum.Accept
     if (!ltssm_disable_disp_state[node]) VPrint("---> Configuration Lanenum Accept (node %d)\n", node);
     ResetEventCount(TS1_ID, node);
+
+    // Hold this state for a while after the receive condition is met. The
+    // partner has to see these TS1s too, and a real downstream port needs a
+    // run of them in Configuration.Lanenum.Accept before it will move on. The
+    // unguarded loop can exit after as few as three transmitted TS1, which is
+    // not enough, and the link then times out back to Detect.
+    int ts1_sendcount = 0;
+
     do
     {
         SendTs(TS1_ID, ENABLE_LANENUMS, ltssm_linknum[node], ltssm_n_fts[node], ltssm_ts_ctl[VP_MAX_NODES], false, node);
+
+        if (ts1_count[0])
+        {
+            ts1_sendcount++;
+        }
+
         for (i=0; i < lnkwidth; i++)
         {
             ts_status = GetTS(i, node);
@@ -314,7 +353,7 @@ static int Configuration(const int active_lanes, const int target_state, const i
                 ResetEventCount(TS1_ID, node);
             }
         }
-    } while (ts1_count[0] < 2);
+    } while (ts1_count[0] < 2 || ts1_sendcount < 16);
 
     // Complete
     if (!ltssm_disable_disp_state[node]) VPrint("---> Configuration Complete (node %d)\n", node);
