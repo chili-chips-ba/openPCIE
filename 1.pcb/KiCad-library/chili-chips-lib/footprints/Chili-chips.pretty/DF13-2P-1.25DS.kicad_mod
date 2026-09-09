@@ -1,0 +1,208 @@
+(footprint "DF13-2P-1.25DS"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(tags "DF13-2P-1.25DS ")
+	(property "Reference" "REF**"
+		(at -1.3 -1.62 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "35eb3fa5-9953-4c98-ac24-c721b8e37077")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "DF13-2P-1.25DS"
+		(at -0.625 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "ec65a92a-7e42-43cf-825f-55d3e59404c7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "230133a9-224d-4e9e-a65a-9af7e51113a8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "971f2795-aaa0-45a4-8256-43d58fb52ba3")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "cd7c2349-b7dd-4c80-9880-9f235079344c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -2.8221 -1.016)
+		(end -2.8221 4.6482)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ee254b58-b981-40aa-9445-e6f9141b88e7")
+	)
+	(fp_line
+		(start -2.8221 4.6482)
+		(end 1.5721 4.6482)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "1a69c875-6295-44f8-af5e-e8f6baf7ba98")
+	)
+	(fp_line
+		(start 1.5721 -1.016)
+		(end -2.8221 -1.016)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "10e464e8-89c3-4b88-9e5b-d8badfd2209e")
+	)
+	(fp_line
+		(start 1.5721 4.6482)
+		(end 1.5721 -1.016)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e94d788c-1bc4-436a-8182-64f1f38e06ed")
+	)
+	(fp_rect
+		(start -2.96 -1.17)
+		(end 1.73 4.79)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "ef5588b6-0609-4add-83e2-dfacacf45352")
+	)
+	(fp_line
+		(start -2.6951 -0.889)
+		(end -2.6951 4.5212)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4104039a-663d-4fae-b2a9-b605f964dd0d")
+	)
+	(fp_line
+		(start -2.6951 4.5212)
+		(end 1.4451 4.5212)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "413f6412-eed3-4e71-a4c9-6fcd88ca09ca")
+	)
+	(fp_line
+		(start 1.4451 -0.889)
+		(end -2.6951 -0.889)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ec25011f-3a91-43bd-9fe7-4c9b097dda16")
+	)
+	(fp_line
+		(start 1.4451 4.5212)
+		(end 1.4451 -0.889)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f6fa6924-1549-478a-878b-31bb64b1e6fa")
+	)
+	(fp_text user "${REFERENCE}"
+		(at -0.625 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "c6b08b16-555d-4948-8b43-e8a38cbed34f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 0 0)
+		(size 1.0668 1.0668)
+		(drill 0.6096)
+		(layers "*.Cu" "*.Mask" "In3.Cu" "In4.Cu" "In5.Cu" "In6.Cu" "In7.Cu" "In8.Cu"
+			"In9.Cu" "In10.Cu" "In11.Cu" "In12.Cu" "In13.Cu" "In14.Cu" "In15.Cu" "In16.Cu"
+			"In17.Cu" "In18.Cu" "In19.Cu" "In20.Cu" "In21.Cu" "In22.Cu" "In23.Cu"
+			"In24.Cu" "In25.Cu" "In26.Cu" "In27.Cu" "In28.Cu" "In29.Cu" "In30.Cu"
+		)
+		(remove_unused_layers no)
+		(roundrect_rratio 0.2)
+		(uuid "ba3a2206-1532-448d-92b0-9a79cb666a6a")
+	)
+	(pad "2" thru_hole circle
+		(at -1.25 0)
+		(size 1.0668 1.0668)
+		(drill 0.6096)
+		(layers "*.Cu" "*.Mask" "In3.Cu" "In4.Cu" "In5.Cu" "In6.Cu" "In7.Cu" "In8.Cu"
+			"In9.Cu" "In10.Cu" "In11.Cu" "In12.Cu" "In13.Cu" "In14.Cu" "In15.Cu" "In16.Cu"
+			"In17.Cu" "In18.Cu" "In19.Cu" "In20.Cu" "In21.Cu" "In22.Cu" "In23.Cu"
+			"In24.Cu" "In25.Cu" "In26.Cu" "In27.Cu" "In28.Cu" "In29.Cu" "In30.Cu"
+		)
+		(remove_unused_layers no)
+		(uuid "18dc97e7-9da3-4bd2-b032-4f3b9950d1a3")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/df13-2p-1_25ds_25_.stp"
+		(offset
+			(xyz 15.0114 -1.7272 27.305)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 180 90 0)
+		)
+	)
+)

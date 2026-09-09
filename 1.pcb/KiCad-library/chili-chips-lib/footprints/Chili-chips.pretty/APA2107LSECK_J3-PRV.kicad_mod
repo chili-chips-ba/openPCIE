@@ -1,0 +1,169 @@
+(footprint "APA2107LSECK_J3-PRV"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "LED 0603; Right Angle")
+	(tags "LED")
+	(property "Reference" "REF**"
+		(at 0 -0.9 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "3f165f11-5b3b-4d48-becf-1e82b34a4b60")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "LED_LTST-S270EKT_LTO"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "1c55c3a8-6e22-436e-a424-7bf0bdfd56f2")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "54a9c04e-ab5c-40dd-95be-334a215172e7")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "86da047f-f86f-477b-8907-755d7449350e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -0.55 -0.425)
+		(end 0 0.4318)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "0e345300-0322-4764-b4bb-f69605f05e00")
+	)
+	(fp_rect
+		(start -1.5 -0.55)
+		(end 1.5 0.55)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "7f08ddfe-b55f-43c6-97dc-02ba146ad4d0")
+	)
+	(fp_rect
+		(start -1.05 -0.3)
+		(end 1.05 0.3)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "1a24cdbf-bfc9-48bd-84e3-18e0516d86c7")
+	)
+	(fp_line
+		(start -0.8001 -0.3048)
+		(end -0.8001 0.3048)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8b3dd225-ca57-4c55-aa5a-b3294a0d9c0d")
+	)
+	(fp_line
+		(start -0.8001 -0.3048)
+		(end -0.8001 0.3048)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c22841b9-3d11-4ee7-9748-725abf028f9e")
+	)
+	(fp_line
+		(start 0.8001 0.3048)
+		(end 0.8001 -0.3048)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "59bee0bf-e4cf-4221-b9fe-e76218a1f3e1")
+	)
+	(fp_line
+		(start 0.8001 0.3048)
+		(end 0.8001 -0.3048)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c3c9f62c-5e2c-4f52-87bd-5f06843ac6b9")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 1.9 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "bdcedf85-5718-4dc6-838a-2bb772ad9403")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(pad "A" smd rect
+		(at 1.05 0)
+		(size 0.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "fc05d374-5716-42ef-a3c2-fc43ce3061f7")
+	)
+	(pad "C" smd rect
+		(at -1.05 0)
+		(size 0.8 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "058b3d21-c9aa-4170-b585-457bf1f839d9")
+	)
+	(embedded_fonts no)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/APA2107.STEP"
+		(offset
+			(xyz 0 0 0.29)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)

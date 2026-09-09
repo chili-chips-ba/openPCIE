@@ -1,0 +1,186 @@
+(footprint "SP0201BULC01UTG"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "SP0201B-ULC-01UTG-3")
+	(tags "TVS Diode (Bi-directional)")
+	(property "Reference" "REF**"
+		(at 0 -0.6985 0)
+		(layer "F.SilkS")
+		(uuid "a54960e6-c94a-4a3e-811d-e1a84d0c7722")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "SP0201BULC01UTG"
+		(at 0 0.9525 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "c38cabbe-a993-46e9-99d3-5447ab51ce2f")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1ff0a4b8-b2e2-4c8d-a561-e97805fc7000")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d9046954-f638-47b5-b39d-65fe655318fe")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d883b4e7-cf13-415d-8a03-e4f76db3da43")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.381 -0.254)
+		(end -0.381 0.254)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "3ac360f1-f87e-4803-aad0-3e80883a5eb7")
+	)
+	(fp_line
+		(start -0.381 0.254)
+		(end -0.0635 0.254)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "9ef18494-93da-4ed5-9392-0d97c628bdbc")
+	)
+	(fp_line
+		(start -0.0635 -0.254)
+		(end -0.381 -0.254)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "583c12d8-3e92-4d94-bcdb-e52894eb8cd7")
+	)
+	(fp_rect
+		(start -0.381 -0.254)
+		(end 0.381 0.254)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "25e6e16b-6dbc-42c0-bed4-27e518975de7")
+	)
+	(fp_line
+		(start -0.3 -0.15)
+		(end 0.3 -0.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "6038742a-5f63-41a6-83fc-44a0c1eca384")
+	)
+	(fp_line
+		(start -0.3 0.15)
+		(end -0.3 -0.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0190dff8-2974-4626-8412-ecf82251f3ee")
+	)
+	(fp_line
+		(start 0.3 -0.15)
+		(end 0.3 0.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "bc446618-d02f-4af1-9a73-5e72d5a4657b")
+	)
+	(fp_line
+		(start 0.3 0.15)
+		(end -0.3 0.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "393cc605-36c3-445d-b3e1-30e8cee31a7d")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 1.905 0)
+		(layer "F.Fab")
+		(uuid "d8f376a5-587c-4f93-86db-36344779a6bc")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(pad "A" smd rect
+		(at 0.19 0)
+		(size 0.24 0.32)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "4247d12f-e7df-44d5-b96b-9aacdae2a200")
+	)
+	(pad "C" smd rect
+		(at -0.19 0)
+		(size 0.24 0.32)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "cf949d16-96c7-42a2-b7ec-c557bdda9007")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/SP0201B-ULC-01UTG.stp"
+		(offset
+			(xyz 0 0 0.009999999626)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

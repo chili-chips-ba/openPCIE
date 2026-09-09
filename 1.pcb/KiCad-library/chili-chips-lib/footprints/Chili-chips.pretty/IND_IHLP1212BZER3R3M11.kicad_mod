@@ -1,0 +1,243 @@
+(footprint "IND_IHLP1212BZER3R3M11"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0.0635 -2.0955 0)
+		(layer "F.SilkS")
+		(uuid "62078703-3cf2-4628-abe4-5722e197353c")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "IND_IHLP1212BZER3R3M11"
+		(at 0 2.5 0)
+		(layer "F.Fab")
+		(uuid "fdab7056-5fdb-4a27-8516-f4f7a2255a33")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f2f75d8d-ce07-47d1-be8b-5f8de0c54c91")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d37a8d2c-165d-46b2-86b2-7273a3d3b1a2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b7379c24-0d40-4fe4-87a6-fa24aa7ee5e0")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -1.5 -1.5)
+		(end 1.5 -1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f8182dff-bc86-4ca0-84fb-a17ec01442cd")
+	)
+	(fp_line
+		(start -1.5 -0.92)
+		(end -1.5 -1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b7a2baa9-6b7e-417b-8e7d-2b2171666f7b")
+	)
+	(fp_line
+		(start -1.5 1.5)
+		(end -1.5 0.92)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e9fc1423-3dbb-4acc-9630-7dc1bad57719")
+	)
+	(fp_line
+		(start 1.5 -1.5)
+		(end 1.5 -0.92)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "65cb7659-266b-4b5c-86f0-a2c42ff8c121")
+	)
+	(fp_line
+		(start 1.5 0.92)
+		(end 1.5 1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "7ddd9d4f-047e-4ef1-b43e-6764e176e0b7")
+	)
+	(fp_line
+		(start 1.5 1.5)
+		(end -1.5 1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f3a4cd9c-2d58-45e2-ad22-5ffd99450602")
+	)
+	(fp_circle
+		(center -1.905 -1.143)
+		(end -1.7145 -1.143)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.SilkS")
+		(uuid "60ac97b4-077e-4208-88d7-3f0b1b5d0e54")
+	)
+	(fp_line
+		(start -2.35 -1.75)
+		(end -2.35 1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "cc4b7652-5d3a-4842-80a5-5af5d7f657e6")
+	)
+	(fp_line
+		(start -2.35 1.75)
+		(end 2.35 1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "312110c5-4798-4bad-bdc7-2f4854d659d0")
+	)
+	(fp_line
+		(start 2.35 -1.75)
+		(end -2.35 -1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "6c3b6ea9-c449-46d2-9821-57ec1235e95b")
+	)
+	(fp_line
+		(start 2.35 1.75)
+		(end 2.35 -1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c83eec4f-60ba-4eb8-a742-ec3ec27190e4")
+	)
+	(fp_line
+		(start -1.5 -1.5)
+		(end -1.5 1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8aa49dc2-2c0c-46ab-99cc-866d538fc181")
+	)
+	(fp_line
+		(start -1.5 1.5)
+		(end 1.5 1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a4f2006d-5095-4701-b5ca-dd8ef1584af6")
+	)
+	(fp_line
+		(start 1.5 -1.5)
+		(end -1.5 -1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1a7c4dc3-4467-408a-935d-9bd56114e18d")
+	)
+	(fp_line
+		(start 1.5 1.5)
+		(end 1.5 -1.5)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "03d3bbc2-04a6-4139-b402-496c9944ecea")
+	)
+	(pad "1" smd rect
+		(at -1.35 0)
+		(size 1.5 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "50ba2a7b-99de-426e-93bf-b8f79e99c346")
+	)
+	(pad "2" smd rect
+		(at 1.35 0)
+		(size 1.5 1.2)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "3cb87ecf-c31c-4e77-aadf-cb17ee0f64d6")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/IHLP1212BZER3R3M11.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)

@@ -1,0 +1,215 @@
+(footprint "XDFN6_1P25X1P25_ONS"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(tags "NCP130AMX105TCG ")
+	(property "Reference" "REF**"
+		(at 0 -1.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "3e3cc40a-91a4-4c36-838b-f86a05e015d8")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "XDFN6_1P25X1P25_ONS"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "b4ac7ac8-5101-45d2-89c5-92f63679be40")
+		(effects
+			(font
+				(size 0.508 0.508)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f2a3458c-35e8-46eb-a9f7-6c6c505a03bd")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5f6a2218-2b99-47ee-821e-31ec040975e0")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.9779 -0.85)
+		(end -0.9779 -0.1221)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "98b00427-33d5-4b9c-a22e-89474968dbd6")
+	)
+	(fp_line
+		(start -0.9779 0.85)
+		(end 0.9779 0.85)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3f7b3fd9-c964-4bc6-90a6-21aa0a7b73f0")
+	)
+	(fp_line
+		(start 0.9779 -0.85)
+		(end -0.9779 -0.85)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d53979d7-56cd-41a1-97cf-7b45ee427079")
+	)
+	(fp_rect
+		(start -0.8509 -0.8509)
+		(end 0.8509 0.8509)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "a9c62999-0b5e-4b93-a25a-e6cd2750acb9")
+	)
+	(fp_line
+		(start -0.5969 -0.5969)
+		(end -0.5969 0.5969)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ce867c6a-0ead-4216-bc30-f21b2d859d87")
+	)
+	(fp_line
+		(start -0.5969 0.5969)
+		(end 0.5969 0.5969)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e2022668-d439-4c61-8e70-f834889dde42")
+	)
+	(fp_line
+		(start -0.5969 0.6731)
+		(end 0.6731 -0.5969)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "49843f18-a486-4524-b98b-76db9ca623e3")
+	)
+	(fp_line
+		(start 0.5969 -0.5969)
+		(end -0.5969 -0.5969)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4c4d5b02-4c2d-4d05-bd37-1ba31450ec0b")
+	)
+	(fp_line
+		(start 0.5969 0.5969)
+		(end 0.5969 -0.5969)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cc9b50b1-bdaf-48d9-bd50-687f06ec4a39")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0.635 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "e3357110-33e2-45b4-84c0-ce90d69d9b8f")
+		(effects
+			(font
+				(size 0.508 0.508)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -0.515 -0.399999 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "533372a0-8f85-4dc3-99b0-4c1e68099255")
+	)
+	(pad "2" smd rect
+		(at -0.515 0 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "dfb1aa8b-6f8f-4093-8c03-e578039e5c59")
+	)
+	(pad "3" smd rect
+		(at -0.515 0.399999 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "fee50c50-3e1c-49da-96f0-2000c0074214")
+	)
+	(pad "4" smd rect
+		(at 0.515 0.399999 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "f552de5e-808b-4b92-89f7-acb0e0c2c347")
+	)
+	(pad "5" smd rect
+		(at 0.515 0 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "4948c00b-7768-4925-856c-bba1fe420008")
+	)
+	(pad "6" smd rect
+		(at 0.515 -0.399999 90)
+		(size 0.254 0.381)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "417afd9e-20d0-46c8-aa85-bd0f063cb45d")
+	)
+	(pad "7" smd rect
+		(at 0 0)
+		(size 0.4064 1.0922)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "35ed82df-8105-41ee-bc02-7b01751e005e")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/XDFN6_1P25X1P25_ONS.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

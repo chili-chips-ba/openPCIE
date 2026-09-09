@@ -1,0 +1,122 @@
+(footprint "CHS-01TA"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -3.937 0)
+		(layer "F.SilkS")
+		(uuid "358e26ab-ab21-4c30-be60-a31f0808c9c3")
+		(effects
+			(font
+				(size 0.7112 0.7112)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "CHS-01TA"
+		(at 0.839974 4.253187 0)
+		(layer "Dwgs.User")
+		(uuid "6ef0b41e-52a5-42bd-9d74-f4adf3b25fb8")
+		(effects
+			(font
+				(size 0.480902 0.480902)
+				(thickness 0.120226)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5226f0d7-9813-4d7a-b443-36caa78f664c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "15dd692a-8b32-4129-879f-86aa95ffaa3c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3e065dc2-b2a5-4915-869a-1f9db019f006")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -1.25 -2.8)
+		(end -1.25 2.8)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "cca5d2a5-02f5-4411-bd3e-8128c7575e85")
+	)
+	(fp_line
+		(start 1.25 -2.8)
+		(end 1.25 2.8)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ac40f704-339d-45c4-b6c8-7deecd23a9ce")
+	)
+	(fp_rect
+		(start -1.397 -3.4925)
+		(end 1.397 3.4925)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "3f8e2d31-4e7d-4a9b-ae5c-1ba75455a649")
+	)
+	(pad "1" smd rect
+		(at 0 -2.54)
+		(size 1 1.6)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "dc194ae1-4b4a-4b17-bd2c-dfcb5e38d41b")
+	)
+	(pad "2" smd rect
+		(at 0 2.54)
+		(size 1 1.6)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "e65bd1c3-9188-48bb-9b4e-176dbccd86cd")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/CHS-01TA.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 90)
+		)
+	)
+)

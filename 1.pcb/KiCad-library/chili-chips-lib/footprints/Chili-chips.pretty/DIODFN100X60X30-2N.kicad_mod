@@ -1,0 +1,174 @@
+(footprint "DIODFN100X60X30-2N"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -0.8382 0)
+		(layer "F.SilkS")
+		(uuid "d3bf1131-bed3-4a67-bb6a-24d53ccea1bb")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "DIODFN100X60X30-2N"
+		(at 5.3152 1.2064 0)
+		(layer "F.Fab")
+		(uuid "3ae91d83-683c-4a5e-acb1-9e899755f1bb")
+		(effects
+			(font
+				(size 0.64 0.64)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7c3b76f0-29ad-4a3b-a2da-d0bb72cdbbf8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b63be35b-6c3d-4c6f-9378-417ba8ea1270")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d2c715d5-a0e6-4726-8a00-ab4cfdbdeb14")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.5588 -0.3556)
+		(end -0.5588 0.3556)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "488db645-cf3a-4317-af8b-ef25984b746c")
+	)
+	(fp_line
+		(start -0.5588 0.3556)
+		(end -0.1778 0.3556)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "e21c6e03-b395-4442-a22e-fbb141dd6f8f")
+	)
+	(fp_line
+		(start -0.1778 -0.3556)
+		(end -0.5588 -0.3556)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "2b4ecb0e-5e48-4814-88da-4ecbcca9a2b2")
+	)
+	(fp_rect
+		(start -0.635 -0.4318)
+		(end 0.635 0.4318)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "f844239c-0a1f-4dcf-9c90-a6ee6fae2b94")
+	)
+	(fp_line
+		(start -0.5 -0.3)
+		(end 0.5 -0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ed0b5a12-3d74-4892-82f2-4c89c57b31d4")
+	)
+	(fp_line
+		(start -0.5 0.3)
+		(end -0.5 -0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "6a61da0f-af88-4d89-ac5c-f5196a9fcc74")
+	)
+	(fp_line
+		(start 0.5 -0.3)
+		(end 0.5 0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "b02cf585-036e-4f5d-a9d2-ed8b22e126e7")
+	)
+	(fp_line
+		(start 0.5 0.3)
+		(end -0.5 0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cf12f9ce-f108-4887-931a-cba220b5a98a")
+	)
+	(pad "A" smd roundrect
+		(at 0.325 0)
+		(size 0.27 0.52)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.125)
+		(solder_mask_margin 0.0508)
+		(uuid "4069f621-908d-4777-b96b-727465b32c1e")
+	)
+	(pad "C" smd roundrect
+		(at -0.325 0)
+		(size 0.27 0.52)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.125)
+		(solder_mask_margin 0.0508)
+		(uuid "60b293cc-0987-4553-9818-6dd3e867c0f7")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/SOD993.step"
+		(offset
+			(xyz -0.5 0.3 0.25)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 180 180)
+		)
+	)
+)

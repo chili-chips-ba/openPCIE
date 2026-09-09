@@ -1,0 +1,216 @@
+(footprint "SON127P600X500X80-9NC"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "10.1 8-Pad WSON 6x5-mm")
+	(tags "FLASH NOR")
+	(property "Reference" "REF**"
+		(at 0 -3.2385 0)
+		(layer "F.SilkS")
+		(uuid "4ef7a8ac-44b1-44a0-8452-272442df053f")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "SON127P600X500X80-9NC"
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "60a49cf4-eaae-42e7-8b72-3abcc5b82f47")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d886865d-a1b6-44c3-a2be-23aba59bd419")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6a3957df-afd0-4801-8b90-8e49e0c75122")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d6f8550d-2c2f-47d7-ab73-40c589a2cc8f")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_circle
+		(center -3.7465 -1.905)
+		(end -3.7465 -1.78)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "232dcb71-ee97-4258-b13c-fea7c06f7c13")
+	)
+	(fp_rect
+		(start -3.4925 -2.667)
+		(end 3.4925 2.667)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "6a396943-a650-4a8a-853f-7873d4430c15")
+	)
+	(fp_line
+		(start -3 -2.5)
+		(end 3 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0c45d963-2e31-4f69-8bd1-aff2533417c9")
+	)
+	(fp_line
+		(start -3 -1)
+		(end -1.5 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ebeb3a9d-9276-4626-90b2-0b8934f5d775")
+	)
+	(fp_line
+		(start -3 2.5)
+		(end -3 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c1464acd-e8fa-4549-8acc-2847ebf6f0b3")
+	)
+	(fp_line
+		(start 3 -2.5)
+		(end 3 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "842144fb-ca95-411f-829c-382cd13b4621")
+	)
+	(fp_line
+		(start 3 2.5)
+		(end -3 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "317663ab-1f7f-4190-b107-937cc0607834")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "ec9063fe-fea1-4d18-b3f3-7f148cc6ea57")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -2.85 -1.905 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "e9f47ec2-544d-4535-b848-903b67da977b")
+	)
+	(pad "2" smd rect
+		(at -2.85 -0.635 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "a6aaab52-e018-4d89-beb5-cc047b8919a7")
+	)
+	(pad "3" smd rect
+		(at -2.85 0.635 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "3398ccc9-d24d-4be0-a333-3ab89512f854")
+	)
+	(pad "4" smd rect
+		(at -2.85 1.905 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "d0a7f485-3838-4db0-8812-dd84c252d1db")
+	)
+	(pad "5" smd rect
+		(at 2.85 1.905 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "a81958f9-289a-46d0-bc26-06b475062cbb")
+	)
+	(pad "6" smd rect
+		(at 2.85 0.635 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "2a2388e7-3d88-4a91-8c31-56ac6ea6ce7e")
+	)
+	(pad "7" smd rect
+		(at 2.85 -0.635 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "75cee0f7-42c5-48ae-b260-9a5212e4fcfd")
+	)
+	(pad "8" smd rect
+		(at 2.85 -1.905 90)
+		(size 0.45 1.05)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "838a7809-c511-461c-b1e8-ec07642bf794")
+	)
+	(pad "9" smd rect
+		(at 0 0)
+		(size 3.45 4.35)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "38628e4e-9330-4a59-b63c-cc857eafb07c")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/W25Q64JWZPIQ.stp"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

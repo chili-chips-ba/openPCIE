@@ -1,0 +1,228 @@
+(footprint "B2B-PH-K-S"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(tags "B2B-PH-K-S ")
+	(property "Reference" "REF**"
+		(at -2.12 -2.55 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "3d15d63d-2e33-4144-8a79-cafee424fa51")
+		(effects
+			(font
+				(size 1.016 1.016)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "CONN2_B2B-PH-K-S_JST"
+		(at -1 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "588b905e-f9d5-4d09-a6a1-72836e4edeec")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0ab1871b-68bb-4eb1-85cf-2a94fbb72682")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "099bc208-6dcd-4498-9096-05fb6cccb449")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "59f82f98-2be5-42a1-9fa2-ad380575d350")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -4.0734 -1.827)
+		(end -4.0734 2.922801)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e023d893-447b-4563-acb3-2409d5497c7f")
+	)
+	(fp_line
+		(start -4.0734 2.922801)
+		(end 2.0734 2.922801)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "16789ff2-f548-48d3-931b-ab55e67f2b55")
+	)
+	(fp_line
+		(start 2.0734 -1.827)
+		(end -4.0734 -1.827)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "cfeea109-9aaf-47fd-b71c-b7fa2adf044e")
+	)
+	(fp_line
+		(start 2.0734 2.922801)
+		(end 2.0734 -1.827)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0320b577-762c-473b-932a-51de342a163e")
+	)
+	(fp_line
+		(start -4.2004 -1.954)
+		(end -4.2004 3.049801)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b466037f-32af-4a87-a195-8d6c34d8f79b")
+	)
+	(fp_line
+		(start -4.2004 3.049801)
+		(end 2.2004 3.049801)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "86f5b780-3bed-4453-a244-e83bb2293ba6")
+	)
+	(fp_line
+		(start 2.2004 -1.954)
+		(end -4.2004 -1.954)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "6b32640d-eb6f-4949-bdbe-83cf98195981")
+	)
+	(fp_line
+		(start 2.2004 3.049801)
+		(end 2.2004 -1.954)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b7bcc2b6-bb42-47d9-901f-00bd5f227b6c")
+	)
+	(fp_line
+		(start -3.9464 -1.7)
+		(end -3.9464 2.795801)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "36e71891-41d6-4690-a772-3c049ea3df2f")
+	)
+	(fp_line
+		(start -3.9464 2.795801)
+		(end 1.9464 2.795801)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "466c9d94-848a-4a24-995a-1172a83e74e6")
+	)
+	(fp_line
+		(start 1.9464 -1.7)
+		(end -3.9464 -1.7)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "bbb6c09b-6cbe-4e65-871d-42fefe86dfea")
+	)
+	(fp_line
+		(start 1.9464 2.795801)
+		(end 1.9464 -1.7)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "66686962-b505-47c6-9b8f-f895797c912f")
+	)
+	(fp_text user "${REFERENCE}"
+		(at -1 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "00f2af65-7579-4a2a-b636-daba2079f679")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 0 0)
+		(size 1.27 1.27)
+		(drill 0.762)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.2)
+		(uuid "df4f920f-cb72-45e6-a6c2-145b8c89992d")
+	)
+	(pad "2" thru_hole circle
+		(at -2.000001 0)
+		(size 1.27 1.27)
+		(drill 0.762)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6da452d7-acd0-43ed-bf7a-9343dd1d9583")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/B2B-PH-K-S-GW--3DModel-STEP-56544.STEP"
+		(offset
+			(xyz -1 -0.55 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 180)
+		)
+	)
+)

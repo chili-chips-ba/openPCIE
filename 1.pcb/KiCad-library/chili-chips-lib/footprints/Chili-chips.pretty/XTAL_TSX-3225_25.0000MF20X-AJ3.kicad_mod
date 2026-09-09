@@ -1,0 +1,227 @@
+(footprint "XTAL_TSX-3225_25.0000MF20X-AJ3"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -2.4765 0)
+		(layer "F.SilkS")
+		(uuid "d2ed42c9-d96e-4fd6-9a38-43103d8d3f2d")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "XTAL_TSX-3225_25.0000MF20X-AJ3"
+		(at 17.425 2.885 0)
+		(layer "F.Fab")
+		(uuid "d2468dea-7300-48f1-80e9-33baf081e89b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7eb8ac9d-f186-4a16-aa75-168c91e0f75e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b2b2f001-1861-4568-aaac-eab9e2e0ede3")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1b3f1c85-fa72-423d-9756-d4a8414e7c8a")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -1.25 -0.08)
+		(end -1.25 0.08)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f75c45b2-665b-4724-9cfd-bdbcb769f7d7")
+	)
+	(fp_line
+		(start 1.25 -0.08)
+		(end 1.25 0.08)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "72988907-0d1b-40fc-bab1-640cac9e6af7")
+	)
+	(fp_circle
+		(center -1.778 -1.1)
+		(end -1.678 -1.1)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "7278092e-462f-48e3-a641-9c44c003d867")
+	)
+	(fp_line
+		(start -1.625 -2.05)
+		(end -1.625 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "0bbfba81-77c6-47cc-983d-2d928fcbf0c6")
+	)
+	(fp_line
+		(start -1.625 -2.05)
+		(end 1.625 -2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "9f84ed02-b42f-4097-911f-b70d66e16602")
+	)
+	(fp_line
+		(start 1.625 -2.05)
+		(end 1.625 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "d5b4d711-3584-4966-b416-3f0d5ac8f472")
+	)
+	(fp_line
+		(start 1.625 2.05)
+		(end -1.625 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c6f8a0fa-0ed0-44f5-9d68-8133d037463c")
+	)
+	(fp_line
+		(start -1.25 -1.6)
+		(end -1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cc132e4c-b99a-4c37-86b8-767e68f2b3d2")
+	)
+	(fp_line
+		(start -1.25 -1.6)
+		(end 1.25 -1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8697b92d-4bfa-4640-b3fd-b618f26cafab")
+	)
+	(fp_line
+		(start 1.25 -1.6)
+		(end 1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "83de4ddc-a59c-42a7-bc71-77e810dcedc8")
+	)
+	(fp_line
+		(start 1.25 1.6)
+		(end -1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "000590d3-38af-486d-9b0d-42465565142e")
+	)
+	(fp_circle
+		(center -1.778 -1.1)
+		(end -1.678 -1.1)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.Fab")
+		(uuid "fe9262ba-ac15-480e-9f77-d4310a927a9e")
+	)
+	(pad "1" smd rect
+		(at -0.8 -1.1)
+		(size 1.15 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "2e119ac2-096e-44ac-b22a-9726ebf9eb4e")
+	)
+	(pad "2" smd rect
+		(at -0.8 1.1)
+		(size 1.15 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "f2b71c58-3806-4f4b-b813-92bf392482f4")
+	)
+	(pad "3" smd rect
+		(at 0.8 1.1)
+		(size 1.15 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "80f53d1a-1c92-41a6-a9ec-79865f883f92")
+	)
+	(pad "4" smd rect
+		(at 0.8 -1.1)
+		(size 1.15 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "fab11594-b8e5-4bb1-a7d6-f96957210c86")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/TSX-3225_25.0000MF20X-AJ3.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)

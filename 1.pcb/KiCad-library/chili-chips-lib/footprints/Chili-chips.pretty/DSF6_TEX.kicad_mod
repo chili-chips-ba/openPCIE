@@ -1,0 +1,220 @@
+(footprint "DSF6_TEX"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(tags "SN74LVC2G17DSFR ")
+	(property "Reference" "REF**"
+		(at 0 -1.2 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "0b10536f-31c3-490c-b57b-d1608c289be0")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.127)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "DSF6_TEX"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "3722665a-7664-4cf0-a392-0f7ae5c3b6c8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e75a6384-6a91-40b4-a816-ed8c0385898b")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bb3fd6d7-8e7a-4899-b47e-5c45aa939b0e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.81 -0.66)
+		(end -0.81 -0.22)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6b864f9e-feac-43d0-bbca-3b03aad2eac5")
+	)
+	(fp_line
+		(start 0.05 -0.66)
+		(end -0.81 -0.66)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e7f5259d-4f07-4e06-a120-d88705e56bb1")
+	)
+	(fp_line
+		(start 0.755 0.68)
+		(end -0.755 0.68)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b5155d54-4ef3-45eb-9023-a9b63e64dff0")
+	)
+	(fp_rect
+		(start -0.81 -0.66)
+		(end 0.81 0.68)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "5973d992-d2c4-4f2e-bc15-d9e8ea373a04")
+	)
+	(fp_line
+		(start -0.525 -0.525)
+		(end -0.525 0.525)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1d7a6201-9ae6-4051-b3d0-6c2f9c093e84")
+	)
+	(fp_line
+		(start -0.525 0.525)
+		(end 0.525 0.525)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d37683b9-ca38-42d4-8210-03aabdab5914")
+	)
+	(fp_line
+		(start 0.525 -0.525)
+		(end -0.525 -0.525)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "006f3dc4-dcc3-48ca-8f46-b008868eec1b")
+	)
+	(fp_line
+		(start 0.525 0.525)
+		(end 0.525 -0.525)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "66c1e42b-b12a-42e2-9905-ed871af37e04")
+	)
+	(fp_arc
+		(start 0.3048 -0.525)
+		(mid 0 -0.2202)
+		(end -0.3048 -0.525)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0c2e4d3a-6512-47b6-be39-9610047df181")
+	)
+	(fp_circle
+		(center -0.07 -0.35)
+		(end 0.0062 -0.35)
+		(stroke
+			(width 0.0254)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "e921e971-c53f-4d79-b5b7-60bb481819f1")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "fe652403-bfb5-4232-bf49-7fd6c82c8557")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -0.335001 -0.349999)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "02563849-ee8a-4b5e-80f5-df212f2df9e6")
+	)
+	(pad "2" smd rect
+		(at -0.335001 0)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "ea802c75-50cb-4009-9d49-c41ad2577199")
+	)
+	(pad "3" smd rect
+		(at -0.335001 0.349999)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "793fb5ac-f320-49c8-904b-7895c98e2f97")
+	)
+	(pad "4" smd rect
+		(at 0.335001 0.349999)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "3a7143b9-8ea7-4f88-a5b0-bc0cdd2f5a15")
+	)
+	(pad "5" smd rect
+		(at 0.335001 0)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "aad8a126-6b19-4d37-a273-2f23ebe34d15")
+	)
+	(pad "6" smd rect
+		(at 0.335001 -0.349999)
+		(size 0.53 0.2)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "0170b409-5f5b-405d-b1bc-f20573dc0fec")
+	)
+	(embedded_fonts no)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/DSF0006A.stp"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

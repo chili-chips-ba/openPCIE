@@ -1,0 +1,27 @@
+{
+  "$schema": "https://go.kicad.org/pcm/schemas/v1",
+  "name": "av_lib",
+  "description": "Simboli, footprinti i 3D modeli za moje projekte.",
+  "description_full": "Simboli, footprinti i 3D modeli za moje projekte. Paket sadrži foldere: symbols (kicad_sym), footprints (pretty) i 3dmodels (STEP).",
+  "identifier": "xyz.av.lib",
+  "type": "library",
+  "author": {
+    "name": "Anes Vrce",
+    "contact": { "email": "avrce1@etf.unsa.ba" }
+  },
+  "maintainer": {
+    "name": "Anes Vrce",
+    "contact": { "email": "avrce1@etf.unsa.ba" }
+  },
+  "license": "MIT",
+  "resources": {
+    "homepage": "https://example.com/av_lib"
+  },
+  "versions": [
+    {
+      "version": "1.0.0",
+      "status": "stable",
+      "kicad_version": "9.0"
+    }
+  ]
+}

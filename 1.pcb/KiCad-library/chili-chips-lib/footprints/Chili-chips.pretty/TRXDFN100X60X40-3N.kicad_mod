@@ -1,0 +1,231 @@
+(footprint "TRXDFN100X60X40-3N"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0.46 -0.87 0)
+		(layer "F.SilkS")
+		(uuid "b61d4e98-1676-4343-94a2-a428a09d4d1a")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "TRXDFN100X60X40-3N"
+		(at 4.7364 1.0928 0)
+		(layer "F.Fab")
+		(uuid "e678f03c-9640-4fbd-a310-34e819ea5709")
+		(effects
+			(font
+				(size 0.48 0.48)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "51e22323-85a9-4333-a6c3-9d0e7a320f55")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1e461293-5b2a-4010-90f1-f3a7c5f2800d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8c608500-d02f-4725-9d7d-c60c383d7ec6")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.64 -0.45)
+		(end -0.64 0.34)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "28095ba2-f5c5-414e-ad95-b09958b310c4")
+	)
+	(fp_line
+		(start 0.52 -0.45)
+		(end -0.64 -0.45)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "409220da-d9e7-4ed5-a4d3-03b31a121547")
+	)
+	(fp_poly
+		(pts
+			(xy -0.515 -0.31) (xy -0.135 -0.31) (xy -0.135 -0.04) (xy -0.515 -0.04)
+		)
+		(stroke
+			(width 0.01)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.Mask")
+		(uuid "661b898a-6022-4239-b848-87ed01f4615c")
+	)
+	(fp_poly
+		(pts
+			(xy -0.515 0.04) (xy -0.135 0.04) (xy -0.135 0.31) (xy -0.515 0.31)
+		)
+		(stroke
+			(width 0.01)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.Mask")
+		(uuid "854bd8eb-8a29-4c52-a68f-1db59a152b6d")
+	)
+	(fp_poly
+		(pts
+			(xy 0.135 -0.31) (xy 0.515 -0.31) (xy 0.515 0.31) (xy 0.135 0.31)
+		)
+		(stroke
+			(width 0.01)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.Mask")
+		(uuid "3dda9a87-8268-40e8-bad4-b64afec54933")
+	)
+	(fp_line
+		(start -0.75 -0.55)
+		(end -0.75 0.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "97921a51-f4db-436e-9014-65474410c4ff")
+	)
+	(fp_line
+		(start -0.75 0.55)
+		(end 0.75 0.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "91981fe4-557a-471e-bc33-8e81bb2281df")
+	)
+	(fp_line
+		(start 0.75 -0.55)
+		(end -0.75 -0.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3489cc95-75b5-4fb9-8ea2-5dd16e1c1e24")
+	)
+	(fp_line
+		(start 0.75 0.55)
+		(end 0.75 -0.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "9b129c8e-9e99-4639-8c0e-47295524a278")
+	)
+	(fp_line
+		(start -0.5 -0.3)
+		(end -0.5 0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "58cd99a9-8949-4674-9977-c92734fe1fef")
+	)
+	(fp_line
+		(start -0.5 0.3)
+		(end 0.5 0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3f1ac820-16dc-48a0-a55c-298ef96fd932")
+	)
+	(fp_line
+		(start 0.5 -0.3)
+		(end -0.5 -0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0514c34c-3d36-4c21-a216-f040321ccc0b")
+	)
+	(fp_line
+		(start 0.5 0.3)
+		(end 0.5 -0.3)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8259557e-46de-4d63-ad81-3c2a24c82c77")
+	)
+	(pad "B" smd rect
+		(at -0.325 -0.175)
+		(size 0.28 0.17)
+		(layers "F.Cu" "F.Paste")
+		(uuid "bd3d2f43-7618-4392-91a9-318215fe1bbe")
+	)
+	(pad "C" smd rect
+		(at 0.325 0)
+		(size 0.28 0.52)
+		(layers "F.Cu" "F.Paste")
+		(uuid "f9d5f4e9-59d8-460c-bd30-0419f83bbf95")
+	)
+	(pad "E" smd rect
+		(at -0.325 0.175)
+		(size 0.28 0.17)
+		(layers "F.Cu" "F.Paste")
+		(uuid "2dbdc3a3-a7e3-46ec-a85a-522febfbaba4")
+	)
+	(model "${KICAD7_3RD_PARTY}/3dmodels/xyz_chili-chips_kicad/BC846BLP4-7B.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)
