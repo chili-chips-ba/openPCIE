@@ -499,6 +499,7 @@ These results confirm that PCIe link initialization and RC-to-EP data transfer o
 - [An interesting PCIE tidbit: Peer-to-Peer communicaton](https://xilinx.github.io/XRT/master/html/p2p.html). Also see [this](https://xillybus.com/tutorials/pci-express-tlp-pcie-primer-tutorial-guide-1)
 - [NetTLP - An invasive method for intercepting PCIE TLPs](https://haeena.dev/nettlp)
 - [PCIe on STM32MP257 with ngscopeclient](https://www.youtube.com/watch?v=qxdK3mjHNBM)
+- [opensource PCIE Controller](https://www.mdpi.com/2076-3417/16/7/3409)
 
 
 --------------------
@@ -529,6 +530,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 ### Crowd Supply Campaign
  - [Info Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control)
  - [Hackster](https://www.hackster.io/chili-chips-ba/openpcie-backplane-76fdb0)
+ - [Elecrow](https://www.hackster.io/ElecrowOfficial/projects)
 
 <p align="center">
   <img width="25%" src="0.doc/artwork/CrowdSupply.logo.png">
