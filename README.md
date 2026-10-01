@@ -526,7 +526,17 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <img width="25%" src="0.doc/artwork/EEZ-web-logo.png">
 </p>
 
+### Crowd Supply Campaign
+ - [Info Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control)
+ - [Hackster](https://www.hackster.io/chili-chips-ba/openpcie-backplane-76fdb0)
+
+<p align="center">
+  <img width="25%" src="0.doc/artwork/CrowdSupply.logo.png">
+  <img width="25%" src="0.doc/artwork/Hackster-logo.png">
+</p>
+ 
 ### Public posts:
+- [2026-09-15](https://www.linkedin.com/posts/chili-chips_opensource-pcie-activity-7505034443674251264-eed-?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2026-06-23](https://www.linkedin.com/posts/andrew-e-wilson_its-fun-bringing-all-the-fpga-vendors-together-share-7475267075234607104-j50-)
 - [2026-01-26](https://www.linkedin.com/posts/chili-chips_fpga-pcie-riscv-activity-7421756737285734400-Lzlv?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2025-12-19](https://www.linkedin.com/posts/chili-chips_opensource-fpga-gatemate-activity-7407180369269223424-laCE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
