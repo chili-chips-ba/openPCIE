@@ -273,6 +273,8 @@ Check [here](https://e2e.ti.com/support/power-management-group/power-management/
 
 When the backplane comes out of the reflow oven with all components soldered, and before loading it with boards for the full functional testing, we first must check the basic power, reset and clock generation circuits. See our [PCBA_Functional_Test_Procedure](0.doc/PCBA_Functional_Test_Procedure.pdf) documents for the complete detail on how to go about it.
 
+# Crowd Supply Campaign
+ - [Web Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control)
 
 -----
 
