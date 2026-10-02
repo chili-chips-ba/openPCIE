@@ -536,6 +536,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <img width="25%" src="0.doc/artwork/CrowdSupply.logo.png">
   <img width="25%" src="0.doc/artwork/Hackster-logo.png">
   <img width="25%" src="0.doc/artwork/Elecrow-logo.png">
+  <img width="25%" src="0.doc/artwork/kickstarter.logo.png">
 </p>
  
 ### Public posts:
