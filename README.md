@@ -537,7 +537,12 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <img width="25%" src="0.doc/artwork/Hackster-logo.png">
   <img width="25%" src="0.doc/artwork/Elecrow-logo.png">
   <img width="25%" src="0.doc/artwork/kickstarter.logo.png">
-</p>
+  <img width="25%" src="0.doc/artwork/symbioticeda.logo.png">
+  <img width="25%" src="0.doc/artwork/openXC7.logo.png">
+  <img width="25%" src="0.doc/artwork/kicad_logo.png">
+  <img width="25%" src="0.doc/artwork/openEMS.logo.short.noBG.JPG">
+  <img width="25%" src="0.doc/artwork/oshw-logo-filled-black.png">
+  </p>
  
 ### Public posts:
 - [2026-09-15](https://www.linkedin.com/posts/chili-chips_opensource-pcie-activity-7505034443674251264-eed-?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
