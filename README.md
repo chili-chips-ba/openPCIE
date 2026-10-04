@@ -533,16 +533,25 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
  - [Elecrow](https://www.hackster.io/ElecrowOfficial/projects)
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/CrowdSupply.logo.png">
+  <img width="50%" src="0.doc/artwork/CrowdSupply.logo.png">
+  <img width="20%" src="0.doc/artwork/oshw-logo-filled-black.png">
+</p>  
+
+<p align="center">
   <img width="25%" src="0.doc/artwork/Hackster-logo.png">
   <img width="25%" src="0.doc/artwork/Elecrow-logo.png">
   <img width="25%" src="0.doc/artwork/kickstarter.logo.png">
+</p> 
+
+<p align="center">
   <img width="25%" src="0.doc/artwork/symbioticeda.logo.png">
-  <img width="25%" src="0.doc/artwork/openXC7.logo.png">
+  <img width="80%" src="0.doc/artwork/openXC7.logo.png">
+</p>   
+
+<p align="center">
   <img width="25%" src="0.doc/artwork/kicad_logo.png">
-  <img width="25%" src="0.doc/artwork/openEMS.logo.short.noBG.JPG">
-  <img width="25%" src="0.doc/artwork/oshw-logo-filled-black.png">
-  </p>
+  <img width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png">
+</p>
  
 ### Public posts:
 - [2026-09-15](https://www.linkedin.com/posts/chili-chips_opensource-pcie-activity-7505034443674251264-eed-?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
