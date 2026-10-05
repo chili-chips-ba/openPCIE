@@ -20,7 +20,7 @@ The board is designed for flexible PCIe system development and testing, featurin
 - Innovative RC Connector Design:
   - Allows natively EndPoint cards to function as a RootComplex without hardware modification.
 
-Designed with **KiCad 9.0.5**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
+Designed with **KiCad 10.0.6**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
 ### Common Resources
 

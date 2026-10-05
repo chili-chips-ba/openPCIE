@@ -1,5 +1,5 @@
 This repository contains the Symbols, Footprint, and 3D Models for the Chili.CHIPS projects.
-The libraries in this repository are intended to be used with KiCad version 9.
+The libraries in this repository are intended to be used with KiCad version 10.
 
 ### Installation
 
@@ -9,7 +9,7 @@ Additionally, it is recommended that you install the EEZ KiCad library available
 
 ### Configuration
 
-The installed libraries will be available in the `KICAD9_3RD_PARTY` folder, which you can define under `Preferences -> Configure Paths...` from the KiCad main menu:
+The installed libraries will be available in the `KICAD10_3RD_PARTY` folder, which you can define under `Preferences -> Configure Paths...` from the KiCad main menu:
 
 ![path config1](images/path_config1.png)
 
