@@ -213,6 +213,8 @@ In the example above, when the M.2 connector acts as the signal generator and th
 The key is to eliminate or minimize the second, third, and subsequent `reflected waves`, keeping only the primary, `incident wave` that carries the valid data.
 
 ## Signal Integrity (SI) Sims
+Signal integrity was validated with [openEMS](https://docs.openems.de) electro-magnetic simulations of the high-speed traces.
+
 The following videos demonstrate signal reflections on a transmission line in two different cases:
 
 - **Transmission line with stub** – see video below
@@ -223,7 +225,7 @@ https://github.com/user-attachments/assets/f051aea8-5269-4e07-8074-357f93c2e468
 
 https://github.com/user-attachments/assets/b43a36d0-c9cd-4929-85f8-a3717680f151
   
-The following five wiring topologies are examined in Electro-Magnetic Simulations (EMS):
+The following four wiring topologies are examined in openEMS Electro-Magnetic Simulations (EMS):
 - `Bad` **Long stubs**. For understanding of _Incident_ and _Reflected_ waves
 - `One-2-One` **Point-to-Point**. This is the standard and simplest, i.e. the baseline case
 - `One-2-Two` **Point-to-Multipoint**. Unique for high-speed

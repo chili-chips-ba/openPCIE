@@ -37,7 +37,7 @@ Such approach is less work and less risk than to design our own PCIE motherboard
 
  - [x] ✔ Create requirements document.
  - [x] ✔ Select components. Schematic and PCB layout design.
- - [x] ✔ Review and iterate design to ensure robust operation at 5GHz, possibly using openEMS for simulation of high-speed traces.
+ - [x] ✔ Review and iterate design to ensure robust operation at 5GHz, using openEMS for simulation of high-speed traces.
  - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
  - [x] ✔ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
