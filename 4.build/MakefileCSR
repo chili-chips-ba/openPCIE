@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -53,8 +53,9 @@ PKRDLMD   = $(GENDIR)/$(RDLPCIETOP).md
 # The tools do not emit SPDX headers, and the repository is REUSE-linted, so
 # every generated text file gets stamped right after it is written.
 # csr_cosim.rdl needs no stamping -- sed copies csr.rdl verbatim, header and all.
+# REUSE-IgnoreStart  (the SPDX tags below are text this make file writes, not its own)
 define spdx_c
-@printf '%s\n' '// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba' \
+@printf '%s\n' '// SPDX-FileCopyrightText: 2026 Chili.CHIPS' \
                '//' \
                '// SPDX-License-Identifier: BSD-3-Clause' \
                '' | cat - $(1) > $(1).spdx && mv $(1).spdx $(1)
@@ -62,12 +63,13 @@ endef
 
 define spdx_md
 @printf '%s\n' '<!--' \
-               'SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba' \
+               'SPDX-FileCopyrightText: 2026 Chili.CHIPS' \
                '' \
                'SPDX-License-Identifier: BSD-3-Clause' \
                '-->' \
                '' | cat - $(1) > $(1).spdx && mv $(1).spdx $(1)
 endef
+# REUSE-IgnoreEnd
 
 all: $(COSIMHDR) $(HWHDR) rtl $(PKRDLHTML) $(PKRDLMD)
 

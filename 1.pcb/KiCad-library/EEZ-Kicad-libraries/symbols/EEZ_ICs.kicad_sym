@@ -52,7 +52,7 @@
 				)
 			)
 		)
-		(property "Description" "Quad buffer/line driver; 3-state"
+		(property "MPN" "74HC126PW,118"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -63,31 +63,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "1727-6579-1-ND"
-			(at 0 -10.16 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-HC126PW118"
-			(at 0 -12.7 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "SN74HC126PW"
-			(at 0 -15.24 0)
-			(show_name yes)
+		(property "Description" "Quad buffer/line driver; 3-state"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -572,8 +550,8 @@
 				)
 			)
 		)
-		(property "Description" "Dual Inverter Gate"
-			(at 0 -10.795 0)
+		(property "MPN" "74HC2G04GW,125"
+			(at 1.2722 0.0931 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -583,47 +561,14 @@
 				)
 			)
 		)
-		(property "DigiKey" "1727-6045-1-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
+		(property "Description" "Dual Inverter Gate"
+			(at 0 -10.795 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-74LVC2G04GW-G"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "74HC2G04GW.125"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C730244"
-			(at -0.508 -22.098 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -876,8 +821,8 @@
 				)
 			)
 		)
-		(property "Description" "Quad 2-input NAND gate"
-			(at 0 -10.16 0)
+		(property "MPN" "SN74LVC00APWR"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -887,42 +832,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "296-1216-1-ND"
-			(at 0 -12.7 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-74LVC00APW-T"
-			(at 2.54 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "SN74LVC00APWR"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C7803"
-			(at 0 -20.32 0)
-			(show_name yes)
+		(property "Description" "Quad 2-input NAND gate"
+			(at 0 -10.16 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -1434,6 +1346,18 @@
 				)
 			)
 		)
+		(property "MPN" "ADUM3166BRSZ"
+			(at 12.192 -28.702 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "3.75 kV RMS Digital Isolators for Isolated USB 2.0 High, Full, and Low Speed"
 			(at 17.018 -30.734 0)
 			(show_name no)
@@ -1442,39 +1366,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "505-ADUM3166BRSZ-ND"
-			(at 11.43 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "584-ADUM3166BRSZ"
-			(at 9.906 -34.798 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 2.286 -36.576 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -1967,6 +1858,18 @@
 				)
 			)
 		)
+		(property "MPN" "ADUM3166BRSZ"
+			(at 12.192 -28.702 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "3.75 kV RMS Digital Isolators for Isolated USB 2.0 High, Full, and Low Speed"
 			(at 17.018 -30.734 0)
 			(show_name no)
@@ -1975,39 +1878,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "505-ADUM3166BRSZ-ND"
-			(at 11.43 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "584-ADUM3166BRSZ"
-			(at 9.906 -34.798 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 2.286 -36.576 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -2850,53 +2720,21 @@
 				)
 			)
 		)
-		(property "Description" "256 Mbit Double-Data-Rate OPI/HPI Xccela PSRAM"
-			(at 0 -63.5 0)
+		(property "MPN" "APS256XXN-OBR-BG"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "-"
-			(at 0 -68.58 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "878-APS256XXN-OB9-BG"
-			(at 0 -71.12 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -73.66 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C42963059"
-			(at 0 -76.2 0)
-			(show_name yes)
+		(property "Description" "256 Mbit Double-Data-Rate OPI/HPI Xccela PSRAM"
+			(at 0 -63.5 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -3424,6 +3262,17 @@
 				)
 			)
 		)
+		(property "MPN" "M24C32"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" "I2C-Compatible (2-Wire) Serial EEPROM"
 			(at 0 0 0)
 			(show_name no)
@@ -3658,8 +3507,8 @@
 				)
 			)
 		)
-		(property "Description" "3.3 V, 1A, 3-terminal regulator"
-			(at 0 -10.16 0)
+		(property "MPN" "AZ1117CH2-3.3TRG1"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -3669,42 +3518,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "31-AZ1117CH2-3.3TRG1CT-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "621-AZ1117CH2-33TRG1"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "AZ1117CH2-3.3TRG1"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C108492"
-			(at 0 -22.86 0)
-			(show_name yes)
+		(property "Description" "3.3 V, 1A, 3-terminal regulator"
+			(at 0 -10.16 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -3850,7 +3666,7 @@
 				)
 			)
 		)
-		(property "Description" "35V Withstand Voltage 1A LDO Regulator"
+		(property "MPN" "BD00FC0WFP-E2"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3861,31 +3677,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "BD00FC0WFP-E2TR-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "755-BD00FC0WFP-E2"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -20.32 0)
-			(show_name yes)
+		(property "Description" "35V Withstand Voltage 1A LDO Regulator"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -4064,42 +3858,21 @@
 				)
 			)
 		)
-		(property "Description" "2ch Low Side Switch with built-in OCP, TSD, active clamp"
-			(at 0 0 0)
+		(property "MPN" "BM2LB150FJ-CE2"
+			(at 15.24 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "BM2LB150FJ-CE2TR-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "755-BM2LB150FJ-CE2"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -20.32 0)
-			(show_name yes)
+		(property "Description" "2ch Low Side Switch with built-in OCP, TSD, active clamp"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -4339,8 +4112,8 @@
 				)
 			)
 		)
-		(property "Description" "6-ch, 2-V to 6-V buffers"
-			(at 0 0 0)
+		(property "MPN" "CD74HC4050PWR"
+			(at 1.27 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4350,31 +4123,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "296-9215-1-ND"
-			(at 0 -5.08 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "595-CD74HC4050PWR"
-			(at 0 -7.62 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -10.16 0)
-			(show_name yes)
+		(property "Description" "6-ch, 2-V to 6-V buffers"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -4977,7 +4728,7 @@
 				)
 			)
 		)
-		(property "Description" "Quad CMOS Analog Switches, ± 22 V supply voltage rating"
+		(property "MPN" "DG212BDY-T1-E3"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4988,31 +4739,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "DG212BDY-T1-E3CT-ND "
-			(at 0 -12.7 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "781-DG212BDY-T1-E3"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -17.78 0)
-			(show_name yes)
+		(property "Description" "Quad CMOS Analog Switches, ± 22 V supply voltage rating"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -5999,53 +5728,21 @@
 				)
 			)
 		)
-		(property "Description" "Programmable USB Type‐C Controller w/PD"
-			(at 0 -30.48 0)
+		(property "MPN" "FUSB302BMPX"
+			(at 0 -33.02 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "FUSB302BMPXCT-ND"
-			(at 0 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "512-FUSB302BMPX"
-			(at 0 -43.18 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -45.72 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C132291"
-			(at 0 -40.64 0)
-			(show_name yes)
+		(property "Description" "Programmable USB Type‐C Controller w/PD"
+			(at 0 -30.48 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -6413,8 +6110,8 @@
 				(justify left top)
 			)
 		)
-		(property "Description" "Autonomous USB Type-CE Port Controller with I2C and GPIO Control"
-			(at 0 -30.48 0)
+		(property "MPN" "FUSB303BTMX"
+			(at 29.21 -187.3 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -6422,44 +6119,12 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
-		(property "DigiKey" "488-FUSB303BTMXCT-ND"
-			(at 0 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "863-FUSB303BTMX"
-			(at 0 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C895444"
-			(at 0 -40.64 0)
-			(show_name yes)
+		(property "Description" "Autonomous USB Type-CE Port Controller with I2C and GPIO Control"
+			(at 0 -30.48 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -6750,6 +6415,17 @@
 				)
 			)
 		)
+		(property "MPN" "FUSB340TMX"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" "USB 3.1 SuperSpeed 10 Gbps Switch"
 			(at 0 -12.7 0)
 			(show_name no)
@@ -6760,50 +6436,6 @@
 					(size 1.27 1.27)
 				)
 				(justify bottom)
-			)
-		)
-		(property "DigiKey" "FUSB340TMXCT-ND"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "512-FUSB340TMX"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "FUSB340TMX"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C478457"
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 		(property "ki_keywords" "USB 3.1 super speed switch"
@@ -7216,6 +6848,18 @@
 			)
 		)
 		(property "Datasheet" "IS21EF04GP-JCLI"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+		(property "MPN" "IS21EF04GP-JCLI"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9174,53 +8818,21 @@
 				)
 			)
 		)
-		(property "Description" "4/8GB eMMC in pSLC MODE NAND/eMMC 5.1 Interface"
-			(at 0 -78.74 0)
+		(property "MPN" "IS21EF04GP-JQLI"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "706-IS21EF04GP-JQLI-ND"
-			(at 0 -83.82 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "870-IS21EF04GP-JQLI"
-			(at 0 -86.36 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -88.9 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 0 -91.44 0)
-			(show_name yes)
+		(property "Description" "4/8GB eMMC in pSLC MODE NAND/eMMC 5.1 Interface"
+			(at 0 -78.74 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -10135,6 +9747,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "IS42S16400"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11207,6 +10830,17 @@
 				)
 			)
 		)
+		(property "MPN" "LD1117A"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" "Low drop fixed positive voltage regulator"
 			(at 0 -7.62 0)
 			(show_name no)
@@ -11368,6 +11002,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "LM293D"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11719,8 +11364,8 @@
 				)
 			)
 		)
-		(property "Description" "3-Terminal low current adjustable positive voltage regulator"
-			(at 0 -17.78 0)
+		(property "MPN" "LM317LDR2G"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -11730,42 +11375,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "LM317LDR2GOSCT-ND"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "863-LM317LDR2G"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C7940"
-			(at 0 -27.94 0)
-			(show_name yes)
+		(property "Description" "3-Terminal low current adjustable positive voltage regulator"
+			(at 0 -17.78 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -11978,6 +11590,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" ""
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12202,6 +11825,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" ""
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12438,6 +12072,18 @@
 				)
 			)
 		)
+		(property "MPN" "LSF0102DCH"
+			(at 8.89 -21.59 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "2-Ch Auto-Bidirectional Multi-Voltage Level Translator for OD and PP Applications"
 			(at 10.16 -23.495 0)
 			(show_name no)
@@ -12446,50 +12092,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "1727-LSF0102DCHCT-ND"
-			(at 12.7 -27.94 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "771-LSF0102DCH"
-			(at 12.7 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "LSF0102DCH"
-			(at 12.7 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "LCSC" "C4363955"
-			(at 12.7 -30.48 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -12726,53 +12328,21 @@
 				)
 			)
 		)
-		(property "Description" "4-bit bidirectional level translator open-drain and push-pull"
-			(at 10.16 -25.4 0)
+		(property "MPN" "LSF0204GU12-Q100X"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "1727-LSF0204GU12-Q100XTR-ND"
-			(at 2.54 -30.48 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-LSF0204GU12Q100X"
-			(at 5.08 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 2.54 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C7296193"
-			(at 5.08 -33.02 0)
-			(show_name yes)
+		(property "Description" "4-bit bidirectional level translator open-drain and push-pull"
+			(at 10.16 -25.4 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -13084,7 +12654,7 @@
 				)
 			)
 		)
-		(property "Description" "60V High Current Step-down LED Driver Controller"
+		(property "MPN" "LT3763EFE#PBF"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13095,42 +12665,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "505-LT3763EFE#PBF-ND"
-			(at 0 -45.72 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "584-LT3763EFE#PBF"
-			(at 0 -48.26 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -50.8 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C459912"
-			(at 0 -53.34 0)
-			(show_name yes)
+		(property "Description" "60V High Current Step-down LED Driver Controller"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -13728,7 +13265,7 @@
 				)
 			)
 		)
-		(property "Description" "Zero-Drift operational amplifi er"
+		(property "MPN" "LTC2050HVCS8#PBF"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13739,31 +13276,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "LTC2050HVCS8#PBF-ND"
-			(at 0 -10.16 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "584-LTC2050HVCS8#PBF"
-			(at 0 -12.7 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -15.24 0)
-			(show_name yes)
+		(property "Description" "Zero-Drift operational amplifi er"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -14062,53 +13577,21 @@
 				)
 			)
 		)
-		(property "Description" "Low Noise Dual Supply Inverting Charge Pump"
-			(at 0 -45.72 0)
+		(property "MPN" "LTC3260EMSE#PBF"
+			(at 0 -43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "505-LTC3260EMSE#PBF-ND"
-			(at 0 -48.26 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "584-LTC3260EMSE#PBF"
-			(at 0 -53.34 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -55.88 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C107823"
-			(at 0 -50.8 0)
-			(show_name yes)
+		(property "Description" "Low Noise Dual Supply Inverting Charge Pump"
+			(at 0 -45.72 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -14512,7 +13995,7 @@
 				)
 			)
 		)
-		(property "Description" "0.25ppm Noise, Low Drift Precision Reference"
+		(property "MPN" "LTC6655BHMS8-2.5#TRPBF"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14523,31 +14006,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "505-LTC6655BHMS8-2.5#TRPBFTR-ND"
-			(at 0 -12.7 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "584-C6655BHMS82.5TPF"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -17.78 0)
-			(show_name yes)
+		(property "Description" "0.25ppm Noise, Low Drift Precision Reference"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -14778,7 +14239,7 @@
 				)
 			)
 		)
-		(property "Description" "Precision Fan-Speed Controller with Non-volatile Lookup Table"
+		(property "MPN" "MAX31760AEE+"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14789,31 +14250,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "MAX31760AEE+-ND "
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "700-MAX31760AEE+"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -22.86 0)
-			(show_name yes)
+		(property "Description" "Precision Fan-Speed Controller with Non-volatile Lookup Table"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -15189,7 +14628,7 @@
 				)
 			)
 		)
-		(property "Description" "40ns, Low-Power, 3V/5V, Rail-to-Rail Single-Supply Comparator"
+		(property "MPN" "MAX9141ESA"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15200,31 +14639,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "MAX9141ESA+-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "700-MAX9141ESA"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -20.32 0)
-			(show_name yes)
+		(property "Description" "40ns, Low-Power, 3V/5V, Rail-to-Rail Single-Supply Comparator"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -15577,53 +14994,21 @@
 				)
 			)
 		)
-		(property "Description" "Tiny, Low-Cost, PCM Class D Amplifier with Class AB Performance"
-			(at 0 -43.18 0)
+		(property "MPN" "MAX98357AETE+T"
+			(at 0 -27.94 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "MAX98357AETE+TCT-ND"
-			(at 0 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "700-MAX98357AETE+T"
-			(at 0 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C910544"
-			(at 0 -40.64 0)
-			(show_name yes)
+		(property "Description" "Tiny, Low-Cost, PCM Class D Amplifier with Class AB Performance"
+			(at 0 -43.18 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -16034,53 +15419,21 @@
 				)
 			)
 		)
-		(property "Description" "Single Port USB PD Controller for Source Only"
-			(at 0 -48.26 0)
+		(property "MPN" "MP5031GRE-00A3-Z"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "1589-MP5031GRE-00A3-ZCT-ND"
-			(at 0 -50.8 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "MP5031GRE-00A3-Z"
-			(at 0 -53.34 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -55.88 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 0 -58.42 0)
-			(show_name yes)
+		(property "Description" "Single Port USB PD Controller for Source Only"
+			(at 0 -48.26 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -16555,8 +15908,8 @@
 				(justify left top)
 			)
 		)
-		(property "Description" "NOR Flash Serial NOR 1.8V 256Mbit x8 I/O BGA-24 6x8mm"
-			(at 0 -45.72 0)
+		(property "MPN" "MX25UM25645GXDI00-T"
+			(at 29.21 -194.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -16564,44 +15917,12 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
-		(property "DigiKey" "1092-MX25UM25645GXDI00-ND"
-			(at 0 -50.8 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "95-25UM25645GXDI0T"
-			(at 0 -53.34 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "X25UM25645GXDI00TR"
-			(at 0 -55.88 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C20099946"
-			(at 0 -58.42 0)
-			(show_name yes)
+		(property "Description" "NOR Flash Serial NOR 1.8V 256Mbit x8 I/O BGA-24 6x8mm"
+			(at 0 -45.72 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -17120,53 +16441,21 @@
 				)
 			)
 		)
-		(property "Description" "NAND Flash Memory"
-			(at 0 -93.98 0)
+		(property "MPN" "MX30LF1G28AD-XKI"
+			(at 0 12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "1092-MX30LF1G28AD-XKI-ND"
-			(at 0 -96.52 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "95-30LF1G28ADXKITR"
-			(at 0 -99.06 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "MX30LF1G28AD-XKITR"
-			(at 0 -101.6 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C2913603"
-			(at 0 -104.14 0)
-			(show_name yes)
+		(property "Description" "NAND Flash Memory"
+			(at 0 -93.98 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -18398,53 +17687,21 @@
 				)
 			)
 		)
-		(property "Description" "4G-byte e•MMC™ Memory Consumer Grade"
-			(at 0 -78.74 0)
+		(property "MPN" "MX52LM04A11XVW"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "1092-MX52LM04A11XVW-ND"
-			(at 0 -83.82 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "95-52LM04A11XVWT"
-			(at 0 -86.36 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -88.9 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 0 -91.44 0)
-			(show_name yes)
+		(property "Description" "4G-byte e•MMC™ Memory Consumer Grade"
+			(at 0 -78.74 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -19368,8 +18625,8 @@
 				)
 			)
 		)
-		(property "Description" "Very High Voltage Linear Regulator, 150 V, 100 mA"
-			(at 0 -12.7 0)
+		(property "MPN" "NCP781BMNADJTAG"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -19379,42 +18636,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "NCP781BMNADJTAGOSCT-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "863-NCP781BMNADJTAG"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "NCP781BMNADJTAG"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C603791"
-			(at 0 -17.78 0)
-			(show_name yes)
+		(property "Description" "Very High Voltage Linear Regulator, 150 V, 100 mA"
+			(at 0 -12.7 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -19615,8 +18839,8 @@
 				)
 			)
 		)
-		(property "Description" "Dual Voltage Regulator, Low IQ, Low Dropout, Dual Input, 300 mA"
-			(at 0 -20.32 0)
+		(property "MPN" "NCV8154MW120180TBG"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -19626,42 +18850,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "488-NCV8154MW120180TBGCT-ND"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "863-NCV8154MW120280T"
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -27.94 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C893098"
-			(at 0 -30.48 0)
-			(show_name yes)
+		(property "Description" "Dual Voltage Regulator, Low IQ, Low Dropout, Dual Input, 300 mA"
+			(at 0 -20.32 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -19946,6 +19137,18 @@
 				)
 			)
 		)
+		(property "MPN" "NXS0506GUX"
+			(at 0 -2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "SD 3.0-compatible memory card integrated auto-direction control and level translator with EMI filter and ESD protection"
 			(at -2.54 -30.48 0)
 			(show_name no)
@@ -19954,50 +19157,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "1727-NXS0506GUXCT-ND"
-			(at 12.7 -34.925 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "771-NXS0506GUX"
-			(at 10.16 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 3.81 -36.83 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 4.445 -38.735 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -20376,8 +19535,8 @@
 				)
 			)
 		)
-		(property "Description" "Ultra low-voltage translating 14-bit SPI I/O expander with Agile I/O features, interrupt output and reset"
-			(at 5.08 -55.88 0)
+		(property "MPN" "PCAL9714HNMP"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -20387,42 +19546,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "568-PCAL9714HNMPCT-ND"
-			(at 0 -43.18 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-PCAL9714HNMP"
-			(at 0 -45.72 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -48.26 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C22444745"
-			(at 0 -50.8 0)
-			(show_name yes)
+		(property "Description" "Ultra low-voltage translating 14-bit SPI I/O expander with Agile I/O features, interrupt output and reset"
+			(at 5.08 -55.88 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -20959,8 +20085,8 @@
 				)
 			)
 		)
-		(property "Description" "Ultra low-voltage translating 22-bit SPI I/O expander with Agile I/O features, interrupt output and reset"
-			(at 5.08 -71.12 0)
+		(property "MPN" "PCAL9722HNMP"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -20970,31 +20096,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "568-PCAL9722HNMPTR-ND"
-			(at 0 -60.96 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "771-PCAL9722HNMP"
-			(at 0 -63.5 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -66.04 0)
-			(show_name yes)
+		(property "Description" "Ultra low-voltage translating 22-bit SPI I/O expander with Agile I/O features, interrupt output and reset"
+			(at 5.08 -71.12 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -21677,53 +20781,21 @@
 				)
 			)
 		)
-		(property "Description" "USB 2.0 High-Speed (480 Mbps) Switch with 5V Protection"
-			(at 10.16 -25.4 0)
+		(property "MPN" "PI3USB102ZLEX"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "PI3USB102ZLEXCT-ND"
-			(at 2.54 -30.48 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "729-PI3USB102GZLEX"
-			(at 5.08 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 2.54 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C500797"
-			(at 5.08 -33.02 0)
-			(show_name yes)
+		(property "Description" "USB 2.0 High-Speed (480 Mbps) Switch with 5V Protection"
+			(at 10.16 -25.4 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -22001,53 +21073,21 @@
 				)
 			)
 		)
-		(property "Description" "6-Bit Bi-directional Level Shifter, up to 100 MHz"
-			(at 0 -27.94 0)
+		(property "MPN" "PI4ULS5V106ZHDEX"
+			(at -2.54 12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
 				(font
 					(size 1.27 1.27)
+					(italic yes)
 				)
 			)
 		)
-		(property "DigiKey" "PI4ULS5V106ZHDEXDICT-ND"
-			(at 0 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "729-PI4ULS5V106ZHDEX"
-			(at 0 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C2677456"
-			(at 0 -40.64 0)
-			(show_name yes)
+		(property "Description" "6-Bit Bi-directional Level Shifter, up to 100 MHz"
+			(at 0 -27.94 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -22431,8 +21471,8 @@
 				)
 			)
 		)
-		(property "Description" "0.5A High-Side Power Switch"
-			(at 10.16 -10.16 0)
+		(property "MPN" "RT9742SNGV"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -22442,42 +21482,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "1028-RT9742SNGVCT-ND"
-			(at 10.16 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "835-RT9742SNGV"
-			(at 10.16 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 10.16 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C3235509"
-			(at 10.16 -22.86 0)
-			(show_name yes)
+		(property "Description" "0.5A High-Side Power Switch"
+			(at 10.16 -10.16 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -22604,6 +21611,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" ""
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22836,8 +21854,8 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 4-channel (3/1) digital isolator"
-			(at 0 0 0)
+		(property "MPN" "SI8641BB-B-IS1"
+			(at 0 -27.94 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -22847,31 +21865,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "336-2566-ND"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "634-SI8641BB-B-IS1"
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -27.94 0)
-			(show_name yes)
+		(property "Description" "Low power, 4-channel (3/1) digital isolator"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -24111,8 +23107,8 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 4-channel (2/2) digital isolator"
-			(at 0 14.224 0)
+		(property "MPN" "SI8642BB-B-IS1"
+			(at 0 -27.94 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -24122,31 +23118,9 @@
 				)
 			)
 		)
-		(property "DigiKey" ""
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" ""
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -27.94 0)
-			(show_name yes)
+		(property "Description" "Low power, 4-channel (2/2) digital isolator"
+			(at 0 14.224 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -25374,8 +24348,8 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 6-channel (5/1) digital isolator"
-			(at 12.7 -31.115 0)
+		(property "MPN" "SI8651BD-B-IS"
+			(at 11.43 -43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -25385,42 +24359,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "336-2104-5-ND"
-			(at 12.7 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "634-SI8651BD-B-IS"
-			(at 12.7 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "SI8651BD-B-IS"
-			(at 12.7 -40.64 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C5754758"
-			(at 12.7 -43.18 0)
-			(show_name yes)
+		(property "Description" "Low power, 6-channel (5/1) digital isolator"
+			(at 12.7 -31.115 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -26889,8 +25830,8 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 6-channel (4/2) digital isolator"
-			(at 0 0 0)
+		(property "MPN" "Si8662AB-B-IS1"
+			(at 11.43 -43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -26900,31 +25841,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "SI8662AB-B-IS1-ND"
-			(at 12.7 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "634-SI8662AB-B-IS1"
-			(at 12.7 -38.1 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 12.7 -40.64 0)
-			(show_name yes)
+		(property "Description" "Low power, 6-channel (4/2) digital isolator"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -28487,7 +27406,7 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 6-channel (3/3) digital isolator"
+		(property "MPN" "SI8663AB-B-IS1"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28498,31 +27417,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "336-4714-ND"
-			(at 15.24 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "634-SI8663AB-B-IS1 "
-			(at 15.24 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 15.24 -38.1 0)
-			(show_name yes)
+		(property "Description" "Low power, 6-channel (3/3) digital isolator"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -30037,8 +28934,8 @@
 				)
 			)
 		)
-		(property "Description" "Low power, 5-channel digital isolator  for QSPI"
-			(at -0.635 -17.78 0)
+		(property "MPN" "SI86SQ44BB-IU"
+			(at 0 -27.94 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -30048,31 +28945,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "863-SI86SQ44BB-IU-ND"
-			(at 0 -22.86 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "873-SI86SQ44BB-IU"
-			(at 0 -25.4 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -27.94 0)
-			(show_name yes)
+		(property "Description" "Low power, 5-channel digital isolator  for QSPI"
+			(at -0.635 -17.78 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -30469,8 +29344,8 @@
 				)
 			)
 		)
-		(property "Description" "MIPI® DSI / DPI link to DisplayPortTM bridge"
-			(at 20.32 -137.4775 0)
+		(property "MPN" "TC358867XBG"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -30480,42 +29355,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "-"
-			(at 20.32 -140.0175 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "757-TC358867XBG"
-			(at 20.32 -145.0975 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 20.32 -147.6375 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 20.32 -142.5575 0)
-			(show_name yes)
+		(property "Description" "MIPI® DSI / DPI link to DisplayPortTM bridge"
+			(at 20.32 -137.4775 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -32031,7 +30873,7 @@
 				)
 			)
 		)
-		(property "Description" "Precision Programmable Reference"
+		(property "MPN" "TL431IDBZR"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -32042,31 +30884,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "296-17332-1-ND"
-			(at 0 -7.62 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "595-TL431IDBZR"
-			(at 0 -10.16 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "L431QDBZR.215"
-			(at 0 -12.7 0)
-			(show_name yes)
+		(property "Description" "Precision Programmable Reference"
+			(at 0 0 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -32244,8 +31064,8 @@
 				)
 			)
 		)
-		(property "Description" "SPI Driver for Enhanced Relay Control, 4-channel"
-			(at 0 -25.4 0)
+		(property "MPN" "TLE75004EPDXUMA1"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -32255,42 +31075,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "448-TLE75004EPDXUMA1CT-ND"
-			(at 2.54 -30.48 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "726-TLE75004EPDXUMA1"
-			(at 0 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C3232440"
-			(at 0 -38.1 0)
-			(show_name yes)
+		(property "Description" "SPI Driver for Enhanced Relay Control, 4-channel"
+			(at 0 -25.4 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -32635,8 +31422,8 @@
 				)
 			)
 		)
-		(property "Description" "SPI Driver for Enhanced Relay Control, 8-channel"
-			(at 0 -40.64 0)
+		(property "MPN" "TLE75008ESDXUMA1"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -32646,42 +31433,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "448-TLE75008ESDXUMA1CT-ND"
-			(at 2.54 -45.72 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "726-TLE75008ESDXUMA1"
-			(at 0 -48.26 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -50.8 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" ""
-			(at 0 -53.34 0)
-			(show_name yes)
+		(property "Description" "SPI Driver for Enhanced Relay Control, 8-channel"
+			(at 0 -40.64 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -33212,6 +31966,18 @@
 				(justify left top)
 			)
 		)
+		(property "MPN" "W957D6NBGX5I"
+			(at 29.21 -194.92 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
 		(property "Description" "PSRAM 128Mbit HyperBus 200 MHz 35 ns 49-WFBGA"
 			(at 22.86 -83.82 0)
 			(show_name no)
@@ -33220,50 +31986,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "256-W957D6NBGX5I-ND"
-			(at 15.24 -86.36 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "454-W957D6NBGX5I"
-			(at 15.24 -91.44 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 15.24 -93.98 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "LCSC" "-"
-			(at 15.24 -88.9 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)
@@ -34227,8 +32949,8 @@
 				(justify left top)
 			)
 		)
-		(property "Description" "LDO Negative Voltage Regulator 200mA"
-			(at 0 -12.7 0)
+		(property "MPN" "XC6901D251MR-G"
+			(at 26.67 -194.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -34236,44 +32958,12 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
-		(property "DigiKey" "893-XC6901D251MR-GCT-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" "865-XC6901D251MR-G"
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C6036440"
-			(at 0 -22.86 0)
-			(show_name yes)
+		(property "Description" "LDO Negative Voltage Regulator 200mA"
+			(at 0 -12.7 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -34445,8 +33135,8 @@
 				)
 			)
 		)
-		(property "Description" "Quad CMOS Analog Switches, ± 22 V supply voltage rating"
-			(at 0 -12.7 0)
+		(property "MPN" "DG212BDQ-T1-E3"
+			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -34456,42 +33146,9 @@
 				)
 			)
 		)
-		(property "DigiKey" "DG211BDQ-T1-E3CT-ND"
-			(at 0 -15.24 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Mouser" ""
-			(at 0 -17.78 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 0 -20.32 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "LCSC" "C144932"
-			(at 0 -22.86 0)
-			(show_name yes)
+		(property "Description" "Quad CMOS Analog Switches, ± 22 V supply voltage rating"
+			(at 0 -12.7 0)
+			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
 			(effects
@@ -34550,6 +33207,18 @@
 				)
 			)
 		)
+		(property "MPN" "LSF0102DPH"
+			(at 8.89 -21.59 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "2-Ch Auto-Bidirectional Multi-Voltage Level Translator for OD and PP Applications"
 			(at 10.16 -23.495 0)
 			(show_name no)
@@ -34558,50 +33227,6 @@
 			(effects
 				(font
 					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "1727-LSF0102DPHCT-ND"
-			(at 12.7 -27.94 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "Mouser" "771-LSF0102DPH"
-			(at 12.7 -33.02 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "TME" "-"
-			(at 12.7 -35.56 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
-				)
-			)
-		)
-		(property "LCSC" "C114621"
-			(at 12.7 -30.48 0)
-			(show_name yes)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 0.889 0.889)
 				)
 			)
 		)

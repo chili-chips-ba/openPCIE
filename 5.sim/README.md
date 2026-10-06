@@ -338,8 +338,8 @@ two VProc builds. The replacement module is
 dressed up as a picorv32, driving the core's *native* memory interface.
 
 > Note the difference from the inherited `models/soc_cpu.VPROC.sv`, which is
-> kept for reference. That one speaks the `soc_if` bus interface of the SOC
-> infrastructure of the sibling [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project. This design has no `soc_if` -- it instantiates
+> kept for reference. That one speaks the `soc_if` bus interface of the sibling
+> Chili.CHIPS SOC infrastructure. This design has no `soc_if` -- it instantiates
 > picorv32 directly -- so it needed its own wrapper.
 
 The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL
@@ -388,10 +388,10 @@ core in the way.
 ## Auto-selection of soc_cpu Component
 
 > Historical note. This describes the arrangement in the sibling
-> [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project, where the CPU was selected by filtering a file list. Here the choice
+> Chili.CHIPS SOC infrastructure, where the CPU was selected by filtering a file list. Here the choice
 > is the `CPU=` switch above, and the file list is [`tb.prj`](tb.prj).
 
-The _openCologne-PCIE_ top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the `soc_cpu`, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a verification model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the the HDL files for _VProc_ and _mem_model_ are in `5.sim/models/cosim`. These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
+The SOC top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the `soc_cpu`, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a verification model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the the HDL files for _VProc_ and _mem_model_ are in `5.sim/models/cosim`. These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
 
 ## VProc Software
 

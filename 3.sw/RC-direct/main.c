@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 Chili.CHIPS*ba
+// SPDX-FileCopyrightText: 2026 Chili.CHIPS
 //
 // SPDX-License-Identifier: BSD-3-Clause
 
 //========================================================================== 
 // openPCIE * NLnet-sponsored open-source implementation   
 //--------------------------------------------------------------------------
-//                   Copyright (C) 2026 Chili.CHIPS*ba
+//                   Copyright (C) 2026 Chili.CHIPS
 // 
 // Redistribution and use in source and binary forms, with or without 
 // modification, are permitted provided that the following conditions 

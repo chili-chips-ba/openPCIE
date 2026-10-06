@@ -2,7 +2,7 @@
 # Makefile for virtual processor openpcie top level test bench
 # code in Vivado xsim
 #
-# Copyright (C) 2025 Chili.CHIPS*ba
+# Copyright (C) 2025 Chili.CHIPS
 #
 ###################################################################
 

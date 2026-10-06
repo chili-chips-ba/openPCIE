@@ -41,7 +41,7 @@ Two details are worth knowing:
 
 ## soc_cpu.VPROC
 
-Inherited from the SOC infrastructure of the sibling [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project, and kept for
+Inherited from the sibling Chili.CHIPS SOC infrastructure and kept for
 reference. **It is not used here**, because this design has no `soc_if` bus: the
 SOC instantiates picorv32 directly, which is why the wrapper above exists.
 
