@@ -586,7 +586,6 @@ Command line configurable variables:
   PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp)
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
-  SOCCPUMATCH:  string to match for soc_cpu filtering in h/w file list (default ip.cpu)
   USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
   BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
   CPU:          CPU model on VProc node 0 (default rtl)
@@ -602,7 +601,7 @@ The make file has a set of variables (with default settings) that can be overrid
 
 The variable to reach for is <tt>CPU</tt>, which picks what occupies node 0 and sets everything else to match -- <tt>CPU=iss</tt> is what selects the ISS build, overriding <tt>USER_C</tt> and <tt>USRCODEDIR</tt> with the supplied ISS integration source. (The underlying <tt>BUILD=ISS</tt> switch is still there and still works, but it only changes the C side; without <tt>CPU=iss</tt> the HDL is still built with the RTL core, and the ISS would have no processor socket to occupy.)
 
-The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. (<tt>SOCCPUMATCH</tt> is still listed by <tt>make help</tt>, but it belongs to the historical file-list filtering described [above](#auto-selection-of-soc_cpu-component) and has no effect with <tt>tb.prj</tt>.) If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
+The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
 
 ```
 make run                                                   # Build and run with the RTL picorv32 (the default)

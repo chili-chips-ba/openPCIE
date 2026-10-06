@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 Chili.CHIPS
+# SPDX-FileCopyrightText: 2026 CHILI.CHIPS.LLC
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -11,7 +11,7 @@
 version = 1
 
 # =============================================================================
-# 1. Project defaults (Chili.CHIPS)
+# 1. Project defaults (CHILI.CHIPS.LLC)
 # =============================================================================
 
 # Everything not listed below: RTL, firmware, build/sim scripts, constraints,
@@ -19,14 +19,14 @@ version = 1
 [[annotations]]
 path = ["**"]
 precedence = "closest"
-SPDX-FileCopyrightText = "2026 Chili.CHIPS"
+SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
 SPDX-License-Identifier = "BSD-3-Clause"
 
 # Hardware: backplane design, own KiCad library, PCB docs, photos, test results.
 [[annotations]]
 path = ["1.pcb/**"]
 precedence = "closest"
-SPDX-FileCopyrightText = "2026 Chili.CHIPS"
+SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
 
 # =============================================================================
@@ -34,7 +34,7 @@ SPDX-License-Identifier = "CC-BY-SA-4.0"
 # =============================================================================
 
 # wyvernSemi co-simulation VIP: VProc, mem_model, pcieVHost, rv32 ISS.
-# Chili.CHIPS integration files in rv32/usercode carry their own BSD header,
+# Our own integration files in rv32/usercode carry their own BSD header,
 # which wins (precedence "closest").
 [[annotations]]
 path = ["5.sim/models/cosim/**", "5.sim/models/pcievhost/**", "5.sim/models/rv32/**"]
@@ -72,7 +72,7 @@ SPDX-License-Identifier = "LGPL-3.0-only"
 [[annotations]]
 path = ["4.build/csr_build/generated-files/html/content/**", "4.build/csr_build/generated-files/html/data/**", "4.build/csr_build/generated-files/html/search/**"]
 precedence = "override"
-SPDX-FileCopyrightText = "2026 Chili.CHIPS"
+SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
 SPDX-License-Identifier = "BSD-3-Clause"
 
 [[annotations]]
@@ -127,8 +127,6 @@ SPDX-License-Identifier = "LicenseRef-AMD-Example-Design"
 path = [
   "0.doc/xilinx/**",
   "0.doc/Reference-SCH/**",
-  "0.doc/PCIE-Technology3-0---MindSharePress2012.pdf",
-  "0.doc/PCIE-base-spec.Rev2-1.pdf",
   "0.doc/pcie-primer.Simon-Southwell.pdf",
   "0.doc/artwork/CrowdSupply.logo.png",
   "0.doc/artwork/EEZ-web-logo.png",
@@ -147,10 +145,60 @@ path = [
   "1.pcb/0.doc/*.slyt467.pdf",
   "1.pcb/0.doc/*.ssztam1.pdf",
   "1.pcb/0.doc/*.snva364a.pdf",
-  "1.pcb/0.doc/PCIE-card-ElectroMech-Spec.Rev4-0.pdf",
   "1.pcb/0.doc/PCIE-Layout-Guidelines.SIG.pdf",
   "1.pcb/0.doc/PMOD-interface-spec.V1_2_0.pdf",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "Respective owners, as identified in each document"
 SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
+
+# Backplane renderings adapted from vendor marketing material, then modified.
+[[annotations]]
+path = ["1.pcb/0.doc/openPCIE3-backplane.ASMedia.png"]
+precedence = "override"
+SPDX-FileCopyrightText = ["ASMedia Technology Inc.", "2026 CHILI.CHIPS.LLC (modifications)"]
+SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
+
+[[annotations]]
+path = ["1.pcb/0.doc/openPCIE3-backplane.DiodesInc.png"]
+precedence = "override"
+SPDX-FileCopyrightText = ["Diodes Incorporated", "2026 CHILI.CHIPS.LLC (modifications)"]
+SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
+
+# Vendor-generated footprints (Ultra Librarian "-L" / TI "-MFG" / vendor-code
+# suffixes) and manufacturer 3D models, kept in our library for the boards.
+[[annotations]]
+path = [
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*-L.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*-MFG.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_ABR.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_APY.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_DTS.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_INO.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_INO_altium.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_IVS.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_JAE.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_NXP.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_ONS.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_TEX.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/footprints/Chili-chips.pretty/*_VIS.kicad_mod",
+  "1.pcb/KiCad-library/chili-chips-lib/3dmodels/**",
+  "1.pcb/KiCad-library/av_lib/3dmodels/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "Respective component manufacturers / library vendors"
+SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
+
+# Interactive HTML BOM: our board data plus the InteractiveHtmlBom viewer code
+# (and the JS libraries it bundles) embedded in the same self-contained file.
+[[annotations]]
+path = ["1.pcb/*/production/*-iBOM.html"]
+precedence = "override"
+SPDX-FileCopyrightText = [
+  "2026 CHILI.CHIPS.LLC (board data)",
+  "qu1ck and InteractiveHtmlBom contributors",
+  "Nathan Cahill (Split.js)",
+  "jQuery Foundation and other contributors (PEP)",
+  "Pieroxy (lz-string)",
+]
+SPDX-License-Identifier = "CC-BY-SA-4.0 AND MIT AND WTFPL"

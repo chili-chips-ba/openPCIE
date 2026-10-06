@@ -8,8 +8,10 @@
 	)
 	(paper "A4")
 	(title_block
-		(date "2025-07-31")
-		(rev "r1B1")
+		(title "openPCIE2 Backplane")
+		(date "2026-10-06")
+		(rev "RevB")
+		(company "COPYRIGHT (C) CHILI.CHIPS.LLC")
 	)
 	(layers
 		(0 "F.Cu" signal)
@@ -117,6 +119,7 @@
 		)
 		(capping no)
 		(filling no)
+		(aux_axis_origin 19.11 153.286436)
 		(pcbplotparams
 			(layerselection 0x00000000_00000000_55555555_5755f5ff)
 			(plot_on_all_layers_selection 0x00000000_00000000_00000000_00000000)
@@ -147,11 +150,11 @@
 			(sketchdnponfab yes)
 			(crossoutdnponfab yes)
 			(subtractmaskfromsilk no)
-			(outputformat 4)
+			(outputformat 1)
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "../../../../../Desktop/Backplane_revB/gerberi/")
+			(outputdirectory "./production/gerbers")
 		)
 	)
 	(footprint "PCM_av_lib:BWSMA-KWE-Z001"
@@ -10132,7 +10135,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.1524)
 				)
 			)
 		)
@@ -16541,7 +16544,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.1524)
 				)
 			)
 		)
@@ -26099,15 +26102,15 @@
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "1124e6c1-9c8a-4320-a561-17196695e32e")
 		)
 		(pad "" np_thru_hole circle
 			(at 23.15 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "c7b7dfcc-fa11-4bf0-bb5e-b46dbfd5f0c1")
 		)
@@ -40684,15 +40687,15 @@
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0 90)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "98b2666d-3273-4788-a58e-fea634119bce")
 		)
 		(pad "" np_thru_hole circle
 			(at 23.15 0 90)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "d2cbe998-59dc-46a7-a940-55004b976991")
 		)
@@ -41400,7 +41403,7 @@
 			(effects
 				(font
 					(size 0.6096 0.6096)
-					(thickness 0.15)
+					(thickness 0.1524)
 					(bold yes)
 				)
 			)
@@ -47281,15 +47284,15 @@
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "8830b365-b90e-4b0a-87e8-d1ae18d9fc91")
 		)
 		(pad "" np_thru_hole circle
 			(at 9.15 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "665dc127-685f-45ce-83e0-a7740285af30")
 		)
@@ -50149,15 +50152,15 @@
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "a4900023-627a-439d-8fd6-3ac4988cccc5")
 		)
 		(pad "" np_thru_hole circle
 			(at 9.15 0 270)
-			(size 1.25 1.25)
-			(drill 1.25)
+			(size 1.2 1.2)
+			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(uuid "39851d20-cf76-4cb7-a0be-bbb798f261d4")
 		)
@@ -97858,14 +97861,6 @@
 		(layer "B.Cu")
 		(net "Net-(NT3-Pad1)")
 		(uuid "741aae9d-10b6-49f5-805e-9c8938df4235")
-	)
-	(segment
-		(start 191.05 130.32)
-		(end 189.4804 130.32)
-		(width 0.1524)
-		(layer "B.Cu")
-		(net "Net-(NT3-Pad1)")
-		(uuid "8d1a136b-d565-4bb9-8770-cc75bc6ab41d")
 	)
 	(segment
 		(start 191.05 130.32)

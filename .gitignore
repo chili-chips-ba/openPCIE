@@ -3,7 +3,10 @@
 #--------
 *~
 *.bak
+*.bak-*
+*-bak
 *.bkp
+*-backups/
 *.log
 *\#*\#
 *\#*
@@ -47,6 +50,11 @@
 1.pcb/openpci2-backplane/fp-info-cache
 1.pcb/openpci2-backplane/\#auto_saved_files\#
 1.pcb/openpci2-backplane/_autosave-openpci2-backplane.kicad_pcb
+_autosave-*
+# KiBot's temporary copies of the board/project (left behind by an interrupted run)
+kibot_*.kicad_pcb
+kibot_*.kicad_prl
+kibot_*.kicad_pro
 
 #--------
 # Firmware build products (4.build/sw_build)
@@ -57,6 +65,18 @@
 4.build/hw_build.openXC7/.build-config
 4.build/hw_build.openXC7/.build-config.switched
 4.build/hw_build.openXC7/chipdb/
+
+# Intermediates -- rebuilt on every run. Kept on purpose (not ignored):
+#   4.build/csr_build/generated-files/  so a build never needs peakrdl
+#   4.build/sw_build/firmware.hex       hard dependency of the Vivado tcl
+#   build_artifacts*/top.bit            prebuilt bitstreams
+4.build/sw_build/firmware.elf
+4.build/sw_build/firmware.bin
+4.build/hw_build.openXC7/firmware.hex
+4.build/hw_build.openXC7/converted/
+4.build/hw_build.openXC7/converted.switched/
+4.build/hw_build.openXC7/build_artifacts*/*
+!4.build/hw_build.openXC7/build_artifacts*/top.bit
 
 #--------
 # Sim build products (5.sim)

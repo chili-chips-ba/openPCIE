@@ -46,7 +46,7 @@ set xdc_file "$origin_dir/xdc/RC-switched.sv.x1g2.AcornCLE-215P.xdc"
 
 set top_sv "$src_dir/RC_switched_opensource.sv"
 set soc_sv "$src_dir/riscv_pcie_soc.sv"
-set cpu_v  "$src_dir/picorv32.v"
+set cpu_v  "$src_dir/picorv32.CHILI.sv"
 
 # ---- CSR: PeakRDL-generated register block ----------------------------------
 # csr_pkg.sv and csr.sv are generated from 4.build/csr_build/csr.rdl by
@@ -98,7 +98,8 @@ if { $use_legacy_csr } {
   set csr_files [list $csr_pkg_sv $csr_sv $soc_csr_sv]
 }
 
-# firmware.hex is NOT kept in this repo -- it is a product of the sw_build stage:
+# firmware.hex is a product of the sw_build stage. The copy checked in is the
+# RC-direct one, so rebuild it for this design:
 #   <openPCIE>/4.build/sw_build/firmware.hex
 # Build it with the switched firmware:  make VARIANT=switched
 # Relative to here (2.rtl/3.Bonus--RC-switched.opensource) that is ../../4.build/sw_build/
@@ -152,8 +153,9 @@ add_files -norecurse [concat $svfiles $vfiles $csr_files [list $cpu_v $soc_sv $t
 
 # Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
 # package (link_pkg.sv) and two SV interfaces (stream_if.sv, phy_lanes_if.sv) --
-# if Vivado treats them as plain Verilog, elaboration fails.
-foreach f [concat $svfiles $csr_files [list $soc_sv $top_sv]] {
+# if Vivado treats them as plain Verilog, elaboration fails. picorv32.CHILI.sv is
+# SystemVerilog too.
+foreach f [concat $svfiles $csr_files [list $cpu_v $soc_sv $top_sv]] {
   set_property file_type "SystemVerilog" [get_files [file normalize $f]]
 }
 
@@ -187,7 +189,7 @@ puts "  xpr       : $proj_dir/$proj_name.xpr"
 puts "  part      : xc7a200tfbg484-3   (Acorn CLE-215P)"
 puts "  top       : RC_switched_opensource"
 puts "  src/pcie  : [llength $svfiles] .sv  +  [llength $vfiles] .v"
-puts "  src/      : picorv32.v, riscv_pcie_soc.sv, RC_switched_opensource.sv"
+puts "  src/      : picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_switched_opensource.sv"
 puts "  csr       : [expr {$use_legacy_csr ? {hand-written (SOC_CSR_LEGACY)} : {PeakRDL -- csr_pkg.sv, csr.sv, soc_csr.sv}}]"
 puts "  xdc       : [file tail $xdc_file]"
 puts "  firmware  : $hex_file"

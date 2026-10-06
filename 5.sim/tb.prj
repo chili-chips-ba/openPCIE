@@ -70,7 +70,7 @@ sv work models/serdes_front.PIPE.sv
 # ---------------------------------------------------------------------
 # DUT: SOC and top level
 # ---------------------------------------------------------------------
-verilog work ../2.rtl/2.RC-direct.opensource/src/picorv32.v
+sv work ../2.rtl/2.RC-direct.opensource/src/picorv32.CHILI.sv
 sv work ../2.rtl/2.RC-direct.opensource/src/riscv_pcie_soc.sv
 sv work ../2.rtl/2.RC-direct.opensource/src/RC_direct_opensource.sv
 

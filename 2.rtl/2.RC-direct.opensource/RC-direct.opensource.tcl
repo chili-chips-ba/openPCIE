@@ -1,31 +1,33 @@
 #*****************************************************************************
-# RC-direct.opensource.tcl -- pravi Vivado projekat (.xpr) za RC-direct,
-#                             open-source SystemVerilog implementaciju
+# RC-direct.opensource.tcl -- creates the Vivado project (.xpr) for
+#                             RC-direct, the open-source SystemVerilog
+#                             implementation
 #
-# Ploca : Acorn CLE-215P  ->  xc7a200tfbg484-3
+# Board : Acorn CLE-215P  ->  xc7a200tfbg484-3
 # Link  : PCIe x1 Gen2
 # Top   : RC_direct_opensource
 #
-# Pokretanje (iz ovog foldera):
+# Run (from this folder):
 #   vivado -mode batch -source RC-direct.opensource.tcl
 #
-# ili iz Vivado Tcl konzole, bilo odakle:
-#   source <putanja>/RC-direct.opensource.tcl
+# or from the Vivado Tcl console, from anywhere:
+#   source <path>/RC-direct.opensource.tcl
 #
-# Opcije preko Tcl varijabli (postavi ih PRIJE source):
-#   set ::origin_dir_loc    <putanja>   ;# korijen projekta (default: folder skripte)
-#   set ::user_project_name <ime>       ;# ime .xpr (default: RC_direct_opensource)
+# Options via Tcl variables (set them BEFORE source):
+#   set ::origin_dir_loc    <path>   ;# project root (default: script folder)
+#   set ::user_project_name <name>   ;# .xpr name (default: Vivado-v2024.2)
 #
-# Nakon toga otvori  proj/RC_direct_opensource.xpr  u Vivado GUI pa:
+# Afterwards open  xbuild.Vivado-v2024.2/Vivado-v2024.2.xpr  in the Vivado GUI:
 #   Run Synthesis -> Run Implementation -> Generate Bitstream
 #
-# PAZNJA: proj/ je potpuno regenerisan folder -- skripta ga pravi s -force,
-# tj. svako ponovno pokretanje ga brise i gradi iz nule. Ne cuvaj nista svoje
-# unutra. Izvor istine su samo  src/ ,  xdc/  i ova skripta.
+# NOTE: xbuild.Vivado-v2024.2/ is a fully regenerated folder -- the script
+# creates it with -force, so every re-run deletes it and builds from scratch.
+# Do not keep anything of your own inside. The sources of truth are only
+# src/ , xdc/ and this script.
 #*****************************************************************************
 
-# ---- Korijen projekta = folder u kojem je ova skripta ----------------------
-# ([info script] radi i kad se skripta source-a izvana, za razliku od "." )
+# ---- Project root = the folder this script lives in -------------------------
+# ([info script] works even when the script is sourced from elsewhere, "." does not)
 set origin_dir [file dirname [file normalize [info script]]]
 if { [info exists ::origin_dir_loc] } {
   set origin_dir [file normalize $::origin_dir_loc]
@@ -37,14 +39,14 @@ if { [info exists ::user_project_name] } {
 }
 set proj_dir "$origin_dir/xbuild.Vivado-v2024.2"
 
-# ---- Putanje ---------------------------------------------------------------
+# ---- Paths ------------------------------------------------------------------
 set src_dir  "$origin_dir/src"
 set pcie_dir "$origin_dir/src/pcie"
 set xdc_file "$origin_dir/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc"
 
 set top_sv "$src_dir/RC_direct_opensource.sv"
 set soc_sv "$src_dir/riscv_pcie_soc.sv"
-set cpu_v  "$src_dir/picorv32.v"
+set cpu_v  "$src_dir/picorv32.CHILI.sv"
 
 # ---- CSR: PeakRDL-generated register block ----------------------------------
 # csr_pkg.sv and csr.sv are generated from 4.build/csr_build/csr.rdl by
@@ -96,12 +98,13 @@ if { $use_legacy_csr } {
   set csr_files [list $csr_pkg_sv $csr_sv $soc_csr_sv]
 }
 
-# firmware.hex se NE drzi u ovom repou -- proizvod je sw_build faze:
+# firmware.hex is a product of the sw_build stage (a prebuilt RC-direct copy is
+# checked in):
 #   <openPCIE>/4.build/sw_build/firmware.hex
-# Relativno odavde (2.rtl/2.RC-direct.opensource) to je ../../4.build/sw_build/
+# Relative to here (2.rtl/2.RC-direct.opensource) that is ../../4.build/sw_build/
 set hex_file [file normalize "$origin_dir/../../4.build/sw_build/firmware.hex"]
 
-# ---- Provjeri da sve postoji prije nego se uopste startuje Vivado ----------
+# ---- Check everything exists before Vivado is even started ------------------
 set missing {}
 foreach f [concat [list $top_sv $soc_sv $cpu_v $xdc_file $hex_file] $csr_files] {
   if { ![file isfile $f] } { lappend missing $f }
@@ -110,16 +113,17 @@ if { ![file isdirectory $pcie_dir] } { lappend missing "$pcie_dir (folder)" }
 
 if { [llength $missing] } {
   puts "=============================================================="
-  puts " GRESKA -- nedostaje:"
+  puts " ERROR -- missing:"
   foreach f $missing { puts "   $f" }
   puts ""
-  puts " Ako fali firmware.hex: pokreni sw_build fazu u 4.build/ prije"
-  puts " kreiranja RTL projekta."
+  puts " If firmware.hex is missing: run the sw_build stage with"
+  puts "   make"
+  puts " before creating the RTL project."
   puts "=============================================================="
-  return -code error "Nedostaju izvorni fajlovi -- projekat nije kreiran."
+  return -code error "Missing source files -- project not created."
 }
 
-# ---- Kreiraj projekat ------------------------------------------------------
+# ---- Create the project -----------------------------------------------------
 create_project $proj_name $proj_dir -part xc7a200tfbg484-3 -force
 
 set obj [current_project]
@@ -127,43 +131,45 @@ set_property -name "target_language"    -value "Verilog" -objects $obj
 set_property -name "simulator_language" -value "Mixed"   -objects $obj
 set_property -name "default_lib"        -value "xil_defaultlib" -objects $obj
 
-# host_bridge.sv instancira xpm_cdc_single (2x). Za sintezu Vivado XPM nalazi
-# sam, ali za simulaciju/elaboraciju biblioteka mora biti eksplicitno ukljucena.
+# host_bridge.sv instantiates xpm_cdc_single (2x). Vivado finds XPM by itself for
+# synthesis, but for simulation/elaboration the library must be included explicitly.
 set_property -name "xpm_libraries" -value "XPM_CDC" -objects $obj
 
-# ---- Izvorni fajlovi -------------------------------------------------------
-# glob je NAMJERNO ne-rekurzivan: src/pcie/_catB_backup/ drzi originalne Xilinx
-# fajlove kao *.sv.orig (referenca za rewrite) i oni ne smiju u sintezu.
+# ---- Source files -----------------------------------------------------------
+# The glob is DELIBERATELY non-recursive: src/pcie/_catB_backup/ holds the
+# original Xilinx files as *.sv.orig (reference for the rewrite) and they must
+# not enter synthesis.
 set svfiles [lsort [glob -nocomplain $pcie_dir/*.sv]]
 
-# Eventualni preostali .v u pcie/ (trenutno ih nema -- sve je prevedeno u .sv)
+# Any remaining .v in pcie/ (currently none -- everything has been ported to .sv)
 set vfiles [lsort [glob -nocomplain $pcie_dir/*.v]]
 
 if { ![llength $svfiles] } {
-  return -code error "Nijedan .sv fajl nije nadjen u $pcie_dir"
+  return -code error "No .sv file found in $pcie_dir"
 }
 
 add_files -norecurse [concat $svfiles $vfiles $csr_files [list $cpu_v $soc_sv $top_sv]]
 
-# Eksplicitno oznaci SystemVerilog. Bitno jer je u src/pcie/ i SV paket
-# (link_pkg.sv) i dva SV interfejsa (stream_if.sv, phy_lanes_if.sv) --
-# ako ih Vivado tretira kao obicni Verilog, elaboracija puca.
-foreach f [concat $svfiles $csr_files [list $soc_sv $top_sv]] {
+# Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
+# package (link_pkg.sv) and two SV interfaces (stream_if.sv, phy_lanes_if.sv) --
+# if Vivado treats them as plain Verilog, elaboration fails. picorv32.CHILI.sv is
+# SystemVerilog too.
+foreach f [concat $svfiles $csr_files [list $cpu_v $soc_sv $top_sv]] {
   set_property file_type "SystemVerilog" [get_files [file normalize $f]]
 }
 
-# ---- firmware.hex kao Memory Initialization File ---------------------------
-# riscv_pcie_soc.sv radi  $readmemh("firmware.hex", ram)  s golim imenom, pa
-# Vivado mora znati gdje da ga trazi. Tip "Memory Initialization Files"
-# ubacuje njegov direktorij u search path sinteze.
+# ---- firmware.hex as a Memory Initialization File ---------------------------
+# riscv_pcie_soc.sv does  $readmemh("firmware.hex", ram)  with a bare name, so
+# Vivado has to know where to look for it. The "Memory Initialization Files"
+# type puts its directory into the synthesis search path.
 add_files -norecurse $hex_file
 set_property file_type {Memory Initialization Files} [get_files [file normalize $hex_file]]
 
-# ---- Constraints -----------------------------------------------------------
+# ---- Constraints ------------------------------------------------------------
 add_files -fileset constrs_1 -norecurse $xdc_file
 set_property file_type "XDC" [get_files [file normalize $xdc_file]]
 
-# ---- Top modul + redoslijed kompilacije ------------------------------------
+# ---- Top module + compile order ---------------------------------------------
 set_property top RC_direct_opensource [current_fileset]
 set_property top_auto_set 0 [current_fileset]
 
@@ -173,21 +179,21 @@ if { $use_legacy_csr } {
 }
 update_compile_order -fileset sources_1
 
-# ---- Sazetak ---------------------------------------------------------------
+# ---- Summary ----------------------------------------------------------------
 puts ""
 puts "=============================================================="
-puts " PROJEKAT KREIRAN"
+puts " PROJECT CREATED"
 puts "--------------------------------------------------------------"
 puts "  xpr       : $proj_dir/$proj_name.xpr"
 puts "  part      : xc7a200tfbg484-3   (Acorn CLE-215P)"
 puts "  top       : RC_direct_opensource"
 puts "  src/pcie  : [llength $svfiles] .sv  +  [llength $vfiles] .v"
-puts "  src/      : picorv32.v, riscv_pcie_soc.sv, RC_direct_opensource.sv"
+puts "  src/      : picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_direct_opensource.sv"
 puts "  csr       : [expr {$use_legacy_csr ? {hand-written (SOC_CSR_LEGACY)} : {PeakRDL -- csr_pkg.sv, csr.sv, soc_csr.sv}}]"
 puts "  xdc       : [file tail $xdc_file]"
 puts "  firmware  : $hex_file"
 puts "--------------------------------------------------------------"
-puts " Otvori .xpr u Vivado GUI, pa:"
+puts " Open the .xpr in the Vivado GUI, then:"
 puts "   Run Synthesis -> Run Implementation -> Generate Bitstream"
 puts "=============================================================="
 puts ""

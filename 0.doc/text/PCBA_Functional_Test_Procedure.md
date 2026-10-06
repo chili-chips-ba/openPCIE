@@ -1,8 +1,8 @@
-<!-- Generated text version of `1.pcb/0.doc/PCBA_Functional_Test_Procedure.pdf` (converted from its LaTeX source; figures omitted) so the website assistant can read it. Do not edit by hand; regenerate from the source. -->
+<!-- Generated text version of `1.pcb/0.doc/PCBA_Functional_Test_Procedure_RevB.pdf` (converted from its LaTeX source, `PCBA_Functional_Test_Procedure_RevB_LaTeX_Source.zip`; figures omitted) so the website assistant can read it. Do not edit by hand; regenerate from the source. -->
 
 # PCBA Functional Test Procedure (openpci2-backplane)
 
-Prepared for Elecrow, December 1, 2025.
+Prepared for Elecrow. Revision B.
 
 ## Introduction
 
@@ -71,37 +71,36 @@ The objective of this section is to verify the clock generator chip functionalit
 **Objective:** Verify the presence of the 100 MHz PCIe reference clock outputs, confirm that the clock generator correctly drives the PCIe Switch, and verify that the Switch distributes the clock to downstream endpoints.
 
 **Test Strategy:**
-We will activate the clock on the main upstream slot (**SWRC1**) by pulling its CLKREQ# signal low. This action enables the clock generator output which feeds both the SWRC1 slot and the PCIe Switch input. Once the Switch receives the reference clock, it should automatically distribute it to the downstream x1 slot (**SW_EP1**).
+The CLKREQ# signal of the main upstream slot (**SWRC1**) is tied to GND by default on the board. Therefore, as soon as the board is powered, the clock generator output that feeds both the SWRC1 slot and the PCIe Switch input is enabled automatically. **No jumper wire or any other external connection is required.** Once the Switch receives the reference clock, it should automatically distribute it to the downstream x1 slot (**SW_EP1**).
 
-- **Step 3.5: Activate Clock on SWRC1**
+- **Step 3.5: Measure Input Clock (at SWRC1)**
 
 - Locate the PCIe x4 slot labeled **SWRC1**.
-- Insert a jumper wire directly into the slot connector to bridge the **CLKREQ# pin (B12)** to **GND (B13)**.
-- Refer to **the figure** for the exact pin position and method.
-
-[Figure: Activation Method: Shorting CLKREQ# to GND on SWRC1]
-
-- **Step 3.6: Measure Input Clock (at SWRC1)**
-
-- While the jumper is inserted, probe the clock pins (A13/A14) on the **SWRC1** slot (at the connector entrance). **Refer to the figure.**
+- With the board powered, probe the clock pins (A13/A14) on the **SWRC1** slot (at the connector entrance). **Refer to the figure.**
 - **Verify:** 100 MHz clock is present.
 
 [Figure: Measurement points on SWRC1]
 
-- **Step 3.7: Measure Downstream Clock (at SW_EP1)**
+- **Step 3.6: Measure Downstream Clock (at SW_EP1)**
 
 - Locate the PCIe x1 slot labeled **SW_EP1**.
 - Probe the clock pins (A13/A14) on **SW_EP1**. **Refer to the figure.**
 - **Verify:** 100 MHz clock is present.
 - *Note: If the clock is present here, it confirms the PCIe Switch is functioning.*
 
-- **Step 3.8: Signal Parameters Verification**
+[Figure: Measurement points on SW_EP1]
+
+- **Step 3.7: Signal Parameters Verification**
 
 - **Frequency:** **100 MHz**
 - **Waveform:** Clean square/sine-like wave (HCSL).
 - **Amplitude:** Logic High (V_OH) approx. **0.7V - 0.8V**. Logic Low (V_OL) approx. **0V**.
 
-[Figure: Measurement points on SW_EP1]
+- **Step 3.8: Thermal Check of the PCIe Switch**
+
+- With the board powered for at least 1–2 minutes, briefly touch the **PCIe Switch chip** and the area around it with a finger.
+- **Verify:** The chip and the surrounding area must **not be hot**. Slightly warm is acceptable.
+- *Note: If the chip is too hot to keep a finger on it, mark the board as "Failed".*
 
 **End of Test Procedure** 
 If all steps passed, mark the board as **"PASSED"**.

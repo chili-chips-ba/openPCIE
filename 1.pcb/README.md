@@ -283,7 +283,7 @@ When the backplane comes out of the reflow oven with all components soldered, an
 -----
 
 ### References:
-**[1] [PCIE Card Electro-Mechanical Specification, Rev4.0](0.doc/PCIE-card-ElectroMech-Spec.Rev4-0.pdf)**
+**[1] PCIE Card Electro-Mechanical (CEM) Specification, Rev4.0** - available from [PCI-SIG](https://pcisig.com/specifications)
 
 **[2] RPi5 PCIE Connector Enigma**
 - [Reverse Engineering RPi5 PCIE](https://github.com/m1geo/Pi5_PCIe)

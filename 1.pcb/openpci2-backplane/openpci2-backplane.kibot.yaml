@@ -1,0 +1,164 @@
+# SPDX-FileCopyrightText: 2026 CHILI.CHIPS.LLC
+# SPDX-License-Identifier: CC-BY-SA-4.0
+#
+# KiBot recipe for the openPCIE2 backplane production package.
+# Uses only the libraries vendored in ../KiCad-library (see its README).
+#
+#   cd 1.pcb/openpci2-backplane
+#   kibot -c openpci2-backplane.kibot.yaml -d production
+#
+# Produces in production/: BOM (.xlsx, MPN only), interactive BOM, pick-and-place,
+# Gerbers + drill (also zipped), a per-layer PDF of the Gerber layers and a STEP model;
+# the schematic PDF is written next to the project (openpci2-backplane.pdf).
+kibot:
+  version: 1
+
+global:
+  # The only part-number field in this design (no distributor columns)
+  field_part_number: 'MPN'
+
+filters:
+  - name: not_placed
+    comment: 'Drop fiducials, logos and net ties from the pick-and-place file'
+    type: generic
+    exclude_refs: ['FM*', 'LOGO*', 'NT*']
+
+  - name: bom_parts
+    comment: 'BOM = what KiCad marks "in BOM" (keeps test points TP* and standoffs H*, which are bought parts)'
+    type: generic
+    exclude_not_in_bom: true
+    exclude_virtual: true
+
+variants: []
+
+outputs:
+  - name: schematic_pdf
+    comment: 'Schematic, all sheets'
+    type: pdf_sch_print
+    dir: '..'
+    options:
+      output: '%f.%x'
+
+  - name: gerbers
+    comment: 'Gerbers (RS-274X2), origin = aux axis'
+    type: gerber
+    dir: gerbers
+    options:
+      use_aux_axis_as_origin: true
+      use_protel_extensions: false
+      create_gerber_job_file: true
+      use_gerber_x2_attributes: true
+      use_gerber_net_attributes: true
+      subtract_mask_from_silk: false
+      plot_footprint_refs: true
+      plot_footprint_values: false
+      exclude_edge_layer: true
+    layers: &fab_layers
+      - F.Cu
+      - In1.Cu
+      - In2.Cu
+      - B.Cu
+      - F.Mask
+      - B.Mask
+      - F.Paste
+      - B.Paste
+      - F.Silkscreen
+      - B.Silkscreen
+      - Edge.Cuts
+
+  - name: drill
+    comment: 'Excellon drill + Gerber X2 drill map'
+    type: excellon
+    dir: gerbers
+    options:
+      use_aux_axis_as_origin: true
+      pth_and_npth_single_file: true
+      map:
+        type: gerber
+
+  - name: gerbers_zip
+    comment: 'Gerbers + drill in one zip for the fab'
+    type: compress
+    options:
+      output: '%f-gerbers.%x'
+      format: ZIP
+      files:
+        - from_output: gerbers
+          dest: /
+        - from_output: drill
+          dest: /
+
+  - name: gerbers_pdf
+    comment: 'One page per fabrication layer, board outline on every page'
+    type: pcb_print
+    options:
+      output: '%f-gerbers.%x'
+      format: PDF
+      plot_sheet_reference: true
+      forced_edge_cuts_color: '#000000'
+      pages:
+        - layers: [F.Cu, Edge.Cuts]
+        - layers: [In1.Cu, Edge.Cuts]
+        - layers: [In2.Cu, Edge.Cuts]
+        - layers: [B.Cu, Edge.Cuts]
+        - layers: [F.Mask, Edge.Cuts]
+        - layers: [B.Mask, Edge.Cuts]
+        - layers: [F.Paste, Edge.Cuts]
+        - layers: [B.Paste, Edge.Cuts]
+        - layers: [F.Silkscreen, Edge.Cuts]
+        - layers: [B.Silkscreen, Edge.Cuts]
+        - layers: [Edge.Cuts]
+
+  - name: step
+    comment: '3D model of the assembled board'
+    type: export_3d
+    options:
+      output: '%f.%x'
+      format: step
+      subst_models: true
+
+  - name: bom_xlsx
+    comment: 'BOM for PCBA: MPN only (no distributor columns)'
+    type: bom
+    options:
+      output: '%f-BOM.%x'
+      format: XLSX
+      exclude_filter: bom_parts
+      group_fields: ['MPN', 'Value', 'Footprint']
+      columns:
+        - field: Row
+          name: Item
+        - field: Quantity Per PCB
+          name: Qty
+        - field: References
+          name: Designators
+        - Value
+        - MPN
+        - field: Footprint
+          name: Footprint
+      xlsx:
+        title: 'openPCIE2 Backplane'
+        logo: false
+        highlight_empty: true
+
+  - name: ibom
+    comment: 'Interactive HTML BOM'
+    type: ibom
+    options:
+      output: '%f-iBOM.%x'
+      extra_fields: 'MPN'
+      dark_mode: false
+      show_fabrication: false
+      layer_view: FB
+
+  - name: pick_and_place
+    comment: 'Pick-and-place (CPL), top side only, mm, aux-axis origin'
+    type: position
+    options:
+      output: '%f-pos.%x'
+      format: CSV
+      units: millimeters
+      separate_files_for_front_and_back: false
+      only_smd: false
+      use_aux_axis_as_origin: true
+      exclude_filter: not_placed

@@ -189,7 +189,6 @@ FORCE:
 # itself from the XPM library, Yosys/openXC7 do not have it. See the comment in
 # the file.
 PURE_V_FILES = \
-    $(SRC_DIR)/picorv32.v \
     xpm_shim.v \
     unimacro_shim.v
 
@@ -206,7 +205,10 @@ SV_IF = \
 # does not catch them, and they must not enter synthesis.
 SV_PCIE_REST = $(filter-out $(SV_PKG) $(SV_IF), $(sort $(wildcard $(PCIE_DIR)/*.sv)))
 
+# picorv32.CHILI.sv is SystemVerilog (always_ff, typedef enum, unique case),
+# so the CPU goes through sv2v together with the rest of the design.
 SV_TOP = \
+    $(SRC_DIR)/picorv32.CHILI.sv \
     $(SRC_DIR)/riscv_pcie_soc.sv \
     $(SRC_DIR)/$(TOP).sv
 

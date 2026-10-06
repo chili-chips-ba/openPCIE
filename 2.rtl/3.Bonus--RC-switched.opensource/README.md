@@ -164,7 +164,7 @@ src/
   RC_switched_opensource.sv  top level: refclk buffer, PCIe bridge, SOC, LEDs
   riscv_pcie_soc.sv          picorv32 SOC + the Type 0/Type 1 routing above
   soc_csr.sv                 wrapper for the PeakRDL-generated CSR block
-  picorv32.v                 the RISC-V core itself
+  picorv32.CHILI.sv          the RISC-V core (Chili.CHIPS-improved picorv32)
   pcie/                      the opensource PCIe stack (as RC-direct, minus its sim-only ifdefs)
 xdc/
   RC-switched.sv.x1g2.AcornCLE-215P.xdc   full constraints (source of truth)

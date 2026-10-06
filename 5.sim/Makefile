@@ -19,8 +19,6 @@ USRCODEDIR       = $(CURDIR)/usercode
 PCIE_C           = VUserMain1.cpp
 PCIECODEDIR      = $(CURDIR)/usercode
 OPTFLAG          = -g
-# TOPFILELIST      = top.prj
-SOCCPUMATCH      = ip.cpu
 VPROC_PLI        = VProc.so
 USRSIMOPTS       =
 USRCFLAGS        =
@@ -293,10 +291,6 @@ $(FIRMWARE):
 	@echo "================================================================"
 	@exit 1
 
-# Create local file list for top, with PicoRv32 files removed
-# So soc_cpu.VPROC can be used instead
-#$(TOPFILELIST): $(HW_SRC)/$(TOPFILELIST)
-#	@sed -e "/$(SOCCPUMATCH)/d" $< > $@
 
 #======================================================
 # EXECUTION RULES
@@ -331,7 +325,6 @@ help:
 	@$(info $(SPC) $(SPC) PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp))
 	@$(info $(SPC) $(SPC) USRCODEDIR:   directory containing user source code (default $$(CURDIR)/usercode))
 	@$(info $(SPC) $(SPC) OPTFLAG:      Optimisation flag for user VProc code (default -g))
-	@$(info $(SPC) $(SPC) SOCCPUMATCH:  string to match for soc_cpu filtering in h/w file list (default ip.cpu))
 	@$(info $(SPC) $(SPC) USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank))
 	@$(info $(SPC) $(SPC) BUILD:        Select build type from DEFAULT or ISS (default DEFAULT))
 	@$(info $(SPC) $(SPC) CPU:          CPU model on VProc node 0 (default rtl))
