@@ -98,17 +98,41 @@
 
 #endif
 
-#define MY_REQUESTER_ID  0x10EE 
+#define MY_REQUESTER_ID  0x10EE
 
-#define TLP_CFG_WR0 0x44000000 
-#define TLP_CFG_RD0 0x04000000 
-#define TLP_MEM_WR  0x40000000 
-#define TLP_MEM_RD  0x00000000 
+#define TLP_CFG_WR0 0x44000000
+#define TLP_CFG_RD0 0x04000000
+#define TLP_MEM_WR  0x40000000
+#define TLP_MEM_RD  0x00000000
 
 #define CPL_STAT_SC  0 // Successful
 #define CPL_STAT_UR  1 // Unsupported Request
 #define CPL_STAT_CRS 2 // Configuration Retry Status (Busy)
 #define CPL_STAT_CA  4 // Completer Abort
+#define CPL_TIMEOUT  8 // not a PCIe status: no Completion arrived in time
+
+#define CPL_POLL_LIMIT 2000000 // polls of rx.header_info before giving up
+#define CRS_RETRIES    100     // re-issues of a request answered with CRS
+
+// Configuration space offsets used below
+#define CFG_ID           0x00 // Device ID / Vendor ID
+#define CFG_COMMAND      0x04
+#define CFG_BAR0         0x10
+#define NUM_BARS         6
+
+#define CMD_MEM_BUS_MASTER 0x00000006 // Memory Space Enable + Bus Master Enable
+
+// Memory window the endpoint BARs are placed in: the upper 2 GB of the 32-bit
+// space. BAR0 lands at its base, so the self-test address stays 0x80000000.
+#define WINDOW_BASE      0x80000000
+#define WINDOW_SIZE      0x80000000
+
+// Result markers written to PCIE_TX_DATA
+#define RESULT_PASS        0x0000FACE // data 0x6 was written and read back
+#define RESULT_FAIL        0x0000DEAD // the readback did not match, or failed
+#define RESULT_NO_DEVICE   0xBAD00000 // no endpoint answered the first config read
+#define RESULT_CFG_FAILED  0xBAD00002 // a config request to the endpoint failed
+#define RESULT_BAR0_FAILED 0xBAD00003 // BAR0 is missing, I/O, or does not fit
 
 // Cycles to idle at start-up, waiting for the PCIe link to finish training.
 // On hardware that wait is unavoidable. In co-simulation the link is already up
@@ -125,8 +149,13 @@ void wait_cycles(int n) {
     for (int i = 0; i < n; i++) __asm__("nop");
 }
 
+__attribute__((noreturn)) void halt(uint32_t marker) {
+    PCIE_TX_DATA = marker;
+    while (1) {}
+}
+
 void send_tlp(uint32_t h0, uint32_t h1, uint32_t h2, uint32_t data) {
-    while (((PCIE_PHY_STATUS & TX_STATE_MASK) != 0) || 
+    while (((PCIE_PHY_STATUS & TX_STATE_MASK) != 0) ||
            ((PCIE_PHY_STATUS & TX_BUF_MASK) == 0));
 
     PCIE_TX_HEADER0 = h0;
@@ -135,139 +164,235 @@ void send_tlp(uint32_t h0, uint32_t h1, uint32_t h2, uint32_t data) {
     PCIE_TX_DATA = data;
 }
 
-uint32_t wait_for_completion(uint8_t tag) {
-    volatile int timeout = 2000000;
-    
+// Waits for the Completion carrying `tag` and returns its Completion Status
+// (CPL_STAT_*), or CPL_TIMEOUT. The payload is stored to *data only on SC, so
+// a genuine 0xFFFFFFFF read can no longer be mistaken for an error.
+uint32_t wait_for_completion(uint8_t tag, uint32_t *data) {
+    volatile int timeout = CPL_POLL_LIMIT;
+
     while (timeout > 0) {
         uint32_t raw_header = PCIE_RX_HEADER_INFO;
         uint16_t rx_req_id = RX_REQUESTER_ID(raw_header);
         uint8_t  rx_tag    = RX_TAG(raw_header);
 
         if (rx_req_id == MY_REQUESTER_ID && rx_tag == tag) {
-            if (PCIE_RX_STATUS == CPL_STAT_SC) {
-                return PCIE_RX_DATA; 
-            } else {
-                return 0xFFFFFFFF; 
+            uint32_t rx_status = PCIE_RX_STATUS;
+
+            if (rx_status == CPL_STAT_SC && data) {
+                *data = PCIE_RX_DATA;
             }
+            return rx_status;
         }
         timeout--;
     }
-    return 0xFFFFFFFF; 
+    return CPL_TIMEOUT;
 }
 
-void pcie_cfg_write(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t val) {
-    uint8_t tag = tx_tag++;
-    uint32_t id = (bus << 24) | (dev << 19) | (func << 16) | (reg & 0xFC);
-    
-    send_tlp(TLP_CFG_WR0 | 0x01, 
-             (MY_REQUESTER_ID << 16) | (tag << 8) | 0x0F, 
-             id, val);
+// Sends one non-posted request and waits for its Completion. A device that is
+// still initialising may answer a Configuration Request -- read or write --
+// with CRS; the request is then re-issued, with a fresh tag, up to CRS_RETRIES
+// times. Returns the final Completion Status.
+uint32_t pcie_request(uint32_t type, uint32_t addr_or_id, uint32_t wdata, uint32_t *rdata) {
+    uint32_t status = CPL_TIMEOUT;
 
-    wait_for_completion(tag);
+    for (int retry_count = 0; retry_count <= CRS_RETRIES; retry_count++) {
+
+        uint8_t current_tag = tx_tag++;
+
+        send_tlp(type | 0x01,
+                 (MY_REQUESTER_ID << 16) | (current_tag << 8) | 0x0F,
+                 addr_or_id & 0xFFFFFFFC,
+                 wdata);
+
+        status = wait_for_completion(current_tag, rdata);
+
+        if (status != CPL_STAT_CRS) {
+            break;
+        }
+        wait_cycles(1000);
+    }
+    return status;
+}
+
+uint32_t pcie_cfg_write(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t val) {
+    uint32_t id = (bus << 24) | (dev << 19) | (func << 16) | (reg & 0xFC);
+    return pcie_request(TLP_CFG_WR0, id, val, 0);
+}
+
+uint32_t pcie_cfg_read(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t *val) {
+    uint32_t id = (bus << 24) | (dev << 19) | (func << 16) | (reg & 0xFC);
+    return pcie_request(TLP_CFG_RD0, id, 0, val);
 }
 
 void pcie_mem_write(uint32_t addr, uint32_t val) {
 	uint8_t tag = tx_tag++;
-	
-    send_tlp(TLP_MEM_WR | 0x01,                           
-             (MY_REQUESTER_ID << 16) | (tag << 8) | 0x0F, 
-             addr & 0xFFFFFFFC,                          
-             val);                                        
+
+    // Posted -- no Completion to wait for
+    send_tlp(TLP_MEM_WR | 0x01,
+             (MY_REQUESTER_ID << 16) | (tag << 8) | 0x0F,
+             addr & 0xFFFFFFFC,
+             val);
 }
 
-uint32_t pcie_read(uint32_t type, uint32_t addr_or_id) {
-	
-    for (int retry_count = 0; retry_count <= 100; retry_count++) {
-        
-        uint8_t current_tag = tx_tag++; 
+uint32_t pcie_mem_read(uint32_t addr, uint32_t *val) {
+    return pcie_request(TLP_MEM_RD, addr, 0, val);
+}
 
-		send_tlp(type | 0x01,                                  			
-                 (MY_REQUESTER_ID << 16) | (current_tag << 8) | 0x0F,   
-                 addr_or_id & 0xFFFFFFFC,                      			
-                 0);                                           			
+//--------------------------------------------------------------------------
+// Configuration space payloads travel big-endian: byte 0 of the register ends
+// up in bits [31:24] of the data dword. The two helpers below swap on the way
+// in and out, so every value in this file is written the way the spec prints
+// it (BAR 0x80000000, not 0x00000080).
+//
+// cfg_write32() is the checked write: any status other than SC stops the
+// firmware with RESULT_CFG_FAILED.
+//--------------------------------------------------------------------------
+static uint32_t bswap32(uint32_t v) {
+    return ((v & 0x000000FFu) << 24) |
+           ((v & 0x0000FF00u) <<  8) |
+           ((v & 0x00FF0000u) >>  8) |
+           ((v & 0xFF000000u) >> 24);
+}
 
-        volatile int timeout = 2000000;
-        int crs_received = 0; 
+static void cfg_write32(uint32_t bus, uint32_t dev, uint32_t reg, uint32_t val) {
+    if (pcie_cfg_write(bus, dev, 0, reg, bswap32(val)) != CPL_STAT_SC) {
+        halt(RESULT_CFG_FAILED);
+    }
+}
 
-        while (timeout > 0) {
-            uint32_t raw_header = PCIE_RX_HEADER_INFO;
-            uint16_t rx_req_id = RX_REQUESTER_ID(raw_header);
-            uint8_t  rx_tag    = RX_TAG(raw_header);
+static uint32_t cfg_read32(uint32_t bus, uint32_t dev, uint32_t reg, uint32_t *val) {
+    uint32_t raw;
+    uint32_t status = pcie_cfg_read(bus, dev, 0, reg, &raw);
 
-            if (rx_req_id == MY_REQUESTER_ID && rx_tag == current_tag) {
-                uint32_t rx_status = PCIE_RX_STATUS; 
-                
-                if (rx_status == CPL_STAT_SC) { 
-                    return PCIE_RX_DATA; 
-                }
-                
-                if (rx_status == CPL_STAT_CRS) { 
-                    wait_cycles(1000); 
-                    crs_received = 1; 
-                    break; 
-                }
+    if (status == CPL_STAT_SC) {
+        *val = bswap32(raw);
+    }
+    return status;
+}
 
-                return 0xFFFFFFFF;
-            }
-            timeout--;
+// The checked read, for a device already known to be there
+static uint32_t cfg_read32_checked(uint32_t bus, uint32_t dev, uint32_t reg) {
+    uint32_t val;
+
+    if (cfg_read32(bus, dev, reg, &val) != CPL_STAT_SC) {
+        halt(RESULT_CFG_FAILED);
+    }
+    return val;
+}
+
+//--------------------------------------------------------------------------
+// BAR sizing and assignment. For each of the six BARs:
+//   - write all ones, read back; 0 means the BAR is not implemented
+//   - bit 0 set: I/O BAR. This RC has no I/O space -- left unassigned
+//   - bits [2:1] = 10: 64-bit BAR, the next BAR holds the upper half
+//   - size = ~(readback & ~0xF) + 1, the base is aligned to it
+// BARs are packed into [win_base, win_base + win_size) in order. One that does
+// not fit is not squeezed in but parked out of the way: a 64-bit BAR above
+// 4 GB (out of reach of the 3-DW requests this RC sends), a 32-bit one at 0,
+// below every window. Only BAR0 is used by the self-test.
+//
+// Memory decoding is switched off while the BARs move.
+// Returns the address given to BAR0, or 0 when BAR0 could not be placed.
+//--------------------------------------------------------------------------
+static uint32_t assign_bars(uint32_t bus, uint32_t dev,
+                            uint32_t win_base, uint32_t win_size) {
+    uint32_t next     = 0; // first free offset inside the window
+    uint32_t bar0     = 0;
+
+    cfg_write32(bus, dev, CFG_COMMAND, 0);
+
+    for (int i = 0; i < NUM_BARS; i++) {
+        uint32_t reg = CFG_BAR0 + 4 * i;
+
+        cfg_write32(bus, dev, reg, 0xFFFFFFFF);
+        uint32_t lo = cfg_read32_checked(bus, dev, reg);
+
+        if (lo == 0) {
+            continue;                             // not implemented
+        }
+        if (lo & 0x1) {
+            cfg_write32(bus, dev, reg, 0);        // I/O -- left unassigned
+            continue;
         }
 
-        if (!crs_received && timeout <= 0) {
-            return 0xFFFFFFFF; 
+        int      is64 = (((lo >> 1) & 0x3) == 0x2) && (i < NUM_BARS - 1);
+        uint32_t hi   = 0xFFFFFFFF;               // upper half of the size mask
+
+        if (is64) {
+            cfg_write32(bus, dev, reg + 4, 0xFFFFFFFF);
+            hi = cfg_read32_checked(bus, dev, reg + 4);
+        }
+
+        uint32_t size = ~(lo & 0xFFFFFFF0) + 1;   // 0 when 4 GB or more
+        int      fits = 0;
+        uint32_t base = 0;
+
+        if (hi == 0xFFFFFFFF && size != 0 && size <= win_size) {
+            base = (next + size - 1) & ~(size - 1);
+            fits = (base <= win_size - size);
+        }
+
+        if (fits) {
+            cfg_write32(bus, dev, reg, win_base + base);
+            if (is64) {
+                cfg_write32(bus, dev, reg + 4, 0);
+            }
+            next = base + size;
+            if (i == 0) {
+                bar0 = win_base + base;
+            }
+        } else if (is64) {
+            // Base = size (aligned to itself), but never below 4 GB
+            uint32_t park_hi = (hi == 0xFFFFFFFF) ? 1 : ~hi + 1;
+            cfg_write32(bus, dev, reg, 0);
+            cfg_write32(bus, dev, reg + 4, park_hi);
+        } else {
+            cfg_write32(bus, dev, reg, 0);
+        }
+
+        if (is64) {
+            i++;                                  // upper half done
         }
     }
-
-    return 0xFFFFFFFF;
-}
-
-uint32_t pcie_cfg_read(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg) {
-    uint32_t id = (bus << 24) | (dev << 19) | (func << 16) | (reg & 0xFC);
-    return pcie_read(TLP_CFG_RD0, id);
-}
-
-uint32_t pcie_mem_read(uint32_t addr) {
-    return pcie_read(TLP_MEM_RD, addr);
+    return bar0;
 }
 
 int main() {
-	
+
 	tx_tag = 0;
-	
+
 	wait_cycles(STARTUP_DELAY);
-	
-    uint32_t dev_id = pcie_cfg_read(1, 0, 0, 0x00);
-    
-    if (dev_id == 0xFFFFFFFF) {
-        PCIE_TX_DATA = 0xBAD00000;
-        while(1);
+
+    uint32_t dev_id;
+
+    if (cfg_read32(1, 0, CFG_ID, &dev_id) != CPL_STAT_SC || dev_id == 0xFFFFFFFF) {
+        halt(RESULT_NO_DEVICE);
     }
 
-	pcie_cfg_write(1, 0, 0, 0x10, 0xFFFFFFFF); 
-	pcie_cfg_write(1, 0, 0, 0x14, 0xFFFFFFFF);
-		
-	pcie_cfg_write(1, 0, 0, 0x10, 0x00000080);  
-	pcie_cfg_write(1, 0, 0, 0x14, 0x00000000); 
-	
-    pcie_cfg_write(1, 0, 0, 0x04, 0x06000000); 
+    uint32_t test_addr = assign_bars(1, 0, WINDOW_BASE, WINDOW_SIZE);
 
-    uint32_t test_addr = 0x80000000;
-	uint32_t test_data = 0x00000006; 
-	
+    if (test_addr == 0) {
+        halt(RESULT_BAR0_FAILED);
+    }
+
+    cfg_write32(1, 0, CFG_COMMAND, CMD_MEM_BUS_MASTER);
+
+	uint32_t test_data = 0x00000006;
+    uint32_t readback;
+
     pcie_mem_write(test_addr, test_data);
-    
-    uint32_t readback = pcie_mem_read(test_addr);
 
-    if (readback == test_data) {
-        PCIE_TX_DATA = 0x0000FACE;
+    if (pcie_mem_read(test_addr, &readback) == CPL_STAT_SC && readback == test_data) {
+        halt(RESULT_PASS);
     } else {
-        PCIE_TX_DATA = 0x0000DEAD;
+        halt(RESULT_FAIL);
     }
-
-    while (1) {}
 }
 
 //--------------------------------------------------------------------------
 // Revision history:
 //  2026/02/01 AV - initial creation
 //  2026/02/20 AV - updates based on test results on hardware
+//  2026/10/06    - Completion Status checked on every request (CRS retry on
+//                  config writes too), real BAR sizing, explicit byte swap
 //--------------------------------------------------------------------------

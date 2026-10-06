@@ -22,6 +22,15 @@ The board is designed for flexible PCIe system development and testing, featurin
 
 Designed with **KiCad 10.0.6**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
+### Production Files
+
+The ready-to-order package (BOM with MPNs, interactive BOM, pick-and-place, Gerbers + drill, Gerber PDF, STEP model) is in [openpci2-backplane/production](openpci2-backplane/production). All symbols, footprints and 3D models come from the in-repo [KiCad-library](KiCad-library), so nothing needs to be installed besides KiCad. To regenerate everything with [KiBot](https://github.com/INTI-CMNB/KiBot):
+
+```bash
+cd openpci2-backplane
+kibot -c openpci2-backplane.kibot.yaml -d production
+```
+
 ### Common Resources
 
 #### Power Delivery

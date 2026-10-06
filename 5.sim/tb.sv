@@ -252,8 +252,10 @@ module tb;
 //--------------------------------------------------------------
 // main() ends by writing a marker into the Tx payload register:
 //   0x0000FACE  memory write/read back matched
-//   0x0000DEAD  it did not
+//   0x0000DEAD  it did not, or the read was not completed with SC
 //   0xBAD00000  no endpoint answered the first config read
+//   0xBAD00002  a later config request failed (UR/CA/timeout)
+//   0xBAD00003  BAR0 is not implemented, is I/O, or does not fit
 // Everything before that is the enumeration sequence.
 
   logic [31:0] result_marker;
@@ -305,7 +307,9 @@ module tb;
 
       if (dut.soc_inst.mem_wdata == 32'h0000_face ||
           dut.soc_inst.mem_wdata == 32'h0000_dead ||
-          dut.soc_inst.mem_wdata == 32'hbad0_0000) begin
+          dut.soc_inst.mem_wdata == 32'hbad0_0000 ||
+          dut.soc_inst.mem_wdata == 32'hbad0_0002 ||
+          dut.soc_inst.mem_wdata == 32'hbad0_0003) begin
         result_marker  = dut.soc_inst.mem_wdata;
         mem_rd_payload = rx_data_last;
         $display("\n%t  TB     ===> FIRMWARE RESULT 0x%08h  (%s)\n", $time,
@@ -344,6 +348,8 @@ module tb;
       32'h0000_face: $display("  FIRMWARE RESULT ......... PASS (0x%08h)", result_marker);
       32'h0000_dead: $display("  FIRMWARE RESULT ......... FAIL (0x%08h)", result_marker);
       32'hbad0_0000: $display("  FIRMWARE RESULT ......... no endpoint found (0x%08h)", result_marker);
+      32'hbad0_0002: $display("  FIRMWARE RESULT ......... config request failed (0x%08h)", result_marker);
+      32'hbad0_0003: $display("  FIRMWARE RESULT ......... BAR0 not usable (0x%08h)", result_marker);
       default:       $display("  FIRMWARE RESULT ......... not reached yet");
     endcase
     $display("--------------------------------------------------------");

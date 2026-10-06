@@ -34,16 +34,18 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 
 | **Function Prototype** |
 | :---: |
-| `uint32_t pcie_cfg_read(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg);` |
+| `uint32_t pcie_cfg_read(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t *val);` |
 
 </div>
 
 *   **Parameters:**
     *   **bus, dev, func:** Target device topology (usually 1, 0, 0 for a direct connection).
     *   **reg:** The register offset (e.g., 0x00 for Vendor ID).
-*   **Returns:** **The 32-bit register value, or 0xFFFFFFFF on failure.**
+    *   **val:** **Receives the raw (byte-swapped) register value - written only on success.**
+*   **Returns:** **The Completion Status: `CPL_STAT_SC` (0), `_UR` (1), `_CRS` (2, after 100 retries), `_CA` (4), or `CPL_TIMEOUT` (8).**
 >*   **Example:** 
-    > `uint32_t id = pcie_cfg_read(1, 0, 0, 0x00);`
+    > `if (pcie_cfg_read(1, 0, 0, 0x00, &id) == CPL_STAT_SC) ...`
+*   **Note:** `main()` uses the wrappers `cfg_read32()` / `cfg_write32()`, which add the `bswap32()` and, for writes, stop with `0xBAD00002` on failure.
 
 ### **2. Configuration Write**
 **Writes a 32-bit value to the Configuration Space. Used to configure BARs, enable Bus Mastering, and set Command registers.**
@@ -53,7 +55,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
   
 | **Function Prototype** |
 | :---: |
-| `void pcie_cfg_write(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t val);` |
+| `uint32_t pcie_cfg_write(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, uint32_t val);` |
 
 </div>
 
@@ -62,9 +64,9 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
     *   **bus, dev, func:** Target device topology.
     *   **reg:** The register offset.
     *   **val:** **The 32-bit data to write.**
-*   **Behavior:** **Waits for the matching Completion TLP, with a timeout. The completion status is not checked and the write is not retried.**
+*   **Returns:** **The Completion Status, as for `pcie_cfg_read()`. A write answered with CRS is re-issued, like a read.**
 >*   **Example:** 
-   > `pcie_cfg_write(1, 0, 0, 0x10, 0xFFFFFFFF);`
+   > `status = pcie_cfg_write(1, 0, 0, 0x10, 0xFFFFFFFF);`
 
 
 ### **3. Memory Write (32-bit)**
@@ -94,16 +96,16 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 
 | **Function Prototype** |
 | :---: |
-| `uint32_t pcie_mem_read(uint32_t addr);` |
+| `uint32_t pcie_mem_read(uint32_t addr, uint32_t *val);` |
 
 </div>
 
 *   **Parameters:**
     *   **addr:** **Target memory address.**
-*   **Returns:** **The 32-bit data read from the Endpoint.**
-*   **Robustness:** **Shares `pcie_read()` with `pcie_cfg_read()`, so a CRS (Configuration Retry Status) completion is retried automatically. Any other unsuccessful status, or a timeout, returns `0xFFFFFFFF`.**
+    *   **val:** **Receives the 32-bit data read from the Endpoint - written only on success.**
+*   **Returns:** **The Completion Status, as for `pcie_cfg_read()`. All three non-posted calls share `pcie_request()`.**
 >*   **Example:** 
-    > `uint32_t data = pcie_mem_read(0x80000000);`
+    > `if (pcie_mem_read(0x80000000, &data) == CPL_STAT_SC) ...`
 
 ---
 
@@ -135,15 +137,17 @@ The following addresses map directly to the RTL bridge inputs/outputs. With the 
 ## Driver Logic & Features
 
 ### 1. Robust TLP Transmission
-The `pcie_read()` function implements a retry mechanism to handle **CRS (Configuration Retry Status)**. If the Endpoint is busy, the driver waits and retries the transaction multiple times before timing out.
+Every non-posted request (config read, config write, memory read) goes through `pcie_request()`, which checks the **Completion Status** (SC / UR / CRS / CA) or reports a timeout, and passes read data back separately - so a genuine `0xFFFFFFFF` read is never mistaken for an error. A request answered with **CRS (Configuration Retry Status)** - read or write - is re-issued with a fresh tag up to 100 times. Any config request that fails after the device has been found stops the firmware with `0xBAD00002`.
 
 ### 2. Enumeration Sequence (in `main`)
 The firmware performs a standard PCIe Bring-up sequence:
 1.  **Wait:** Delays execution to allow the Physical Link to stabilize.
 2.  **Discovery:** Reads the `Device ID` from Bus 1.
-3.  **BAR Sizing write:** Writes `0xFFFFFFFF` to BAR0/BAR1. The resulting size is not read back - the firmware assumes the Endpoint's BAR0 fits at the fixed address below.
-4.  **Assignment:** Assigns Base Address `0x80000000` to the Endpoint.
+3.  **BAR Sizing:** With memory decoding off, writes `0xFFFFFFFF` to each of the six BARs and reads it back. `0` = BAR not implemented; bit 0 = I/O BAR (left unassigned, this RC has no I/O space); bits `[2:1] = 10` = 64-bit BAR, the next BAR is its upper half. Size = `~(readback & ~0xF) + 1`.
+4.  **Assignment:** Places each memory BAR, aligned to its size, in the window `0x80000000 - 0xFFFFFFFF` (`RC-switched`: the 1 MB window of the endpoint's switch port). BAR0 lands at the window base - `0x80000000` for the AMD EP's 2 KB BAR0. A BAR that does not fit is parked out of the way (64-bit above 4 GB, 32-bit at 0); if that is BAR0, the firmware stops with `0xBAD00003`.
 5.  **Enable:** Sets the **Bus Master** and **Memory Space** bits in the Command Register.
+
+Configuration payloads travel big-endian on this RC (byte 0 of the register in bits `[31:24]`), so all config data goes through `bswap32()` and the values in the source read the way the spec prints them.
 
 ### 3. Self-Test & Debug Codes
 The driver reports its execution status by writing specific "Magic Numbers" to the `PCIE_TX_DATA` register. These values serve as debug markers that can be monitored via the **Vivado ILA**.
@@ -153,9 +157,11 @@ The driver reports its execution status by writing specific "Magic Numbers" to t
 | Magic Number | Meaning |
 | :--- | :--- |
 | **`0x0000FACE`** | **PASS:** Data `0x6` was written and successfully read back. |
-| **`0x0000DEAD`** | **FAIL:** Readback data did not match the written value. |
+| **`0x0000DEAD`** | **FAIL:** Readback data did not match the written value, or the memory read was not completed with SC. |
 | **`0xBAD00000`** | **ERROR:** Device ID read failed (Link down or device not found). In `RC-switched`: the switch upstream port did not answer. |
 | **`0xBAD00001`** | **ERROR** (`RC-switched` only): the switch is up, but no Endpoint was found behind it. |
+| **`0xBAD00002`** | **ERROR:** A config request to a device that had answered failed (UR, CA, timeout, or CRS after 100 retries). |
+| **`0xBAD00003`** | **ERROR:** The Endpoint's BAR0 is not implemented, is an I/O BAR, or does not fit the window. |
 
 </div>
 

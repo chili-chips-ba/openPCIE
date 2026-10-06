@@ -342,7 +342,7 @@ The architecture follows a layered approach:
 
 2.  **PCIe Driver (Enumeration & Setup)**:
     - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
-    - It manually performs device discovery, writes the BARs, assigns memory addresses, and configures the **Command Register** to enable the device for communication.
+    - It manually performs device discovery, sizes the BARs by readback, assigns aligned memory addresses, checks the completion status of every request, and configures the **Command Register** to enable the device for communication.
       
 3.  **HAL (Hardware Abstraction Layer)**:
     - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.

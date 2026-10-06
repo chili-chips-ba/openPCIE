@@ -127,9 +127,13 @@ bus 3..6  dev 0 .... the endpoint cards, BAR0 at the window base
 * **Step 2 - the four downstream ports** on the internal bus 2. Each is a
   virtual bridge, gets its own secondary bus and its own 1 MB slice of the
   upstream window.
-* **Step 3 - the endpoints**, device 0 on buses 3..6. BAR0 is placed at the base
-  of the window its port forwards - put it anywhere else and the port drops
-  every memory request aimed at it.
+* **Step 3 - the endpoints**, device 0 on buses 3..6. Every BAR is sized
+  (write all ones, read back, decode the 32/64-bit type) and placed, aligned to
+  its size, inside the 1 MB window its port forwards - put it anywhere else and
+  the port drops every memory request aimed at it. BAR0 therefore lands at the
+  window base. A BAR0 larger than the window is reported, not squeezed in; any
+  other BAR that does not fit is parked out of the way (64-bit above 4 GB,
+  32-bit at 0).
 * **Step 4 - self test.** Memory write and readback through the switch for each
   populated slot, then `0x0000FACE` / `0x0000DEAD` to `PCIE_TX_DATA`, as in the
   direct build.
@@ -137,10 +141,9 @@ bus 3..6  dev 0 .... the endpoint cards, BAR0 at the window base
 Two things worth knowing when comparing the C against the AMD ROM dump:
 
 * Configuration payloads travel **big-endian** - byte 0 of the register ends up
-  in bits `[31:24]` of the data dword. The direct firmware hides this by writing
-  pre-swapped constants (BAR `0x80000000` written as `0x00000080`); with four
-  bridges to set up that gets unreadable, so here the swap is explicit in
-  `bswap32()` and the register values are written the way the spec prints them.
+  in bits `[31:24]` of the data dword. Both firmwares make the swap explicit in
+  `bswap32()`, so the register values are written the way the spec prints them
+  (BAR `0x10000000`, not `0x00000010`).
 * The ROM writes `0x103F` into a memory-limit field where this firmware writes
   `0x1030`. Bits `[3:0]` of the Memory Limit register are read-only, so the two
   land the same value in the switch.
@@ -154,6 +157,11 @@ skips the empty ones, so a partially populated backplane is fine. It reports
 | `0x0000DEAD` | an endpoint failed its readback |
 | `0xBAD00000` | the switch upstream port did not answer at all |
 | `0xBAD00001` | the switch is up, but no endpoint was found behind it |
+| `0xBAD00002` | a config request to a device that had answered failed (UR, CA, timeout, or CRS after 100 retries) |
+| `0xBAD00003` | an endpoint's BAR0 is not implemented, is I/O, or is larger than its 1 MB port window |
+
+Every request's Completion Status is checked; config reads **and** writes
+answered with CRS are re-issued up to 100 times.
 
 ---
 
