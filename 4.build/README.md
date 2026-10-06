@@ -199,8 +199,8 @@ A single build can still override it without editing the file:
 
 Both describe the same map down to the byte offset, so any firmware runs on
 either bitstream. That was checked by compiling `main.c` both ways with the
-RISC-V toolchain and comparing the generated code: the same `lw`/`sw` at the
-same offsets, and the same image size to within one word.
+RISC-V toolchain and comparing the output: `firmware.bin` is byte-identical,
+for both RC-direct and RC-switched.
 
 The PeakRDL path is also the one exercised by the
 [co-simulation](../5.sim), which runs the real firmware against a PCIe endpoint
@@ -228,13 +228,16 @@ for `rv32i` only - picorv32 here is configured without the M and C extensions.
 `make` builds the RC-direct firmware. For the switched topology:
 
 ```
-make clean && make VARIANT=switched
+make VARIANT=switched
 ```
 
-Both variants write the same three output names, hence the `clean`.
+Both variants write the same three output names, but the make file records the
+configuration in `.build-config` and rebuilds whenever it changes, so no
+`make clean` is needed to switch.
 
-`make CSR=peakrdl` takes the register map from the headers generated in step 1
-instead of from the addresses hard-coded in `main.c` - see
+By default (`CSR ?= peakrdl` in `config.mk`) the firmware takes its register map
+from the headers generated in step 1; `make CSR=legacy` uses the addresses
+hard-coded in `main.c` instead - see
 [Two interchangeable CSR implementations](#two-interchangeable-csr-implementations)
 above.
 
@@ -289,7 +292,7 @@ Two things are worth knowing before the first build, both covered in detail in
   regression.
 - **nextpnr's GT attribute defaults do not match the Xilinx library.** Where the
   RTL omits an attribute, Vivado fills it from `unisim` while nextpnr substitutes
-  its own default - almost always `0`. `lane_xcvr.sv` therefore sets 17 of them
+  its own default - almost always `0`. `lane_xcvr.sv` therefore sets 20 of them
   explicitly. This was the root cause of the design not working on hardware, and
   it is silent: no warning, and the bitstream builds cleanly.
 

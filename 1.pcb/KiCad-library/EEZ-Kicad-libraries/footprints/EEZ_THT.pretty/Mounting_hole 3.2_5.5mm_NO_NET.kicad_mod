@@ -1,0 +1,18 @@
+(footprint "Mounting_hole 3.2_5.5mm_NO_NET" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (property "Sheetfile" "STM32H7_MCU.kicad_sch")
+  (property "Sheetname" "STM32H7 MCU")
+  (property "exclude_from_bom" "")
+  (property "ki_description" "Mounting Hole with connection")
+  (property "ki_keywords" "mounting hole")
+  (attr through_hole exclude_from_pos_files exclude_from_bom)
+  (fp_text reference "REF**" (at 0 -0.5 unlocked) (layer "F.SilkS") hide
+      (effects (font (size 1 1) (thickness 0.1)))
+    (tstamp fed6589c-2949-433a-b4b5-52807c4f49b7)
+  )
+  (fp_text value "~" (at 0 1 unlocked) (layer "F.Fab") hide
+      (effects (font (size 1 1) (thickness 0.15)))
+    (tstamp 9f86afea-f021-455b-8986-5bfc15987965)
+  )
+  (pad "" thru_hole circle (at 0 0) (size 5.5 5.5) (drill 3.2) (layers "*.Cu" "*.Mask") (tstamp f5c88126-2727-4221-bdd6-2cf5b9cca42e))
+)

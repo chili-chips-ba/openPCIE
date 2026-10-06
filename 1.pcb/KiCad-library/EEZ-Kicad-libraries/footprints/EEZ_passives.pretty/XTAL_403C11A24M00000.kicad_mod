@@ -1,0 +1,227 @@
+(footprint "XTAL_403C11A24M00000"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "Oscillator; 4-pin; 3.2 x 2.5 mm")
+	(property "Reference" "REF**"
+		(at 0 -2.7305 0)
+		(layer "F.SilkS")
+		(uuid "7bf571aa-ec9b-4e17-91c7-4fada260a407")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "XTAL_403C11A24M00000"
+		(at 0 2.7305 0)
+		(layer "F.Fab")
+		(uuid "29fe2d6e-e24a-42a9-b04e-54d1ea9b4e6d")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "033c3d0f-3bce-4437-a404-e49b6ffa72af")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e44c24ae-bc18-4dda-b53e-6019bbc86f48")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "569484ea-e72c-435f-b55e-10fcb69716ce")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -1.651 -2.032)
+		(end -1.651 -0.254)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "452a351d-00a2-43d7-b07a-72d282d89eed")
+	)
+	(fp_line
+		(start -1.25 -0.08)
+		(end -1.25 0.08)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "60b81b3b-000a-498b-be12-56b9007f22c4")
+	)
+	(fp_line
+		(start 0 -2.032)
+		(end -1.651 -2.032)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "81061da5-07a4-4509-95e2-c438a8fcd428")
+	)
+	(fp_line
+		(start 1.25 -0.08)
+		(end 1.25 0.08)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f1d86af8-1150-477c-af0d-ff28bf2bf4c8")
+	)
+	(fp_line
+		(start -1.65 -2.05)
+		(end -1.65 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3c6f0d06-6f90-4ca1-8d68-6853577fda62")
+	)
+	(fp_line
+		(start -1.65 -2.05)
+		(end 1.65 -2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3dea8857-d469-4947-9661-f2f314efd834")
+	)
+	(fp_line
+		(start 1.65 -2.05)
+		(end 1.65 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "d4e3739c-b93d-4f11-9d16-6c0113f4ec97")
+	)
+	(fp_line
+		(start 1.65 2.05)
+		(end -1.65 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "caefdd56-3328-4aae-9f88-a3b9de4c9ac4")
+	)
+	(fp_line
+		(start -1.25 -1.6)
+		(end -1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fbe8172a-90c4-472b-a281-2e4cda10d6da")
+	)
+	(fp_line
+		(start -1.25 -1.6)
+		(end 1.25 -1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "21675b1b-696a-4031-861d-40ff330acaa4")
+	)
+	(fp_line
+		(start 1.25 -1.6)
+		(end 1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cb65e6cd-c657-47b5-a924-436699d02c31")
+	)
+	(fp_line
+		(start 1.25 1.6)
+		(end -1.25 1.6)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ea921a5c-fcad-4f3f-ae85-9524def2e34a")
+	)
+	(pad "1" smd rect
+		(at -0.8 -1.1)
+		(size 1.2 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "8e7db52c-5108-45e4-bce0-3e285a8ba52e")
+	)
+	(pad "2" smd rect
+		(at -0.8 1.1)
+		(size 1.2 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "bd2be753-d7a1-4357-aadd-e607f199fab8")
+	)
+	(pad "3" smd rect
+		(at 0.8 1.1)
+		(size 1.2 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "c09bc7d4-8adc-4276-9273-43d86adae660")
+	)
+	(pad "4" smd rect
+		(at 0.8 -1.1)
+		(size 1.2 1.4)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(solder_mask_margin 0.102)
+		(uuid "a42d8072-1828-471b-b684-c347760ae992")
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/403C11A24M00000.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)

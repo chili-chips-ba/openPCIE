@@ -1,0 +1,113 @@
+(footprint "Fiducial_0.75mm_Mask1.5mm"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "Circular Fiducial, 0.75mm bare copper, 1.5mm soldermask opening (Level B)")
+	(tags "fiducial")
+	(property "Reference" "REF**"
+		(at 0 -1.3335 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "1565c96e-f9a8-4d99-9e02-f4e2e9401c7d")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "Fiducial_0.75mm_Mask1.5mm"
+		(at 0 2 0)
+		(layer "F.Fab")
+		(uuid "bf4a0f39-0bd8-48c6-af33-cefefde51919")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" "Fiducial:Fiducial_0.75mm_Mask1.5mm"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8307a1e0-34f7-4970-b0d0-44bfb03d4955")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9d2fe182-09e2-4763-b410-7abdf27d9a14")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d24988c3-adbd-4d32-922b-cc6194054d5b")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_circle
+		(center 0 0)
+		(end 1 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "3f196dfb-b79f-4f56-aa12-c4102a2e388c")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 0.75 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.Fab")
+		(uuid "8307a2f0-1509-4ba0-95f4-85e937a64d16")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "f89dcd9c-bc15-40f0-90d7-ea13f0acb951")
+		(effects
+			(font
+				(size 0.3 0.3)
+				(thickness 0.05)
+			)
+		)
+	)
+	(pad "" smd circle
+		(at 0 0)
+		(size 0.75 0.75)
+		(layers "F.Cu" "F.Mask")
+		(solder_mask_margin 0.375)
+		(clearance 0.375)
+		(uuid "41cb8cd3-2fce-4e47-9cb9-f0346c9d503e")
+	)
+)

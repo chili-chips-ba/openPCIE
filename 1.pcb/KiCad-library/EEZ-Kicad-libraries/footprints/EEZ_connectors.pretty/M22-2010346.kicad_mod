@@ -1,0 +1,237 @@
+(footprint "M22-2010346"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "3-pos 2mm pin header vertical")
+	(property "Reference" "REF**"
+		(at -1.397 -1.5875 0)
+		(layer "F.SilkS")
+		(uuid "e0b6e204-79e4-4d6c-bb2e-62444bee4ae6")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+		)
+	)
+	(property "Value" "M22-2010346"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "eee35eb0-f38c-4b20-8ebc-2a4e01103ea4")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1d89f29e-b36e-4697-8ab6-45d10ad9a187")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9c022b74-2695-42fe-9265-6cbbc543d347")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -3 -1)
+		(end 3 -1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "40941549-6ce6-4129-ac1e-66a593011f85")
+	)
+	(fp_line
+		(start -3 1)
+		(end -3 -1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eefd8cab-f297-4e06-87bf-6a8fd81e53a9")
+	)
+	(fp_line
+		(start 3 -1)
+		(end 3 1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a2463d6b-8a5c-4658-9da8-4fa92b0e1342")
+	)
+	(fp_line
+		(start 3 1)
+		(end -3 1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3aeb809a-1911-4554-b3a1-7cf416a62ee2")
+	)
+	(fp_circle
+		(center -3.5 0)
+		(end -3.4 0)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "aa69d70f-2066-4851-842e-9063c93586f8")
+	)
+	(fp_line
+		(start -3.25 -1.25)
+		(end 3.25 -1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "ab0c8cb8-d4ef-41fc-b8f9-e26b1f4e9577")
+	)
+	(fp_line
+		(start -3.25 1.25)
+		(end -3.25 -1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "0b161b09-417b-4651-9311-10ae82544a4b")
+	)
+	(fp_line
+		(start 3.25 -1.25)
+		(end 3.25 1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "573fb668-b97e-41ab-b217-75f4c6f738b0")
+	)
+	(fp_line
+		(start 3.25 1.25)
+		(end -3.25 1.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5f7d4351-084f-492c-a212-711ec40fe11b")
+	)
+	(fp_line
+		(start -3 -1)
+		(end 3 -1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "2760e6a0-d7e6-47ef-ab53-b237395567ca")
+	)
+	(fp_line
+		(start -3 1)
+		(end -3 -1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4bb8fc8f-a923-47b5-9bce-d51cf1c718d0")
+	)
+	(fp_line
+		(start 3 -1)
+		(end 3 1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "73de84fe-325c-4939-afb6-d0f5cbfd7ec1")
+	)
+	(fp_line
+		(start 3 1)
+		(end -3 1)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "56b6a2ca-dd25-4eb9-900b-cec33a99b9c5")
+	)
+	(fp_circle
+		(center -3.5 0)
+		(end -3.4 0)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "08fce39a-afc0-43b2-9276-8ad14f36c557")
+	)
+	(pad "1" thru_hole rect
+		(at -2 0)
+		(size 1.358 1.358)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "8b9e352c-0669-4585-8fb3-0c9e86af79d4")
+	)
+	(pad "2" thru_hole circle
+		(at 0 0)
+		(size 1.358 1.358)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "7b90657e-2cd1-4b97-bd8f-fbd92bb63295")
+	)
+	(pad "3" thru_hole circle
+		(at 2 0)
+		(size 1.358 1.358)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.102)
+		(uuid "3376e625-97c4-47e6-b1ca-6520bedc7c39")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/m22-2010346.stp"
+		(offset
+			(xyz -4 0 1.46)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -0)
+		)
+	)
+)

@@ -14,8 +14,8 @@
 * [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
 * [_VProc_ Software](#vproc-software)
   * [Other Software Use Cases](#other-software-use-cases)
-    [Natively Compiled Application](#natively-compiled-application)
-    [RISC-V Compiled Application](#risc-v-compiled-application)
+    * [Natively Compiled Application](#natively-compiled-application)
+    * [RISC-V Compiled Application](#risc-v-compiled-application)
 * [Building and Running Code](#building-and-running-code)
   * [Configuring ISS timing model](#configuring-iss-timing-model)
   * [Running ISS code](#running-iss-code)
@@ -24,7 +24,7 @@
   * [Natively Compiled Code](#natively-compiled-code)
   * [ISS Software](#iss-software)
 * [The mem_model Co-Simulation Sparse Memory Model](#the-mem_model-co-simulation-sparse-memory-model)
-* [Driving the PCie Link](#driving-the-pcie-link)
+* [Driving the PCIe Link](#driving-the-pcie-link)
 * [Co-simulation HAL](#co-simulation-hal)
 * [References](#references)
 
@@ -77,17 +77,18 @@ Exactly **one** RTL file is swapped for the simulation, and one file is copied i
 Everything else -- the hard macro, the transaction layer, the CPU, the CSR and
 the firmware -- is what goes into the FPGA. The swap needs no `ifdef` in the
 design: the module name and port list match, so the simulation file list
-(`tb.prj`) simply picks the other file. It is the same mechanism the test bench
-already used for the CPU with `soc_cpu.VPROC.sv`.
+(`tb.prj`) simply picks the other file. (The CPU swap for `CPU=vproc` /
+`CPU=iss` is different - that one *is* an `` `ifdef SOC_CPU_VPROC `` in
+`riscv_pcie_soc.sv`, see [The three CPU options](#the-three-cpu-options).)
 
-Two simulation-only parameters ARE selected with defines, both set only in
+Three simulation-only parameters ARE selected with defines, all set only in
 `5.sim/Makefile` and never by either synthesis flow:
 
 | Define | Effect | Why |
 |---|---|---|
 | `SIM_FAST_TRAIN` | `PL_FAST_TRAIN = "TRUE"` on the hard macro (`silicon_core.sv`) | shortens the LTSSM training timers. This is a simulation feature of the macro -- with the real 12/24 ms timers link training is longer than any practical run |
 | `SIM_GEN1_ONLY` | `PCIE_GEN = 1` (`link_pkg.sv`) | the endpoint VIP advertises Gen1 and its LTSSM helper cannot follow a Gen1 to Gen2 retrain |
-| `SIM_PIPE_CODING` | line coding of the hard macro (`silicon_core.sv`) | matches how the endpoint VIP is configured over PIPE |
+| `SIM_PIPE_CODING` | `DISABLE_SCRAMBLING = "TRUE"` on the hard macro (`silicon_core.sv`) | matches how the endpoint VIP is configured over PIPE |
 
 ### The PIPE PHY model
 
@@ -211,7 +212,7 @@ write its temporaries into `C:\WINDOWS\`.
 ### What the simulation does
 
 A full run takes the design from power-up to a verified memory transaction, with
-no hardware involved:
+no hardware involved (this run used `RUN_US=3000`; the default is 2000):
 
 ```
                    0  TB     run length 3000 us
@@ -337,8 +338,8 @@ two VProc builds. The replacement module is
 dressed up as a picorv32, driving the core's *native* memory interface.
 
 > Note the difference from the inherited `models/soc_cpu.VPROC.sv`, which is
-> kept for reference. That one speaks the `soc_if` bus interface of the sibling
-> Chili.CHIPS SOC infrastructure. This design has no `soc_if` -- it instantiates
+> kept for reference. That one speaks the `soc_if` bus interface of the SOC
+> infrastructure of the sibling [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project. This design has no `soc_if` -- it instantiates
 > picorv32 directly -- so it needed its own wrapper.
 
 The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL
@@ -386,11 +387,11 @@ core in the way.
 
 ## Auto-selection of soc_cpu Component
 
-> Historical note. This describes the arrangement in the sibling _openpcie2-rc_
-> project, where the CPU was selected by filtering a file list. Here the choice
+> Historical note. This describes the arrangement in the sibling
+> [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project, where the CPU was selected by filtering a file list. Here the choice
 > is the `CPU=` switch above, and the file list is [`tb.prj`](tb.prj).
 
-The _openpcie2-rc_ top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the `soc_cpu`, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a verification model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the the HDL files for _VProc_ and _mem_model_ are in `5.sim/models/cosim`. These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
+The _openCologne-PCIE_ top level component has the required RTL files listed in <tt>2.rtl/top.filelist</tt>. This includes files for the `soc_cpu`, under the directory <tt>ip.cpu</tt>. The simulation build make file ([see below](#building-and-running-code)) will process the <tt>top.filelist</tt> file to generate a new local copy, having removed all references to the files under the <tt>ip.cpu</tt> directory. Since the VProc <tt>soc_cpu</tt> component is a verification model, the <tt>soc_cpu.VPROC.sv</tt> HDL file is placed in <tt>5.sim/models</tt> whilst the the HDL files for _VProc_ and _mem_model_ are in `5.sim/models/cosim`. These are referenced within the make file, along with the other test models that are used in the test bench. Thus the VProc device is selected for the simulation as the CPU component.
 
 ## VProc Software
 
@@ -467,7 +468,7 @@ The above code is a slightly abbreviated version of the code in <tt>5.sim/userco
     int  readWord     (const unsigned   byteaddr,       unsigned   *data, const int delta=0);
 
 ```
-The other methods in this class are not, at this point, used by _openpcie2-rc_. These methods can now be used to write test code to drive the <tt>soc_if</tt> bus of the <tt>soc_cpu</tt> component, and is the basic method to write test code software.
+The other methods in this class are not, at this point, used by _openpcie2-rc_. These methods can now be used to write test code to drive the CPU bus of the <tt>soc_cpu</tt> component (here picorv32's native memory interface), and is the basic method to write test code software.
 
 As well as the _VProc_ API, the user software can have direct access to the sparse memory model API (which is part of the _pcievhost_ model) by including <tt>mem.h</tt>, which are a set of C methods (and <tt>mem.h</tt> must be included as <tt>extern "C"</tt> in C++ code). The functions relevant to _openpcie2-rc_ are shown below:
 
@@ -601,7 +602,7 @@ The make file has a set of variables (with default settings) that can be overrid
 
 The variable to reach for is <tt>CPU</tt>, which picks what occupies node 0 and sets everything else to match -- <tt>CPU=iss</tt> is what selects the ISS build, overriding <tt>USER_C</tt> and <tt>USRCODEDIR</tt> with the supplied ISS integration source. (The underlying <tt>BUILD=ISS</tt> switch is still there and still works, but it only changes the C side; without <tt>CPU=iss</tt> the HDL is still built with the RTL core, and the ISS would have no processor socket to occupy.)
 
-The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. The _openpcie2-rc_ <tt>top.filelist</tt> filename can be overridden to allow multiple configurations to be selected from, if required. The processing of this file to remove the listed <tt>soc_cpu</tt> HDL files is selected on a pattern (<tt>ip.cpu</tt>) but this can be changed using <tt>SOCCPUMATCH</tt>. If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
+The <tt>USER_C</tt> and <tt>USERCODEDIR</tt> make file variable allows different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. (<tt>SOCCPUMATCH</tt> is still listed by <tt>make help</tt>, but it belongs to the historical file-list filtering described [above](#auto-selection-of-soc_cpu-component) and has no effect with <tt>tb.prj</tt>.) If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
 
 ```
 make run                                                   # Build and run with the RTL picorv32 (the default)
@@ -641,7 +642,7 @@ In this instance, the code is set to compile to use the MAFDC extensions (maths,
 ```
 vusermain0 -x 0x10000000 -X 0x20000000 -rEHRca -t ./models/rv32/riscvtest/main.bin
 ```
-This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed):
+This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed; this transcript is from an earlier xsim 2023.2 run):
 
 ```
 $make CPU=iss run
@@ -795,7 +796,7 @@ The [ISS manual](https://github.com/wyvernSemi/riscV/blob/main/iss/doc/iss_manua
 
 The _openpcie2-rc_ test bench makes use of the [mem_model](https://github.com/wyvernSemi/mem_model) co-simulation HDL component. This makes use of the sparse memory model, written in C with a software API for read and write transactions that is part of the _pcieVHost_ model's software. It can map a 64-bit address space, with pages allocated on demand to restrict the actual memory required. The API can be accessed from any _VProc_ running code to share this memory space. This model can also be accessed from the HDL using the `mem_model` HDL component, which may be instantiated any number of times, but always accesses the same memory. This allows multiple _VProc_ virtual processors and the simulated test bench logic to access a common memory space.
 
-Currently, the `soc_cpu.VPROC` component has a `mem_model` instantiated for program writes via a UART, and the software running on the _VProc_ virtual processor can access the memory directly via the API. The software running on the  _VProc_ used on the [_pcievhost_](#driving-the-pcie-link) in the `pcieVHostPipex1` driver also has access to the same API and memory space.
+The inherited `soc_cpu.VPROC` component has a `mem_model` instantiated for program writes via a UART; the `soc_cpu.VPROC.picorv32` wrapper used here has none, but the software running on its _VProc_ virtual processor can still access the memory directly via the API. The software running on the  _VProc_ used on the [_pcievhost_](#driving-the-pcie-link) in the `pcieVHostPipex1` driver also has access to the same API and memory space.
 
 Details of the memory model HDL can be found in the [README.md](models/cosim/README.md) in `5.sim/models/cosim`.
 

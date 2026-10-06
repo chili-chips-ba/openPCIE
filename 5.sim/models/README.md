@@ -15,8 +15,8 @@ This directory contains the following bus functional models
 In addition, sub-directories contain the following models
 
 * [`cosim`](cosim/README.md) : Contains the _VProc_ and _mem_model_ co-simulation VIP.
-* [`rv32`](rv32/README.md) : Contains the _rv32_ RISC-V RV32GCC_Zbb instruction set simulator C++ model
-* [`pcievhost`](pcievhost/README.md) : Contains the PCIe traffic generator with PIPE TX and RX adta interface for a single lane.
+* [`rv32`](rv32/README.md) : Contains the _rv32_ RISC-V RV32GC (+ Zba/Zbb/Zbc/Zbs) instruction set simulator C++ model
+* [`pcievhost`](pcievhost/README.md) : Contains the PCIe traffic generator with PIPE TX and RX data interface for a single lane.
 
 ## soc_cpu.VPROC.picorv32
 
@@ -41,7 +41,7 @@ Two details are worth knowing:
 
 ## soc_cpu.VPROC
 
-Inherited from the sibling _openpcie2-rc_ SOC infrastructure and kept for
+Inherited from the SOC infrastructure of the sibling [_openCologne-PCIE_](https://github.com/chili-chips-ba/openCologne-PCIE) project, and kept for
 reference. **It is not used here**, because this design has no `soc_if` bus: the
 SOC instantiates picorv32 directly, which is why the wrapper above exists.
 

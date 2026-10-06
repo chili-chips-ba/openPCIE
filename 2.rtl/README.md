@@ -27,7 +27,8 @@ serves as the reference the opensource variant is measured against.
   running on it.
 
   Verified on hardware: **PCIe Gen2 x1, link up and trained** in a direct RC-to-EP
-  configuration. It builds both with Vivado and with a
+  configuration. As a bonus, **Gen2 x4** has also been tested on hardware; x1
+  remains the checked-in default. It builds both with Vivado and with a
   [fully opensource toolchain](../4.build/hw_build.openXC7) - sv2v, yosys,
   nextpnr-xilinx and prjxray, with no proprietary tool in the chain.
 
@@ -72,24 +73,28 @@ The **XDC file** is critical for mapping the logical PCIe signals to the specifi
 3.  **Transceiver (GTP) Placement:**
     Defining `PACKAGE_PIN` constraints for RX/TX pairs alone is **insufficient**. The logical lane **must be explicitly locked** to the corresponding physical **GTP Channel Primitive** (e.g., `GTPE2_CHANNEL_X0Y...`). Without this, the design will not route correctly.
 
+    The `LOC` alone is also **sufficient**: GT pads are dedicated, so each `GTPE2_CHANNEL` site fixes its own four RX/TX pins. The Vivado XDC files in this project therefore carry no `PACKAGE_PIN` constraints on the GT ports. (The openXC7 flow is the opposite case - nextpnr needs the pins and cannot take the `LOC`; see [`4.build/hw_build.openXC7`](../4.build/hw_build.openXC7/README.md#gt-channel).)
+
     **Procedure to identify the correct channel:**
     1.  **Schematic Check:** Consult the [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master) schematic to map the physical M.2 or PCIe connector pins to the specific FPGA **Package Pins**.
     2.  **Vivado Device View:** Open the **Device Window** in Vivado, locate those specific RX/TX package pins, and identify the **GTP Channel Primitive** associated with them.
 
     <div align="center">
 
-    | Logical Lane | Physical Pin (RX) | Physical Pin (TX) | GT Location |
-    | :--- | :--- | :--- | :--- |
-    | Lane 0 | B10 / A10 | B6 / A6 | X0Y6 |
-    | Lane 1 | B8 / A8 | B4 / A4 | X0Y4 |
-    | Lane 2 | D11 / C11 | D5 / C5 | X0Y5 |
-    | Lane 3 | D9 / C9 | D7 / C7 | X0Y7 |
+    | Board Lane | RX pins (P / N) | TX pins (P / N) | GT Location | GTP channel in bank 216 (openXC7 numbering) | Used by |
+    | :--- | :--- | :--- | :--- | :--- | :--- |
+    | Lane 0 | B10 / A10 | B6 / A6 | X0Y6 | 2 | RC-switched |
+    | Lane 1 | B8 / A8 | B4 / A4 | X0Y4 | 0 | |
+    | Lane 2 | D11 / C11 | D5 / C5 | X0Y5 | 1 | RC-direct, EP |
+    | Lane 3 | D9 / C9 | D7 / C7 | X0Y7 | 3 | |
 
     </div>
+
+    Pin names are from AMD's package file [`xc7a200t-fbg484-package.txt`](../0.doc/xilinx/xc7a200t-fbg484-package.txt) ([source](https://www.xilinx.com/support/packagefiles/a7packages/xc7a200tfbg484pkg.txt)) (`MGTPRXP<n>_216` etc.). The checked-in designs are all x1: the four rows are the alternative physical positions for the single logical lane `[0]`.
     
-> **Note:** The provided XDC file includes configuration blocks for all 4 potential lanes. The specific lane(s) intended for the active topology must be **uncommented**, while the unused lanes should remain **commented**
+> **Note:** The AMD XDC files in [`2.amd-rtl-with-Vivado-build`](../2.amd-rtl-with-Vivado-build) include a `LOC` block for all 4 positions; the one intended for the active topology is **uncommented**, the others stay **commented**. The opensource XDC files carry only the active `LOC`. Neither has GT pin constraints.
     
-5.  **Visual Debug (LEDs):**
+4.  **Visual Debug (LEDs):**
     Internal status signals—such as `user_lnk_up` or received data payloads—are mapped to the 4 onboard **User LEDs** (Pins **G3, H3, G4, H4**) to provide immediate visual feedback during testing.
 
 

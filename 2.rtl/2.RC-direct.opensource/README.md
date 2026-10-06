@@ -27,7 +27,8 @@ foundation for the makers to build their future applications upon...
 | | |
 |---|---|
 | Target device | `xc7a200tfbg484-3`, Acorn CLE-215P |
-| Link | **PCIe Gen2 x1, up and trained** (verified RC-to-EP on hardware) |
+| Link | **PCIe Gen2 x1, up and trained** (verified RC-to-EP on hardware) - the default, and the committed deliverable |
+| Bonus | **Gen2 x4** also tested on hardware, on the backplane's RC4 ⇔ EP4 island; not the checked-in default |
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
@@ -77,10 +78,10 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 
 ```
 sys_clk_p/n (100 MHz PCIe refclk)
-   └─ IBUFDS_GTE2 ─┬─ GTREFCLK0 ─ GTPE2_COMMON ─ QPLL (2.5 GHz)
-                   └─ wake_timer (startup sequencer)
+   └─ IBUFDS_GTE2 ── GTREFCLK0 ─ GTPE2_COMMON ─ QPLL (2.5 GHz)
 
-GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dclk (DRP)
+GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dclk (DRP,
+                                      │                      and wake_timer)
                                       ├─ CLKOUT1  250 MHz  ─┐
                                       └─ CLKOUT2  62.5 MHz ─ userclk1/2
                                                              │
@@ -89,6 +90,11 @@ GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dcl
 
 The pipe clock is 125 MHz in Gen1 and 250 MHz in Gen2; the BUFGCTRL mux switches
 it on rate change. It is the tightest timing domain in the design.
+
+`wake_timer` (the startup sequencer) runs from `clk_dclk` rather than from the
+refclk buffer - see
+[`wake_timer` clocked from `clk_dclk`](../../4.build/hw_build.openXC7/README.md#wake_timer-clocked-from-clk_dclk)
+for why.
 
 ---
 

@@ -1,0 +1,188 @@
+(footprint "WE-MAIA_4020"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(descr "WE-MAIA SMT Power Inductor, Size:4020, SMT, L X W X H = 4.1mm X 4.1mm X 2.1mm")
+	(property "Reference" "REF**"
+		(at -1.4224 -2.286 0)
+		(layer "F.SilkS")
+		(uuid "008b2144-5e92-4ae6-b846-f6e4da381b00")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "78438356018"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "9c897d8e-de49-4304-8c23-6eaefa65110a")
+		(effects
+			(font
+				(size 0.747776 0.747776)
+				(thickness 0.065024)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "81ef62f2-24a7-448e-983b-dedfb31f102d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f864ec15-4525-4e02-97b8-e22d56b6aa50")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a09b12c0-b19f-4245-9858-06feaec082d8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -2.15 -2.15)
+		(end 2.15 -2.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9d7c8ba9-3521-4266-a9b3-bfca780f8a58")
+	)
+	(fp_line
+		(start -2.15 2.15)
+		(end -2.15 -2.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "afad43cf-1244-4523-9ea5-db7562192644")
+	)
+	(fp_line
+		(start 2.15 -2.15)
+		(end 2.15 2.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "22237f94-d3e9-43f6-8079-0445a69a13bc")
+	)
+	(fp_line
+		(start 2.15 2.15)
+		(end -2.15 2.15)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c49128a0-5ceb-4304-b60f-c735dc0dfce1")
+	)
+	(fp_circle
+		(center -1.9304 -2.5908)
+		(end -1.714874 -2.5908)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill solid)
+		(layer "F.SilkS")
+		(uuid "6a9c8929-d2f0-4422-93eb-fa612d7b911d")
+	)
+	(fp_line
+		(start -2.05 -2.05)
+		(end 2.05 -2.05)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c2a5c97b-af5f-4080-bab1-6c1081564b8b")
+	)
+	(fp_line
+		(start -2.05 2.05)
+		(end -2.05 -2.05)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "2a2baa31-86ea-466a-9ffb-521e013cf092")
+	)
+	(fp_line
+		(start 2.05 -2.05)
+		(end 2.05 2.05)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "adfd817d-0eef-407c-846f-4a39e7fc9e16")
+	)
+	(fp_line
+		(start 2.05 2.05)
+		(end -2.05 2.05)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "c9672ae9-88e1-4e41-90c5-8d9e5ddf4fa1")
+	)
+	(pad "1" smd roundrect
+		(at -1.185 0 90)
+		(size 3.7 0.98)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.05183673469)
+		(solder_mask_margin 0.0635)
+		(thermal_bridge_angle 0)
+		(uuid "02761ea5-30e6-4ec5-b59a-5ab603beda3c")
+	)
+	(pad "2" smd roundrect
+		(at 1.185 0 90)
+		(size 3.7 0.98)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.05183673469)
+		(solder_mask_margin 0.0635)
+		(thermal_bridge_angle 0)
+		(uuid "ed76f9e4-af27-4fcc-a3ba-827da2aa1d4a")
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/WE-MAIA-4020 (rev1).stp"
+		(offset
+			(xyz 0 0 2.1)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 180 0 0)
+		)
+	)
+)

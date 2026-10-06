@@ -1,0 +1,165 @@
+(footprint "ABS07AIG"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "ABS07AIG")
+	(tags "Crystal or Oscillator")
+	(property "Reference" "REF**"
+		(at -1.8923 -1.0668 0)
+		(layer "F.SilkS")
+		(uuid "cff03524-5447-4c20-b399-c5ba2c4e5237")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1524)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "ABS07AIG"
+		(at -0.553 -1.709 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "e2308d0a-b621-4346-9176-de93a7103004")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bd8bc58a-5ea5-4507-a0c2-f9e3ff4aab02")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b8f2b025-1c34-46e6-ac05-32191f47a43d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.5 -0.75)
+		(end 0.5 -0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0fe70427-928d-4c7f-8cf9-c3bc5aa86c31")
+	)
+	(fp_line
+		(start -0.5 0.75)
+		(end 0.5 0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "cb7270d2-a735-402b-8248-894a831d11de")
+	)
+	(fp_rect
+		(start -1.8669 -1.0033)
+		(end 1.8669 1.0033)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "bd02b098-4491-4e4c-86df-699768256446")
+	)
+	(fp_line
+		(start -1.6 -0.75)
+		(end 1.6 -0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "e56a8da9-771c-4b40-b9b2-5c0e72e0f13c")
+	)
+	(fp_line
+		(start -1.6 0.75)
+		(end -1.6 -0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "a884145e-0111-4648-af3a-bbca2903991c")
+	)
+	(fp_line
+		(start 1.6 -0.75)
+		(end 1.6 0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "687805f1-464d-4e2b-b03e-9edf82a99325")
+	)
+	(fp_line
+		(start 1.6 0.75)
+		(end -1.6 0.75)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "7b803ca8-a769-406e-bb06-8e0cf2b4d39a")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "54cff828-3f78-4800-a729-50b65b5f9fee")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -1.275 0)
+		(size 1 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "86e45356-dda0-42a0-a167-f9a303bf2c6e")
+	)
+	(pad "2" smd rect
+		(at 1.275 0)
+		(size 1 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "2498e07f-7e86-4a1e-b39d-4f5f5e12d6f8")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/ABS07AIG-32.768KHZ-6-D-T.stp"
+		(offset
+			(xyz 0.01999999925 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 0)
+		)
+	)
+)

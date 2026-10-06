@@ -1,0 +1,169 @@
+(footprint "CMI-9605-1280T"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4.953 0)
+		(layer "F.SilkS")
+		(uuid "da992a51-8803-4c60-9466-a6b24abb7c9c")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+			(justify bottom)
+		)
+	)
+	(property "Value" "CMI-9605-1280T"
+		(at -2.8575 0.635 0)
+		(layer "F.Fab")
+		(uuid "cb05a63f-5dea-4ab9-b785-61ccc6f74718")
+		(effects
+			(font
+				(size 0.9144 0.9144)
+				(thickness 0.1016)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Footprint" "CMI-9605-1280T"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "263d8a20-4bfe-4061-9bdc-8a67539238eb")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "82cbad6a-adce-43c4-88b2-2cb4485cc6f9")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "196424e4-942b-4fd5-9af6-fae37b99bd0d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -2.286 -2.4765)
+		(end -1.524 -2.4765)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5ab2ae50-61bc-403c-a394-d7866828e652")
+	)
+	(fp_line
+		(start -1.905 -2.0955)
+		(end -1.905 -2.8575)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3aa11583-c559-406b-90ad-f27a8baad3ea")
+	)
+	(fp_circle
+		(center -1.905 -2.4765)
+		(end -1.143 -2.4765)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "196a6402-a389-43ab-8ddd-06104157bffb")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 0.7 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "670f6742-488f-4ea1-8dd3-32464d8a4800")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4.8 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "1a024504-508c-49f7-8ece-2300faa19943")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4.85 0)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+		(uuid "542ba178-1745-408b-8527-8a37d8f72a9b")
+	)
+	(pad "+B" thru_hole roundrect
+		(at 0 -2.5)
+		(size 1.778 1.778)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.25)
+		(chamfer_ratio 0.2928932188)
+		(chamfer top_left top_right bottom_left bottom_right)
+		(solder_mask_margin 0.0635)
+		(thermal_bridge_angle 0)
+		(uuid "09334464-71d2-455b-8f60-3f91757f4fd1")
+	)
+	(pad "-B" thru_hole circle
+		(at 0 2.5)
+		(size 1.778 1.778)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(solder_mask_margin 0.0635)
+		(thermal_bridge_angle 0)
+		(uuid "ebeb0dfd-c3c7-40b0-81fd-9d0aa1c008d5")
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/CUI_DEVICES_CMI-9605-1280T.step"
+		(offset
+			(xyz 0 0 5)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 90)
+		)
+	)
+)

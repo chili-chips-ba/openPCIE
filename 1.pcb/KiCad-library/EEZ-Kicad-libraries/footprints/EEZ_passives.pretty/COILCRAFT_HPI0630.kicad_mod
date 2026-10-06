@@ -1,0 +1,167 @@
+(footprint "COILCRAFT_HPI0630"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -3.175 -3.556 0)
+		(layer "F.SilkS")
+		(uuid "a3df3e90-220a-4580-842f-4a04c0015766")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "COILCRAFT_HPI0630"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "4f838091-5a11-4b1c-bb56-f9084d793cf6")
+		(effects
+			(font
+				(size 1.143 1.143)
+				(thickness 0.127)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4a13d09b-25c4-4760-be9e-b919f3119b58")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "da5d3d27-5265-415e-8240-508eb49288aa")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -3.7 -3.4)
+		(end -3.7 -2)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5a0037aa-2264-445b-a265-1c49e7efb0c2")
+	)
+	(fp_line
+		(start -3.7 -3.4)
+		(end 3.7 -3.4)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ce99065a-0c6c-4499-a846-7eddf42bd5d9")
+	)
+	(fp_line
+		(start -3.7 2)
+		(end -3.7 3.4)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "fed33bc2-3ef0-4f53-a454-278e220515e6")
+	)
+	(fp_line
+		(start -3.7 3.4)
+		(end 3.7 3.4)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eb2b5cf2-08b5-403d-9358-83434d2af66b")
+	)
+	(fp_line
+		(start 3.7 -3.4)
+		(end 3.7 -2)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b413aa0a-52f1-4459-9042-296c93a7c8e8")
+	)
+	(fp_line
+		(start 3.7 2)
+		(end 3.7 3.4)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a03adc47-34ca-40f2-81b3-4db9263387e4")
+	)
+	(fp_circle
+		(center -2.921 -2.7305)
+		(end -2.579042 -2.7305)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "017c299c-3287-4e0c-9d91-46257e62e3ae")
+	)
+	(fp_rect
+		(start -4.3815 -3.556)
+		(end 4.3815 3.556)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "5361aea2-25ac-449a-b940-fb18a81d8c73")
+	)
+	(pad "1" smd roundrect
+		(at -3 0 90)
+		(size 3.5 2.3)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.02208695652)
+		(solder_mask_margin 0.0762)
+		(thermal_bridge_angle 0)
+		(uuid "dc7c36c9-6848-4584-9005-bdb4f94e3486")
+	)
+	(pad "2" smd roundrect
+		(at 3 0 90)
+		(size 3.5 2.3)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.02208695652)
+		(solder_mask_margin 0.0762)
+		(thermal_bridge_angle 0)
+		(uuid "159dcabc-4077-4af9-8eee-8c35c375939e")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/IND_WE-LHMI_7030_WRE.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

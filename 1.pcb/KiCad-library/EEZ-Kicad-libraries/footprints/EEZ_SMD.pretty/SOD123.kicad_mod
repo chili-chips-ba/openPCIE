@@ -1,0 +1,68 @@
+(footprint "SOD123" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (property "Sheetfile" "I%2fO_expanders,_Isolated_PS,_RS485.kicad_sch")
+  (property "Sheetname" "I/O expanders, Isolated PS, RS485")
+  (attr smd)
+  (fp_text reference "REF**" (at -1.3335 -0.889) (layer "F.SilkS")
+      (effects (font (size 0.8128 0.8128) (thickness 0.1524)) (justify left bottom))
+    (tstamp 34f8367b-4cce-4080-8c75-b84332fa96be)
+  )
+  (fp_text value "MBR0530T3G" (at -1.1 2.3) (layer "F.Fab")
+      (effects (font (size 1.176528 1.176528) (thickness 0.093472)) (justify left bottom))
+    (tstamp d4d63a5f-7974-44bb-9baa-3e32dbb8d077)
+  )
+  (fp_poly
+    (pts
+      (xy 0.7112 0.789752)
+      (xy -0.31969 -0.00324)
+      (xy 0.7112 -0.716933)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 09e95f4a-e037-4159-a55b-2c4c6f7167f0))
+  (fp_poly
+    (pts
+      (xy -0.446 0.7)
+      (xy -0.246 0.7)
+      (xy -0.246 -0.7)
+      (xy -0.446 -0.7)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp b1cac4a6-418c-4f06-bf81-5fe981cf6838))
+  (fp_rect (start -2.7305 -0.9525) (end 2.7305 0.9525)
+    (stroke (width 0.05) (type default)) (fill none) (layer "F.CrtYd") (tstamp 50d6902d-6cb1-4f03-8fab-d1d35b4a44be))
+  (fp_line (start -1.1 -0.7) (end 1.1 -0.7)
+    (stroke (width 0.254) (type solid)) (layer "F.Fab") (tstamp a372c94e-049a-47ea-854e-043459532169))
+  (fp_line (start -1.1 0.7) (end -1.1 -0.7)
+    (stroke (width 0.254) (type solid)) (layer "F.Fab") (tstamp ff8bb3bc-bd31-444b-98b7-f1abb3b710dc))
+  (fp_line (start 1.1 -0.7) (end 1.1 0.7)
+    (stroke (width 0.254) (type solid)) (layer "F.Fab") (tstamp b7fb6b93-ab75-404b-87c8-e281fb087243))
+  (fp_line (start 1.1 0.7) (end -1.1 0.7)
+    (stroke (width 0.254) (type solid)) (layer "F.Fab") (tstamp 13f5a204-cd6a-40a5-8cbc-961256397818))
+  (fp_poly
+    (pts
+      (xy -1.95 0.45)
+      (xy -1.2 0.45)
+      (xy -1.2 -0.4)
+      (xy -1.95 -0.4)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 75711113-1ae6-4b68-8e06-bd1f6cdd28c9))
+  (fp_poly
+    (pts
+      (xy 1.2 0.45)
+      (xy 1.95 0.45)
+      (xy 1.95 -0.4)
+      (xy 1.2 -0.4)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp b34a0f9b-cf3f-4be7-a9e4-d628da309248))
+  (pad "A" smd roundrect (at 1.9 0) (size 1.4 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03628571429)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 286f65d0-b193-475e-aa86-5715ec1ecc95))
+  (pad "C" smd roundrect (at -1.9 0) (size 1.4 1.4) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03628571429)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 5151208b-81d7-4632-b2d7-cf051e8a10d6))
+  (model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/SOD-123_ONS.step"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 0))
+  )
+)

@@ -1,0 +1,81 @@
+(footprint "DIL4-SMD" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (attr smd)
+  (fp_text reference "REF**" (at -2.54 3.175 90) (layer "F.SilkS")
+      (effects (font (size 0.8128 0.8128) (thickness 0.1524) bold) (justify left bottom))
+    (tstamp 8c8f9a97-4174-41b4-a2b2-015c7902435e)
+  )
+  (fp_text value "DIL4-SMD" (at 0 0 90) (layer "F.Fab")
+      (effects (font (size 1.143 1.143) (thickness 0.127)))
+    (tstamp f8add193-1ac3-4286-9f7f-9cb0e68811d3)
+  )
+  (fp_line (start -2.315 -3.18) (end 2.315 -3.18)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 42a4d31c-dc8e-46d1-8f12-80fc74a63e0c))
+  (fp_line (start -2.315 3.18) (end -2.315 -3.18)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 5a877a29-cdfa-4e06-92f1-f0369eab841b))
+  (fp_line (start 2.315 -3.18) (end 2.315 2.164)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 67a476b2-4e7a-4804-9524-a101c6b967a4))
+  (fp_line (start 2.315 2.164) (end 2.315 3.18)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 73807edd-b756-4312-a412-0ec95d88aa97))
+  (fp_line (start 2.315 3.18) (end -2.315 3.18)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp b5333653-405c-4c45-99d4-b7b564bb69b0))
+  (fp_poly
+    (pts
+      (xy -1.3462 2.841279)
+      (xy -1.3462 1.6383)
+      (xy -0.486929 1.6383)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 13847970-9359-403c-a5b4-00c0778687ed))
+  (fp_rect (start -2.4765 -5.969) (end 2.4765 5.9055)
+    (stroke (width 0.05) (type default)) (fill none) (layer "F.CrtYd") (tstamp c77c4ab6-85cc-447e-8cc9-c7f2640343c6))
+  (fp_poly
+    (pts
+      (xy -1.875 5.15)
+      (xy -0.65 5.15)
+      (xy -0.65 3.2)
+      (xy -1.875 3.2)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 2fb61ba3-3146-41e8-9ab0-eb6cf336c584))
+  (fp_poly
+    (pts
+      (xy -0.665 -5.15)
+      (xy -1.89 -5.15)
+      (xy -1.89 -3.2)
+      (xy -0.665 -3.2)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp b844e57d-d2bf-4de2-95f5-8f6edd084529))
+  (fp_poly
+    (pts
+      (xy 0.665 5.15)
+      (xy 1.89 5.15)
+      (xy 1.89 3.2)
+      (xy 0.665 3.2)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 16e0317c-0040-42cf-865f-26a6e660381a))
+  (fp_poly
+    (pts
+      (xy 1.875 -5.15)
+      (xy 0.65 -5.15)
+      (xy 0.65 -3.2)
+      (xy 1.875 -3.2)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 2ed0aaad-5def-44a7-bcd8-74064777869f))
+  (pad "1" smd roundrect (at -1.27 4.77) (size 1.6 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp fa2948ef-1e9a-4798-a739-b78ed6524871))
+  (pad "2" smd roundrect (at 1.27 4.77) (size 1.6 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 4e274975-cc79-45c4-9baa-07c176d85fc1))
+  (pad "3" smd roundrect (at 1.27 -4.77 180) (size 1.6 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp ed59014d-1788-42d4-aa45-4d9ff07908f8))
+  (pad "4" smd roundrect (at -1.27 -4.77 180) (size 1.6 2) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 21e5a5c0-1532-434b-8784-d3d29b17ae99))
+  (model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/G3VM-DR_OMR.step"
+    (offset (xyz 0 0 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz 0 0 -90))
+  )
+)

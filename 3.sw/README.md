@@ -4,9 +4,18 @@ This directory contains the C source code, startup assembly, and linker scripts 
 
 ## File Structure
 
+There is one subdirectory per Root Complex variant, each with the same three files:
+
+| Directory | Topology |
+| :--- | :--- |
+| [`RC-direct/`](RC-direct) | one Endpoint, straight RC-to-EP link |
+| [`RC-switched/`](RC-switched) | ASM1184e switch with up to 4 Endpoints behind it - see the [RC-switched README](../2.rtl/3.Bonus--RC-switched.opensource/README.md#2-firmware-the-bring-up-sequence) |
+
+Both are built in [`4.build/sw_build`](../4.build/sw_build) (`make`, or `make VARIANT=switched`). The API and register map below are common to both; the enumeration sequence described further down is that of `RC-direct`.
+
 *   **`main.c`**: The core application logic. It contains:
     *   **HAL:** Low-level functions that interact with the hardware by reading and writing data to specific memory addresses.
-    *   **Driver:** The enumeration sequence, including device discovery, probes BAR sizes, assigns memory addresses, and configures the Command Register to enable the device for communication.
+    *   **Driver:** The enumeration sequence, including device discovery, BAR setup, assigns memory addresses, and configures the Command Register to enable the device for communication.
     *   **App:** A test application that performs a Memory Write and Memory Read to the Endpoint and verifies the data integrity.
 *   **`start.S`**: The assembly startup code. It initializes the Stack Pointer and jumps to the `main()` C function.
 *   **`sections.lds`**: The Linker script. It maps the code and data to the FPGA's Block RAM (BRAM), starting at address `0x00000000` with a size of 8KB.
@@ -34,7 +43,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
     *   **reg:** The register offset (e.g., 0x00 for Vendor ID).
 *   **Returns:** **The 32-bit register value, or 0xFFFFFFFF on failure.**
 >*   **Example:** 
-    > `uint32_t id = pcie_cfg_read(1, 0, 0, 0x00);
+    > `uint32_t id = pcie_cfg_read(1, 0, 0, 0x00);`
 
 ### **2. Configuration Write**
 **Writes a 32-bit value to the Configuration Space. Used to configure BARs, enable Bus Mastering, and set Command registers.**
@@ -53,9 +62,9 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
     *   **bus, dev, func:** Target device topology.
     *   **reg:** The register offset.
     *   **val:** **The 32-bit data to write.**
-*   **Behavior:** **Blocks until a successful Completion TLP is received.**
+*   **Behavior:** **Waits for the matching Completion TLP, with a timeout. The completion status is not checked and the write is not retried.**
 >*   **Example:** 
-   > `pcie_cfg_write(1, 0, 0, 0x10, 0xFFFFFFFF); 
+   > `pcie_cfg_write(1, 0, 0, 0x10, 0xFFFFFFFF);`
 
 
 ### **3. Memory Write (32-bit)**
@@ -75,7 +84,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
     *   **val:** **The 32-bit data payload.**
 *   **Note:** **This is a Posted Transaction, meaning the function sends the packet and returns immediately without waiting for a completion.**
 >*   **Example:** 
-   > `pcie_mem_write(0x80000000, 0x00000006);
+   > `pcie_mem_write(0x80000000, 0x00000006);`
 
 
 ### **4. Memory Read (32-bit)**
@@ -92,9 +101,9 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 *   **Parameters:**
     *   **addr:** **Target memory address.**
 *   **Returns:** **The 32-bit data read from the Endpoint.**
-*   **Robustness:** **Includes a retry mechanism. If the endpoint responds with CRS (Configuration Retry Status), the driver waits and retries automatically.**
+*   **Robustness:** **Shares `pcie_read()` with `pcie_cfg_read()`, so a CRS (Configuration Retry Status) completion is retried automatically. Any other unsuccessful status, or a timeout, returns `0xFFFFFFFF`.**
 >*   **Example:** 
-    > `uint32_t data = pcie_mem_read(0x80000000);
+    > `uint32_t data = pcie_mem_read(0x80000000);`
 
 ---
 
@@ -103,7 +112,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 The driver interacts with the custom PCIe Bridge RTL via **Memory Mapped I/O (MMIO)**. The C code writes to specific memory addresses that the hardware interprets as control registers.
 
 ### Register Map
-The following addresses map directly to the RTL bridge inputs/outputs:
+The following addresses map directly to the RTL bridge inputs/outputs. With the default `CSR = peakrdl` (set in [`4.build/config.mk`](../4.build/config.mk)) `main.c` takes them from the generated `openpcie_regs.h`; with `CSR=legacy` it uses the same values hard-coded. Either way the map is the same - see [4.build/README.md](../4.build/README.md#the-register-map).
 
 <div align="center">
 
@@ -113,7 +122,7 @@ The following addresses map directly to the RTL bridge inputs/outputs:
 | `PCIE_TX_HEADER1` | `0x30000004` | W | TLP Header DW1 (Requester ID, Tag, Byte Enables). |
 | `PCIE_TX_HEADER2` | `0x30000008` | W | TLP Header DW2 (Target Address or Bus/Dev/Func). |
 | `PCIE_TX_DATA` | `0x3000000C` | W | **Write:** Data Payload. |
-| `PCIE_RX_STATUS` | `0x30000010` | R | Completion Status (`0`=Success, `1`=UR, `2`=CRS, `3`=CA). |
+| `PCIE_RX_STATUS` | `0x30000010` | R | Completion Status (`0`=Success, `1`=UR, `2`=CRS, `4`=CA). |
 | `PCIE_RX_DATA` | `0x30000014` | R | Data received from Memory Read Completions. |
 | `PCIE_RX_HEADER_INFO`| `0x30000018` | R | **Completion Info:** Contains Requester ID and Tag for matching. |
 | `PCIE_ERR_STATUS` | `0x3000001C` | R | **Error Flags:** Physical layer errors.|
@@ -132,7 +141,7 @@ The `pcie_read()` function implements a retry mechanism to handle **CRS (Configu
 The firmware performs a standard PCIe Bring-up sequence:
 1.  **Wait:** Delays execution to allow the Physical Link to stabilize.
 2.  **Discovery:** Reads the `Device ID` from Bus 1.
-3.  **BAR Sizing:** Writes `0xFFFFFFFF` to BAR0/BAR1 to determine memory requirements.
+3.  **BAR Sizing write:** Writes `0xFFFFFFFF` to BAR0/BAR1. The resulting size is not read back - the firmware assumes the Endpoint's BAR0 fits at the fixed address below.
 4.  **Assignment:** Assigns Base Address `0x80000000` to the Endpoint.
 5.  **Enable:** Sets the **Bus Master** and **Memory Space** bits in the Command Register.
 
@@ -145,7 +154,8 @@ The driver reports its execution status by writing specific "Magic Numbers" to t
 | :--- | :--- |
 | **`0x0000FACE`** | **PASS:** Data `0x6` was written and successfully read back. |
 | **`0x0000DEAD`** | **FAIL:** Readback data did not match the written value. |
-| **`0xBAD00000`** | **ERROR:** Device ID read failed (Link down or device not found). |
+| **`0xBAD00000`** | **ERROR:** Device ID read failed (Link down or device not found). In `RC-switched`: the switch upstream port did not answer. |
+| **`0xBAD00001`** | **ERROR** (`RC-switched` only): the switch is up, but no Endpoint was found behind it. |
 
 </div>
 

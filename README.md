@@ -8,7 +8,7 @@ Computing is about communicating. Some would also say about networking. Digital 
   <img width="25%" src="0.doc/artwork/pcie2rootc.hex.png">
 </p>
 
-This project looks to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`sofware Driver with Demo App`**. 
+This project looks to open Artix7 PCIe Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`software Driver with Demo App`**. 
 
 All that with **`full HW/SW opensource co-sim`**. Augmented with a rock-solid **`openBackplane`** in the basement of our hardware solution, the geek community will thus get all it takes for building their own, end-to-end _openCompute_ systems.
 
@@ -63,7 +63,7 @@ With the full end-to-end simulation thus in place, we hope that the need for har
  - [x] ✔ Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
 #### `PART 5. Integration, testing and iterative design refinements`
- - [x] ✔ One-by-one replace proprietary design elements from PART2.b with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
+ - [x] ✔ One-by-one replace proprietary design elements of the PART 2 prototype system with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
@@ -147,7 +147,7 @@ The system consists of two main components:
 
 It is important to note that the Acorn CLE-215+ is functionally identical to the more widely known NiteFury board, with the primary difference being the amount of onboard memory. The Acorn model features 1 GB of DDR3 RAM, while the standard NiteFury has 512 MB. Therefore, the [NiteFury schematic](https://github.com/chili-chips-ba/openPCIE/blob/main/0.doc/Reference-SCH/Schematic.FPGA-NiteFury.pdf) serves as a direct and accurate reference for the board's hardware layout.
 
-The central component of the SQRL Acorn CLE-215+ system is the **Xilinx Artix-7 XC7A200T-FBG484** chip. This FPGA is crucial for implementing the PCIe Endpoint functionality, possessing a range of features that make it highly suitable for this purpose.
+The central component of the SQRL Acorn CLE-215+ system is the **Xilinx Artix-7 XC7A200T-FBG484** chip. This FPGA is crucial for implementing the PCIe Root Complex - and, on the other card, the Endpoint - possessing a range of features that make it highly suitable for this purpose.
 
 The key specifications are summarized below:
 
@@ -225,7 +225,7 @@ Properly programming and operating the Artix-7 FPGA on the SQRL board required t
 
 The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
-<<table align="center" style="border: none; border-collapse: collapse; width: 100%;">
+<table align="center" style="border: none; border-collapse: collapse; width: 100%;">
   <tr style="border: none;">
     <td align="center" style="border: none;" width="70%">
       <img src="0.doc/pictures/FPGA-JTAG.jpg" width="100%">
@@ -296,7 +296,7 @@ Please, refer to [1.pcb](1.pcb) for additional detail.
 
 ## Simulation Test Bench
 
-The [openpcue2-rc test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with a RISC-V processor RTL implementation such as picoRV32, IBEX or EDUBOS5, or to co-simulate software using the virtual processor, with a significant speed up in simulation times. The test bench has the following features:
+The [openpcie2-rc test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the picorv32 RISC-V RTL core that goes into the bitstream, or to co-simulate software using the virtual processor, with a significant speed up in simulation times. The test bench has the following features:
 
 * A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.picorv32`](5.sim/models/README.md#soc_cpuvprocpicorv32) component
   * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL picorv32, with `make CPU=rtl|vproc|iss`
@@ -342,7 +342,7 @@ The architecture follows a layered approach:
 
 2.  **PCIe Driver (Enumeration & Setup)**:
     - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
-    - It manually performs device discovery, probes BAR sizes, assigns memory addresses, and configures the **Command Register** to enable the device for communication.
+    - It manually performs device discovery, writes the BARs, assigns memory addresses, and configures the **Command Register** to enable the device for communication.
       
 3.  **HAL (Hardware Abstraction Layer)**:
     - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.

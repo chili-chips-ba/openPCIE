@@ -1,0 +1,265 @@
+(footprint "SK96_84"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 1.524 0)
+		(layer "F.SilkS")
+		(uuid "9df0288c-264f-44e8-ba12-70c844ea2bef")
+		(effects
+			(font
+				(size 1.016 1.016)
+				(thickness 0.1524)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Value" "SK96_84"
+		(at 35.56 -2.54 0)
+		(layer "F.Fab")
+		(uuid "702e57bf-eea1-4c1d-817b-99cd3e777fc0")
+		(effects
+			(font
+				(size 2.286 2.286)
+				(thickness 0.254)
+			)
+			(justify left bottom)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8acc5a09-7781-4403-8c95-494723d6ea1e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "43b294b5-e257-427f-9b38-1992800294f8")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start 0 -8)
+		(end 84 -8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "557e44e1-3161-4515-bbd6-0504499689b5")
+	)
+	(fp_line
+		(start 0 0)
+		(end 0 -8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "335ef847-468d-4be8-b6b3-160448a84ed3")
+	)
+	(fp_line
+		(start 84 0)
+		(end 0 0)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6e28c515-8190-4b19-8027-f940d5311374")
+	)
+	(fp_line
+		(start 84 0)
+		(end 84 -8)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "75ebd41d-2451-4871-98ee-6d6d96464211")
+	)
+	(fp_rect
+		(start -0.1016 -8.128)
+		(end 84.0994 0.1016)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "caddd8d2-e55d-48c1-8307-72eec9fdc598")
+	)
+	(fp_line
+		(start 0 -8)
+		(end 0 0)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4ecc1ac2-301d-4e2b-a8ae-ca65fd92a002")
+	)
+	(fp_line
+		(start 0 -8)
+		(end 84 -8)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3009d564-ca10-409b-a111-7b41f788d64d")
+	)
+	(fp_line
+		(start 0 0)
+		(end 84 0)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "1cee7228-83f2-460d-97a3-13e3c53b3bfe")
+	)
+	(fp_line
+		(start 84 0)
+		(end 84 -8)
+		(stroke
+			(width 0.127)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "df5f8dc3-7e2b-4af5-9b9b-083abdaf0279")
+	)
+	(pad "" np_thru_hole circle
+		(at 10 -4)
+		(size 6.5 6.5)
+		(drill 3.2)
+		(layers "*.Mask")
+		(solder_mask_margin 0)
+		(clearance 2)
+		(thermal_bridge_angle 0)
+		(uuid "327b147a-efe2-4b77-8d78-1ae7c26ae0aa")
+	)
+	(pad "" np_thru_hole circle
+		(at 74 -4)
+		(size 6.5 6.5)
+		(drill 3.2)
+		(layers "*.Mask")
+		(solder_mask_margin 0)
+		(clearance 2)
+		(thermal_bridge_angle 0)
+		(uuid "19d65ec5-286f-4323-aaac-0eb70f9e6de1")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 0 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 10 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 20 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 30 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 40 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 50 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 60 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 70 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/sk096.stp"
+		(offset
+			(xyz 74 1.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 -90)
+		)
+	)
+)

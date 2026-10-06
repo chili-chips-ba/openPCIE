@@ -14,7 +14,7 @@
 		(comment 3 "OSHW - Open Source HardWare: https://oshwa.org")
 	)
 	(lib_symbols
-		(symbol "Connector_Generic:Conn_02x03_Top_Bottom"
+		(symbol "KiCad-stock:Conn_02x03_Top_Bottom"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -288,7 +288,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Device:Crystal_GND24"
+		(symbol "KiCad-stock:Crystal_GND24"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -571,7 +571,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Device:NetTie_2"
+		(symbol "KiCad-stock:NetTie_2"
 			(pin_numbers
 				(hide yes)
 			)
@@ -5329,7 +5329,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Switch:SW_Push"
+		(symbol "KiCad-stock:SW_Push"
 			(pin_numbers
 				(hide yes)
 			)
@@ -5493,7 +5493,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:+12V"
+		(symbol "KiCad-stock:+12V"
 			(power global)
 			(pin_numbers
 				(hide yes)
@@ -5632,7 +5632,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:+3V3"
+		(symbol "KiCad-stock:+3V3"
 			(power global)
 			(pin_numbers
 				(hide yes)
@@ -5771,7 +5771,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:GND"
+		(symbol "KiCad-stock:GND"
 			(power global)
 			(pin_numbers
 				(hide yes)
@@ -5886,7 +5886,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:PWR_FLAG"
+		(symbol "KiCad-stock:PWR_FLAG"
 			(power global)
 			(pin_numbers
 				(hide yes)
@@ -6075,7 +6075,7 @@
 	)
 	(text "Series termination inside\n"
 		(exclude_from_sim no)
-		(at 242.57 103.886 0)
+		(at 246.126 103.632 0)
 		(effects
 			(font
 				(size 1.016 1.016)
@@ -6084,13 +6084,15 @@
 		)
 		(uuid "351fffa2-ae29-471a-a15e-982e62640487")
 	)
-	(text "+3V3/65A Buck"
+	(text "+3V3, 65Amp Buck"
 		(exclude_from_sim no)
-		(at 60.96 53.34 0)
+		(at 58.674 53.34 0)
 		(effects
 			(font
 				(size 1.524 1.524)
-				(color 194 194 194 1)
+				(thickness 0.3048)
+				(bold yes)
+				(color 132 0 0 1)
 			)
 			(justify left bottom)
 		)
@@ -6149,9 +6151,9 @@
 		)
 		(uuid "b68cb598-b7aa-4fba-9675-5751895ca7a7")
 	)
-	(text "R22: Place as close as possible \nto REFOUT pin.\n"
+	(text "R22: Place as close as\npossible to U6 REFOUT pin.\n"
 		(exclude_from_sim no)
-		(at 236.982 53.848 0)
+		(at 246.634 58.928 0)
 		(effects
 			(font
 				(size 1.016 1.016)
@@ -6326,6 +6328,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "29e0fde2-ac67-4e46-90e4-fe78f6eca984")
+	)
+	(junction
+		(at 153.67 30.48)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2be1394d-ff25-4bb4-9998-c1fd0516ddf4")
 	)
 	(junction
 		(at 113.03 78.74)
@@ -6508,7 +6516,7 @@
 		(uuid "5ae831ca-a356-4163-9b63-53d139b323c2")
 	)
 	(junction
-		(at 36.83 53.34)
+		(at 36.83 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5e0304d7-0666-40d9-a9f6-081eebf30e98")
@@ -6580,7 +6588,7 @@
 		(uuid "6ccfc94a-87e5-403c-bc04-27c1389ec2a0")
 	)
 	(junction
-		(at 31.75 53.34)
+		(at 31.75 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6d77e30e-1eac-490f-bf43-14a6e0dd8b61")
@@ -6664,7 +6672,7 @@
 		(uuid "8e111bb7-9bd3-42e0-9556-a35412378e05")
 	)
 	(junction
-		(at 26.67 53.34)
+		(at 26.67 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "8e475b8b-7cf2-4fa1-ad82-1a3e472a1f26")
@@ -6874,12 +6882,6 @@
 		(uuid "c5475ea2-99cf-4284-bba8-a7095a765404")
 	)
 	(junction
-		(at 138.43 53.34)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c90ba20b-7ce4-4448-af1e-202fc59d58f0")
-	)
-	(junction
 		(at 173.99 132.08)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6904,7 +6906,7 @@
 		(uuid "cdace54d-de1c-4831-8cfd-155ea87275bc")
 	)
 	(junction
-		(at 52.07 53.34)
+		(at 52.07 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d152a1ee-8aec-4b7e-8cd4-c4eb4ba756b2")
@@ -6928,7 +6930,7 @@
 		(uuid "da501765-2a45-49ed-9432-47e02a4d9bce")
 	)
 	(junction
-		(at 41.91 53.34)
+		(at 41.91 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "df901c40-4a33-44c7-a674-c5fc41382bca")
@@ -6946,7 +6948,7 @@
 		(uuid "e18f85fa-1f82-41d8-bdd6-f9afde2af022")
 	)
 	(junction
-		(at 19.05 53.34)
+		(at 19.05 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e1a900f4-6c4b-4fa1-99a2-768df8402a66")
@@ -6982,7 +6984,7 @@
 		(uuid "ec98661e-c0d5-4cea-b3bf-2393fd0ad4f1")
 	)
 	(junction
-		(at 46.99 53.34)
+		(at 46.99 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ed622c77-a034-497d-a608-c3c794896cc4")
@@ -7277,7 +7279,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 35.56) (xy 138.43 53.34)
+			(xy 138.43 27.94) (xy 138.43 64.77)
 		)
 		(stroke
 			(width 0)
@@ -7731,6 +7733,16 @@
 		)
 		(uuid "1de1f4f8-c481-4d1b-a830-6d74377c1a7d")
 	)
+	(wire
+		(pts
+			(xy 153.67 27.94) (xy 153.67 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1ea8d200-fd45-46f7-823f-1bad8440c57f")
+	)
 	(polyline
 		(pts
 			(xy 235.585 82.55) (xy 236.22 82.55)
@@ -7816,7 +7828,7 @@
 	)
 	(polyline
 		(pts
-			(xy 135.89 152.4) (xy 177.8 166.37)
+			(xy 135.89 152.4) (xy 176.53 166.37)
 		)
 		(stroke
 			(width 0.1524)
@@ -7877,7 +7889,7 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 54.61) (xy 255.27 58.42)
+			(xy 266.7 55.88) (xy 266.7 60.96)
 		)
 		(stroke
 			(width 0)
@@ -7979,7 +7991,7 @@
 	)
 	(polyline
 		(pts
-			(xy 177.8 166.37) (xy 177.8 166.37)
+			(xy 176.53 166.37) (xy 177.8 166.37)
 		)
 		(stroke
 			(width 0.1524)
@@ -8041,7 +8053,7 @@
 	)
 	(wire
 		(pts
-			(xy 19.05 53.34) (xy 26.67 53.34)
+			(xy 19.05 54.61) (xy 26.67 54.61)
 		)
 		(stroke
 			(width 0)
@@ -8154,7 +8166,7 @@
 	)
 	(wire
 		(pts
-			(xy 264.16 49.53) (xy 264.16 52.07)
+			(xy 275.59 50.8) (xy 275.59 53.34)
 		)
 		(stroke
 			(width 0)
@@ -8373,16 +8385,6 @@
 			(type default)
 		)
 		(uuid "40c74277-d415-419e-bc40-d490a17161b3")
-	)
-	(wire
-		(pts
-			(xy 138.43 30.48) (xy 138.43 35.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "41af1f27-570a-4890-9f30-e5350f7630eb")
 	)
 	(wire
 		(pts
@@ -8621,7 +8623,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 53.34) (xy 52.07 53.34)
+			(xy 46.99 54.61) (xy 52.07 54.61)
 		)
 		(stroke
 			(width 0)
@@ -8715,7 +8717,7 @@
 	)
 	(wire
 		(pts
-			(xy 41.91 60.96) (xy 41.91 63.5)
+			(xy 41.91 62.23) (xy 41.91 63.5)
 		)
 		(stroke
 			(width 0)
@@ -9032,16 +9034,6 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 53.34) (xy 140.97 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6475edd0-daa0-46a4-bf84-ce489d6c7611")
-	)
-	(wire
-		(pts
 			(xy 104.14 81.28) (xy 105.41 81.28)
 		)
 		(stroke
@@ -9183,13 +9175,23 @@
 	)
 	(wire
 		(pts
-			(xy 26.67 60.96) (xy 26.67 63.5)
+			(xy 26.67 62.23) (xy 26.67 63.5)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "6b9035b1-d079-4581-9e28-aa75e3ae1634")
+	)
+	(wire
+		(pts
+			(xy 273.05 72.39) (xy 271.78 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c1756ef-53ca-44f8-95e7-789c844714ac")
 	)
 	(wire
 		(pts
@@ -9203,7 +9205,7 @@
 	)
 	(wire
 		(pts
-			(xy 52.07 53.34) (xy 55.88 53.34)
+			(xy 52.07 54.61) (xy 55.88 54.61)
 		)
 		(stroke
 			(width 0)
@@ -9255,7 +9257,7 @@
 	)
 	(wire
 		(pts
-			(xy 26.67 53.34) (xy 31.75 53.34)
+			(xy 26.67 54.61) (xy 31.75 54.61)
 		)
 		(stroke
 			(width 0)
@@ -9275,7 +9277,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 60.96) (xy 46.99 63.5)
+			(xy 46.99 62.23) (xy 46.99 63.5)
 		)
 		(stroke
 			(width 0)
@@ -9305,7 +9307,7 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 30.48) (xy 156.21 30.48)
+			(xy 138.43 30.48) (xy 153.67 30.48)
 		)
 		(stroke
 			(width 0)
@@ -9467,7 +9469,7 @@
 	)
 	(wire
 		(pts
-			(xy 52.07 60.96) (xy 52.07 63.5)
+			(xy 52.07 62.23) (xy 52.07 63.5)
 		)
 		(stroke
 			(width 0)
@@ -9477,7 +9479,7 @@
 	)
 	(wire
 		(pts
-			(xy 19.05 60.96) (xy 19.05 63.5)
+			(xy 19.05 62.23) (xy 19.05 63.5)
 		)
 		(stroke
 			(width 0)
@@ -9661,6 +9663,16 @@
 	)
 	(wire
 		(pts
+			(xy 271.78 95.25) (xy 270.51 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81c068ee-3b19-4a1b-84f8-db312b1d5126")
+	)
+	(wire
+		(pts
 			(xy 204.47 71.12) (xy 201.93 71.12)
 		)
 		(stroke
@@ -9742,7 +9754,7 @@
 	)
 	(wire
 		(pts
-			(xy 31.75 60.96) (xy 31.75 63.5)
+			(xy 31.75 62.23) (xy 31.75 63.5)
 		)
 		(stroke
 			(width 0)
@@ -9782,7 +9794,7 @@
 	)
 	(wire
 		(pts
-			(xy 260.35 49.53) (xy 264.16 49.53)
+			(xy 271.78 50.8) (xy 275.59 50.8)
 		)
 		(stroke
 			(width 0)
@@ -10127,7 +10139,7 @@
 	)
 	(wire
 		(pts
-			(xy 55.88 53.34) (xy 55.88 63.5)
+			(xy 55.88 54.61) (xy 55.88 63.5)
 		)
 		(stroke
 			(width 0)
@@ -10320,16 +10332,6 @@
 	)
 	(wire
 		(pts
-			(xy 247.65 58.42) (xy 255.27 58.42)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a6016f31-6ec8-41a5-b54b-50fb3f884d24")
-	)
-	(wire
-		(pts
 			(xy 113.03 55.88) (xy 113.03 53.34)
 		)
 		(stroke
@@ -10340,7 +10342,7 @@
 	)
 	(polyline
 		(pts
-			(xy 11.43 46.99) (xy 63.5 46.99)
+			(xy 12.7 46.99) (xy 63.5 46.99)
 		)
 		(stroke
 			(width 0.1524)
@@ -10689,7 +10691,7 @@
 	)
 	(wire
 		(pts
-			(xy 41.91 53.34) (xy 46.99 53.34)
+			(xy 41.91 54.61) (xy 46.99 54.61)
 		)
 		(stroke
 			(width 0)
@@ -10736,16 +10738,6 @@
 			(type default)
 		)
 		(uuid "bdf928d2-c615-4683-8194-0887ab38274b")
-	)
-	(wire
-		(pts
-			(xy 138.43 27.94) (xy 138.43 30.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "be1959d5-41d8-4864-bb1a-17e16c686f06")
 	)
 	(wire
 		(pts
@@ -10830,7 +10822,7 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 60.96) (xy 36.83 63.5)
+			(xy 36.83 62.23) (xy 36.83 63.5)
 		)
 		(stroke
 			(width 0)
@@ -10951,7 +10943,7 @@
 	)
 	(wire
 		(pts
-			(xy 31.75 53.34) (xy 36.83 53.34)
+			(xy 31.75 54.61) (xy 36.83 54.61)
 		)
 		(stroke
 			(width 0)
@@ -11328,7 +11320,7 @@
 	)
 	(wire
 		(pts
-			(xy 19.05 52.07) (xy 19.05 53.34)
+			(xy 19.05 53.34) (xy 19.05 54.61)
 		)
 		(stroke
 			(width 0)
@@ -11387,6 +11379,16 @@
 			(type default)
 		)
 		(uuid "df36125d-51bd-468b-b1f3-5ee36d60e20e")
+	)
+	(wire
+		(pts
+			(xy 153.67 30.48) (xy 156.21 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dfc1630d-f777-43ac-ad1c-269ca6578822")
 	)
 	(polyline
 		(pts
@@ -11553,7 +11555,7 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 71.12) (xy 234.95 71.12)
+			(xy 236.22 71.12) (xy 234.95 71.12)
 		)
 		(stroke
 			(width 0)
@@ -11606,13 +11608,13 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 58.42) (xy 237.49 71.12)
+			(xy 236.22 60.96) (xy 266.7 60.96)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "eb31a1a2-75db-4e12-bb64-e28f92b4a1a4")
+		(uuid "ea4d39c9-5528-4deb-808e-cf7dac62eef6")
 	)
 	(wire
 		(pts
@@ -11739,16 +11741,6 @@
 	)
 	(wire
 		(pts
-			(xy 138.43 53.34) (xy 138.43 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f06c86c5-274e-48b1-bd18-b803f3a946bd")
-	)
-	(wire
-		(pts
 			(xy 201.93 137.16) (xy 201.93 144.78)
 		)
 		(stroke
@@ -11770,7 +11762,7 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 53.34) (xy 41.91 53.34)
+			(xy 36.83 54.61) (xy 41.91 54.61)
 		)
 		(stroke
 			(width 0)
@@ -16392,7 +16384,7 @@
 		(uuid "c2b2ddd1-dc41-4ab5-a28e-e24265c33def")
 	)
 	(label "REFOUT"
-		(at 255.27 58.42 180)
+		(at 266.7 60.96 180)
 		(effects
 			(font
 				(size 0.889 0.889)
@@ -16615,7 +16607,7 @@
 	)
 	(global_label "~{RC4_CLKREQ}"
 		(shape input)
-		(at 271.78 73.66 0)
+		(at 273.05 72.39 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -16625,7 +16617,7 @@
 		)
 		(uuid "6c3fa586-c982-4ca0-9009-92432efacbc2")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 282.2938 73.66 0)
+			(at 283.5638 72.39 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16903,7 +16895,7 @@
 	)
 	(global_label "~{SWRC1_CLKREQ}"
 		(shape input)
-		(at 270.51 96.52 0)
+		(at 271.78 95.25 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -16913,7 +16905,7 @@
 		)
 		(uuid "ec38e666-7a65-4154-a6a2-9cf142dfa2fd")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 282.8865 96.52 0)
+			(at 284.1565 95.25 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16950,7 +16942,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 270.51 106.68 0)
 		(mirror y)
 		(unit 1)
@@ -17082,6 +17074,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 113.03 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 113.03 71.12 0)
 			(hide yes)
@@ -17196,6 +17199,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 173.99 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 173.99 139.7 0)
 			(hide yes)
@@ -17244,7 +17258,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+12V")
+		(lib_id "KiCad-stock:+12V")
 		(at 20.32 71.12 90)
 		(unit 1)
 		(body_style 1)
@@ -17322,7 +17336,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 130.81 102.87 0)
 		(unit 1)
 		(body_style 1)
@@ -17399,8 +17413,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+12V")
-		(at 19.05 52.07 0)
+		(lib_id "KiCad-stock:+12V")
+		(at 19.05 53.34 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -17410,7 +17424,7 @@
 		(dnp no)
 		(uuid "048b9a15-a7eb-4a77-9cd9-4c59f2fe20da")
 		(property "Reference" "#PWR04"
-			(at 19.05 55.88 0)
+			(at 19.05 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17421,7 +17435,7 @@
 			)
 		)
 		(property "Value" "+12V"
-			(at 20.32 50.8 0)
+			(at 17.272 49.784 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -17432,7 +17446,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 19.05 52.07 0)
+			(at 19.05 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17443,7 +17457,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 19.05 52.07 0)
+			(at 19.05 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17454,7 +17468,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+12V\""
-			(at 19.05 52.07 0)
+			(at 19.05 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17532,6 +17546,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 158.75 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 158.75 119.38 0)
 			(hide yes)
@@ -17580,7 +17605,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 45.72 148.59 0)
 		(unit 1)
 		(body_style 1)
@@ -17711,6 +17736,17 @@
 				)
 			)
 		)
+		(property "MPN" "RMCF0603FT33K0"
+			(at 151.13 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 151.13 40.64 0)
 			(hide yes)
@@ -17803,6 +17839,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 259.08 86.36 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RC0603JR-070RL"
 			(at 259.08 86.36 90)
 			(hide yes)
 			(show_name no)
@@ -17929,6 +17976,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 151.13 114.3 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 151.13 116.84 0)
 			(hide yes)
@@ -17988,7 +18046,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 149.86 185.42 270)
 		(mirror x)
 		(unit 1)
@@ -18066,7 +18124,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 138.43 27.94 0)
 		(mirror y)
 		(unit 1)
@@ -18198,6 +18256,17 @@
 				)
 			)
 		)
+		(property "MPN" "C1608X5R1E105K080AC"
+			(at 196.85 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 196.85 139.7 0)
 			(hide yes)
@@ -18257,7 +18326,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 44.45 73.66 90)
 		(unit 1)
 		(body_style 1)
@@ -18390,6 +18459,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 96.52 157.48 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 96.52 157.48 0)
 			(hide yes)
@@ -18428,7 +18508,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 46.99 81.28 0)
 		(mirror y)
 		(unit 1)
@@ -18506,7 +18586,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 190.5 60.96 0)
 		(mirror y)
 		(unit 1)
@@ -18585,7 +18665,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 26.67 58.42 0)
+		(at 26.67 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -18596,7 +18676,7 @@
 		(dnp no)
 		(uuid "16c0cf6c-6454-4159-a952-e93a6ae5870d")
 		(property "Reference" "C3"
-			(at 26.162 56.0324 0)
+			(at 26.162 57.3024 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -18607,7 +18687,7 @@
 			)
 		)
 		(property "Value" "10u"
-			(at 26.162 59.8424 0)
+			(at 26.162 61.1124 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -18618,7 +18698,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_1206_3216Metric"
-			(at 26.67 60.96 0)
+			(at 26.67 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18629,7 +18709,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 26.67 60.96 0)
+			(at 26.67 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL31A106KAHNNNE"
+			(at 26.67 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18640,7 +18731,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 26.67 58.42 0)
+			(at 26.67 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18651,7 +18742,7 @@
 			)
 		)
 		(property "DigiKey" "1276-1075-1-ND"
-			(at 26.67 58.42 0)
+			(at 26.67 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18662,7 +18753,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 24.384 60.96 0)
+			(at 24.384 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -18719,7 +18810,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "KiCad-stock:L_0402_1005Metric"
 			(at 143.51 93.218 90)
 			(hide yes)
 			(show_name no)
@@ -18731,6 +18822,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 143.51 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BLM15AG221SN1D"
 			(at 143.51 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -18925,6 +19027,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 255.27 71.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 255.27 71.12 0)
 			(hide yes)
@@ -19007,6 +19120,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 22.86 168.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RC0603FR-1310KL"
 			(at 22.86 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -19109,6 +19233,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 130.81 118.11 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "LTST-C170KRKT"
 			(at 130.81 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -19224,6 +19359,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 199.39 33.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL05A104KA5NNNC"
 			(at 199.39 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -19380,6 +19526,18 @@
 				)
 			)
 		)
+		(property "MPN" "TPS54KC23RZRR"
+			(at 69.85 114.3 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "4V to 16V Input, 30A, Remote Sense, D-CAP4 Synchronous Buck Converter"
 			(at 64.77 119.38 0)
 			(hide yes)
@@ -19525,6 +19683,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1312K1L"
+			(at 31.75 86.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 31.75 86.36 0)
 			(hide yes)
@@ -19640,7 +19809,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_THT:Testhole 24_50mils"
+		(property "Footprint" "PCM_Chili-chips:5000"
 			(at 15.24 21.59 0)
 			(hide yes)
 			(show_name no)
@@ -19652,6 +19821,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 17.78 21.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "5001"
 			(at 17.78 21.59 0)
 			(hide yes)
 			(show_name no)
@@ -19741,7 +19921,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 96.52 149.86 0)
 		(unit 1)
 		(body_style 1)
@@ -19872,6 +20052,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 118.11 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 118.11 71.12 0)
 			(hide yes)
@@ -19975,6 +20166,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 158.75 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL21A226KPCLRNC"
 			(at 158.75 134.62 0)
 			(hide yes)
 			(show_name no)
@@ -20098,6 +20300,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 107.95 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 107.95 58.42 0)
 			(hide yes)
@@ -20211,6 +20424,17 @@
 				)
 			)
 		)
+		(property "MPN" "GRM1555C1H8R0BA01D"
+			(at 163.83 78.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 163.83 81.28 0)
 			(hide yes)
@@ -20314,6 +20538,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 181.61 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 181.61 119.38 0)
 			(hide yes)
@@ -20362,7 +20597,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:NetTie_2")
+		(lib_id "KiCad-stock:NetTie_2")
 		(at 123.19 93.98 0)
 		(unit 1)
 		(body_style 1)
@@ -20464,7 +20699,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 259.08 91.44 0)
 		(mirror y)
 		(unit 1)
@@ -20542,7 +20777,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 36.83 64.77 0)
 		(mirror y)
 		(unit 1)
@@ -20620,7 +20855,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 22.86 180.34 0)
 		(mirror y)
 		(unit 1)
@@ -20731,7 +20966,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_SMD:DBV5"
+		(property "Footprint" "KiCad-stock:SOT-23-5"
 			(at 168.91 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -20743,6 +20978,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 168.91 35.56 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "TLV75801PDBVR"
 			(at 168.91 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -20876,7 +21122,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 181.61 81.28 0)
 		(unit 1)
 		(body_style 1)
@@ -21008,6 +21254,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 151.13 64.77 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 151.13 64.77 0)
 			(hide yes)
@@ -21047,7 +21304,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 46.99 58.42 0)
+		(at 46.99 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -21058,7 +21315,7 @@
 		(dnp no)
 		(uuid "47526a08-29eb-4ec1-ac34-3da0b3133003")
 		(property "Reference" "C8"
-			(at 46.99 55.88 0)
+			(at 46.99 57.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -21069,7 +21326,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 46.99 59.944 0)
+			(at 46.99 61.214 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -21080,7 +21337,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
-			(at 46.99 60.96 0)
+			(at 46.99 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21091,7 +21348,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 46.99 60.96 0)
+			(at 46.99 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 46.99 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21102,7 +21370,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 46.99 58.42 0)
+			(at 46.99 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21113,7 +21381,7 @@
 			)
 		)
 		(property "DigiKey" "1276-1043-1-ND"
-			(at 46.99 58.42 0)
+			(at 46.99 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21124,7 +21392,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 44.958 60.96 0)
+			(at 44.958 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -21149,7 +21417,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 85.09 111.76 0)
 		(unit 1)
 		(body_style 1)
@@ -21281,6 +21549,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603JR-070RL"
+			(at 74.93 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 74.93 154.94 0)
 			(hide yes)
@@ -21330,7 +21609,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 151.13 91.44 0)
 		(unit 1)
 		(body_style 1)
@@ -21451,6 +21730,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 163.83 71.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H8R0BA01D"
 			(at 163.83 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -21597,6 +21887,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603JR-07220RL"
+			(at 130.81 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 130.81 107.95 0)
 			(hide yes)
@@ -21701,6 +22002,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 158.75 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 158.75 99.06 0)
 			(hide yes)
@@ -21760,7 +22072,7 @@
 		(dnp no)
 		(uuid "4fcb9dac-d5ab-49b0-9c3d-7053e50afec7")
 		(property "Reference" "R8"
-			(at 40.64 106.045 0)
+			(at 41.656 102.87 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -21771,7 +22083,7 @@
 			)
 		)
 		(property "Value" "4K32"
-			(at 40.64 107.9501 0)
+			(at 40.132 104.14 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -21793,6 +22105,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 41.91 106.68 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RT0603FRE074K32L"
 			(at 41.91 106.68 90)
 			(hide yes)
 			(show_name no)
@@ -21864,7 +22187,7 @@
 		(dnp no)
 		(uuid "50f2206e-f8dc-4edf-bf76-54c34c496b2b")
 		(property "Reference" "TP2"
-			(at 51.435 26.67 90)
+			(at 50.546 24.892 0)
 			(show_name no)
 			(do_not_autoplace yes)
 			(effects
@@ -21886,7 +22209,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_THT:Testhole 24_50mils"
+		(property "Footprint" "PCM_Chili-chips:5000"
 			(at 49.53 24.13 0)
 			(hide yes)
 			(show_name no)
@@ -21898,6 +22221,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 49.53 26.67 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "5000"
 			(at 49.53 26.67 0)
 			(hide yes)
 			(show_name no)
@@ -21997,7 +22331,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 40.64 25.4 0)
 		(unit 1)
 		(body_style 1)
@@ -22019,7 +22353,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 40.64 21.59 0)
+			(at 42.672 21.844 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22074,7 +22408,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 158.75 81.28 0)
 		(unit 1)
 		(body_style 1)
@@ -22248,7 +22582,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "???"
+		(property "Value" "SMBJ12A"
 			(at 42.545 38.735 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22320,7 +22654,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 41.91 58.42 0)
+		(at 41.91 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -22331,7 +22665,7 @@
 		(dnp no)
 		(uuid "5a5868b5-c70b-4e08-94f5-3f63c06e65f7")
 		(property "Reference" "C7"
-			(at 41.91 55.88 0)
+			(at 41.91 57.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22342,7 +22676,7 @@
 			)
 		)
 		(property "Value" "1u"
-			(at 41.656 59.944 0)
+			(at 41.656 61.214 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22353,7 +22687,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
-			(at 41.91 60.96 0)
+			(at 41.91 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22364,7 +22698,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 41.91 60.96 0)
+			(at 41.91 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "C1608X5R1E105K080AC"
+			(at 41.91 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22375,7 +22720,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 41.91 58.42 0)
+			(at 41.91 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22386,7 +22731,7 @@
 			)
 		)
 		(property "DigiKey" "445-5146-1-ND"
-			(at 41.91 58.42 0)
+			(at 41.91 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22397,7 +22742,7 @@
 			)
 		)
 		(property "LCSC" ""
-			(at 41.91 58.42 0)
+			(at 41.91 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22408,7 +22753,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 39.878 61.087 0)
+			(at 39.878 62.357 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -22478,6 +22823,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 252.73 71.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RC0603FR-1310KL"
 			(at 252.73 71.12 0)
 			(hide yes)
 			(show_name no)
@@ -22581,6 +22937,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 173.99 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 173.99 119.38 0)
 			(hide yes)
@@ -22673,6 +23040,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 151.13 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL21A226KPCLRNC"
 			(at 151.13 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -22797,6 +23175,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 166.37 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 166.37 119.38 0)
 			(hide yes)
@@ -22845,7 +23234,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 199.39 43.18 0)
 		(unit 1)
 		(body_style 1)
@@ -22922,7 +23311,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 54.61 104.14 0)
 		(unit 1)
 		(body_style 1)
@@ -23053,6 +23442,17 @@
 				)
 			)
 		)
+		(property "MPN" "ERJ-3EKF1823V"
+			(at 49.53 106.68 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 49.53 106.68 90)
 			(hide yes)
@@ -23134,7 +23534,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 125.73 49.53 0)
 		(unit 1)
 		(body_style 1)
@@ -23264,6 +23664,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-0775KL"
+			(at 146.05 35.56 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 146.05 35.56 0)
 			(hide yes)
@@ -23313,7 +23724,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Crystal_GND24")
+		(lib_id "KiCad-stock:Crystal_GND24")
 		(at 173.99 78.74 270)
 		(unit 1)
 		(body_style 1)
@@ -23333,7 +23744,7 @@
 				)
 			)
 		)
-		(property "Value" "Crystal_GND24"
+		(property "Value" "ECS-250-8-33B2-CTN-TR3"
 			(at 173.99 87.63 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23355,6 +23766,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 173.99 78.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "ECS-250-8-33B2-CTN-TR3"
 			(at 173.99 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -23420,7 +23842,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 153.67 81.28 0)
 		(unit 1)
 		(body_style 1)
@@ -23497,7 +23919,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 60.96 167.64 90)
 		(unit 1)
 		(body_style 1)
@@ -23626,6 +24048,17 @@
 				)
 			)
 		)
+		(property "MPN" "7443082015A"
+			(at 97.79 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 97.79 63.5 0)
 			(hide yes)
@@ -23707,7 +24140,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 40.64 41.91 0)
 		(unit 1)
 		(body_style 1)
@@ -23838,6 +24271,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 123.19 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 123.19 58.42 0)
 			(hide yes)
@@ -23897,7 +24341,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 271.78 83.82 0)
 		(mirror y)
 		(unit 1)
@@ -24030,6 +24474,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 166.37 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 166.37 99.06 0)
 			(hide yes)
@@ -24078,7 +24533,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 173.99 144.78 0)
 		(mirror y)
 		(unit 1)
@@ -24211,6 +24666,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603JR-070RL"
+			(at 30.48 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 30.48 154.94 0)
 			(hide yes)
@@ -24314,6 +24780,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 123.19 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 123.19 71.12 0)
 			(hide yes)
@@ -24373,7 +24850,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 181.61 104.14 0)
 		(mirror y)
 		(unit 1)
@@ -24506,6 +24983,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-07255KL"
+			(at 22.86 154.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 22.86 154.94 0)
 			(hide yes)
@@ -24555,7 +25043,7 @@
 	)
 	(symbol
 		(lib_id "PCM_BWSMA-KWE-Z001:Conn_Coaxial")
-		(at 255.27 49.53 90)
+		(at 266.7 50.8 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -24565,7 +25053,7 @@
 		(dnp no)
 		(uuid "88ebe455-2838-4a8b-87b1-90fa43f2350a")
 		(property "Reference" "J4"
-			(at 255.5632 43.18 90)
+			(at 266.9932 44.45 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -24575,7 +25063,7 @@
 			)
 		)
 		(property "Value" "BWSMA-KWE-Z001"
-			(at 255.5632 45.72 90)
+			(at 266.9932 46.99 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -24585,7 +25073,7 @@
 			)
 		)
 		(property "Footprint" "PCM_av_lib:BWSMA-KWE-Z001"
-			(at 255.27 49.53 0)
+			(at 266.7 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24596,7 +25084,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 255.27 49.53 0)
+			(at 266.7 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BWSMA-KWE-Z001"
+			(at 266.7 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24607,7 +25106,7 @@
 			)
 		)
 		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
-			(at 255.27 49.53 0)
+			(at 266.7 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24618,7 +25117,7 @@
 			)
 		)
 		(property "Voltage" ""
-			(at 255.27 49.53 0)
+			(at 266.7 50.8 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -24628,7 +25127,7 @@
 			)
 		)
 		(property "LCSC" "C496551"
-			(at 255.27 49.53 0)
+			(at 266.7 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24654,7 +25153,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 111.76 111.76 0)
 		(unit 1)
 		(body_style 1)
@@ -24883,6 +25382,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 38.1 148.59 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 38.1 148.59 0)
 			(hide yes)
@@ -24932,7 +25442,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 153.67 45.72 0)
 		(unit 1)
 		(body_style 1)
@@ -25009,7 +25519,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+12V")
+		(lib_id "KiCad-stock:+12V")
 		(at 35.56 21.59 0)
 		(mirror y)
 		(unit 1)
@@ -25142,6 +25652,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 147.32 193.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 147.32 190.5 0)
 			(hide yes)
@@ -25244,6 +25765,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 265.43 95.25 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 265.43 95.25 0)
 			(hide yes)
@@ -25326,6 +25858,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 111.76 115.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "EEE-1CA101WAP"
 			(at 111.76 115.57 0)
 			(hide yes)
 			(show_name no)
@@ -25428,6 +25971,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 107.95 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL21A226KPCLRNC"
 			(at 107.95 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -25552,6 +26106,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 36.83 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 36.83 99.06 0)
 			(hide yes)
@@ -25643,6 +26208,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 270.51 101.6 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RC0603JR-070RL"
 			(at 270.51 101.6 90)
 			(hide yes)
 			(show_name no)
@@ -25769,6 +26345,17 @@
 				)
 			)
 		)
+		(property "MPN" "GRM155R71C103KA01D"
+			(at 191.77 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 191.77 71.12 0)
 			(hide yes)
@@ -25849,7 +26436,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "KiCad-stock:L_0402_1005Metric"
 			(at 143.51 113.538 90)
 			(hide yes)
 			(show_name no)
@@ -25861,6 +26448,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 143.51 111.76 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BLM15AG221SN1D"
 			(at 143.51 111.76 0)
 			(hide yes)
 			(show_name no)
@@ -26002,7 +26600,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:ECAP")
-		(at 19.05 55.88 0)
+		(at 19.05 57.15 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -26012,7 +26610,7 @@
 		(dnp no)
 		(uuid "a9087ae7-7178-4a33-abcd-3025ca3d8d55")
 		(property "Reference" "C2"
-			(at 16.637 55.245 0)
+			(at 18.034 55.372 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26023,7 +26621,7 @@
 			)
 		)
 		(property "Value" "100u"
-			(at 16.637 57.404 0)
+			(at 18.796 59.944 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26034,7 +26632,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:CAPAE660X610N"
-			(at 19.05 55.88 0)
+			(at 19.05 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26045,7 +26643,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 19.05 55.88 0)
+			(at 19.05 57.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "EEE-1CA101WAP"
+			(at 19.05 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26056,7 +26665,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 19.05 55.88 0)
+			(at 19.05 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26067,7 +26676,7 @@
 			)
 		)
 		(property "DigiKey" "PCE4579CT-ND"
-			(at 19.05 55.88 0)
+			(at 19.05 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -26078,7 +26687,7 @@
 			)
 		)
 		(property "Voltage" "16V"
-			(at 14.732 59.944 0)
+			(at 17.018 62.484 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26103,7 +26712,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+12V")
+		(lib_id "KiCad-stock:+12V")
 		(at 22.86 147.32 0)
 		(unit 1)
 		(body_style 1)
@@ -26180,7 +26789,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_02x03_Top_Bottom")
+		(lib_id "KiCad-stock:Conn_02x03_Top_Bottom")
 		(at 27.94 29.21 0)
 		(mirror y)
 		(unit 1)
@@ -26201,8 +26810,8 @@
 				)
 			)
 		)
-		(property "Value" "Conn_02x03_Top_Bottom"
-			(at 26.416 34.798 0)
+		(property "Value" "DLL-5566-6A"
+			(at 29.464 34.544 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26223,6 +26832,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 27.94 29.21 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "DLL-5566-6A"
 			(at 27.94 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -26357,6 +26977,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603JR-070RL"
+			(at 271.78 78.74 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 271.78 78.74 0)
 			(hide yes)
@@ -26474,6 +27105,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 166.37 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 166.37 139.7 0)
 			(hide yes)
@@ -26522,7 +27164,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:NetTie_2")
+		(lib_id "KiCad-stock:NetTie_2")
 		(at 69.85 111.76 0)
 		(unit 1)
 		(body_style 1)
@@ -26670,6 +27312,18 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 199.39 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+		(property "MPN" "PI6CG18801ZLIEX"
 			(at 199.39 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -26927,6 +27581,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 90.17 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 90.17 88.9 0)
 			(hide yes)
@@ -27062,6 +27727,18 @@
 				)
 			)
 		)
+		(property "MPN" "NCV308SNADJT1G"
+			(at 72.644 176.276 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
 		(property "Description" "Programmable Delay Time Supervisory Circuit"
 			(at 75.438 178.562 0)
 			(hide yes)
@@ -27123,7 +27800,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Switch:SW_Push")
+		(lib_id "KiCad-stock:SW_Push")
 		(at 30.48 170.18 90)
 		(unit 1)
 		(body_style 1)
@@ -27144,7 +27821,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "SW_Push"
+		(property "Value" "PTS645SK50SMTR92 LFS"
 			(at 32.004 169.926 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27167,6 +27844,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 25.4 170.18 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "PTS645SK50SMTR92 LFS"
 			(at 25.4 170.18 0)
 			(hide yes)
 			(show_name no)
@@ -27260,7 +27948,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 36.83 58.42 0)
+		(at 36.83 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -27271,7 +27959,7 @@
 		(dnp no)
 		(uuid "b03d328d-74b0-4f7d-8e59-c5464bd75292")
 		(property "Reference" "C5"
-			(at 36.83 55.88 0)
+			(at 36.83 57.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27282,7 +27970,7 @@
 			)
 		)
 		(property "Value" "1u"
-			(at 36.83 59.944 0)
+			(at 36.83 61.214 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27293,7 +27981,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_0603_1608Metric"
-			(at 36.83 60.96 0)
+			(at 36.83 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27304,7 +27992,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 36.83 60.96 0)
+			(at 36.83 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "C1608X5R1E105K080AC"
+			(at 36.83 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27315,7 +28014,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 36.83 58.42 0)
+			(at 36.83 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27326,7 +28025,7 @@
 			)
 		)
 		(property "DigiKey" "445-5146-1-ND"
-			(at 36.83 58.42 0)
+			(at 36.83 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27337,7 +28036,7 @@
 			)
 		)
 		(property "LCSC" ""
-			(at 36.83 58.42 0)
+			(at 36.83 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27348,7 +28047,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 34.798 60.96 0)
+			(at 34.798 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27428,6 +28127,17 @@
 				)
 			)
 		)
+		(property "MPN" "RMCF0603FT33R0"
+			(at 113.03 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 113.03 81.28 0)
 			(hide yes)
@@ -27477,7 +28187,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 201.93 30.48 270)
 		(mirror x)
 		(unit 1)
@@ -27555,7 +28265,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 111.76 121.92 0)
 		(unit 1)
 		(body_style 1)
@@ -27632,8 +28342,8 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 264.16 52.07 0)
+		(lib_id "KiCad-stock:GND")
+		(at 275.59 53.34 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -27643,7 +28353,7 @@
 		(dnp no)
 		(uuid "b327c534-5165-4499-8e72-fdfe106a672f")
 		(property "Reference" "#PWR039"
-			(at 264.16 58.42 0)
+			(at 275.59 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27654,7 +28364,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 267.97 53.975 0)
+			(at 279.4 55.245 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27664,7 +28374,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 264.16 52.07 0)
+			(at 275.59 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27675,7 +28385,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 264.16 52.07 0)
+			(at 275.59 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27686,7 +28396,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 264.16 52.07 0)
+			(at 275.59 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27709,7 +28419,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 151.13 111.76 0)
 		(unit 1)
 		(body_style 1)
@@ -27829,6 +28539,18 @@
 			)
 		)
 		(property "Datasheet" "https://www.ti.com/lit/gpn/sn74lvc244a"
+			(at 124.46 205.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+			)
+		)
+		(property "MPN" "SN74LVC244APWR"
 			(at 124.46 205.74 0)
 			(hide yes)
 			(show_name no)
@@ -27988,6 +28710,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 17.78 172.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C103KA01D"
 			(at 17.78 172.72 0)
 			(hide yes)
 			(show_name no)
@@ -28236,6 +28969,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-072K2L"
+			(at 207.01 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 207.01 53.34 0)
 			(hide yes)
@@ -28307,7 +29051,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_THT:Testhole 24_50mils"
+		(property "Footprint" "PCM_Chili-chips:5000"
 			(at 87.63 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -28319,6 +29063,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 87.63 107.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "5001"
 			(at 87.63 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -28408,7 +29163,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 116.84 193.04 0)
 		(mirror y)
 		(unit 1)
@@ -28529,6 +29284,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 177.8 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "B4B-XH-A"
 			(at 177.8 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -28696,6 +29462,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 181.61 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 181.61 99.06 0)
 			(hide yes)
@@ -28745,7 +29522,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 31.75 58.42 0)
+		(at 31.75 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -28756,7 +29533,7 @@
 		(dnp no)
 		(uuid "cc76de91-3b76-4b47-9139-6c3cc4bf8481")
 		(property "Reference" "C4"
-			(at 31.242 56.0324 0)
+			(at 31.242 57.3024 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28767,7 +29544,7 @@
 			)
 		)
 		(property "Value" "10u"
-			(at 31.242 59.8424 0)
+			(at 31.242 61.1124 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28778,7 +29555,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_1206_3216Metric"
-			(at 31.75 60.96 0)
+			(at 31.75 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28789,7 +29566,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 31.75 60.96 0)
+			(at 31.75 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL31A106KAHNNNE"
+			(at 31.75 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28800,7 +29588,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 31.75 58.42 0)
+			(at 31.75 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28811,7 +29599,7 @@
 			)
 		)
 		(property "DigiKey" "1276-1075-1-ND"
-			(at 31.75 58.42 0)
+			(at 31.75 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28822,7 +29610,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 29.464 60.96 0)
+			(at 29.464 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28847,7 +29635,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 130.81 121.92 0)
 		(mirror y)
 		(unit 1)
@@ -28979,6 +29767,17 @@
 				)
 			)
 		)
+		(property "MPN" "C1608X5R1E105K080AC"
+			(at 46.99 81.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 46.99 78.74 0)
 			(hide yes)
@@ -29093,6 +29892,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 146.05 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 146.05 68.58 0)
 			(hide yes)
@@ -29132,7 +29942,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_unsorted:PCB test point")
-		(at 143.51 53.34 0)
+		(at 153.67 25.4 270)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -29143,7 +29953,7 @@
 		(dnp no)
 		(uuid "d2e04937-1fa9-43e8-82e2-43c48e4385b7")
 		(property "Reference" "TP3"
-			(at 145.415 53.34 0)
+			(at 153.67 23.495 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29154,7 +29964,7 @@
 			)
 		)
 		(property "Value" "Test"
-			(at 141.6051 50.8 90)
+			(at 151.13 27.3049 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29165,8 +29975,8 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_THT:Testhole 24_50mils"
-			(at 143.51 50.8 0)
+		(property "Footprint" "PCM_Chili-chips:5000"
+			(at 151.13 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29177,7 +29987,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "5000"
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29188,7 +30009,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29199,7 +30020,7 @@
 			)
 		)
 		(property "DigiKey" "36-5000-ND"
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29210,7 +30031,7 @@
 			)
 		)
 		(property "Mouser" ""
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29221,7 +30042,7 @@
 			)
 		)
 		(property "TME" ""
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29232,7 +30053,7 @@
 			)
 		)
 		(property "LCSC" ""
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29243,7 +30064,7 @@
 			)
 		)
 		(property "Label" "+1V8"
-			(at 143.51 53.34 0)
+			(at 153.67 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29266,7 +30087,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 88.9 167.64 0)
 		(unit 1)
 		(body_style 1)
@@ -29344,7 +30165,7 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:C-EU")
-		(at 52.07 58.42 0)
+		(at 52.07 59.69 0)
 		(mirror x)
 		(unit 1)
 		(body_style 1)
@@ -29355,7 +30176,7 @@
 		(dnp no)
 		(uuid "d6a45266-adfa-4592-b989-3c0e0cf4b12e")
 		(property "Reference" "C10"
-			(at 52.07 55.88 0)
+			(at 52.07 57.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29366,7 +30187,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 52.07 59.944 0)
+			(at 52.07 61.214 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29377,7 +30198,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:C_0402_1005Metric"
-			(at 52.07 60.96 0)
+			(at 52.07 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29388,7 +30209,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 52.07 60.96 0)
+			(at 52.07 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 52.07 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29399,7 +30231,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 52.07 58.42 0)
+			(at 52.07 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29410,7 +30242,7 @@
 			)
 		)
 		(property "DigiKey" "1276-1043-1-ND"
-			(at 52.07 58.42 0)
+			(at 52.07 59.69 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29421,7 +30253,7 @@
 			)
 		)
 		(property "Voltage" "25V"
-			(at 49.53 60.96 0)
+			(at 49.53 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29446,7 +30278,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 181.61 124.46 0)
 		(mirror y)
 		(unit 1)
@@ -29524,7 +30356,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 147.32 193.04 0)
 		(mirror y)
 		(unit 1)
@@ -29634,7 +30466,7 @@
 				(justify bottom)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "KiCad-stock:L_0402_1005Metric"
 			(at 143.51 133.858 90)
 			(hide yes)
 			(show_name no)
@@ -29646,6 +30478,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 143.51 132.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BLM15AG221SN1D"
 			(at 143.51 132.08 0)
 			(hide yes)
 			(show_name no)
@@ -29840,6 +30683,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-072K2L"
+			(at 214.63 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 214.63 53.34 0)
 			(hide yes)
@@ -29922,6 +30776,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 118.11 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CL21A226KPCLRNC"
 			(at 118.11 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -30045,6 +30910,17 @@
 				)
 			)
 		)
+		(property "MPN" "RT0603DRD0756KL"
+			(at 99.06 81.28 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 99.06 81.28 90)
 			(hide yes)
@@ -30149,6 +31025,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 90.17 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 87.63 63.5 0)
 			(hide yes)
@@ -30197,7 +31084,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 17.78 36.83 0)
 		(unit 1)
 		(body_style 1)
@@ -30274,7 +31161,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 191.77 76.2 0)
 		(unit 1)
 		(body_style 1)
@@ -30351,7 +31238,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
+		(lib_id "KiCad-stock:GND")
 		(at 105.41 66.04 0)
 		(mirror y)
 		(unit 1)
@@ -30429,7 +31316,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 123.19 52.07 0)
 		(unit 1)
 		(body_style 1)
@@ -30507,8 +31394,8 @@
 	)
 	(symbol
 		(lib_id "PCM_EEZ_passives:R-EU")
-		(at 242.57 58.42 270)
-		(mirror x)
+		(at 236.22 66.04 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -30518,7 +31405,7 @@
 		(dnp no)
 		(uuid "e8d4328c-5b8c-4d59-93c9-01174cde98ec")
 		(property "Reference" "R22"
-			(at 240.665 57.15 90)
+			(at 234.95 67.945 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -30529,7 +31416,7 @@
 			)
 		)
 		(property "Value" "33R"
-			(at 240.665 60.96 90)
+			(at 239.268 67.818 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -30540,7 +31427,7 @@
 			)
 		)
 		(property "Footprint" "PCM_EEZ_passives:R_0603_1608Metric"
-			(at 242.57 58.42 0)
+			(at 236.22 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30551,7 +31438,18 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 242.57 58.42 0)
+			(at 236.22 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RMCF0603FT33R0"
+			(at 236.22 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30562,7 +31460,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 242.57 58.42 0)
+			(at 236.22 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30573,7 +31471,7 @@
 			)
 		)
 		(property "DigiKey" "RMCF0603FT33R0CT-ND"
-			(at 242.57 58.42 0)
+			(at 236.22 66.04 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30584,7 +31482,7 @@
 			)
 		)
 		(property "LCSC" ""
-			(at 242.57 58.42 90)
+			(at 236.22 66.04 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30643,7 +31541,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "PCM_EEZ_THT:Testhole 24_50mils"
+		(property "Footprint" "PCM_Chili-chips:5000"
 			(at 130.81 58.42 0)
 			(hide yes)
 			(show_name no)
@@ -30655,6 +31553,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 130.81 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "5000"
 			(at 130.81 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -30799,6 +31708,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 173.99 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 173.99 99.06 0)
 			(hide yes)
@@ -30902,6 +31822,17 @@
 				)
 			)
 		)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 153.67 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 153.67 76.2 0)
 			(hide yes)
@@ -30951,7 +31882,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
+		(lib_id "KiCad-stock:+3V3")
 		(at 217.17 45.72 270)
 		(mirror x)
 		(unit 1)
@@ -31083,6 +32014,17 @@
 				)
 			)
 		)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 113.03 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" ""
 			(at 113.03 58.42 0)
 			(hide yes)
@@ -31142,7 +32084,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:NetTie_2")
+		(lib_id "KiCad-stock:NetTie_2")
 		(at 123.19 81.28 0)
 		(unit 1)
 		(body_style 1)
@@ -31266,7 +32208,7 @@
 			)
 		)
 		(property "Value" "56K"
-			(at 26.67 72.39 90)
+			(at 26.924 73.152 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -31288,6 +32230,17 @@
 			)
 		)
 		(property "Datasheet" ""
+			(at 26.67 71.12 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "RT0603DRD0756KL"
 			(at 26.67 71.12 90)
 			(hide yes)
 			(show_name no)
@@ -31347,7 +32300,7 @@
 		)
 	)
 	(symbol
-		(lib_id "power:PWR_FLAG")
+		(lib_id "KiCad-stock:PWR_FLAG")
 		(at 158.75 132.08 0)
 		(unit 1)
 		(body_style 1)

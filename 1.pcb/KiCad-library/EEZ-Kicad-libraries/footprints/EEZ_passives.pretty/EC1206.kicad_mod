@@ -1,0 +1,78 @@
+(footprint "EC1206" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (attr smd)
+  (fp_text reference "REF**" (at -2.667 -1.2065) (layer "F.SilkS")
+      (effects (font (size 0.8128 0.8128) (thickness 0.1524) bold) (justify left bottom))
+    (tstamp 8ad9839f-ebe0-4c34-a864-56acba16dca6)
+  )
+  (fp_text value "EC1206" (at -3.4925 0.635) (layer "F.Fab")
+      (effects (font (size 1.1684 1.1684) (thickness 0.1016)) (justify left bottom))
+    (tstamp a2bb94af-d68d-479e-88e2-7c29575d73c7)
+  )
+  (fp_poly
+    (pts
+      (xy -0.1999 0.4001)
+      (xy 0.1999 0.4001)
+      (xy 0.1999 -0.4001)
+      (xy -0.1999 -0.4001)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Adhes") (tstamp 3224d31a-e5b5-4290-b7ae-044a6705e50c))
+  (fp_poly
+    (pts
+      (xy -2.4892 1.016)
+      (xy -2.3368 1.016)
+      (xy -2.3368 -1.016)
+      (xy -2.4892 -1.016)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 1654a099-7999-4b60-bdf7-e22b5ed892fc))
+  (fp_poly
+    (pts
+      (xy -0.4445 1.016)
+      (xy 0 1.016)
+      (xy 0 -1.016)
+      (xy -0.4445 -1.016)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 12e6c82f-da48-4e60-9a00-222c0261fc4d))
+  (fp_line (start -2.473 -1.11) (end 2.473 -1.11)
+    (stroke (width 0.127) (type solid)) (layer "F.CrtYd") (tstamp d755fefa-7899-411b-89b9-4f86ecb74528))
+  (fp_line (start -2.473 1.11) (end -2.473 -1.11)
+    (stroke (width 0.127) (type solid)) (layer "F.CrtYd") (tstamp 114d7595-a0f8-465f-af5e-d06db3614790))
+  (fp_line (start 2.473 -1.11) (end 2.473 1.11)
+    (stroke (width 0.127) (type solid)) (layer "F.CrtYd") (tstamp 6301936e-2d7b-4905-831d-36fa78792eab))
+  (fp_line (start 2.473 1.11) (end -2.473 1.11)
+    (stroke (width 0.127) (type solid)) (layer "F.CrtYd") (tstamp 8a005df5-7d3f-4668-bae7-247bcbd5f2fe))
+  (fp_line (start -0.965 -0.787) (end 0.965 -0.787)
+    (stroke (width 0.1016) (type solid)) (layer "F.Fab") (tstamp 601f9742-0c2a-45a5-82ae-a44b2fda9ef4))
+  (fp_line (start -0.965 0.787) (end 0.965 0.787)
+    (stroke (width 0.1016) (type solid)) (layer "F.Fab") (tstamp 8a6c70db-ebe4-4739-aaad-68ce4f0f3bf6))
+  (fp_poly
+    (pts
+      (xy -1.7018 0.8509)
+      (xy -0.9517 0.8509)
+      (xy -0.9517 -0.8491)
+      (xy -1.7018 -0.8491)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 7f90a80d-8db2-48bf-accd-eaf3ea6c2d65))
+  (fp_poly
+    (pts
+      (xy 0.9517 0.8491)
+      (xy 1.7018 0.8491)
+      (xy 1.7018 -0.8509)
+      (xy 0.9517 -0.8509)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 541fec2a-7137-43c1-9632-64842f6d88c7))
+  (pad "+" smd roundrect (at -1.4 0) (size 1.6 1.8) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 19e180b8-a5f6-47d2-a1c5-97a32ec5b40b))
+  (pad "-" smd roundrect (at 1.4 0) (size 1.6 1.8) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.03175)
+    (solder_mask_margin 0.0635) (thermal_bridge_angle 0) (tstamp 39fb4066-5e9a-4a40-af05-de6351ba3860))
+  (model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/EC1206_kemet.step"
+    (offset (xyz 1.524 0.889 0))
+    (scale (xyz 1 1 1))
+    (rotate (xyz -90 0 180))
+  )
+)

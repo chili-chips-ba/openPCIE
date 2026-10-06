@@ -1,0 +1,91 @@
+(footprint "TO220-2-V" (version 20221018) (generator pcbnew)
+  (layer "F.Cu")
+  (attr through_hole)
+  (fp_text reference "REF**" (at -5.08 2.7305) (layer "F.SilkS")
+      (effects (font (size 1.016 1.016) (thickness 0.1524)) (justify left bottom))
+    (tstamp aebad636-a1b1-46e7-a782-5a3e5c925eb2)
+  )
+  (fp_text value "TO220-2-V" (at -5.08 4.6228) (layer "F.Fab")
+      (effects (font (size 1.143 1.143) (thickness 0.127)) (justify left bottom))
+    (tstamp 5732f15c-65c1-425d-9388-55f89fa3f9d6)
+  )
+  (fp_line (start -4.953 1.0668) (end -5.08 -1.397)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 6fcd9c43-f9f5-4a4f-a8cb-0515fe592f71))
+  (fp_line (start -4.953 1.0668) (end -4.699 1.3208)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp ba72b6c8-5a8c-4d17-97ee-79e724adfdfb))
+  (fp_line (start -3.0734 1.3208) (end -4.699 1.3208)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 1a88c456-f5cf-4c03-8c6b-3fb1bf31667e))
+  (fp_line (start 1.9558 1.3208) (end -1.9558 1.3208)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 337d2739-f5a1-408b-95c0-daf875d584c8))
+  (fp_line (start 4.699 1.3208) (end 3.0734 1.3208)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 8a157a12-bd06-4a42-abfe-febf3e4672c0))
+  (fp_line (start 4.699 1.3208) (end 4.953 1.0668)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 96f01c7d-f7c1-4324-8dc5-b94a842e9c69))
+  (fp_line (start 5.08 -1.397) (end 4.953 1.0668)
+    (stroke (width 0.1524) (type solid)) (layer "F.SilkS") (tstamp 811338a4-ef70-4a0d-9223-7333c79880f6))
+  (fp_circle (center -4.4958 0.7112) (end -4.3688 0.7112)
+    (stroke (width 0.254) (type solid)) (fill solid) (layer "F.SilkS") (tstamp 58548d92-979e-4c2b-a07c-26b93b3fc8af))
+  (fp_poly
+    (pts
+      (xy -5.334 -1.9812)
+      (xy 5.334 -1.9812)
+      (xy 5.334 -2.54)
+      (xy -5.334 -2.54)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 9aed13a9-75ee-4451-8284-c7dd346b5342))
+  (fp_poly
+    (pts
+      (xy -5.334 -1.27)
+      (xy -3.429 -1.27)
+      (xy -3.429 -1.9812)
+      (xy -5.334 -1.9812)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 2a11d972-3f64-4e40-ba9a-f861c29824d2))
+  (fp_poly
+    (pts
+      (xy -1.651 -1.27)
+      (xy 1.651 -1.27)
+      (xy 1.651 -1.9812)
+      (xy -1.651 -1.9812)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp 76bb21a9-e69a-449d-9997-cf7c7a27c07f))
+  (fp_poly
+    (pts
+      (xy 3.429 -1.27)
+      (xy 5.334 -1.27)
+      (xy 5.334 -1.9812)
+      (xy 3.429 -1.9812)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.SilkS") (tstamp b02d54ee-38c9-4ab2-9713-582703133b8a))
+  (fp_poly
+    (pts
+      (xy -3.429 -1.27)
+      (xy -1.651 -1.27)
+      (xy -1.651 -1.9812)
+      (xy -3.429 -1.9812)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp e349a8c2-ca53-4f30-a60a-93316a2aac4c))
+  (fp_poly
+    (pts
+      (xy 1.651 -1.27)
+      (xy 3.429 -1.27)
+      (xy 3.429 -1.9812)
+      (xy 1.651 -1.9812)
+    )
+
+    (stroke (width 0) (type default)) (fill solid) (layer "F.Fab") (tstamp 63cb56d7-37b3-465e-8cf8-a10665a28c51))
+  (pad "1" thru_hole oval (at -2.54 -0.254 90) (size 3.048 1.524) (drill 1.016) (layers "*.Cu" "*.Mask")
+    (solder_mask_margin 0.0762) (thermal_bridge_angle 0) (tstamp 4e83dde8-c2e2-4225-be19-51dc024a757c))
+  (pad "2" thru_hole oval (at 2.54 -0.254 90) (size 3.048 1.524) (drill 1.016) (layers "*.Cu" "*.Mask")
+    (solder_mask_margin 0.0762) (thermal_bridge_angle 0) (tstamp 0dd1a40d-5bc5-4574-a3c0-651b7bde3e3c))
+  (model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/pwr220t-35-2r20j.stp"
+    (offset (xyz 0 2.54 10.16))
+    (scale (xyz 1 1 1))
+    (rotate (xyz -180 0 0))
+  )
+)

@@ -1,0 +1,217 @@
+(footprint "R_1210_3225Metric_4-Wire"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Resistor SMD 1210 (3225 Metric), 4-wire")
+	(tags "resistor")
+	(property "Reference" "REF**"
+		(at 0 -1.905 0)
+		(layer "F.SilkS")
+		(uuid "59bd0f24-e830-43ee-8993-606e3c5dc0f1")
+		(effects
+			(font
+				(size 0.8128 0.8128)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "R_1210_3225Metric_4-Wire"
+		(at 0 0.762 0)
+		(layer "F.Fab")
+		(uuid "ac5b5129-69a3-4135-a3f1-6932b5e067d9")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "472a0782-aa67-4077-9e32-bfc7038e721f")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5eb90743-d673-43fc-8a6c-0a1ddea63b54")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.723737 -1.355)
+		(end 0.723737 -1.355)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "78af4321-48ca-474b-9335-931a569f69b7")
+	)
+	(fp_line
+		(start -0.723737 1.355)
+		(end 0.723737 1.355)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "57833dca-a9f5-44a0-b9c8-cfbea6ac47a6")
+	)
+	(fp_line
+		(start -2.28 -1.58)
+		(end 2.28 -1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "6e98541a-b79a-4349-9347-88b57f57cbc1")
+	)
+	(fp_line
+		(start -2.28 1.58)
+		(end -2.28 -1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "badb9bb6-a68e-4241-9996-337ed8742064")
+	)
+	(fp_line
+		(start 2.28 -1.58)
+		(end 2.28 1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "4ba66745-9eca-4b10-8a76-7497464bc98a")
+	)
+	(fp_line
+		(start 2.28 1.58)
+		(end -2.28 1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "638742e0-416b-4961-9d45-5afa56dee593")
+	)
+	(fp_line
+		(start -1.6 -1.245)
+		(end 1.6 -1.245)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "58fb259a-491f-431c-a4b9-cb0ea351d387")
+	)
+	(fp_line
+		(start -1.6 1.245)
+		(end -1.6 -1.245)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4c8d8450-0c56-4163-8b06-af2f009ae6c2")
+	)
+	(fp_line
+		(start 1.6 -1.245)
+		(end 1.6 1.245)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "16b75581-0d58-407f-8670-f3af75e83cea")
+	)
+	(fp_line
+		(start 1.6 1.245)
+		(end -1.6 1.245)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "2915e6a7-1ee0-4e11-b5cf-5d4a65c78061")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5fb82888-593d-4a1d-9d89-357cfca44eab")
+		(effects
+			(font
+				(size 0.6096 0.6096)
+				(thickness 0.1016)
+				(bold yes)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -1.4625 0)
+		(size 1.125 2.65)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.222222)
+		(uuid "5c484be1-652c-4964-ae1d-3bafccae63d1")
+	)
+	(pad "1S" smd roundrect
+		(at -0.8255 0)
+		(size 0.254 0.254)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.2)
+		(solder_mask_margin 0.0762)
+		(zone_connect 2)
+		(thermal_bridge_angle 0)
+		(uuid "fd44b249-a972-4f4c-8b9f-95c80ff648d1")
+	)
+	(pad "2" smd roundrect
+		(at 1.4625 0)
+		(size 1.125 2.65)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.222222)
+		(uuid "15c17ada-81b4-4a3a-9f26-cc91f0faa9e8")
+	)
+	(pad "2S" smd roundrect
+		(at 0.8255 0 180)
+		(size 0.254 0.254)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.2)
+		(solder_mask_margin 0.0762)
+		(zone_connect 2)
+		(thermal_bridge_angle 0)
+		(uuid "5e56ddbb-1d4e-4070-9a3a-2978d416d0fe")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/R_1210_3225Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

@@ -1,0 +1,195 @@
+(footprint "C_2220_5750Metric"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Capacitor SMD 2220 (5750 Metric)")
+	(tags "capacitor")
+	(property "Reference" "REF**"
+		(at 0 -3.65 0)
+		(layer "F.SilkS")
+		(uuid "699aac36-636b-4f2a-a632-4a856e0d5ceb")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "C_2220_5750Metric"
+		(at 0 0.65 0)
+		(layer "F.Fab")
+		(uuid "053a159f-ba42-4e91-bb40-78ecf7a6d8f4")
+		(effects
+			(font
+				(size 0.4 0.4)
+				(thickness 0.06)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "06bfbcb6-871f-43d4-a0ca-377d205c5bcb")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d9be4123-8c4a-452d-91e0-976b192ed0a1")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.415748 -2.61)
+		(end 1.415748 -2.61)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "7a60f9b8-214d-466b-9387-cc957d5605bf")
+	)
+	(fp_line
+		(start -1.415748 2.61)
+		(end 1.415748 2.61)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0944f806-2850-43fc-9043-24bdea530cd8")
+	)
+	(fp_line
+		(start -3.7 -2.95)
+		(end 3.7 -2.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c695cf1d-16b9-4c79-ad79-2e1f87fa5913")
+	)
+	(fp_line
+		(start -3.7 2.95)
+		(end -3.7 -2.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "989ab539-f15d-4ef7-b8c5-165df3e64d32")
+	)
+	(fp_line
+		(start 3.7 -2.95)
+		(end 3.7 2.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "7790a0d2-4dfc-4d15-9d83-bbcf66c83870")
+	)
+	(fp_line
+		(start 3.7 2.95)
+		(end -3.7 2.95)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "654ecdfc-7fee-47bb-9e6c-cd268088f7fe")
+	)
+	(fp_line
+		(start -2.85 -2.5)
+		(end 2.85 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0dc5f422-be75-4882-95af-8f50c94bc401")
+	)
+	(fp_line
+		(start -2.85 2.5)
+		(end -2.85 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "724ed383-c522-4037-939f-49e6f7bde5b6")
+	)
+	(fp_line
+		(start 2.85 -2.5)
+		(end 2.85 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d52db2dd-fb2c-401a-857d-dc6e396ed9ba")
+	)
+	(fp_line
+		(start 2.85 2.5)
+		(end -2.85 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ee38bc1c-b182-4262-bcda-3615aeea585f")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "925d7f3b-e3af-4ec4-bbdd-64c1c85ce77b")
+		(effects
+			(font
+				(size 0.4 0.4)
+				(thickness 0.06)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -2.55 0)
+		(size 1.8 5.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.138889)
+		(uuid "00125b93-c5cf-4680-88c0-9d891bb30419")
+	)
+	(pad "2" smd roundrect
+		(at 2.55 0)
+		(size 1.8 5.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.138889)
+		(uuid "2acba251-31b3-42f4-a2e9-27a647b8ce72")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/C_2220_5750Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

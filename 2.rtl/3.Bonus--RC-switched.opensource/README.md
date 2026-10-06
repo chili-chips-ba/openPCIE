@@ -41,7 +41,7 @@ localparam int PCIE_GEN   = 2;   // 1 = Gen1, 2 = Gen2
 ```
 
 The corresponding hardware setup is
-[here](../../1.pcb#usecase-2-switched-fpga_rc-to-fpga_ep-gen1-x1). Note that the
+[here](../../1.pcb#usecase-2-switched-fpga_rc-to-fpga_ep-gen2-x1). Note that the
 ASM1184e on the RevA backplane is fed by an undersized LDO - see slide 17 of the
 [presentation](../../1.pcb/0.doc). RevB replaces it with a DC/DC buck.
 
@@ -49,8 +49,11 @@ ASM1184e on the RevA backplane is fed by an undersized LDO - see slide 17 of the
 
 ## What differs from RC-direct
 
-The PCIe stack itself is untouched - `src/pcie/` is byte-identical to
-[RC-direct.opensource](../2.RC-direct.opensource). A switch changes nothing at
+The PCIe stack itself is functionally untouched - `src/pcie/` is the same as in
+[RC-direct.opensource](../2.RC-direct.opensource), except that RC-direct's
+`link_pkg.sv` and `silicon_core.sv` carry three co-simulation-only `ifdef`s
+(`SIM_GEN1_ONLY`, `SIM_PIPE_CODING`, `SIM_FAST_TRAIN`) that no synthesis flow
+defines. A switch changes nothing at
 the physical or link layer; the root port still trains a plain Gen2 x1 link, and
 what it talks to on the far end happens to be a switch upstream port instead of
 an endpoint. Everything that changes is one level up, in how Configuration TLPs
@@ -91,7 +94,12 @@ assign tx_header0_routed = pkt_is_cfg
 `Fmt`/`Type` sits in `tx_header0[31:24]`; `[28:25] == 4'b0010` marks a
 Configuration request and bit `[24]` is the Type 0 / Type 1 selector. Memory and
 Completion TLPs pass through untouched. That, plus the top module name, is the
-whole RTL delta between the two projects.
+whole functional RTL delta between the two projects. The other differences:
+
+* `riscv_pcie_soc.sv` here has no `` `ifdef SOC_CPU_VPROC `` - the co-simulation
+  in [`5.sim`](../../5.sim) is built around RC-direct only.
+* The XDC locks the transceiver to `GTPE2_CHANNEL_X0Y6` (RC-direct: `X0Y5`) - see
+  the lane table in [`2.rtl/README.md`](../README.md#common-physical-constraints-xdc).
 
 ### 2. Firmware: the bring-up sequence
 
@@ -157,7 +165,7 @@ src/
   riscv_pcie_soc.sv          picorv32 SOC + the Type 0/Type 1 routing above
   soc_csr.sv                 wrapper for the PeakRDL-generated CSR block
   picorv32.v                 the RISC-V core itself
-  pcie/                      the opensource PCIe stack (identical to RC-direct)
+  pcie/                      the opensource PCIe stack (as RC-direct, minus its sim-only ifdefs)
 xdc/
   RC-switched.sv.x1g2.AcornCLE-215P.xdc   full constraints (source of truth)
 RC-switched.opensource.tcl   regenerates the Vivado project from scratch
@@ -204,8 +212,11 @@ and it has to be the **switched** one:
 
 ```sh
 cd 4.build/sw_build
-make clean && make VARIANT=switched
+make VARIANT=switched
 ```
+
+No `make clean` is needed to switch variants - the make file tracks the build
+configuration and rebuilds by itself.
 
 ### Vivado
 

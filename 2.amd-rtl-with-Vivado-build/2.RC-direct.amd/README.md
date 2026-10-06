@@ -14,7 +14,7 @@ The following table summarizes the key parameters configured in the Vivado IP Ge
 | :--- | :--- | :--- |
 | **Device Port Type** | **Root Port** | Acts as the PCIe Host. |
 | **Link Speed** | **Gen2 (5.0 GT/s)** | High-speed data rate. |
-| **Lane Width** | **x1** | Currently set to single-lane for verification. |
+| **Lane Width** | **x1** | The default, and the committed deliverable. As a bonus, **x4** (Gen2) has also been tested on hardware. |
 | **User Interface** | **AXI4-Stream** | 64-bit width @ 62.5 MHz. |
 | **Vendor ID** | **`0x10EE`** | Xilinx, Inc. |
 | **Device ID** | **`0x7121`** | 7-Series Root Port ID. |

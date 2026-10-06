@@ -1,0 +1,128 @@
+(footprint "0031.8221"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Fuse holder")
+	(tags "0031.8221 ")
+	(property "Reference" "REF**"
+		(at -9.9 -6.3 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "a1a525ce-1a1b-4b4d-8a0c-6df95ff93a42")
+		(effects
+			(font
+				(size 1.016 1.016)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "0031.8221"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "35f15b56-cba7-47ca-80c0-d28a9677ee5c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8d2ccb57-1065-49ec-b195-f960a9389bba")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "106c8fbd-12ec-4de3-82ae-efb022603b87")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -11.85 -5.4)
+		(end 11.85 5.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "5b6305f1-506a-44fa-b4b9-873217944292")
+	)
+	(fp_rect
+		(start -11.9 -5.4)
+		(end 11.9 5.4)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "b4f89e31-06a1-4692-a739-ccc1f7fe81a9")
+	)
+	(fp_circle
+		(center -8.500001 -1.905)
+		(end -8.119001 -1.905)
+		(stroke
+			(width 0.508)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "b1dc1df5-e951-408a-9f5b-5c2bfc6d1e51")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "9f0bfb80-d6d1-4a96-ba43-9013a6d4decd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -8.5 0)
+		(size 6 6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.05)
+		(uuid "a2f9f78f-7a29-477e-acad-ecdc564894d7")
+	)
+	(pad "2" smd roundrect
+		(at 8.5 0)
+		(size 6 6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.05)
+		(uuid "5889c90c-af52-4d52-8109-2866e0da0fed")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/OGN-SMD_STEP.STEP"
+		(offset
+			(xyz -4.445 0 2.159)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -90)
+		)
+	)
+)

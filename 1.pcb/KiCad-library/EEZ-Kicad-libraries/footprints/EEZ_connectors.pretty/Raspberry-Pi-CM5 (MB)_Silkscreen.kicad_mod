@@ -1,0 +1,224 @@
+(footprint "Raspberry-Pi-CM5 (MB)_Silkscreen"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Raspberry Pi 5 Compute Module silkscreen with holes")
+	(tags "Raspberry Pi 5 Compute Module")
+	(property "Reference" "REF**"
+		(at -4.5085 0 270)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "2d3ffc56-6923-4f83-8ba8-6ece0d946275")
+		(effects
+			(font
+				(size 1.016 1.016)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "Raspberry-Pi-CM4/5-hiprofile"
+		(at 16.52 0.19 0)
+		(layer "F.Fab")
+		(uuid "ed5aedac-a34e-46c7-b8bf-ea8d88e0ac27")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "130d6094-a4d3-43f5-8460-dae9f3c7d54f")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d54ff338-1aba-4319-b09e-1f2fa01007e5")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -3.5 -48)
+		(end -3.5 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "068d78f4-80ce-4031-b880-276c51d5ab76")
+	)
+	(fp_line
+		(start 0 3.5)
+		(end 33 3.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f43c1f0b-4374-43ff-8a15-1a002ad148fc")
+	)
+	(fp_line
+		(start 33 -51.5)
+		(end 0 -51.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4ea66ace-58e5-4ba1-add6-a9526de95a06")
+	)
+	(fp_line
+		(start 36.5 0)
+		(end 36.5 -48)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e1f89327-bca2-4548-ad09-ae4b3e37c3d7")
+	)
+	(fp_arc
+		(start -3.5 -48)
+		(mid -2.474874 -50.474874)
+		(end 0 -51.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "98e3caf3-eb99-46a4-a854-abeadc4e8c9a")
+	)
+	(fp_arc
+		(start 0 3.5)
+		(mid -2.474874 2.474874)
+		(end -3.5 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d89dd313-9a63-4076-90ea-07a4b5a903f7")
+	)
+	(fp_arc
+		(start 33 -51.5)
+		(mid 35.474874 -50.474874)
+		(end 36.5 -48)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4161609e-13d9-4d56-93cf-3adbaa82cd5c")
+	)
+	(fp_arc
+		(start 36.5 0)
+		(mid 35.474874 2.474874)
+		(end 33 3.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9e60c0aa-d997-4203-8cf0-ef7da3747e1e")
+	)
+	(fp_rect
+		(start -2.425 -32.896)
+		(end 1.505 -10.1035)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f794caf6-2ac6-4f0d-862e-f074283162ee")
+	)
+	(fp_rect
+		(start 31.5 -32.896)
+		(end 35.43 -10.0075)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "66e743b6-68b0-4d7e-bc7d-5ab50499660d")
+	)
+	(pad "" np_thru_hole circle
+		(at 0 -48)
+		(size 2.7 2.7)
+		(drill 2.7)
+		(layers "*.Cu" "*.Mask")
+		(solder_mask_margin 1.7)
+		(clearance 1.7)
+		(uuid "3380744b-5beb-48a3-9739-08e577c8c3f6")
+	)
+	(pad "" np_thru_hole circle
+		(at 0 0)
+		(size 2.7 2.7)
+		(drill 2.7)
+		(layers "*.Cu" "*.Mask")
+		(solder_mask_margin 1.7)
+		(clearance 1.7)
+		(uuid "51d65692-b428-4a32-9424-e5191c171c42")
+	)
+	(pad "" np_thru_hole circle
+		(at 33 -48)
+		(size 2.7 2.7)
+		(drill 2.7)
+		(layers "*.Cu" "*.Mask")
+		(solder_mask_margin 1.7)
+		(clearance 1.7)
+		(uuid "bbf315d7-fd4f-461c-bccd-e3f69077d3ec")
+	)
+	(pad "" np_thru_hole circle
+		(at 33 0)
+		(size 2.7 2.7)
+		(drill 2.7)
+		(layers "*.Cu" "*.Mask")
+		(solder_mask_margin 1.7)
+		(clearance 1.7)
+		(uuid "0f02a6f5-7ac7-438a-b629-6dd43816d36c")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/10164227-1004A1RLF--3DModel-STEP-533217.STEP"
+		(hide yes)
+		(offset
+			(xyz -0.5 21.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -90)
+		)
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/10164227-1004A1RLF--3DModel-STEP-533217.STEP"
+		(hide yes)
+		(offset
+			(xyz 33.5 21.5 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 -90)
+		)
+	)
+)

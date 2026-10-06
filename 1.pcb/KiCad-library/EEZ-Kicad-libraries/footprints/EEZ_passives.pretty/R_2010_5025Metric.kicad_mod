@@ -1,0 +1,193 @@
+(footprint "R_2010_5025Metric"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Resistor SMD 2010 (5025 Metric)")
+	(tags "resistor")
+	(property "Reference" "REF**"
+		(at 0 -2.28 0)
+		(layer "F.SilkS")
+		(uuid "a2370ac0-4acb-41de-ad8f-e58f025b2403")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "R_2010_5025Metric"
+		(at 0 2.28 0)
+		(layer "F.Fab")
+		(uuid "9993cfde-0751-47cd-8de4-849c96bb2894")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "af3ce532-25b1-46a0-a316-7d1edc1617b2")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7c42b1fe-2fdc-48f9-a160-1d0ac8e8e195")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.527064 -1.36)
+		(end 1.527064 -1.36)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "666030ab-9fe3-4302-9d30-a7ea46793c74")
+	)
+	(fp_line
+		(start -1.527064 1.36)
+		(end 1.527064 1.36)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f19ca406-4cc8-474f-a255-f043f73a9531")
+	)
+	(fp_line
+		(start -3.18 -1.58)
+		(end 3.18 -1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "e7ca33fa-5f74-44fd-9c15-5b9bf0a18ef3")
+	)
+	(fp_line
+		(start -3.18 1.58)
+		(end -3.18 -1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "8f57134c-ca10-4451-bcd8-f0ec8c9df971")
+	)
+	(fp_line
+		(start 3.18 -1.58)
+		(end 3.18 1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "d9db641b-4044-439f-be4d-ca7e60a292bc")
+	)
+	(fp_line
+		(start 3.18 1.58)
+		(end -3.18 1.58)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "ebad5895-d1d4-4444-a14f-be5a611d0a5d")
+	)
+	(fp_line
+		(start -2.5 -1.25)
+		(end 2.5 -1.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "d90a3870-46ca-4f63-91b2-e430ae6fac55")
+	)
+	(fp_line
+		(start -2.5 1.25)
+		(end -2.5 -1.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "68902aff-4fd8-42eb-828f-695536b93990")
+	)
+	(fp_line
+		(start 2.5 -1.25)
+		(end 2.5 1.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "5c09e3c8-17b3-4a9b-a3d4-df8c6bb01740")
+	)
+	(fp_line
+		(start 2.5 1.25)
+		(end -2.5 1.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ac7ea0e1-632c-4772-b72b-8255fb4a2c5b")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "deeec82e-371b-4cc5-ad1a-326f51893bd9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -2.3125 0)
+		(size 1.225 2.65)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.204082)
+		(uuid "03724982-93f2-400b-b09a-0d1ffd55c117")
+	)
+	(pad "2" smd roundrect
+		(at 2.3125 0)
+		(size 1.225 2.65)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.204082)
+		(uuid "d546f234-9ccd-404c-b976-4e1729d46e2b")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/R_2010_5025Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

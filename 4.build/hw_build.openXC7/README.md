@@ -5,9 +5,10 @@ no Vivado anywhere in the chain. `make` builds
 [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource);
 `make VARIANT=switched` builds
 [`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource) instead.
-Everything below applies to both - the two differ by one `assign` in
-`riscv_pcie_soc.sv` and by the firmware they carry, and not at all in the
-toolchain or the constraints.
+Everything below applies to both - the two differ by the Type 0 / Type 1 routing
+in `riscv_pcie_soc.sv`, by the firmware they carry, and by the GT pins in their
+constraint file (`openxc7.xdc` vs `openxc7.switched.xdc`, see
+[GT channel](#gt-channel)), and not at all in the toolchain.
 
 | Stage | Tool | Input -> Output |
 |---|---|---|
@@ -33,8 +34,8 @@ rate        = Gen2
 
 The same readings as the Vivado bitstream built from identical RTL.
 
-Getting there required four fixes. One is a genuine latent bug in this design's
-RTL; three are workarounds for openXC7 defects. All are documented below.
+Getting there required six fixes. One is a genuine latent bug in this design's
+RTL; five are workarounds for openXC7 defects. All are documented below.
 
 ---
 
@@ -86,7 +87,8 @@ substitutes **its own** default - almost always `0`. Silently, with no warning.
 
 Comparing every `GTPE2_CHANNEL` attribute the RTL does not set, against the
 `cells_xtra.v` library default and the `*_or_default(...)` call in
-`xilinx/fasm.cc`, gives **17 mismatches**. The damaging ones:
+`xilinx/fasm.cc`, gives a list of mismatches. The **20** that matter for this
+design:
 
 | Attribute | Xilinx library | nextpnr | Consequence |
 |---|---|---|---|
@@ -107,7 +109,7 @@ Symptom: the GT came up (QPLL locked, all `resetdone` asserted) but TX phase
 alignment never started - `TXDLYSRESETDONE` never produced an edge, so the sync
 FSM sat in `TX_START` forever and the LTSSM never left `DETECT_QUIET`.
 
-`lane_xcvr.sv` now sets all 17 explicitly, to the **library** values. The Vivado
+`lane_xcvr.sv` now sets all 20 explicitly, to the **library** values. The Vivado
 flow is unaffected - the numbers are what Vivado was already using.
 
 This is why [regymm/pcie_7x](https://github.com/regymm/pcie_7x) works on openXC7
@@ -144,7 +146,7 @@ master nextpnr. With `45a986b` neither is necessary.)*
 fasm.cc:3146  if (txpi_synfreq_ppm == 0) log_error("TXPI_SYNFREQ_PPM must not be zero!")
 ```
 
-The same class of problem as the 17 defaults above, but this one at least fails
+The same class of problem as the 20 defaults above, but this one at least fails
 loudly.
 
 ### Unused GT refclk inputs left unconnected
@@ -293,8 +295,12 @@ make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 | `make convert` | only sv2v conversion + module extraction |
 | `make CSR=legacy` | build the hand-written CSR instead of the PeakRDL one |
 | `make info` | print resolved configuration |
-| `make clean` | remove `build_artifacts/` |
-| `make clean-all` | also remove `converted/` and `chipdb/` |
+| `make clean` | remove `build_artifacts/`, `.build-config` and the local copy of `firmware.hex` |
+| `make clean-converted` | remove `converted/` |
+| `make clean-all` | all of the above, plus `chipdb/` |
+
+With `VARIANT=switched` the clean targets act on `build_artifacts.switched/` and
+`converted.switched/` instead.
 
 `VARIANT=switched` gives the switched build its own `converted.switched/` and
 `build_artifacts.switched/`, so the two never overwrite each other and neither
@@ -320,8 +326,9 @@ Build time with a cached chipdb is about 2 minutes.
 ## Constraints
 
 nextpnr's XDC parser accepts only `[get_ports]` and `[get_nets]` targets, so the
-full Vivado XDC cannot be used. `openxc7.xdc` is a reduced version; the Vivado file
-in `2.rtl/` remains the source of truth for the AMD flow.
+full Vivado XDC cannot be used. `openxc7.xdc` (RC-direct) and
+`openxc7.switched.xdc` (RC-switched) are reduced versions; the Vivado files in
+`2.rtl/*/xdc/` remain the source of truth for the AMD flow.
 
 ### GT channel
 
@@ -353,7 +360,13 @@ the tile directly):
 | 2 | `GTPE2_CHANNEL_X0Y6` | A10/B10 | A6/B6 |
 | 3 | `GTPE2_CHANNEL_X0Y7` | C9/D9 | C7/D7 |
 
-Verify after every build - the FASM must contain `GTP_CHANNEL_1_MID_LEFT`:
+RC-switched uses channel **2** instead (`GTPE2_CHANNEL_X0Y6`, pins A10/B10 and
+A6/B6, in `openxc7.switched.xdc`) - the same position its Vivado XDC locks.
+Note that this table numbers channels as prjxray does; [`2.rtl/README.md`](../../2.rtl/README.md#common-physical-constraints-xdc)
+lists the same four positions by board lane.
+
+Verify after every build - the FASM must contain `GTP_CHANNEL_1_MID_LEFT`
+(`GTP_CHANNEL_2_...` for RC-switched):
 
 ```bash
 grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/top.fasm | sort -u
@@ -446,7 +459,7 @@ build too, because it is a pulse, not a level.
 
 | # | Finding |
 |---|---|
-| 1 | **GT attribute defaults do not match the Xilinx library** - **80 mismatches** on `GTPE2_CHANNEL`, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV`/`RX_XCLK_SEL` among them (17 of those affected this design). Any design relying on library defaults gets a silently broken transceiver |
+| 1 | **GT attribute defaults do not match the Xilinx library** - **80 mismatches** on `GTPE2_CHANNEL`, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV`/`RX_XCLK_SEL` among them (20 of those affected this design). Any design relying on library defaults gets a silently broken transceiver |
 | 2 | **`IBUFDS_GTE2.O` -> `BUFG` yields a dead clock in fabric.** The net routes without error and the FASM looks correct, but the BUFG output does not toggle on hardware |
 | 3 | **`fasm.cc:2118` hardcodes `PLL0_CFG`/`PLL1_CFG`** to `0x1F03DC` instead of reading the cell parameter (this design asks for `0x1F024C`), and writes only bits [20:0] of a 27-bit attribute |
 | 4 | **Regression between `45a986b` and `bab26c2`** - master cannot route `CARRY4_Ox` -> `xFFMUX_OUT` inside a slice, so any design with a counter fails; reproduced with a 4-line testcase. `common/router2.cc` is byte-identical between the two commits, so the change is in the xilinx packing code. On larger designs the same area instead runs for hours in `route_xilinx_const` |

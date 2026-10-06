@@ -1,0 +1,172 @@
+(footprint "TL1260_EWI"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(tags "TL1260BQRBLK ")
+	(property "Reference" "REF**"
+		(at 3.937 -2.4765 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "7f23af41-aee8-45c1-b829-4620fa88b08d")
+		(effects
+			(font
+				(size 1.016 1.016)
+				(thickness 0.1524)
+			)
+		)
+	)
+	(property "Value" "TL1260_EWI"
+		(at 2.5019 2.2479 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "15d31e49-9daf-49f5-adb1-cfaec37ce68b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a4091b2c-63cf-44aa-ba66-b7f78bc8d077")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "898ed75e-239c-4269-a627-ac59d8379f77")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "47fa8477-f0bb-48c0-9dfd-a1c86856afb4")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -6.5405 -2.31775)
+		(end -4.064 6.82625)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "f7bc81c9-bce3-4fb5-b86c-d9c11142b226")
+	)
+	(fp_rect
+		(start -4.064 0.73025)
+		(end -2.667 3.77825)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "68b4b27d-90b8-4970-9332-bf051f692529")
+	)
+	(fp_rect
+		(start -2.667 -1.80975)
+		(end 5.9055 6.31825)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "a1dd99d2-8890-4a07-ad74-cab9ebea5837")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 2.5019 2.2479 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "78d7dfbf-327b-4700-947d-a160e1d3b2cc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "4e080b2b-55a9-4501-9ff4-f6b371953cfc")
+	)
+	(pad "2" thru_hole circle
+		(at 5 0)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0fd04a6d-2b9f-4be1-b1ee-b69e743e923a")
+	)
+	(pad "3" thru_hole circle
+		(at 0 4.5)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "2e435f2f-e06b-448d-ade1-3e4d8259e071")
+	)
+	(pad "4" thru_hole circle
+		(at 5.0038 4.4958)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "5c1cd7be-d22b-46dd-a587-f04e0b96a0f2")
+	)
+	(pad "5" thru_hole circle
+		(at 2.5 -0.9)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "753fd288-59dd-4c58-be6a-76d28abb5716")
+	)
+	(pad "6" thru_hole circle
+		(at 2.5 5.4)
+		(size 1.4986 1.4986)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3da1ae24-bfaf-402c-be88-405456a52be7")
+	)
+	(model "${KIPRJMOD}/../KiCad-library/EEZ-Kicad-libraries/3dmodels/TL1260RQRBLK--3DModel-STEP-520916.STEP"
+		(offset
+			(xyz 0.508 -2.286 3.5052)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 0 90)
+		)
+	)
+)

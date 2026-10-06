@@ -14,7 +14,7 @@ The board is designed for flexible PCIe system development and testing, featurin
   - Two independent “islands” for different PCIe topologies.  
 - Flexible Connectivity:
   - Supports standard PCIe Slots and M.2 (M-key, PCIe) connectors.  
-- Power, Clock and Reser generation:
+- Power, Clock and Reset generation:
   - Single 6-pin PCIe power connector supplies the entire board (up to 70 W total).  
   - Integrated 100 MHz REFCLK generator and reset (PERST#) distribution circuits.  
 - Innovative RC Connector Design:
@@ -109,7 +109,7 @@ Impedance-controlled traces:
 ---
 ## Usage scenarios
 
-### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen1 x1)
+### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen2 x1)
 
 <p align="center" width="100%">
     <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
@@ -130,11 +130,13 @@ Impedance-controlled traces:
   </tr>
 </table>
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. We intend to test our Artix-7 RootComplex in the Standard PCIe slot. The backplane design leaves the path open for future exploration of **x4** and **Gen2** implementations.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. Our Artix-7 RootComplex has been tested in this setup and trains a **Gen2 x1** link to the EndPoint.
+
+> **Note:** As a bonus, the direct connection has also been tested in **Gen2 x4** mode, using all four lanes of the RC4 ⇔ EP4 island, with both the opensource and the AMD RC designs. The checked-in designs stay at **x1**, the committed deliverable.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 
-### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen1 x1)
+### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen2 x1)
 
 <p align="center" width="100%">
     <img width="70%" src="0.doc/images/openPCIE-switched-all-slots-populated.jpg">
@@ -151,7 +153,7 @@ This same scenario is also envisioned for testing the interoperability of our [o
   </tr>
 </table>
 
-We intend to try testing the RootComplex interactions with EndPoints through a PCIE Switch. This is "best effort", i.e. a  bonus if we manage to make it work. The backplane also leaves the door open for the **Gen2** testing.
+The RootComplex has also been tested with EndPoints behind the on-board ASM1184e PCIE Switch, over a **Gen2 x1** link. This was a bonus deliverable, beyond the original plan - see [RC-switched](../2.rtl/3.Bonus--RC-switched.opensource) for the design.
 
 ### Usecase 3: PCIE Expansion or Extension
 By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specificaly to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
@@ -273,7 +275,7 @@ Check [here](https://e2e.ti.com/support/power-management-group/power-management/
 
 # First Functional Check
 
-When the backplane comes out of the reflow oven with all components soldered, and before loading it with boards for the full functional testing, we first must check the basic power, reset and clock generation circuits. See our [PCBA_Functional_Test_Procedure](0.doc/PCBA_Functional_Test_Procedure.pdf) documents for the complete detail on how to go about it.
+When the backplane comes out of the reflow oven with all components soldered, and before loading it with boards for the full functional testing, we first must check the basic power, reset and clock generation circuits. See our PCBA Functional Test Procedure documents for the complete detail on how to go about it: [RevB](0.doc/PCBA_Functional_Test_Procedure_RevB.pdf) for the current board, and the [earlier revision](0.doc/PCBA_Functional_Test_Procedure.pdf).
 
 # Crowd Supply Campaign
  - [Web Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control)

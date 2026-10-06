@@ -215,11 +215,13 @@ These functions generate ordered sets on the link lanes, with `SendTs` automatic
 | **API Function**    | **Description**                            |
 |---------------------|--------------------------------------------|
 | `WriteRamByte`      | Write a byte to internal memory            |
-| `WriteRamWord`      | Write a 16-bit word to internal memory     |
-| `WriteRamDWord`     | Write a 32-bit word to internal memory     |
+| `WriteRamHWord`     | Write a 16-bit half-word to internal memory |
+| `WriteRamWord`      | Write a 32-bit word to internal memory     |
+| `WriteRamDWord`     | Write a 64-bit double word to internal memory |
 | `ReadRamByte`       | Read a byte from internal memory           |
-| `ReadRamWord`       | Read a 16-bit word from internal memory    |
-| `ReadRamDWord`      | Read a 32-bit word from internal memory    |
+| `ReadRamHWord`      | Read a 16-bit half-word from internal memory |
+| `ReadRamWord`       | Read a 32-bit word from internal memory    |
+| `ReadRamDWord`      | Read a 64-bit double word from internal memory |
 | `WriteRamByteBlock` | Write a block of bytes to internal memory  |
 | `ReadRamByteBlock`  | Read a block of bytes from internal memory |
 
