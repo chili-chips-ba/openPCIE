@@ -82,5 +82,7 @@ verilog work ../4.build/hw_build.openXC7/xpm_shim.v
 # ---------------------------------------------------------------------
 # Test bench
 # ---------------------------------------------------------------------
+sv work models/tlp_dw_if.sv
 sv work models/tlp_dw_monitor.sv
+sv work models/tlp_wavecrux_view.sv
 sv work tb.sv

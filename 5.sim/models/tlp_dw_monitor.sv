@@ -12,33 +12,24 @@
 //   DW0 in [31:0], with tkeep marking a lone DW in the last beat. Decoders such
 //   as the one in WaveCrux expect one DW per beat instead, framed by start- and
 //   end-of-packet flags. This module re-times the 64-bit stream into exactly
-//   that, one DW per clock, through a small queue:
-//
-//     tlp_data[31:0]  one TLP DW, byte 0 (Fmt/Type) in bits [31:24]
-//     tlp_sop         first DW of a TLP
-//     tlp_eop         last DW of a TLP
-//     tlp_valid       tlp_data carries a DW this cycle
+//   that, one DW per clock of dw.clk, through a small queue, and drives it
+//   onto a tlp_dw_if (tlp_data / tlp_sop / tlp_eop / tlp_valid).
 //
 //   The output lags the AXI-Stream by a few clocks -- nothing in the design
-//   reads it, it only exists to be dumped. Port names match the decoder's
-//   roles, so it binds them automatically.
+//   reads it, it only exists to be dumped. tlp_wavecrux_view.sv re-packages
+//   the two directions for the WaveCrux decoder plugin.
 //==========================================================================
 
 `timescale 1ns / 1ps
 
 module tlp_dw_monitor (
-    input  logic        clk,
-
     input  logic [63:0] axis_tdata,
     input  logic [7:0]  axis_tkeep,
     input  logic        axis_tlast,
     input  logic        axis_tvalid,
     input  logic        axis_tready,
 
-    output logic [31:0] tlp_data,
-    output logic        tlp_sop,
-    output logic        tlp_eop,
-    output logic        tlp_valid
+    tlp_dw_if.source    dw
 );
 
     typedef struct packed {
@@ -51,13 +42,13 @@ module tlp_dw_monitor (
     logic in_packet = 1'b0;
 
     initial begin
-        tlp_data  = '0;
-        tlp_sop   = 1'b0;
-        tlp_eop   = 1'b0;
-        tlp_valid = 1'b0;
+        dw.tlp_data  = '0;
+        dw.tlp_sop   = 1'b0;
+        dw.tlp_eop   = 1'b0;
+        dw.tlp_valid = 1'b0;
     end
 
-    always @(posedge clk) begin
+    always @(posedge dw.clk) begin
         if (axis_tvalid && axis_tready) begin
             // Upper DW is only present when tkeep says so (3-DW TLP tails)
             queue.push_back('{axis_tdata[31:0], !in_packet,
@@ -70,14 +61,14 @@ module tlp_dw_monitor (
 
         if (queue.size() != 0) begin
             dw_t d = queue.pop_front();
-            tlp_data  <= d.dw;
-            tlp_sop   <= d.sop;
-            tlp_eop   <= d.eop;
-            tlp_valid <= 1'b1;
+            dw.tlp_data  <= d.dw;
+            dw.tlp_sop   <= d.sop;
+            dw.tlp_eop   <= d.eop;
+            dw.tlp_valid <= 1'b1;
         end else begin
-            tlp_sop   <= 1'b0;
-            tlp_eop   <= 1'b0;
-            tlp_valid <= 1'b0;
+            dw.tlp_sop   <= 1'b0;
+            dw.tlp_eop   <= 1'b0;
+            dw.tlp_valid <= 1'b0;
         end
     end
 

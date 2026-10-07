@@ -9,6 +9,7 @@
   * [Prerequisites on Windows](#prerequisites-on-windows)
   * [What the simulation does](#what-the-simulation-does)
   * [Building and running](#building-and-running)
+  * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
 * [The three CPU options](#the-three-cpu-options)
   * [What they cost](#what-they-cost)
 * [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
@@ -229,13 +230,13 @@ no hardware involved (this run used `RUN_US=3000`; the default is 2000):
             74033000  LTSSM  0x15 -> 0x16 L0  (linkup)
             74825001  TB     trn_lnk_up   = 1  <- data link layer up, flow control done
             74841000  TB     ===> PCIe LINK UP -- SOC released from reset
-           302441000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+           653961000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
 
  openpcie2-rc co-simulation summary
   PCIe link up ............ YES
   LTSSM final state ....... 0x16
   cfg_status .............. 0x0000
-  TLPs sent by firmware ... 9
+  TLPs sent by firmware ... 22
   Payload written to EP ... 0x00000006  (Memory Write TLP)
   Payload read back ....... 0x00000006  (match)
   FIRMWARE RESULT ......... PASS (0x0000face)
@@ -250,19 +251,30 @@ In between, the real firmware enumerates the endpoint model exactly as it does
 on the board. The endpoint's own decode of the traffic:
 
 ```
-RC -> EP   TL Config read type 0   RID=10ee TAG=00 Bus=01 Dev=00 Func=0 Reg=00
-EP -> RC   TL Completion with data Successful  TAG=00 Byte Count=004
-RC -> EP   TL Config write type 0  TAG=01 Reg=04        BAR0 sizing
-RC -> EP   TL Config write type 0  TAG=02 Reg=05        BAR1 sizing
-RC -> EP   TL Config write type 0  TAG=03 Reg=04        BAR0 assign
-RC -> EP   TL Config write type 0  TAG=04 Reg=05        BAR1 assign
-RC -> EP   TL Config write type 0  TAG=05 Reg=01        Command: mem space + bus master
-RC -> EP   TL Mem write req  Addr=80000000 (32) TAG=06
-RC -> EP   TL Mem read  req  Addr=80000000 (32) TAG=07 Len=001
-EP -> RC   TL Completion with data Successful  TAG=07
+RC -> EP   Config read  type 0  Reg=00   ID                    TAG=00
+EP -> RC   Completion with data              Device 0002, Vendor 14FC
+RC -> EP   Config write type 0  Reg=01   Command = 0           memory decode off
+RC -> EP   Config write type 0  Reg=04   BAR0 = 0xFFFFFFFF     size it ...
+RC -> EP   Config read  type 0  Reg=04   BAR0
+EP -> RC   Completion with data              0xFFFFF008            4 KB, 32-bit, prefetchable
+RC -> EP   Config write type 0  Reg=04   BAR0 = 0x80000000     ... and place it
+           ... the same for BAR1 (1 KB -> 0x80001000), BAR2/3 (64-bit, 8 GB:
+           parked above 4 GB), BAR4/5 (read back 0: not implemented) ...
+RC -> EP   Config write type 0  Reg=01   Command = 6           memory space + bus master
+RC -> EP   Mem write req  Addr=80000000  data 0x00000006
+RC -> EP   Mem read  req  Addr=80000000  TAG=14
+EP -> RC   Completion with data              0x00000006            TAG=14
 ```
 
-and the CSR side of the same sequence, as the firmware sees it:
+Every request goes through the same completion check: the firmware reads the
+Completion Status of each one and re-issues a request answered with CRS. 21 of
+the 22 TLPs are enumeration and test; the 22nd is the result marker itself --
+writing it to `tx.data` re-launches the last header, a second Memory Read.
+
+The same traffic, decoded at TLP level in a waveform viewer, is in
+[Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux).
+
+And the CSR side of the same sequence, as the firmware sees it:
 
 ```
 CSR RD [0x20] = 0000001e     status.phy -- Tx FSM idle, 30 buffers free
@@ -309,6 +321,70 @@ make USRSIMOPTS="--define PIPE_RAW_DUMP"     # raw PIPE symbols
 The LTSSM state, the link status bits and the firmware's result marker are
 always printed, with no define needed.
 
+### Viewing the TLPs in WaveCrux
+
+xsim's own waveform database is the `.wdb` that `make gui` opens. For a view at
+*TLP level* -- every packet named, every completion paired with the request it
+answers -- the run can also write a VCD for [WaveCrux](https://wavecrux.app),
+together with a decoder plugin and a ready-made session:
+
+```
+make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 9 MB, not tracked)
+```
+
+Then, once per machine, in WaveCrux: **Settings -> Extensions -> Decoder
+Plugins**, accept the safety notice, **Add directory...**
+`5.sim/tools/wavecrux-pcie-tlp` and **Reload plugins**. After that, open
+[`tb.wavecrux`](tb.wavecrux) (File -> Open, or `wavecrux_pro tb.wavecrux`): it
+loads `tb.vcd` from the same directory with both decoders bound. The plugin --
+source, Windows binary, parameters -- is described in
+[tools/wavecrux-pcie-tlp](tools/wavecrux-pcie-tlp/README.md).
+
+In each picture the two decoder rows are the TLP stream in either direction:
+**TLP Downstream** is Root Complex -> Endpoint (`tx_`), **TLP Upstream** is
+Endpoint -> Root Complex (`rx_`). Above them are the raw streams they decode,
+one DW per clock.
+
+**BAR0 sizing.** The firmware writes all ones to BAR0, reads it back --
+`0xFFFFF008`, a 4 KB, 32-bit, prefetchable BAR -- and places it at `0x80000000`:
+
+<p align="center">
+<img src="images/wavecrux-tlp-bar-sizing.png" width=1000>
+</p>
+
+**A 64-bit BAR that does not fit.** BAR2 has already read back `0x0000000C`
+(64-bit, prefetchable). The upper half, BAR3, reads back `0xFFFFFFFE`: 8 GB.
+That cannot be placed below 4 GB, and this Root Complex only sends 32-bit
+addresses, so the firmware parks it at `0x2_0000_0000` instead of squeezing it
+in:
+
+<p align="center">
+<img src="images/wavecrux-tlp-bar-64bit.png" width=1000>
+</p>
+
+**The self-test.** Memory Space and Bus Master enabled, then a posted Memory
+Write of `6` to `0x80000000` and a Memory Read whose completion brings the same
+`6` back -- the `PASS (0x0000face)` of the summary above:
+
+<p align="center">
+<img src="images/wavecrux-tlp-mem-rw.png" width=1000>
+</p>
+
+What makes this possible in the test bench:
+
+* [`models/tlp_dw_monitor.sv`](models/tlp_dw_monitor.sv) re-times the SOC's
+  64-bit AXI-Stream into one DW per clock with SOP/EOP flags, one instance per
+  direction, onto a [`tlp_dw_if`](models/tlp_dw_if.sv).
+* [`models/tlp_wavecrux_view.sv`](models/tlp_wavecrux_view.sv) presents both
+  directions as `tb.tlp_view.tx_*` and `rx_*`, named after the decoder's
+  inputs, so WaveCrux's auto-bind finds them; its prefix drop-down picks `tx_`
+  or `rx_`.
+
+The session stores the decoder bindings as positions in the VCD, which are the
+same for every run of this test bench. Should a different simulator version
+order the dump differently, the decoder rows come up empty: remove them and add
+them again with **Ctrl+Shift+D** -- auto-bind fills in all nine inputs.
+
 
 ## The three CPU options
 
@@ -354,7 +430,10 @@ selects the matching instruction timing model.
 
 Measured on a Ryzen 7 5800H (8 cores / 16 threads) **on mains power**, Vivado
 xsim 2024.2, all three producing the identical result -- link up, LTSSM `0x16`,
-9 TLPs, `PASS (0x0000face)`:
+9 TLPs, `PASS (0x0000face)`. These figures were taken with the earlier firmware,
+before BAR sizing by readback; with the current one (22 TLPs, Vivado xsim
+2025.1) the result appears at 654.0 µs (`rtl`), 145.6 µs (`vproc`) and
+805.1 µs (`iss`):
 
 | | `CPU=rtl` | `CPU=vproc` | `CPU=iss` |
 |---|---|---|---|
@@ -871,6 +950,7 @@ The second consideration is the use of delay functions. This can be in the form 
 - [rv32 RISC-V ISS](https://github.com/wyvernSemi/riscV/tree/main/iss)
 - [SystemRDL](https://www.accellera.org/downloads/standards/systemrdl)
 - [PeakRDL and SystemRDLcompiler](https://github.com/SystemRDL)
+- [WaveCrux waveform viewer](https://wavecrux.app) and its [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
 
 
 -------

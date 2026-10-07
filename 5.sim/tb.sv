@@ -179,37 +179,41 @@ module tb;
 //   tlp_tx  RC -> EP, what the firmware sends
 //   tlp_rx  EP -> RC, the completions coming back
 
+  tlp_dw_if tx_dw (dut.user_clk);
+  tlp_dw_if rx_dw (dut.user_clk);
+
   tlp_dw_monitor tlp_tx (
-    .clk         (dut.user_clk),
     .axis_tdata  (dut.s_axis_tx_tdata),
     .axis_tkeep  (dut.s_axis_tx_tkeep),
     .axis_tlast  (dut.s_axis_tx_tlast),
     .axis_tvalid (dut.s_axis_tx_tvalid),
     .axis_tready (dut.s_axis_tx_tready),
-    .tlp_data    (),
-    .tlp_sop     (),
-    .tlp_eop     (),
-    .tlp_valid   ()
+    .dw          (tx_dw)
   );
 
   tlp_dw_monitor tlp_rx (
-    .clk         (dut.user_clk),
     .axis_tdata  (dut.m_axis_rx_tdata),
     .axis_tkeep  (dut.m_axis_rx_tkeep),
     .axis_tlast  (dut.m_axis_rx_tlast),
     .axis_tvalid (dut.m_axis_rx_tvalid),
     .axis_tready (dut.m_axis_rx_tready),
-    .tlp_data    (),
-    .tlp_sop     (),
-    .tlp_eop     (),
-    .tlp_valid   ()
+    .dw          (rx_dw)
+  );
+
+// Both streams again, as the nine-signal sets the WaveCrux decoder plugin
+// auto-binds to: prefix tx_ decodes RC -> EP, rx_ decodes EP -> RC, each with
+// the other direction as its peer (models/tlp_wavecrux_view.sv)
+
+  tlp_wavecrux_view tlp_view (
+    .tx (tx_dw),
+    .rx (rx_dw)
   );
 
 //--------------------------------------------------------------
 // VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
 //     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd
-// Only the TLP monitors, the SOC level and the LTSSM state, which keeps the
-// file small enough to open in seconds.
+// Only the TLP monitors, the decoder view, the SOC level and the LTSSM
+// state, which keeps the file small enough to open in seconds.
 //--------------------------------------------------------------
 
 `ifdef DUMP_VCD
@@ -217,6 +221,7 @@ module tb;
     $dumpfile("tb.vcd");
     $dumpvars(1, tlp_tx);
     $dumpvars(1, tlp_rx);
+    $dumpvars(1, tlp_view);
     $dumpvars(1, dut.soc_inst);
     $dumpvars(0, dut.pcie_inst.pl_ltssm_state_int);
   end

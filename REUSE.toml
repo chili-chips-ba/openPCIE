@@ -111,6 +111,23 @@ precedence = "override"
 SPDX-FileCopyrightText = "Google Inc."
 SPDX-License-Identifier = "Apache-2.0"
 
+# WaveCrux decoder-plugin C ABI header, vendored unchanged from the WaveCrux
+# open core (github.com/Ferrite-Engineering/wavecrux, include/).
+[[annotations]]
+path = ["5.sim/tools/wavecrux-pcie-tlp/wavecrux_decoder.h"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Ferrite Engineering LLC"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Prebuilt Windows x64 WaveCrux plugin: our pcie_tlp_decoder.c compiled against
+# the Apache-2.0 header above (MinGW-w64 gcc, -static-libgcc; the statically
+# linked libgcc parts are covered by the GCC Runtime Library Exception).
+[[annotations]]
+path = ["5.sim/tools/wavecrux-pcie-tlp/pcie_tlp_decoder.dll"]
+precedence = "override"
+SPDX-FileCopyrightText = ["2026 CHILI.CHIPS.LLC", "2026 Ferrite Engineering LLC"]
+SPDX-License-Identifier = "BSD-3-Clause AND Apache-2.0"
+
 # =============================================================================
 # 3. Third-party material included for reference only (NOT open-licensed)
 # =============================================================================
