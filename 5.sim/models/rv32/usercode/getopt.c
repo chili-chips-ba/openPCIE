@@ -36,6 +36,7 @@ static char sccsid[] = "@(#)getopt.c    4.7 (Berkeley) 6/27/88";
 #endif /* LIBC_SCCS and not lint */
 
 #include <stdio.h>
+#include <string.h>
 #ifndef BSD
 # define index strchr
 #endif
@@ -58,7 +59,6 @@ int getopt(nargc, nargv, ostr)
 {
         static char *place = EMSG;              /* option letter processing */
         register char *oli;                     /* option letter list index */
-        char *index();
 
         if (!*place) {                          /* update scanning pointer */
                 if (optind >= nargc || (*(place = nargv[optind]) != '/' && *(place = nargv[optind]) != '-'))

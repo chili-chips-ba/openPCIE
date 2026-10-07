@@ -429,6 +429,14 @@ module picorv32 #(
            COMPRESSED_ISA && mem_la_secondword ? {mem_rdata_latched_noshuffle[15:0], mem_16bit_buffer} :
            COMPRESSED_ISA && mem_la_firstword ? {16'bx, mem_rdata_latched_noshuffle[31:16]} : mem_rdata_latched_noshuffle;
 
+   // Declared here, ahead of its first use in the decoder below.
+   // Compressed-ISA C.JALR recognition (quadrant 2, funct3=100, rd/rs1!=0,
+   // rs2==0), computed once and reused at both of its call sites -- the
+   // mem_rdata_q-populating pass and the instr_jalr-setting pass both check
+   // this same bit pattern of mem_rdata_latched.
+   wire is_c_jalr;
+   assign is_c_jalr = mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0;
+
    always_ff @(posedge clk) begin
       if (!resetn) begin
          mem_la_firstword_reg <= '0;
@@ -817,13 +825,6 @@ module picorv32 #(
 
    wire is_rdcycle_rdcycleh_rdinstr_rdinstrh;
    assign is_rdcycle_rdcycleh_rdinstr_rdinstrh = |{instr_rdcycle, instr_rdcycleh, instr_rdinstr, instr_rdinstrh};
-
-   // Compressed-ISA C.JALR recognition (quadrant 2, funct3=100, rd/rs1!=0,
-   // rs2==0), computed once and reused at both of its call sites -- the
-   // mem_rdata_q-populating pass and the instr_jalr-setting pass both check
-   // this same bit pattern of mem_rdata_latched.
-   wire is_c_jalr;
-   assign is_c_jalr = mem_rdata_latched[12] != 0 && mem_rdata_latched[11:7] != 0 && mem_rdata_latched[6:2] == 0;
 
 
 //--------------------------------------------------------------

@@ -174,6 +174,54 @@ module tb;
   end
 `endif
 
+// The same two streams, re-timed to one DW per clock with SOP/EOP flags, the
+// shape a waveform viewer's PCIe TLP decoder takes (models/tlp_dw_monitor.sv):
+//   tlp_tx  RC -> EP, what the firmware sends
+//   tlp_rx  EP -> RC, the completions coming back
+
+  tlp_dw_monitor tlp_tx (
+    .clk         (dut.user_clk),
+    .axis_tdata  (dut.s_axis_tx_tdata),
+    .axis_tkeep  (dut.s_axis_tx_tkeep),
+    .axis_tlast  (dut.s_axis_tx_tlast),
+    .axis_tvalid (dut.s_axis_tx_tvalid),
+    .axis_tready (dut.s_axis_tx_tready),
+    .tlp_data    (),
+    .tlp_sop     (),
+    .tlp_eop     (),
+    .tlp_valid   ()
+  );
+
+  tlp_dw_monitor tlp_rx (
+    .clk         (dut.user_clk),
+    .axis_tdata  (dut.m_axis_rx_tdata),
+    .axis_tkeep  (dut.m_axis_rx_tkeep),
+    .axis_tlast  (dut.m_axis_rx_tlast),
+    .axis_tvalid (dut.m_axis_rx_tvalid),
+    .axis_tready (dut.m_axis_rx_tready),
+    .tlp_data    (),
+    .tlp_sop     (),
+    .tlp_eop     (),
+    .tlp_valid   ()
+  );
+
+//--------------------------------------------------------------
+// VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
+//     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd
+// Only the TLP monitors, the SOC level and the LTSSM state, which keeps the
+// file small enough to open in seconds.
+//--------------------------------------------------------------
+
+`ifdef DUMP_VCD
+  initial begin
+    $dumpfile("tb.vcd");
+    $dumpvars(1, tlp_tx);
+    $dumpvars(1, tlp_rx);
+    $dumpvars(1, dut.soc_inst);
+    $dumpvars(0, dut.pcie_inst.pl_ltssm_state_int);
+  end
+`endif
+
 //--------------------------------------------------------------
 // CPU activity
 //--------------------------------------------------------------
