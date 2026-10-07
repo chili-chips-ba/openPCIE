@@ -515,8 +515,8 @@ These results confirm that PCIe link initialization and RC-to-EP data transfer o
 We are grateful to **NLnet Foundation** for their sponsorship of this development activity.
 
 <p align="center">
-   <img src="https://github.com/chili-chips-ba/openeye/assets/67533663/18e7db5c-8c52-406b-a58e-8860caa327c2">
-   <img width="25%" alt="NGI-Entrust-Logo" src="https://github.com/chili-chips-ba/openeye-CamSI/assets/67533663/013684f5-d530-42ab-807d-b4afd34c1522">
+   <a href="https://nlnet.nl"><img src="https://github.com/chili-chips-ba/openeye/assets/67533663/18e7db5c-8c52-406b-a58e-8860caa327c2"></a>
+   <a href="https://ngi.eu"><img width="25%" alt="NGI-Entrust-Logo" src="https://github.com/chili-chips-ba/openeye-CamSI/assets/67533663/013684f5-d530-42ab-807d-b4afd34c1522"></a>
 </p>
 
 This project was funded through the NGI0 Core Fund, a fund established by NLnet with financial support from the European Commission's Next Generation Internet programme, under the aegis of DG Communications Networks, Content and Technology under grant agreement No 101092990.
@@ -525,13 +525,13 @@ This project was funded through the NGI0 Core Fund, a fund established by NLnet 
 The **wyvernSemi**'s wisdom and contribution made a great deal of difference -- Thank you, we are honored to have you on the project.
 
 <p align="center">
- <img width="15%" alt="wyvernSemi-Logo" src="0.doc/artwork/wyvernSemi-logo-rounded.png">
+ <a href="https://github.com/wyvernSemi"><img width="15%" alt="wyvernSemi-Logo" src="0.doc/artwork/wyvernSemi-logo-rounded.png"></a>
 </p>
 
 The **Envox**, our next-door buddy, is responsible for the birth of our backplane, which we like to call BB (not to be mistaked for their gorgeous blue beauty [BB3](https://www.envox.eu/eez-bb3))
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/EEZ-web-logo.png">
+  <a href="https://www.envox.eu"><img width="25%" src="0.doc/artwork/EEZ-web-logo.png"></a>
 </p>
 
 ### Crowd Supply Campaign
@@ -540,29 +540,29 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
  - [Elecrow](https://www.hackster.io/ElecrowOfficial/projects)
 
 <p align="center">
-  <img width="50%" src="0.doc/artwork/CrowdSupply.logo.png">
-  <img width="20%" src="0.doc/artwork/oshw-logo-filled-black.png">
+  <a href="https://www.crowdsupply.com"><img width="50%" src="0.doc/artwork/CrowdSupply.logo.png"></a>
+  <a href="https://www.oshwa.org"><img width="20%" src="0.doc/artwork/oshw-logo-filled-black.png"></a>
 </p>  
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/Hackster-logo.png">
-  <img width="25%" src="0.doc/artwork/Elecrow-logo.png">
-  <img width="25%" src="0.doc/artwork/kickstarter.logo.png">
+  <a href="https://www.hackster.io/chili-chips-ba/openpcie-backplane-76fdb0"><img width="25%" src="0.doc/artwork/Hackster-logo.png"></a>
+  <a href="https://www.elecrow.com"><img width="25%" src="0.doc/artwork/Elecrow-logo.png"></a>
+  <a href="https://www.kickstarter.com"><img width="25%" src="0.doc/artwork/kickstarter.logo.png"></a>
 </p> 
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/symbioticeda.logo.png">
-  <img width="80%" src="0.doc/artwork/openXC7.logo.png">
+  <a href="https://www.symbioticeda.com"><img width="25%" src="0.doc/artwork/symbioticeda.logo.png"></a>
+  <a href="https://github.com/openXC7"><img width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
 </p>   
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/kicad_logo.png">
-  <img width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png">
+  <a href="https://www.kicad.org"><img width="25%" src="0.doc/artwork/kicad_logo.png"></a>
+  <a href="https://www.openems.de"><img width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png"></a>
 </p>
 
 <p align="center">
-  <img width="25%" src="0.doc/artwork/Verilator.logo.png">
-  <img width="25%" src="0.doc/artwork/WaveCrux.logo.png">
+  <a href="https://verilator.org"><img width="25%" src="0.doc/artwork/Verilator.logo.png"></a>
+  <a href="https://wavecrux.app"><img width="25%" src="0.doc/artwork/WaveCrux.logo.png"></a>
 </p>
 
 
