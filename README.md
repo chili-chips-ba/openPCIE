@@ -535,7 +535,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 </p>
 
 ### Crowd Supply Campaign
- - [Info Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control)
+ - [Info Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control), [Intro Video](https://www.canva.com/design/DAHXSTcjxEc/odZj_VbgU20EEeZ1zuJlJA/watch?utm_content=DAHXSTcjxEc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h8306e0024f)
  - [Hackster](https://www.hackster.io/chili-chips-ba/openpcie-backplane-76fdb0)
  - [Elecrow](https://www.hackster.io/ElecrowOfficial/projects)
 
