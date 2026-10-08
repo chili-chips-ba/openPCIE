@@ -11,6 +11,7 @@
   * [Building and running](#building-and-running)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
   * [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)
+  * [How long a TLP spends in the hard macro](#how-long-a-tlp-spends-in-the-hard-macro)
 * [The three CPU options](#the-three-cpu-options)
   * [What they cost](#what-they-cost)
 * [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
@@ -337,7 +338,7 @@ make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 15 MB, not 
 Then, once per machine, in WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder
 Plugins**, accept the safety notice, **Add directory...**
 `5.sim/tools/wavecrux-pcie-tlp` and **Reload plugins**. After that, open
-[`tb.wavecrux`](tb.wavecrux) (File -> Open, or `wavecrux_pro tb.wavecrux`): it
+[`tb.TLP.wavecrux`](tb.TLP.wavecrux) (File -> Open, or `wavecrux_pro tb.TLP.wavecrux`): it
 loads `tb.vcd` from the same directory with both decoders bound. The plugin --
 source, Windows binary, parameters -- is described in
 [tools/wavecrux-pcie-tlp](tools/wavecrux-pcie-tlp/README.md).
@@ -405,7 +406,13 @@ These are the inputs of Ferrite's
 (Apache-2.0). Get the plugin from their
 [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.1.0)
 (Windows: `wcx-pcie-0.1.0-windows-x64.zip`), unzip it to a folder of its own and add
-that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then add
+that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then open
+[`tb.PIPE-DLL.wavecrux`](tb.PIPE-DLL.wavecrux) (File -> Open, or
+`wavecrux_pro tb.PIPE-DLL.wavecrux`): it loads `tb.vcd` from the same directory,
+with the PIPE rows and all four decoders below bound, at the view of the third
+picture. It is separate from `tb.TLP.wavecrux`, which needs only our own TLP plugin.
+
+To set it up by hand instead, add
 **PCIe PIPE (16-bit)** and **PCIe Data Link Layer (16-bit)** with **Ctrl+Shift+D**,
 once per direction: prefix `Rx`, then `Tx`, each time **Apply confirmed only**.
 Take the 16-bit variants: each decoder comes in 8, 16, 32 and 64 bits, and only
@@ -491,6 +498,42 @@ decisions. For that, see an open-source Data Link Layer in RTL, where every
 internal signal can be dumped: the sibling project's
 [openCologne-PCIE `2.rtl/4.dll`](https://github.com/chili-chips-ba/openCologne-PCIE/tree/main/2.rtl/4.dll).
 Its wave snapshots are coming soon.
+
+### How long a TLP spends in the hard macro
+
+With all three layers in one view, you can follow a single request through the
+Root Complex and see how long the PCIE_2_1 hard macro takes to pass it on.
+Open [`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (it needs both
+plugins). It shows the TLP view of the SOC's AXI-Stream at the top, the PIPE
+below it, and the TLP, PIPE and Data Link Layer decoders at the bottom.
+
+Here is the firmware's first Configuration Read and its Completion. The markers
+on the time axis show where the TLP crosses from one layer to the next:
+
+<p align="center">
+<img src="images/wavecrux-hm-latency.png" width=1000>
+</p>
+
+| Marker | What happens |
+|---|---|
+| **a** | The CPU's request leaves the SOC on the AXI-Stream |
+| **b** | About 0.4 us later, it appears on the PIPE, on its way to the Endpoint |
+| **c** | The Endpoint's Completion has fully arrived on the PIPE |
+| **d** | About 0.4 us later, the Completion reaches the SOC |
+
+The Endpoint model answers almost at once, so nearly all of the 1 us round trip
+is spent inside the hard macro, about 0.4 us each way. On the way back, the
+clock starts only once the whole TLP has arrived (marker **c**): the hard macro
+holds each TLP until its LCRC has checked out, and only then hands it to the
+SOC.
+
+The same holds for every TLP in the run, give or take one clock. Two things
+to keep in mind when comparing with real hardware:
+
+* The simulation link runs at Gen1 (see `SIM_GEN1_ONLY` above). At Gen2 the
+  link itself is twice as fast.
+* The PIPE PHY model is ideal. On the board, the GTP transceiver adds its own
+  latency on both sides of the link.
 
 
 ## The three CPU options

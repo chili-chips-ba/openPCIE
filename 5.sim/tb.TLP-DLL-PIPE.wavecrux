@@ -1,0 +1,236 @@
+{
+  "version": 4,
+  "sourceFilePath": "tb.vcd",
+  "signals": [
+    {
+      "kind": "signal",
+      "id": "6eda0999-1",
+      "ref": "16",
+      "path": "tb.tlp_view.tx_tlp_valid",
+      "name": "tx_tlp_valid",
+      "color": 4283417591,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "6eda0999-2",
+      "ref": "13",
+      "path": "tb.tlp_view.tx_tlp_data",
+      "name": "tx_tlp_data",
+      "color": 4283417591,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "6eda0999-3",
+      "ref": "25",
+      "path": "tb.tlp_view.rx_tlp_valid",
+      "name": "rx_tlp_valid",
+      "color": 4294948685,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "6eda0999-4",
+      "ref": "22",
+      "path": "tb.tlp_view.rx_tlp_data",
+      "name": "rx_tlp_data",
+      "color": 4294948685,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "4d164393-6",
+      "ref": "80",
+      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.RxData",
+      "name": "RxData",
+      "color": 4283417591,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "4d164393-7",
+      "ref": "81",
+      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.RxDataK",
+      "name": "RxDataK",
+      "color": 4283417591,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "4d164393-8",
+      "ref": "78",
+      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.TxData",
+      "name": "TxData",
+      "color": 4294948685,
+      "format": "hexadecimal",
+      "height": 30.0
+    },
+    {
+      "kind": "signal",
+      "id": "4d164393-9",
+      "ref": "79",
+      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.TxDataK",
+      "name": "TxDataK",
+      "color": 4294948685,
+      "format": "hexadecimal",
+      "height": 30.0
+    }
+  ],
+  "cursor": {
+    "primary": 0,
+    "secondary": null
+  },
+  "markers": {
+    "a": 224937000,
+    "b": 225329000,
+    "c": 225513000,
+    "d": 225945000
+  },
+  "view": {
+    "ticksPerPixel": 1295.1792646782858,
+    "panOffsetTicks": 224900000.0,
+    "scrollOffset": 0.0
+  },
+  "panels": {
+    "signalTree": true,
+    "valueColumn": true,
+    "transactionView": false,
+    "stageView": false,
+    "statisticsStrip": true,
+    "cocotbLogPanel": false,
+    "rtlSource": false,
+    "sizes": {
+      "left": 301.59999999999997,
+      "right": 150.0
+    }
+  },
+  "signalTreeState": {
+    "expanded": [
+      "tb",
+      "tb.tlp_tx",
+      "tb.tlp_rx"
+    ],
+    "selected": [
+      "tb.dut.pcie_inst.pl_ltssm_state_int"
+    ],
+    "scroll": 448.20000000000005
+  },
+  "translateFilters": {},
+  "stage": {
+    "panels": []
+  },
+  "activeTheme": "wavecrux-dark",
+  "decoders": [
+    {
+      "decoderId": "openpcie.pcie_tlp_down",
+      "instanceNumber": 1,
+      "config": {
+        "bindings": {
+          "clk": "12",
+          "tlp_data": "13",
+          "tlp_sop": "14",
+          "tlp_eop": "15",
+          "tlp_valid": "16",
+          "peer_data": "17",
+          "peer_sop": "18",
+          "peer_eop": "19",
+          "peer_valid": "20"
+        },
+        "parameters": {
+          "span": "until_next"
+        }
+      }
+    },
+    {
+      "decoderId": "openpcie.pcie_tlp_up",
+      "instanceNumber": 1,
+      "config": {
+        "bindings": {
+          "clk": "21",
+          "tlp_data": "22",
+          "tlp_sop": "23",
+          "tlp_eop": "24",
+          "tlp_valid": "25",
+          "peer_data": "26",
+          "peer_sop": "27",
+          "peer_eop": "28",
+          "peer_valid": "29"
+        },
+        "parameters": {
+          "span": "until_next"
+        }
+      }
+    },
+    {
+      "decoderId": "ferrite.pcie_pipe_w16",
+      "instanceNumber": 1,
+      "config": {
+        "bindings": {
+          "pclk": "76",
+          "data": "80",
+          "datak": "81"
+        },
+        "parameters": {
+          "scrambling": "auto",
+          "sample_point": "before_edge",
+          "coalesce": true,
+          "show_idle": false
+        }
+      }
+    },
+    {
+      "decoderId": "ferrite.pcie_pipe_w16",
+      "instanceNumber": 2,
+      "config": {
+        "bindings": {
+          "pclk": "76",
+          "data": "78",
+          "datak": "79"
+        },
+        "parameters": {
+          "scrambling": "auto",
+          "sample_point": "before_edge",
+          "coalesce": true,
+          "show_idle": false
+        }
+      }
+    },
+    {
+      "decoderId": "ferrite.pcie_dll_w16",
+      "instanceNumber": 1,
+      "config": {
+        "bindings": {
+          "pclk": "76",
+          "data": "80",
+          "datak": "81"
+        },
+        "parameters": {
+          "scrambling": "auto",
+          "sample_point": "before_edge"
+        }
+      }
+    },
+    {
+      "decoderId": "ferrite.pcie_dll_w16",
+      "instanceNumber": 2,
+      "config": {
+        "bindings": {
+          "pclk": "76",
+          "data": "78",
+          "datak": "79"
+        },
+        "parameters": {
+          "scrambling": "auto",
+          "sample_point": "before_edge"
+        }
+      }
+    }
+  ]
+}
