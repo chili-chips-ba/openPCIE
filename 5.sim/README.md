@@ -332,7 +332,7 @@ together with a decoder plugin and a ready-made session:
 make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 9 MB, not tracked)
 ```
 
-Then, once per machine, in WaveCrux: **Settings -> Extensions -> Decoder
+Then, once per machine, in WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder
 Plugins**, accept the safety notice, **Add directory...**
 `5.sim/tools/wavecrux-pcie-tlp` and **Reload plugins**. After that, open
 [`tb.wavecrux`](tb.wavecrux) (File -> Open, or `wavecrux_pro tb.wavecrux`): it

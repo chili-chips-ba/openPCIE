@@ -10,7 +10,9 @@ Layer Packet named, and every completion paired with the request it answers.
 
 WaveCrux has a PCIe TLP decoder of its own in its paid tier. This one uses the
 decoder-plugin interface of WaveCrux's free Open Core instead, so it works on
-every edition. How it fits into the simulation -- the VCD dump, the ready-made
+every edition. It needs **WaveCrux 1.0.1 or later**: older releases misplace
+plugin results in time and leave the rows empty
+([wavecrux#22](https://github.com/Ferrite-Engineering/wavecrux/issues/22)). How it fits into the simulation -- the VCD dump, the ready-made
 session, more pictures -- is in
 [5.sim/README.md](../../README.md#viewing-the-tlps-in-wavecrux).
 
@@ -63,7 +65,6 @@ Add one with **Ctrl+Shift+D**. Auto-bind finds both signal sets and offers
 |---|---|---|
 | Labels | Compact | *Compact* drops what a link with one endpoint does not need -- bus/device/function `01:00.0`, the tag, a Successful status. *Full* shows them all. Either way, every field is in the transaction's details. |
 | Box width | Packet duration | *Stretch to next TLP* widens each box up to the next packet, so labels stay readable when zoomed out |
-| Waveform tick (fs) | 1000 | see below |
 
 **Decoded:** Memory (32/64-bit address), I/O, Configuration Type 0/1 with the
 Type 0 header registers named, Completions with status, and Messages.
@@ -71,16 +72,6 @@ Configuration payloads are shown as the register value the spec prints
 (little-endian); memory payloads as the DW itself. Framing errors (data without
 SOP, SOP before EOP, x/z), length mismatches and UR / CA completions are
 flagged as errors.
-
-## Waveform tick (fs)
-
-The plugin interface delivers samples in femtoseconds, but WaveCrux 0.2.x
-draws the transactions a plugin returns in waveform ticks without converting
-back. A decoder that follows the header would land 1000x too late on a 1 ps
-VCD -- past the end of the trace, so the row just stays empty. This decoder
-therefore divides its output times by *Waveform tick (fs)*: `1000` for a 1 ps
-timescale (xsim), `1000000` for 1 ns, and `0` for a WaveCrux release that
-converts by itself.
 
 ## Build
 

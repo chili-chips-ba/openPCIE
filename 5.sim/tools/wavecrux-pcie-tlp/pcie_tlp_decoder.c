@@ -29,10 +29,9 @@
 //   there, by tag, so that each Completion on the main stream can say what it
 //   answers ("CplD BAR0 = 0xFFFFF008" rather than a bare payload).
 //
-//   Time units. Samples arrive in femtoseconds, as wavecrux_decoder.h says,
-//   but WaveCrux 0.2.x places the returned transactions in waveform ticks
-//   without converting back. The tick_fs parameter (default 1000, a 1 ps
-//   timescale) scales the output to match; 0 leaves it in femtoseconds.
+//   Time units. Samples arrive and transactions leave in femtoseconds, as
+//   wavecrux_decoder.h says. That needs WaveCrux 1.0.1 or later: 0.2.x drew
+//   plugin results in waveform ticks, so the rows stay empty there.
 //
 //   Payload byte order. On the wire, byte 0 of a payload DW is bits [31:24].
 //   Configuration registers are little-endian, so a configuration payload is
@@ -90,14 +89,7 @@ static const char kManifestJson[] =
        "\"display_name\":\"Box width\","
        "\"description\":\"Packet duration draws each TLP as long as it really is on "
        "the stream. Stretch to next TLP widens each box up to the next TLP, so the "
-       "labels stay readable when zoomed out over a whole enumeration.\"},"
-      "{\"name\":\"tick_fs\",\"kind\":\"int\",\"default\":1000,"
-       "\"display_name\":\"Waveform tick (fs)\","
-       "\"description\":\"Length of one waveform time unit in femtoseconds: 1000 for "
-       "a 1 ps timescale (xsim), 1000000 for 1 ns. WaveCrux 0.2.x hands samples to "
-       "plugins in femtoseconds but draws their results in waveform ticks; the "
-       "decoder divides its output times by this value to match. 0 = no "
-       "conversion, for a WaveCrux that converts by itself.\"}"
+       "labels stay readable when zoomed out over a whole enumeration.\"}"
     "],"
     "\"description\":\"PCI Express Transaction Layer Packets, one 32-bit DW "
     "per clock with SOP/EOP framing (openPCIE). Memory, I/O, Configuration, "
@@ -162,7 +154,6 @@ typedef struct {
 
     int       stretch;    // span = until_next
     int       full_labels; // labels = full
-    uint64_t  tick_fs;    // output time divisor (host workaround), 0 = none
     Pending   held;       // last TLP, waiting for the next one to end it
     int       has_held;
 
@@ -597,12 +588,6 @@ static WcDecoderHandle tlp_create(const char* config_json) {
         while (*++lb == ' ') {}
         st->full_labels = strncmp(lb, "\"full\"", 6) == 0;
     }
-    st->tick_fs = 1000;
-    const char* tk = config_json ? strstr(config_json, "\"tick_fs\"") : NULL;
-    if (tk) {
-        tk = strchr(tk, ':');
-        if (tk) st->tick_fs = strtoull(tk + 1, NULL, 10);
-    }
     st->last_clk = -1;
     return st;
 }
@@ -614,10 +599,8 @@ static int32_t drain(State* st, WcTransaction* out, size_t* inout_count) {
         Pending* p = &st->pending[n];
         memcpy(st->out_label[n],  p->label,  LABEL_MAX);
         memcpy(st->out_fields[n], p->fields, FIELDS_MAX);
-        uint64_t div = st->tick_fs ? st->tick_fs : 1;
-        out[n].start_fs    = p->start_fs / div;
-        out[n].end_fs      = p->end_fs / div > p->start_fs / div
-                           ? p->end_fs / div : p->start_fs / div + 1;
+        out[n].start_fs    = p->start_fs;
+        out[n].end_fs      = p->end_fs > p->start_fs ? p->end_fs : p->start_fs + 1;
         out[n].label       = st->out_label[n];
         out[n].fields_json = st->out_fields[n];
         out[n].is_error    = (uint32_t)p->is_error;
