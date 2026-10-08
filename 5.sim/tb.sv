@@ -212,8 +212,10 @@ module tb;
 //--------------------------------------------------------------
 // VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
 //     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd
-// Only the TLP monitors, the decoder view, the SOC level and the LTSSM
-// state, which keeps the file small enough to open in seconds.
+// Only the TLP monitors, the decoder view, the SOC level, the LTSSM
+// state and the 16-bit PIPE at the pcieVHost endpoint (pclk, TxData/K,
+// RxData/K, plus rx_active for rxvalid) for Ferrite's PCIe PIPE and
+// Data Link Layer decoders. That keeps the file small enough to open in seconds.
 //--------------------------------------------------------------
 
 `ifdef DUMP_VCD
@@ -224,6 +226,15 @@ module tb;
     $dumpvars(1, tlp_view);
     $dumpvars(1, dut.soc_inst);
     $dumpvars(0, dut.pcie_inst.pl_ltssm_state_int);
+    // PIPE pins only: the model's level-1 scope also has its 500 MHz symbol
+    // clock and shift registers, which would make the file four times larger
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.pclk);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.nreset);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.TxData);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.TxDataK);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.RxData);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.RxDataK);
+    $dumpvars(0, dut.pcie_inst.serdes_front_i.rx_active);
   end
 `endif
 
@@ -432,4 +443,6 @@ Version History:
                 pcievhost endpoint moved behind the PIPE PHY model
  2026/10/07:    DUT is RC_opensource from 2.rtl/0.common.opensource, the RTL
                 shared by RC-direct and RC-switched; 0xBAD00001 decoded
+ 2026/10/08:    DUMP_VCD also dumps the 16-bit PIPE at the pcieVHost endpoint,
+                for Ferrite's PCIe PIPE / Data Link Layer WaveCrux decoders
 */

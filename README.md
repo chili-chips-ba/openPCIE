@@ -334,6 +334,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 #### References
 - [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
 - [WaveCrux](https://wavecrux.app) waveform viewer, [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
+- [wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders): Ferrite's open-source PCIe PIPE and Data Link Layer decoders for WaveCrux
 
 --------------------
 

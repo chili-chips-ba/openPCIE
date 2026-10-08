@@ -10,6 +10,7 @@
   * [What the simulation does](#what-the-simulation-does)
   * [Building and running](#building-and-running)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
+  * [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)
 * [The three CPU options](#the-three-cpu-options)
   * [What they cost](#what-they-cost)
 * [Auto-selection of soc_cpu Component](#auto-selection-of-soc_cpu-component)
@@ -330,7 +331,7 @@ answers -- the run can also write a VCD for [WaveCrux](https://wavecrux.app),
 together with a decoder plugin and a ready-made session:
 
 ```
-make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 9 MB, not tracked)
+make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 15 MB, not tracked)
 ```
 
 Then, once per machine, in WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder
@@ -385,6 +386,111 @@ The session stores the decoder bindings as positions in the VCD, which are the
 same for every run of this test bench. Should a different simulator version
 order the dump differently, the decoder rows come up empty: remove them and add
 them again with **Ctrl+Shift+D** -- auto-bind fills in all nine inputs.
+
+### Viewing the PIPE in WaveCrux
+
+The same `tb.vcd` also carries the 16-bit PIPE between the Root Complex's
+PCIE_2_1 hard macro and the pcieVHost endpoint, one level below the TLPs:
+the symbols as they go on the wire, before 8b/10b. All signals are under
+`tb.dut.pcie_inst.serdes_front_i.u_pcie_ep`:
+
+| Signal | Direction |
+|---|---|
+| `pclk` | PIPE clock, one 16-bit word (two symbols) per rising edge |
+| `RxData` / `RxDataK` | Root Complex -> Endpoint |
+| `TxData` / `TxDataK` | Endpoint -> Root Complex |
+
+These are the inputs of Ferrite's
+[PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders)
+(Apache-2.0). Get the plugin from their
+[release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.1.0)
+(Windows: `wcx-pcie-0.1.0-windows-x64.zip`), unzip it to a folder of its own and add
+that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then add
+**PCIe PIPE (16-bit)** and **PCIe Data Link Layer (16-bit)** with **Ctrl+Shift+D**,
+once per direction: prefix `Rx`, then `Tx`, each time **Apply confirmed only**.
+Take the 16-bit variants: each decoder comes in 8, 16, 32 and 64 bits, and only
+the one matching the bus binds. Leave `scrambling` at `auto`: the simulation
+link runs unscrambled, and the decoder locks to that by itself.
+`serdes_front_i.rx_active` can be bound to `rxvalid` by hand on the `Tx`
+instances (it gates what the Root Complex receives).
+
+In the pictures, the four signal rows under the LTSSM state are the PIPE:
+`RxData`/`RxDataK` in blue (Root Complex -> Endpoint) and `TxData`/`TxDataK` in
+orange (Endpoint -> Root Complex). Below them are the four decoder rows, in
+this order: PIPE `Rx`, PIPE `Tx`, Data Link Layer `Rx`, Data Link Layer `Tx`.
+
+**Link training.** Both sides have been sending TS2s with PAD for link and lane
+number (Polling). Now in Configuration, the Root Complex proposes link 0 in
+TS1s (`link=0 lane=PAD`), the Endpoint echoes it, then lane 0 is
+proposed and echoed (`link=0 lane=0`). TS2s with both numbers close
+Configuration. Each side also advertises how many FTS ordered sets it needs to
+leave L0s: 255 for the Root Complex, 4 for the Endpoint. The Data Link Layer rows
+stay empty: no DLLP is sent before the link is up. The Root Complex's LTSSM
+reaches L0 at 74 us, just after this view:
+
+<p align="center">
+<img src="images/wavecrux-pipe-training.png" width=1000>
+</p>
+
+**Flow-control initialisation.** As soon as the link is up, each side advertises its
+receive buffer credits, in header (`H`) and data (`D`) units, for Posted (`P`),
+Non-Posted (`NP`) and Completion (`Cpl`) traffic: first in InitFC1 DLLPs, then
+in InitFC2 to confirm. No TLP can be sent until this has finished. This 100 ns
+view catches the two sides one step apart:
+- The Endpoint is already sending InitFC2 (bottom row): 32 posted headers with
+  1008 data credits, and 32 non-posted headers.
+- The Root Complex is still sending InitFC1 (row above it): 32 posted headers
+  with 437 data credits.
+
+`H=0 D=0` means infinite: both ends advertise infinite Completion credits. The
+spec requires that of an Endpoint, and of a Root Complex without peer-to-peer
+traffic between its ports. Each DLLP is framed SDP (`5c`) ... END (`fd`)
+on the PIPE, both K symbols:
+
+<p align="center">
+<img src="images/wavecrux-pipe-fc-init.png" width=1000>
+</p>
+
+**The first TLP on the wire.** At 225 us the firmware's first Configuration
+Read leaves the Root Complex as `TLP seq=0 CfgRd0`, framed STP ... END. The
+Endpoint answers with its Completion, `TLP seq=0 CplD`: seq 0 again, because
+each direction numbers its own TLPs. It then sends `Ack seq=0` for the
+Configuration Read, so the Root Complex can drop it from its replay buffer. It
+also sends `UpdateFC-NP` to return the non-posted credit that the read used.
+The Root Complex acknowledges the Completion in turn, with its own `Ack seq=0`
+at 225.95 us, just outside this view:
+
+<p align="center">
+<img src="images/wavecrux-pipe-tlp-ack.png" width=1000>
+</p>
+
+**The Data Link Layer: its traffic is shown, its internals are not.** On this
+Root Complex, the Data Link Layer lives inside the 7-series PCIE_2_1 hard macro.
+Nothing inside it reaches the VCD:
+
+* the replay buffer, which holds each TLP until it is acknowledged
+* the sequence counters (next to send, next expected)
+* the Ack/Nak latency and replay timers
+* the flow-control credit counters
+
+What the Data Link Layer *puts on the wire* does reach the VCD, because it
+crosses the PIPE. That is what Ferrite's Data Link Layer decoder
+(`ferrite.pcie_dll_w16`) reads. From the PIPE symbols alone it names:
+
+* every DLLP: `Ack seq=0`, `Nak`, `InitFC1-P` / `InitFC2-NP` / `UpdateFC-Cpl`
+  with their header and data credits, and the PM DLLPs, each with its CRC-16
+  checked
+* every TLP with its sequence number and LCRC check, the TLP type (`CfgRd0`,
+  `CplD`, `MWr32`, ...), Length, TC, TD and EP
+* replays, sequence-number errors and nullified TLPs
+
+So the pictures above show the Data Link Layer protocol between the two ends:
+which TLP got which sequence number, when it was acknowledged, and how many
+credits each side granted. They do not show how the hard macro arrived at those
+decisions. For that, see an open-source Data Link Layer in RTL, where every
+internal signal can be dumped: the sibling project's
+[openCologne-PCIE `2.rtl/4.dll`](https://github.com/chili-chips-ba/openCologne-PCIE/tree/main/2.rtl/4.dll).
+Its wave snapshots are coming soon.
 
 
 ## The three CPU options
@@ -952,6 +1058,7 @@ The second consideration is the use of delay functions. This can be in the form 
 - [SystemRDL](https://www.accellera.org/downloads/standards/systemrdl)
 - [PeakRDL and SystemRDLcompiler](https://github.com/SystemRDL)
 - [WaveCrux waveform viewer](https://wavecrux.app) and its [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
+- [wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders): Ferrite's open-source PCIe PIPE and Data Link Layer decoders for WaveCrux
 
 
 -------
