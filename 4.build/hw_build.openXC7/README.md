@@ -5,10 +5,11 @@ no Vivado anywhere in the chain. `make` builds
 [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource);
 `make VARIANT=switched` builds
 [`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource) instead.
-Everything below applies to both - the two differ by the Type 0 / Type 1 routing
-in `riscv_pcie_soc.sv`, by the firmware they carry, and by the GT pins in their
-constraint file (`openxc7.xdc` vs `openxc7.switched.xdc`, see
-[GT channel](#gt-channel)), and not at all in the toolchain.
+Everything below applies to both. They are built from the same RTL,
+[`2.rtl/0.common.opensource`](../../2.rtl/0.common.opensource) (top
+`RC_opensource`), and differ only by the firmware they carry and by the GT pins
+in their constraint file (`openxc7.xdc` vs `openxc7.switched.xdc`, see
+[GT channel](#gt-channel)) - not at all in the toolchain.
 
 | Stage | Tool | Input -> Output |
 |---|---|---|
@@ -327,8 +328,9 @@ Build time with a cached chipdb is about 2 minutes.
 
 nextpnr's XDC parser accepts only `[get_ports]` and `[get_nets]` targets, so the
 full Vivado XDC cannot be used. `openxc7.xdc` (RC-direct) and
-`openxc7.switched.xdc` (RC-switched) are reduced versions; the Vivado files in
-`2.rtl/*/xdc/` remain the source of truth for the AMD flow.
+`openxc7.switched.xdc` (RC-switched) are reduced versions; the Vivado files -
+`2.rtl/0.common.opensource/xdc/` plus the one-line GT lane XDC in each variant's
+`xdc/` - remain the source of truth for the AMD flow.
 
 ### GT channel
 

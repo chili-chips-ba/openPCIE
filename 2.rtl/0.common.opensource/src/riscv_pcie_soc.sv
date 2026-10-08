@@ -80,6 +80,35 @@ module riscv_pcie_soc (
     assign is_ram    = (mem_addr[31:24] == 8'h00);
     assign is_bridge = (mem_addr[31:24] == 8'h30);
 
+    // -------------------------------------------------------------------------
+    // The CPU -- two interchangeable implementations
+    //
+    //   default             : the picorv32 RTL core, executing firmware.hex out
+    //                         of the instruction RAM below. This is what goes
+    //                         into the bitstream.
+    //   `define SOC_CPU_VPROC : the VProc virtual processor, so that a native
+    //                         C/C++ program or the rv32 ISS drives the very
+    //                         same bus. Co-simulation only -- see
+    //                         5.sim/models/soc_cpu.VPROC.picorv32.sv and
+    //                         "make CPU=vproc" / "make CPU=iss" in 5.sim.
+    //
+    // Nothing else in the SOC changes: the address decode, the CSR and the PCIe
+    // stack see an identical memory interface either way.
+    // -------------------------------------------------------------------------
+`ifdef SOC_CPU_VPROC
+    soc_cpu_vproc #(
+        .NODE      (4'd0)
+    ) cpu (
+        .clk       (clk),
+        .resetn    (resetn),
+        .mem_valid (mem_valid),
+        .mem_ready (mem_ready),
+        .mem_addr  (mem_addr),
+        .mem_wdata (mem_wdata),
+        .mem_wstrb (mem_wstrb),
+        .mem_rdata (mem_rdata)
+    );
+`else
     picorv32 #(
         .PROGADDR_RESET(32'h0000_0000),
         .STACKADDR(32'h0000_2000),
@@ -95,6 +124,7 @@ module riscv_pcie_soc (
         .mem_wstrb (mem_wstrb),
         .mem_rdata (mem_rdata)
     );
+`endif
 
     logic [31:0] ram [0:2047];
     initial begin

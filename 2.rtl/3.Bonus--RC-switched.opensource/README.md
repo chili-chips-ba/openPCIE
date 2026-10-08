@@ -33,7 +33,9 @@ applications upon...
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
-Link width and speed come from a single place, `src/pcie/link_pkg.sv`:
+Link width and speed come from a single place,
+[`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv) -- shared with
+[RC-direct](../2.RC-direct.opensource), so a change applies to both:
 
 ```systemverilog
 localparam int PCIE_LANES = 1;   // 1, 2, 4 or 8
@@ -49,17 +51,15 @@ ASM1184e on the RevA backplane is fed by an undersized LDO - see slide 17 of the
 
 ## What differs from RC-direct
 
-The PCIe stack itself is functionally untouched - `src/pcie/` is the same as in
-[RC-direct.opensource](../2.RC-direct.opensource), except that RC-direct's
-`link_pkg.sv` and `silicon_core.sv` carry three co-simulation-only `ifdef`s
-(`SIM_GEN1_ONLY`, `SIM_PIPE_CODING`, `SIM_FAST_TRAIN`) that no synthesis flow
-defines. A switch changes nothing at
+In the RTL: nothing. RC-direct and RC-switched are built from the very same
+sources in [`0.common.opensource`](../0.common.opensource) - one top
+(`RC_opensource`), one SOC, one PCIe stack. A switch changes nothing at
 the physical or link layer; the root port still trains a plain Gen2 x1 link, and
 what it talks to on the far end happens to be a switch upstream port instead of
 an endpoint. Everything that changes is one level up, in how Configuration TLPs
-are addressed.
+are addressed - which the shared SOC handles for both, and the firmware drives.
 
-### 1. RTL: Type 0 / Type 1 selection (`src/riscv_pcie_soc.sv`)
+### 1. RTL: Type 0 / Type 1 selection (`riscv_pcie_soc.sv`)
 
 In a direct connection the endpoint always sits on bus 1, so every Configuration
 request is a **Type 0** one. Behind a switch the requests have to cross virtual
@@ -93,19 +93,23 @@ assign tx_header0_routed = pkt_is_cfg
 
 `Fmt`/`Type` sits in `tx_header0[31:24]`; `[28:25] == 4'b0010` marks a
 Configuration request and bit `[24]` is the Type 0 / Type 1 selector. Memory and
-Completion TLPs pass through untouched. That, plus the top module name, is the
-whole functional RTL delta between the two projects. The other differences:
+Completion TLPs pass through untouched.
 
-* `riscv_pcie_soc.sv` here has no `` `ifdef SOC_CPU_VPROC `` - the co-simulation
-  in [`5.sim`](../../5.sim) is built around RC-direct only.
-* The XDC locks the transceiver to `GTPE2_CHANNEL_X0Y6` (RC-direct: `X0Y5`) - see
-  the lane table in [`2.rtl/README.md`](../README.md#common-physical-constraints-xdc).
+This logic is in the shared SOC, so RC-direct carries it too. There it never
+acts: the direct firmware addresses its endpoint on bus 1, which is a Type 0
+request either way. What does differ between the two projects:
+
+* The GT lane. This folder's XDC holds one line, locking the transceiver to
+  `GTPE2_CHANNEL_X0Y6` (RC-direct: `X0Y5`); all other constraints are shared -
+  see the lane table in [`2.rtl/README.md`](../README.md#common-physical-constraints-xdc).
+* The firmware, below.
 
 ### 2. Firmware: the bring-up sequence
 
 The AMD design drives the sequence from a 46-entry ROM
 (`cgator_cfg_rom.data`). Here it is plain C, in
-[`3.sw/RC-switched/main.c`](../../3.sw/RC-switched/main.c), and it walks the same
+[`3.sw/RC-switched/main.c`](../../3.sw/RC-switched/main.c) on top of the PCIe
+request layer both firmwares share ([`3.sw/common`](../../3.sw/common)), and it walks the same
 steps in the same order, producing the same bus map:
 
 ```
@@ -168,18 +172,24 @@ answered with CRS are re-issued up to 100 times.
 ## Structure
 
 ```
-src/
-  RC_switched_opensource.sv  top level: refclk buffer, PCIe bridge, SOC, LEDs
-  riscv_pcie_soc.sv          picorv32 SOC + the Type 0/Type 1 routing above
-  soc_csr.sv                 wrapper for the PeakRDL-generated CSR block
-  picorv32.CHILI.sv          the RISC-V core (Chili.CHIPS-improved picorv32)
-  pcie/                      the opensource PCIe stack (as RC-direct, minus its sim-only ifdefs)
-xdc/
-  RC-switched.sv.x1g2.AcornCLE-215P.xdc   full constraints (source of truth)
-RC-switched.opensource.tcl   regenerates the Vivado project from scratch
+2.rtl/0.common.opensource/        shared by both root complexes
+  src/
+    RC_opensource.sv              top level: refclk buffer, PCIe bridge, SOC, LEDs
+    riscv_pcie_soc.sv             picorv32 SOC + the Type 0/Type 1 routing above
+    soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
+    picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
+    pcie/                         the opensource PCIe stack
+  xdc/
+    RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+  RC.opensource.tcl               the Vivado project script behind both wrappers
+
+2.rtl/3.Bonus--RC-switched.opensource/   this folder
+  xdc/
+    RC-switched.sv.x1g2.AcornCLE-215P.xdc  GT lane: GTPE2_CHANNEL_X0Y6
+  RC-switched.opensource.tcl      regenerates the Vivado project from scratch
 ```
 
-For a file-by-file walk through the PCIe stack itself, see the
+For a file-by-file walk through the PCIe stack, see the
 [RC-direct README](../2.RC-direct.opensource/README.md), which applies here
 unchanged.
 
@@ -190,7 +200,7 @@ is **generated**, not hand-written. The source of truth is a SystemRDL file,
 [`4.build/csr_build/csr.rdl`](../../4.build/csr_build/csr.rdl), out of which
 `peakrdl` produces the register block RTL (`csr_pkg.sv`, `csr.sv`) and the
 software headers (`csr.h`, `csr_hw.h`, `csr_cosim.h`) in
-`4.build/csr_build/generated-files/`. `src/soc_csr.sv` is the only hand-written
+`4.build/csr_build/generated-files/`. `soc_csr.sv` is the only hand-written
 piece: it bridges the picorv32 native memory interface to the "passthrough" CPU
 interface of the generated block.
 

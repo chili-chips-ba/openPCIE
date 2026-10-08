@@ -37,7 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module RC_switched_opensource
+module RC_opensource
   import link_pkg::*;
 (
     input  logic                    sys_clk_p,

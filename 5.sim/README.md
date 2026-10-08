@@ -47,13 +47,14 @@ The user software to run on the virtual processor is the means to configure the 
 ## Test Bench Structure
 
 The test bench drives the **real** Root Complex RTL. `tb.sv` instantiates
-`RC_direct_opensource` out of `2.rtl/2.RC-direct.opensource` -- the same top
-level that goes into the bitstream -- and the whole design comes along with it:
+`RC_opensource` out of `2.rtl/0.common.opensource` -- the same top level that
+goes into both bitstreams, RC-direct and RC-switched -- and the whole design
+comes along with it:
 
 ```
 tb.sv
  |
- +- RC_direct_opensource                            2.rtl/.../src/
+ +- RC_opensource                                   2.rtl/0.common.opensource/src/
       |
       +- host_bridge                                real RTL
       |    +- clk_synth       MMCM                  real RTL
@@ -407,7 +408,7 @@ make run CPU=vproc
 make run CPU=iss
 ```
 
-The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/2.RC-direct.opensource/src/riscv_pcie_soc.sv)
+The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv)
 behind `` `ifdef SOC_CPU_VPROC ``, which the makefile passes to `xvlog` for the
 two VProc builds. The replacement module is
 [`models/soc_cpu.VPROC.picorv32.sv`](models/soc_cpu.VPROC.picorv32.sv): VProc

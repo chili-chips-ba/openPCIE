@@ -5,14 +5,16 @@ its two variants - `RC-direct.opensource` or `RC-switched.opensource`.
 
 | Stage | Tool | Input -> Output |
 |---|---|---|
-| 1. Compile + link | `riscv-none-elf-gcc` | `start.S` + `main.c` -> `firmware.elf` |
+| 1. Compile + link | `riscv-none-elf-gcc` | `start.S` + `pcie.c` + `main.c` -> `firmware.elf` |
 | 2. Raw image | `riscv-none-elf-objcopy` | `.elf` -> `firmware.bin` |
 | 3. Hex for `$readmemh` | `python` | `.bin` -> `firmware.hex` |
 
-Sources live in `3.sw/`, one subdirectory per variant - this folder only builds
-them. All three outputs land here, next to the Makefile.
+Sources live in `3.sw/` - this folder only builds them. `3.sw/common/` holds
+what both variants share (`start.S`, `sections.lds`, the PCIe request layer
+`pcie.c`/`.h`); the variant's own folder adds its `main.c`. All three outputs
+land here, next to the Makefile.
 
-| `VARIANT` | Sources | Topology |
+| `VARIANT` | `main.c` from | Topology |
 |---|---|---|
 | `direct` (default) | `3.sw/RC-direct/` | one endpoint, straight RC-to-EP link |
 | `switched` | `3.sw/RC-switched/` | ASM1184e switch with up to 4 endpoints |
@@ -24,7 +26,7 @@ firmware and bitstream always match:
 | `CSR` | Register map |
 |---|---|
 | `peakrdl` (default) | `../csr_build/generated-files/csr.h`, generated from `csr.rdl` |
-| `legacy` | addresses hard-coded in `main.c` |
+| `legacy` | addresses hard-coded in `3.sw/common/pcie.h` |
 
 `make CSR=legacy` overrides it for one build. Either way the image is
 byte-identical, because both describe the same map. See
@@ -60,31 +62,31 @@ make
 | `make VARIANT=switched` | the same three files, but for RC-switched |
 | `make SIM=1` | short start-up delay, for co-simulation (see below) |
 | `make info` | print the resolved configuration |
-| `make clean` | remove the three generated files and `.build-config` |
+| `make clean` | remove the three generated files |
 
 The register map is deliberately **not** in that table -- it is set once in
 [`config.mk`](../config.mk), for the firmware and the hardware together, as
 described at the top of this file.
 
+**Every `make` rebuilds the firmware from scratch** - it takes about a second.
 Both variants write the same three output names, and `VARIANT`, `CSR` and `SIM`
-leave no trace in the sources, so on its own make would compare the same inputs
-against the same outputs, report `Nothing to be done`, and leave the **previous**
-image in place. The make file records the configuration in `.build-config` and
-treats it -- and `../config.mk` -- as prerequisites, so changing any of them
-rebuilds by itself. **No `make clean` needed to switch.**
+leave no trace in the sources, so a date-based make would compare the same
+inputs against the same outputs, report `Nothing to be done`, and leave the
+**previous** image in place. File dates cannot be trusted either: a tree on a
+network share, or copied off one, can carry timestamps from the future, which
+make a stale `firmware.hex` look up to date. Always rebuilding sidesteps both.
+**No `make clean` needed, ever.**
 
 ```sh
 make                     # direct
-make VARIANT=switched    # rebuilds, no clean
-make SIM=1               # rebuilds, no clean
+make VARIANT=switched    # switched
+make SIM=1               # direct, for co-simulation
 ```
-
-`make clean` is still the right move when you want to be certain of a from-scratch
-build, and it removes `.build-config` along with the three outputs.
 
 ## Building for co-simulation
 
-`main()` opens with `wait_cycles(100000)`, which idles while the PCIe link
+`main()` opens with `wait_cycles(STARTUP_DELAY)` - 100000 by default, set in
+`3.sw/common/pcie.h` - which idles while the PCIe link
 trains. On hardware that costs nothing. In [co-simulation](../../5.sim) it is
 about 80 ms of simulated time before the firmware does anything at all -- the
 loop is compiled without optimisation, so each iteration is a dozen bus cycles.

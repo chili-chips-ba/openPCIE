@@ -11,6 +11,14 @@ serves as the reference the opensource variant is measured against.
 
 ### Directory Structure
 
+- **`0.common.opensource`**
+  The RTL both Root Complex designs are built from - one top (`RC_opensource`),
+  the RISC-V SoC, the CSR wrapper, the opensource PCIe stack - plus the shared
+  constraints and the Vivado project script. The two RC folders below hold only
+  what really differs: the GT lane their x1 link uses (a one-line XDC) and a short
+  wrapper that runs the shared script for them. The firmware differs too; it
+  lives in [`3.sw`](../3.sw).
+
 - **`1.EP.opensource`**
   Opensource PCIe EndPoints, used as the link partner when testing our Root
   Complex. Rather than duplicating them here, this directory points to the
@@ -46,7 +54,8 @@ serves as the reference the opensource variant is measured against.
 Both Root Complex designs take their register block from the **same** SystemRDL
 specification, [`4.build/csr_build/csr.rdl`](../4.build/csr_build/csr.rdl).
 `peakrdl` turns it into the register RTL (`csr_pkg.sv`, `csr.sv`) and into the
-software headers, and each design's `src/soc_csr.sv` bridges that block to the
+software headers, and the shared
+[`soc_csr.sv`](0.common.opensource/src/soc_csr.sv) bridges that block to the
 picorv32 memory interface. Regenerate with `make -f MakefileCSR` in
 [`4.build`](../4.build); the details are in
 [`4.build/README.md`](../4.build/README.md#csr-hal-compilation).
@@ -92,7 +101,7 @@ The **XDC file** is critical for mapping the logical PCIe signals to the specifi
 
     Pin names are from AMD's package file [`xc7a200t-fbg484-package.txt`](../0.doc/xilinx/xc7a200t-fbg484-package.txt) ([source](https://www.xilinx.com/support/packagefiles/a7packages/xc7a200tfbg484pkg.txt)) (`MGTPRXP<n>_216` etc.). The checked-in designs are all x1: the four rows are the alternative physical positions for the single logical lane `[0]`.
     
-> **Note:** The AMD XDC files in [`2.amd-rtl-with-Vivado-build`](../2.amd-rtl-with-Vivado-build) include a `LOC` block for all 4 positions; the one intended for the active topology is **uncommented**, the others stay **commented**. The opensource XDC files carry only the active `LOC`. Neither has GT pin constraints.
+> **Note:** The AMD XDC files in [`2.amd-rtl-with-Vivado-build`](../2.amd-rtl-with-Vivado-build) include a `LOC` block for all 4 positions; the one intended for the active topology is **uncommented**, the others stay **commented**. The opensource designs carry only the active `LOC`, as the one line of their variant XDC; all their other constraints are shared, in [`0.common.opensource/xdc`](0.common.opensource/xdc). Neither has GT pin constraints.
     
 4.  **Visual Debug (LEDs):**
     Internal status signals—such as `user_lnk_up` or received data payloads—are mapped to the 4 onboard **User LEDs** (Pins **G3, H3, G4, H4**) to provide immediate visual feedback during testing.

@@ -4,21 +4,23 @@ This directory contains the C source code, startup assembly, and linker scripts 
 
 ## File Structure
 
-There is one subdirectory per Root Complex variant, each with the same three files:
+What both Root Complex variants share is in [`common/`](common); each variant
+folder holds only its own `main.c`:
 
-| Directory | Topology |
+| Directory | Contents |
 | :--- | :--- |
-| [`RC-direct/`](RC-direct) | one Endpoint, straight RC-to-EP link |
-| [`RC-switched/`](RC-switched) | ASM1184e switch with up to 4 Endpoints behind it - see the [RC-switched README](../2.rtl/3.Bonus--RC-switched.opensource/README.md#2-firmware-the-bring-up-sequence) |
+| [`common/`](common) | `pcie.c` / `pcie.h`, `start.S`, `sections.lds` - used by both |
+| [`RC-direct/`](RC-direct) | `main.c` for one Endpoint, straight RC-to-EP link |
+| [`RC-switched/`](RC-switched) | `main.c` for the ASM1184e switch with up to 4 Endpoints behind it - see the [RC-switched README](../2.rtl/3.Bonus--RC-switched.opensource/README.md#2-firmware-the-bring-up-sequence) |
 
 Both are built in [`4.build/sw_build`](../4.build/sw_build) (`make`, or `make VARIANT=switched`). The API and register map below are common to both; the enumeration sequence described further down is that of `RC-direct`.
 
-*   **`main.c`**: The core application logic. It contains:
-    *   **HAL:** Low-level functions that interact with the hardware by reading and writing data to specific memory addresses.
-    *   **Driver:** The enumeration sequence, including device discovery, BAR setup, assigns memory addresses, and configures the Command Register to enable the device for communication.
-    *   **App:** A test application that performs a Memory Write and Memory Read to the Endpoint and verifies the data integrity.
-*   **`start.S`**: The assembly startup code. It initializes the Stack Pointer and jumps to the `main()` C function.
-*   **`sections.lds`**: The Linker script. It maps the code and data to the FPGA's Block RAM (BRAM), starting at address `0x00000000` with a size of 8KB.
+*   **`common/pcie.c`, `common/pcie.h`**: the HAL and driver layer - register access, TLP send and Completion wait (with Completion Status and CRS retry), the configuration read/write helpers and BAR sizing.
+*   **`main.c`**: the variant's application:
+    *   **Enumeration:** device discovery, BAR placement, and the Command Register that enables the device. `RC-switched` also programs the switch's bus numbers and memory windows.
+    *   **App:** a test that performs a Memory Write and Memory Read to the Endpoint and verifies the data integrity.
+*   **`common/start.S`**: The assembly startup code. It initializes the Stack Pointer and jumps to the `main()` C function.
+*   **`common/sections.lds`**: The Linker script. It maps the code and data to the FPGA's Block RAM (BRAM), starting at address `0x00000000` with a size of 8KB.
 
 ---
 
@@ -114,7 +116,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 The driver interacts with the custom PCIe Bridge RTL via **Memory Mapped I/O (MMIO)**. The C code writes to specific memory addresses that the hardware interprets as control registers.
 
 ### Register Map
-The following addresses map directly to the RTL bridge inputs/outputs. With the default `CSR = peakrdl` (set in [`4.build/config.mk`](../4.build/config.mk)) `main.c` takes them from the generated `openpcie_regs.h`; with `CSR=legacy` it uses the same values hard-coded. Either way the map is the same - see [4.build/README.md](../4.build/README.md#the-register-map).
+The following addresses map directly to the RTL bridge inputs/outputs. With the default `CSR = peakrdl` (set in [`4.build/config.mk`](../4.build/config.mk)) `common/pcie.h` takes them from the generated `openpcie_regs.h`; with `CSR=legacy` it uses the same values hard-coded. Either way the map is the same - see [4.build/README.md](../4.build/README.md#the-register-map).
 
 <div align="center">
 

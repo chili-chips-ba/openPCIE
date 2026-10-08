@@ -280,8 +280,10 @@ sysverilog: $(VPROC_PLI) firmware.hex
 	@$(XVLOG) $(GLBL)
 	@$(XELAB) $(ELABFLAGS)
 
-# Local copy of the firmware image for $readmemh
-firmware.hex: $(FIRMWARE)
+# Local copy of the firmware image for $readmemh. Copied on every build, not by
+# date: a tree on a network share can carry timestamps from the future, and a
+# stale copy would then look newer than the image it came from.
+firmware.hex: $(FIRMWARE) FORCE
 	@cp -f $< $@
 
 $(FIRMWARE):

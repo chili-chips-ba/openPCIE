@@ -208,9 +208,10 @@ model and ends with the memory read-back check passing.
 
 ## SW Compilation
 
-Sources are in [`3.sw`](../3.sw) (`start.S`, `main.c`, `sections.lds`), one
-subdirectory per RC variant - [`RC-direct`](../3.sw/RC-direct) and
-[`RC-switched`](../3.sw/RC-switched). This step only builds them. A Makefile is
+Sources are in [`3.sw`](../3.sw): what both RC variants share in
+[`common`](../3.sw/common) (`start.S`, `sections.lds`, the PCIe request layer
+`pcie.c`/`.h`), and one `main.c` per variant in [`RC-direct`](../3.sw/RC-direct)
+and [`RC-switched`](../3.sw/RC-switched). This step only builds them. A Makefile is
 provided as `4.build/sw_build/Makefile`. Running `make` in that directory
 produces the following files in `4.build/sw_build`:
 
@@ -231,13 +232,12 @@ for `rv32i` only - picorv32 here is configured without the M and C extensions.
 make VARIANT=switched
 ```
 
-Both variants write the same three output names, but the make file records the
-configuration in `.build-config` and rebuilds whenever it changes, so no
-`make clean` is needed to switch.
+Both variants write the same three output names, but every `make` rebuilds the
+firmware (about a second), so no `make clean` is needed to switch.
 
 By default (`CSR ?= peakrdl` in `config.mk`) the firmware takes its register map
 from the headers generated in step 1; `make CSR=legacy` uses the addresses
-hard-coded in `main.c` instead - see
+hard-coded in `3.sw/common/pcie.h` instead - see
 [Two interchangeable CSR implementations](#two-interchangeable-csr-implementations)
 above.
 
@@ -261,7 +261,9 @@ which are all located within `amd-rtl-with-Vivado-build`, e.g.
 
 The opensource RTL can also be built with Vivado, via the project-generation
 scripts [`RC-direct.opensource.tcl`](../2.rtl/2.RC-direct.opensource/RC-direct.opensource.tcl)
-and [`RC-switched.opensource.tcl`](../2.rtl/3.Bonus--RC-switched.opensource/RC-switched.opensource.tcl).
+and [`RC-switched.opensource.tcl`](../2.rtl/3.Bonus--RC-switched.opensource/RC-switched.opensource.tcl) -
+two short wrappers around the shared
+[`RC.opensource.tcl`](../2.rtl/0.common.opensource/RC.opensource.tcl).
 
 ### Opensource openXC7 flow
 

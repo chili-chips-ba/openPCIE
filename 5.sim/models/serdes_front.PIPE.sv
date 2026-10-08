@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //--------------------------------------------------------------------------
 // Description:
-//   Co-simulation stand-in for 2.rtl/*/src/pcie/serdes_front.sv
+//   Co-simulation stand-in for 2.rtl/0.common.opensource/src/pcie/serdes_front.sv
 //
 //   Same module name, same port list, so it is a drop-in replacement: the
 //   simulation file list picks this file INSTEAD of the synthesis one and

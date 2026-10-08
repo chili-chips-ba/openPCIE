@@ -6,9 +6,9 @@
 // Description:
 //   openpcie2-rc top level co-simulation test bench.
 //
-//   The DUT is the REAL Root Complex, 2.rtl/2.RC-direct.opensource:
+//   The DUT is the REAL Root Complex, 2.rtl/0.common.opensource:
 //
-//        RC_direct_opensource
+//        RC_opensource
 //          |- host_bridge
 //          |    |- clk_synth        MMCM, real RTL
 //          |    |- txn_engine       real RTL
@@ -113,7 +113,7 @@ module tb;
   assign RXP = 1'b0;
   assign RXN = 1'b1;
 
-  RC_direct_opensource dut (
+  RC_opensource dut (
     .sys_clk_p    (sys_clk_p),
     .sys_clk_n    (sys_clk_n),
 
@@ -306,7 +306,9 @@ module tb;
 // main() ends by writing a marker into the Tx payload register:
 //   0x0000FACE  memory write/read back matched
 //   0x0000DEAD  it did not, or the read was not completed with SC
-//   0xBAD00000  no endpoint answered the first config read
+//   0xBAD00000  no device answered the first config read (RC-switched:
+//               the switch upstream port)
+//   0xBAD00001  RC-switched only: the switch is up, no endpoint behind it
 //   0xBAD00002  a later config request failed (UR/CA/timeout)
 //   0xBAD00003  BAR0 is not implemented, is I/O, or does not fit
 // Everything before that is the enumeration sequence.
@@ -361,6 +363,7 @@ module tb;
       if (dut.soc_inst.mem_wdata == 32'h0000_face ||
           dut.soc_inst.mem_wdata == 32'h0000_dead ||
           dut.soc_inst.mem_wdata == 32'hbad0_0000 ||
+          dut.soc_inst.mem_wdata == 32'hbad0_0001 ||
           dut.soc_inst.mem_wdata == 32'hbad0_0002 ||
           dut.soc_inst.mem_wdata == 32'hbad0_0003) begin
         result_marker  = dut.soc_inst.mem_wdata;
@@ -401,6 +404,7 @@ module tb;
       32'h0000_face: $display("  FIRMWARE RESULT ......... PASS (0x%08h)", result_marker);
       32'h0000_dead: $display("  FIRMWARE RESULT ......... FAIL (0x%08h)", result_marker);
       32'hbad0_0000: $display("  FIRMWARE RESULT ......... no endpoint found (0x%08h)", result_marker);
+      32'hbad0_0001: $display("  FIRMWARE RESULT ......... switch up, no endpoint behind it (0x%08h)", result_marker);
       32'hbad0_0002: $display("  FIRMWARE RESULT ......... config request failed (0x%08h)", result_marker);
       32'hbad0_0003: $display("  FIRMWARE RESULT ......... BAR0 not usable (0x%08h)", result_marker);
       default:       $display("  FIRMWARE RESULT ......... not reached yet");
@@ -426,4 +430,6 @@ Version History:
  2025/08/19 SS: initial creation, against the dut_stub stand-in
  2026/08/11:    retargeted at the real RC_direct_opensource RTL, with the
                 pcievhost endpoint moved behind the PIPE PHY model
+ 2026/10/07:    DUT is RC_opensource from 2.rtl/0.common.opensource, the RTL
+                shared by RC-direct and RC-switched; 0xBAD00001 decoded
 */

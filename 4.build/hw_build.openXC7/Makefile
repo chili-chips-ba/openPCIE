@@ -68,19 +68,20 @@ PART = xc7a200tfbg484-3
 
 # ---- Variant ----------------------------------------------------------------
 # direct   -> one endpoint on the far end of the link
-# switched -> ASM1184e switch with up to 4 endpoints behind it. The only RTL
-#             difference is in riscv_pcie_soc.sv, which derives the Type 0 /
-#             Type 1 code of a Configuration TLP from the target bus number.
+# switched -> ASM1184e switch with up to 4 endpoints behind it.
+# Both build the very same RTL, 2.rtl/0.common.opensource (top RC_opensource);
+# they differ only in the GT lane (XDC_FILE) and in the firmware.
 VARIANT ?= direct
 
+TOP        = RC_opensource
+COMMON_DIR = ../../2.rtl/0.common.opensource
+
 ifeq ($(VARIANT),switched)
-    TOP       = RC_switched_opensource
     RTL_DIR   = ../../2.rtl/3.Bonus--RC-switched.opensource
     RTL_XDC   = $(RTL_DIR)/xdc/RC-switched.sv.x1g2.AcornCLE-215P.xdc
     XDC_FILE  = openxc7.switched.xdc
     OUT_SFX   = .switched
 else ifeq ($(VARIANT),direct)
-    TOP       = RC_direct_opensource
     RTL_DIR   = ../../2.rtl/2.RC-direct.opensource
     RTL_XDC   = $(RTL_DIR)/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc
     XDC_FILE  = openxc7.xdc
@@ -145,11 +146,12 @@ endif
 NPNR_SRC ?= /opt/openxc7_extra/npnr_45a986b
 
 # ---- Paths (this Makefile lives in 4.build/hw_build.openXC7/) ---------------
-# RTL_DIR is set by the variant block above.
-SRC_DIR  = $(RTL_DIR)/src
+# COMMON_DIR and RTL_DIR are set by the variant block above.
+SRC_DIR  = $(COMMON_DIR)/src
 PCIE_DIR = $(SRC_DIR)/pcie
 # nextpnr-xilinx accepts only [get_ports]/[get_nets] targets, so it CANNOT read
-# the full Vivado XDC from 2.rtl/. A reduced version lives here; what was left
+# the full Vivado XDC from 2.rtl/ (shared part in $(COMMON_DIR)/xdc/, GT lane in
+# $(RTL_DIR)/xdc/). A reduced version lives here; what was left
 # out and why is documented in the header of that file. XDC_FILE is set by the
 # variant block above -- the two differ only in the GT lane:
 #   openxc7.xdc          C5/D5/C11/D11  -> GTP_CHANNEL_1 = GTPE2_CHANNEL_X0Y5  (lane 2)
@@ -249,6 +251,7 @@ info:
 	@echo "CSR            : $(CSR)"
 	@echo "PART           : $(PART)"
 	@echo "TOP            : $(TOP)"
+	@echo "COMMON_DIR     : $(COMMON_DIR)"
 	@echo "RTL_DIR        : $(RTL_DIR)"
 	@echo "PRJXRAY_DB_DIR : $(PRJXRAY_DB_DIR)"
 	@echo "BBAEXPORT      : $(BBAEXPORT)"

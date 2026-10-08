@@ -9,7 +9,7 @@
 #   make                      RC-direct   firmware (default)
 #   make VARIANT=switched     RC-switched firmware
 #
-# Flow:  start.S + main.c --gcc--> firmware.elf
+# Flow:  start.S + pcie.c + main.c --gcc--> firmware.elf
 #                        --objcopy--> firmware.bin
 #                        --python--> firmware.hex
 #
@@ -69,7 +69,10 @@ endif
 
 # ---- Paths ------------------------------------------------------------------
 # Sources live in 3.sw/; this Makefile only builds, it does not hold sources.
-SW_DIR = ../../3.sw/$(SW_SUBDIR)
+# 3.sw/common/ holds what both variants share (start.S, sections.lds, the PCIe
+# request layer pcie.c/.h); the variant folder holds only its main.c.
+SW_DIR     = ../../3.sw/$(SW_SUBDIR)
+COMMON_DIR = ../../3.sw/common
 
 # ---- Toolchain --------------------------------------------------------------
 # xPack GNU RISC-V Embedded GCC. Override CROSS if the prefix differs, e.g.
@@ -112,33 +115,26 @@ endif
 # rv32i only -- picorv32 is configured without M/C extensions.
 # -ffreestanding -nostdlib: no libc, no crt0; start.S provides the entry point.
 ARCH    = -march=rv32i -mabi=ilp32
-CFLAGS  = $(ARCH) -ffreestanding -nostdlib $(CSR_CFLAGS) $(SIM_CFLAGS)
-LDFLAGS = -Wl,-Bstatic,-T,$(SW_DIR)/sections.lds,--strip-debug
+CFLAGS  = $(ARCH) -ffreestanding -nostdlib -I$(COMMON_DIR) $(CSR_CFLAGS) $(SIM_CFLAGS)
+LDFLAGS = -Wl,-Bstatic,-T,$(COMMON_DIR)/sections.lds,--strip-debug
 
 # start.S must come first -- it holds the reset vector.
-SRCS = $(SW_DIR)/start.S $(SW_DIR)/main.c
+SRCS = $(COMMON_DIR)/start.S $(COMMON_DIR)/pcie.c $(SW_DIR)/main.c
 
-# make decides what to rebuild purely from file dates, so a configuration that
-# leaves no trace on disk is invisible to it: switch VARIANT, CSR or SIM and it
-# would compare the same sources against the same outputs, report "Nothing to be
-# done", and leave the PREVIOUS image sitting there. Both halves below close
-# that hole.
+# The firmware is ALWAYS rebuilt - it takes about a second. make decides what to
+# rebuild from file dates alone, and two things defeat that here:
 #
-#   ../config.mk    a real file, so making it a prerequisite is enough.
-#                   $(wildcard) keeps a missing one non-fatal, as -include does.
-#   .build-config   the command line variables have no file behind them, so
-#                   their values are recorded here. The recipe rewrites it only
-#                   when the signature actually changes, so an unchanged
-#                   configuration does not keep re-triggering builds.
-BUILD_SIG := $(VARIANT)-$(CSR)-$(SIM)
-
-.build-config: FORCE
-	@[ "$$(cat $@ 2>/dev/null)" = "$(BUILD_SIG)" ] || echo "$(BUILD_SIG)" > $@
-
+#   - a configuration that leaves no trace on disk: switch VARIANT, CSR or SIM
+#     and it would compare the same sources against the same outputs, report
+#     "Nothing to be done", and leave the PREVIOUS image sitting there;
+#   - dates that cannot be trusted: a tree on a network share, or copied off
+#     one, can carry timestamps from the future, so a stale firmware.hex looks
+#     newer than everything it was built from.
+#
+# FORCE on firmware.elf closes both, with no bookkeeping to go wrong.
 FORCE:
 
-DEPS = $(SRCS) $(SW_DIR)/sections.lds $(CSR_DEPS) \
-       $(wildcard ../config.mk) .build-config
+DEPS = $(SRCS) $(COMMON_DIR)/pcie.h $(COMMON_DIR)/sections.lds $(CSR_DEPS) FORCE
 
 # =============================================================================
 # TARGETS

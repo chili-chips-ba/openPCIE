@@ -32,7 +32,9 @@ foundation for the makers to build their future applications upon...
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
-Link width and speed come from a single place, `src/pcie/link_pkg.sv`:
+Link width and speed come from a single place,
+[`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv) -- shared with
+[RC-switched](../3.Bonus--RC-switched.opensource), so a change applies to both:
 
 ```systemverilog
 localparam int PCIE_LANES = 1;   // 1, 2, 4 or 8
@@ -43,16 +45,26 @@ localparam int PCIE_GEN   = 2;   // 1 = Gen1, 2 = Gen2
 
 ## Structure
 
+RC-direct and [RC-switched](../3.Bonus--RC-switched.opensource) are built from
+the very same RTL, kept once in [`0.common.opensource`](../0.common.opensource).
+They differ only in the GT lane the x1 link uses and in the firmware they run.
+
 ```
-src/
-  RC_direct_opensource.sv    top level: refclk buffer, PCIe bridge, SOC, LEDs
-  riscv_pcie_soc.sv          picorv32 SOC, drives the AXI-Stream TLP interface
-  soc_csr.sv                 wrapper for the PeakRDL-generated CSR block
-  picorv32.CHILI.sv          the RISC-V core (Chili.CHIPS-improved picorv32)
-  pcie/                      the opensource PCIe stack
-xdc/
-  RC-direct.sv.x1g2.AcornCLE-215P.xdc    full constraints (source of truth)
-RC-direct.opensource.tcl     regenerates the Vivado project from scratch
+2.rtl/0.common.opensource/        shared by both root complexes
+  src/
+    RC_opensource.sv              top level: refclk buffer, PCIe bridge, SOC, LEDs
+    riscv_pcie_soc.sv             picorv32 SOC, drives the AXI-Stream TLP interface
+    soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
+    picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
+    pcie/                         the opensource PCIe stack
+  xdc/
+    RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+  RC.opensource.tcl               the Vivado project script behind both wrappers
+
+2.rtl/2.RC-direct.opensource/     this folder
+  xdc/
+    RC-direct.sv.x1g2.AcornCLE-215P.xdc   GT lane: GTPE2_CHANNEL_X0Y5
+  RC-direct.opensource.tcl        regenerates the Vivado project from scratch
 ```
 
 ### The PCIe stack, by layer
@@ -112,7 +124,7 @@ is **generated**, not hand-written. The source of truth is a SystemRDL file,
 | `csr_hw.h`, `csr_cosim.h` | same | C++ / co-simulation code in `5.sim/` |
 | `openpcie.md`, `html/` | same | the documentation of the map itself |
 
-`src/soc_csr.sv` is the only hand-written piece: it bridges the picorv32 native
+`soc_csr.sv` is the only hand-written piece: it bridges the picorv32 native
 memory interface to the "passthrough" CPU interface of the generated block, and
 launches exactly one request per CPU access.
 
@@ -171,7 +183,10 @@ Regenerate the project from scratch with the tcl script:
 source RC-direct.opensource.tcl
 ```
 
-It collects `src/`, `src/pcie/*.sv`, the XDC from `xdc/`, sets
+It is a short wrapper around the shared
+[`RC.opensource.tcl`](../0.common.opensource/RC.opensource.tcl), which collects
+`src/` and `src/pcie/*.sv` from `0.common.opensource`, the shared XDC plus this
+folder's lane XDC, sets
 `XPM_LIBRARIES = XPM_CDC`, and registers `firmware.hex` from
 `4.build/sw_build/` as the memory-init file. The generated project lands in
 `xbuild.Vivado-v2024.2/`.
