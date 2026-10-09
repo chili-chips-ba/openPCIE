@@ -10,7 +10,7 @@ its two variants - `RC-direct.opensource` or `RC-switched.opensource`.
 | 3. Hex for `$readmemh` | `python` | `.bin` -> `firmware.hex` |
 
 Sources live in `3.sw/` - this folder only builds them. `3.sw/common/` holds
-what both variants share (`start.S`, `sections.lds`, the PCIe request layer
+what both variants share (`start.S`, `sections.lds`, the PCIE request layer
 `pcie.c`/`.h`); the variant's own folder adds its `main.c`. All three outputs
 land here, next to the Makefile.
 
@@ -86,7 +86,7 @@ make SIM=1               # direct, for co-simulation
 ## Building for co-simulation
 
 `main()` opens with `wait_cycles(STARTUP_DELAY)` - 100000 by default, set in
-`3.sw/common/pcie.h` - which idles while the PCIe link
+`3.sw/common/pcie.h` - which idles while the PCIE link
 trains. On hardware that costs nothing. In [co-simulation](../../5.sim) it is
 about 80 ms of simulated time before the firmware does anything at all -- the
 loop is compiled without optimisation, so each iteration is a dozen bus cycles.

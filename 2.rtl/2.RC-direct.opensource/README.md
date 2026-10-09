@@ -4,7 +4,7 @@ This is an opensource variant of what was first tested with the
 [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd).
 
 - [x] ✔️ Hardware FSM replaced with an opensource RISC-V based SOC
-- [x] ✔️ PCIe IP core replaced with opensource RTL
+- [x] ✔️ PCIE IP core replaced with opensource RTL
 - [x] ✔️ Builds and runs with a **fully opensource toolchain** - link up at Gen2
 - [x] ✔️ Upgrade the current simple SOC to a version that uses PeakRDL for CSR generation
 
@@ -27,7 +27,7 @@ foundation for the makers to build their future applications upon...
 | | |
 |---|---|
 | Target device | `xc7a200tfbg484-3`, Acorn CLE-215P |
-| Link | **PCIe Gen2 x1, up and trained** (verified RC-to-EP on hardware) - the default, and the committed deliverable |
+| Link | **PCIE Gen2 x1, up and trained** (verified RC-to-EP on hardware) - the default, and the committed deliverable |
 | Bonus | **Gen2 x4** also tested on hardware, on the backplane's RC4 ⇔ EP4 island; not the checked-in default |
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
@@ -52,11 +52,11 @@ They differ only in the GT lane the x1 link uses and in the firmware they run.
 ```
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
-    RC_opensource.sv              top level: refclk buffer, PCIe bridge, SOC, LEDs
+    RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
     riscv_pcie_soc.sv             picorv32 SOC, drives the AXI-Stream TLP interface
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
     picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
-    pcie/                         the opensource PCIe stack
+    pcie/                         the opensource PCIE stack
   xdc/
     RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
   RC.opensource.tcl               the Vivado project script behind both wrappers
@@ -67,7 +67,7 @@ They differ only in the GT lane the x1 link uses and in the firmware they run.
   RC-direct.opensource.tcl        regenerates the Vivado project from scratch
 ```
 
-### The PCIe stack, by layer
+### The PCIE stack, by layer
 
 The `PCIE_2_1` hard block is silicon and is instantiated directly. Everything
 around it - what AMD ships as encrypted IP - is opensource RTL here.
@@ -89,7 +89,7 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 ### Clocking
 
 ```
-sys_clk_p/n (100 MHz PCIe refclk)
+sys_clk_p/n (100 MHz PCIE refclk)
    └─ IBUFDS_GTE2 ── GTREFCLK0 ─ GTPE2_COMMON ─ QPLL (2.5 GHz)
 
 GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dclk (DRP,
@@ -170,7 +170,7 @@ make run CPU=vproc    # native C++
 make run CPU=iss      # rv32 ISS on the real firmware.elf
 ```
 
-All three reach the same result over the same PCIe link. Details and measured
+All three reach the same result over the same PCIE link. Details and measured
 run times: [The three CPU options](../../5.sim/README.md#the-three-cpu-options).
 
 ## Building

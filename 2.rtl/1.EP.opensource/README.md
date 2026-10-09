@@ -2,7 +2,7 @@
 
 This is the opensource counterpart of AMD-proprietary EP core.
 
-It is used only for testing of our Root Complex core, and provided solely for completness -- You are free to build any one of them and validate its interoperability with our Root Complex. They should all work equally well.
+It is used only for testing of our Root Complex core, and provided solely for completeness -- You are free to build any one of them and validate its interoperability with our Root Complex. They should all work equally well.
 
 For the replica of the AMD EP package, please go to [../../2.amd-rtl-with-Vivado-build/1.EP.amd](../../2.amd-rtl-with-Vivado-build/1.EP.amd).
 

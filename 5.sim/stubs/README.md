@@ -1,4 +1,4 @@
-# _openpcie2-rc_ DUT stub, and other superseded originals
+# _openPCIE_ DUT stub, and other superseded originals
 
 This folder keeps the pieces that came before the real DUT was wired in. None of
 them is built any more; they are here so the earlier arrangement stays readable.
@@ -17,11 +17,11 @@ To go back to the stub test bench, analyse with `tb.STUB.prj` in place of
 
 This was a stub in lieu of the DUT RTL, in order to get the top level test bench running.
 
-It has the folloing features
+It has the following features
 
   * Ports
     * A differential system clock input
-    * A PCIe pipe clock input
+    * A PCIE pipe clock input
     * An asynchronous active low reset
     * A UART input port
     * A 2 bit key input
@@ -32,6 +32,6 @@ It has the folloing features
     * An `soc_cpu.VPROC`
       * `imem_xxx` ports tied off
       * `soc_if` with inputs tied off
-    * A `pcieVHostsPipex1` configured as RC at VProc node 2
+    * A `pcieVHostPipex1` configured as RC at VProc node 2
       * Is the BFM wrapper for the `pcieVHost`
       * Ports connected to DUT PIPE ports

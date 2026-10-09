@@ -1,14 +1,14 @@
-# PCIe TLP decoder for WaveCrux
+# PCIE TLP decoder for WaveCrux
 
 A protocol-decoder plugin for the [WaveCrux](https://wavecrux.app) waveform
 viewer that shows the openPCIE co-simulation at **TLP level**: every Transaction
 Layer Packet named, and every completion paired with the request it answers.
 
 <p align="center">
-<img src="../../images/wavecrux-tlp-bar-sizing.png" width=1000>
+<img alt="WaveCrux TLP view: firmware sizing BAR0" src="../../images/wavecrux-tlp-bar-sizing.png" width=1000>
 </p>
 
-WaveCrux has a PCIe TLP decoder of its own in its paid tier. This one uses the
+WaveCrux has a PCIE TLP decoder of its own in its paid tier. This one uses the
 decoder-plugin interface of WaveCrux's free Open Core instead, so it works on
 every edition. It needs **WaveCrux 1.0.1 or later**: older releases misplace
 plugin results in time and leave the rows empty

@@ -1,6 +1,6 @@
-# RISC-V Bare-Metal PCIe Driver
+# RISC-V Bare-Metal PCIE Driver
 
-This directory contains the C source code, startup assembly, and linker scripts required to build the **open-source driver** for the RISC-V Root Complex. This driver performs enumeration and memory transactions to act as the PCIe Host for the system.
+This directory contains the C source code, startup assembly, and linker scripts required to build the **open-source driver** for the RISC-V Root Complex. This driver performs enumeration and memory transactions to act as the PCIE Host for the system.
 
 ## File Structure
 
@@ -26,7 +26,7 @@ Both are built in [`4.build/sw_build`](../4.build/sw_build) (`make`, or `make VA
 
 ## **API Reference**
 
-The driver exposes four high-level functions for interacting with the PCIe Endpoint. These functions abstract away the TLP packet construction and handshake logic.
+The driver exposes four high-level functions for interacting with the PCIE Endpoint. These functions abstract away the TLP packet construction and handshake logic.
 
 
 ### **1. Configuration Read**
@@ -113,7 +113,7 @@ The driver exposes four high-level functions for interacting with the PCIe Endpo
 
 ## Hardware Abstraction Layer (HAL)
 
-The driver interacts with the custom PCIe Bridge RTL via **Memory Mapped I/O (MMIO)**. The C code writes to specific memory addresses that the hardware interprets as control registers.
+The driver interacts with the custom PCIE Bridge RTL via **Memory Mapped I/O (MMIO)**. The C code writes to specific memory addresses that the hardware interprets as control registers.
 
 ### Register Map
 The following addresses map directly to the RTL bridge inputs/outputs. With the default `CSR = peakrdl` (set in [`4.build/config.mk`](../4.build/config.mk)) `common/pcie.h` takes them from the generated `openpcie_regs.h`; with `CSR=legacy` it uses the same values hard-coded. Either way the map is the same - see [4.build/README.md](../4.build/README.md#the-register-map).
@@ -128,9 +128,9 @@ The following addresses map directly to the RTL bridge inputs/outputs. With the 
 | `PCIE_TX_DATA` | `0x3000000C` | W | **Write:** Data Payload. |
 | `PCIE_RX_STATUS` | `0x30000010` | R | Completion Status (`0`=Success, `1`=UR, `2`=CRS, `4`=CA). |
 | `PCIE_RX_DATA` | `0x30000014` | R | Data received from Memory Read Completions. |
-| `PCIE_RX_HEADER_INFO`| `0x30000018` | R | **Completion Info:** Contains Requester ID and Tag for matching. |
-| `PCIE_ERR_STATUS` | `0x3000001C` | R | **Error Flags:** Physical layer errors.|
-| `PCIE_PHY_STATUS` | `0x30000020` | R | Physical Link Status (used to check TX buffers). |
+| `PCIE_RX_HEADER_INFO`| `0x30000018` | R | **Completion Info:** Requester ID, Tag and Lower Address, for matching. |
+| `PCIE_ERR_STATUS` | `0x3000001C` | R | **Error Status:** the hard macro's `cfg_status`, plus a flag for a received fatal-error Message. |
+| `PCIE_PHY_STATUS` | `0x30000020` | R | Tx FSM state and the number of free hard-macro Tx buffers - polled before every send. |
 
 </div>
 
@@ -142,7 +142,7 @@ The following addresses map directly to the RTL bridge inputs/outputs. With the 
 Every non-posted request (config read, config write, memory read) goes through `pcie_request()`, which checks the **Completion Status** (SC / UR / CRS / CA) or reports a timeout, and passes read data back separately - so a genuine `0xFFFFFFFF` read is never mistaken for an error. A request answered with **CRS (Configuration Retry Status)** - read or write - is re-issued with a fresh tag up to 100 times. Any config request that fails after the device has been found stops the firmware with `0xBAD00002`.
 
 ### 2. Enumeration Sequence (in `main`)
-The firmware performs a standard PCIe Bring-up sequence:
+The firmware performs a standard PCIE Bring-up sequence:
 1.  **Wait:** Delays execution to allow the Physical Link to stabilize.
 2.  **Discovery:** Reads the `Device ID` from Bus 1.
 3.  **BAR Sizing:** With memory decoding off, writes `0xFFFFFFFF` to each of the six BARs and reads it back. `0` = BAR not implemented; bit 0 = I/O BAR (left unassigned, this RC has no I/O space); bits `[2:1] = 10` = 64-bit BAR, the next BAR is its upper half. Size = `~(readback & ~0xF) + 1`.

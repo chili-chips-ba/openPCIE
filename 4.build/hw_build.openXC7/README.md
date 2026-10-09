@@ -23,7 +23,7 @@ Target part is `xc7a200tfbg484-3` (Acorn CLE-215P), same as the Vivado build.
 
 ## Status: working on hardware
 
-`make` produces `build_artifacts/top.bit`, and on the board it brings the PCIe
+`make` produces `build_artifacts/top.bit`, and on the board it brings the PCIE
 link **up at Gen2**, verified against a second Artix-7 board acting as endpoint:
 
 ```
@@ -97,7 +97,7 @@ design:
 | `RX_CLKMUX_EN` | `1'b1` | `0` | **GT-internal RX clock mux off** |
 | `PMA_RSV` | `32'h00000333` | `0` | TX PMA analog config wrecked |
 | `TXPI_PPMCLK_SEL` | `"TXUSRCLK2"` | `"TXUSRCLK"` | wrong TX phase-interpolator clock |
-| `PD_TRANS_TIME_FROM_P2` | `12'h03C` | `0` | PCIe P-state transition timing |
+| `PD_TRANS_TIME_FROM_P2` | `12'h03C` | `0` | PCIE P-state transition timing |
 | `PD_TRANS_TIME_TO_P2` | `8'h64` | `0` | same |
 | `OUTREFCLK_SEL_INV` | `2'b11` | `0` | |
 | `TRANS_TIME_RATE` | `8'h0E` | `0` | |
@@ -296,7 +296,7 @@ make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 | `make convert` | only sv2v conversion + module extraction |
 | `make CSR=legacy` | build the hand-written CSR instead of the PeakRDL one |
 | `make info` | print resolved configuration |
-| `make clean` | remove `build_artifacts/`, `.build-config` and the local copy of `firmware.hex` |
+| `make clean` | remove `build_artifacts/` and the local copy of `firmware.hex` |
 | `make clean-converted` | remove `converted/` |
 | `make clean-all` | all of the above, plus `chipdb/` |
 
@@ -310,12 +310,12 @@ depends on the part, not on the design. What is **not** separated is
 `../sw_build/firmware.hex`, so build the matching firmware first
 (`make VARIANT=switched` over in `sw_build/`).
 
-Switching `CSR` is different: it changes only the **file list**, not any file,
-so make on its own would see unchanged sources, decide the conversion is up to
-date and leave the previous bitstream in place. The configuration is therefore
-recorded in `.build-config`, which is a prerequisite of the sv2v step along with
-`../config.mk` - so a change to either rebuilds by itself, with no `make clean`
-needed.
+**Every `make` rebuilds the design from scratch**, from sv2v to the bitstream;
+only the chipdb is kept. Switching `CSR` changes only the **file list**, not any
+file, so a date-based make would decide the conversion is up to date and leave
+the previous bitstream in place. File dates cannot be trusted either: a tree on a
+network share, or copied off one, can carry timestamps from the future. Always
+rebuilding sidesteps both, so no `make clean` is ever needed.
 
 The first build generates the nextpnr chipdb for `xc7a200tfbg484-3` (317 MB,
 several minutes). It is cached in `chipdb/`.
@@ -465,7 +465,7 @@ build too, because it is a pulse, not a level.
 | 2 | **`IBUFDS_GTE2.O` -> `BUFG` yields a dead clock in fabric.** The net routes without error and the FASM looks correct, but the BUFG output does not toggle on hardware |
 | 3 | **`fasm.cc:2118` hardcodes `PLL0_CFG`/`PLL1_CFG`** to `0x1F03DC` instead of reading the cell parameter (this design asks for `0x1F024C`), and writes only bits [20:0] of a 27-bit attribute |
 | 4 | **Regression between `45a986b` and `bab26c2`** - master cannot route `CARRY4_Ox` -> `xFFMUX_OUT` inside a slice, so any design with a counter fails; reproduced with a 4-line testcase. `common/router2.cc` is byte-identical between the two commits, so the change is in the xilinx packing code. On larger designs the same area instead runs for hours in `route_xilinx_const` |
-| 5 | snap 0.8.2 ships metadata missing `site_type_PCIE_2_1.json`, so PCIe designs cannot place at all |
+| 5 | snap 0.8.2 ships metadata missing `site_type_PCIE_2_1.json`, so PCIE designs cannot place at all |
 | 6 | An unconstrained clock silently gets a 12 MHz target, so timing failures on that domain are never reported |
 | 7 | `create_clock [get_nets ...]` drops the constraint **silently** when the net name does not match - no warning |
 | 8 | `pack_io_xc7.cc:474` treats **any** cell carrying a `BEL` attribute as IO and errors on anything that is not IOB18/IOB33, so `BEL` cannot be used to pin non-IO cells (the type check sits above the `rules.count(ci->type)` guard) |

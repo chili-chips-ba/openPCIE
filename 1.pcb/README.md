@@ -1,21 +1,21 @@
 # openPCIE Backplane PCB
 
-The board is designed for flexible PCIe system development and testing, featuring two distinct logical *islands*:  
+The board is designed for flexible PCIE system development and testing, featuring two distinct logical *islands*:  
 - **(1-to-1) 4-lane Direct connection**
 - **(1-to-4) 1-lane Switched connection**.
 
 <p align="center" width="100%">
-    <img width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
+    <img alt="openPCIE backplane block diagram" width="50%" src="0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
 ####  Key Features
 
 - Modular Design:
-  - Two independent “islands” for different PCIe topologies.  
+  - Two independent “islands” for different PCIE topologies.  
 - Flexible Connectivity:
-  - Supports standard PCIe Slots and M.2 (M-key, PCIe) connectors.  
+  - Supports standard PCIE Slots and M.2 (M-key, PCIE) connectors.  
 - Power, Clock and Reset generation:
-  - Single 6-pin PCIe power connector supplies the entire board (up to 70 W total).  
+  - Single 6-pin PCIE power connector supplies the entire board (up to 70 W total).  
   - Integrated 100 MHz REFCLK generator and reset (PERST#) distribution circuits.  
 - Innovative RC Connector Design:
   - Allows natively EndPoint cards to function as a RootComplex without hardware modification.
@@ -34,12 +34,12 @@ kibot -c openpci2-backplane.kibot.yaml -d production
 ### Common Resources
 
 #### Power Delivery
-- Powered by a standard **6-pin PCIe power connector** (3 × **+12V**, 3 × **GND**).  
-- On-board **DC-DC** and **LDO** converters provide the required **+3.3V** and **+12V** rails for all slots.  
+- Powered by a standard **6-pin PCIE power connector** (3 × **+12V**, 3 × **GND**).  
+- The **+12V** input goes straight to the four PCIE slots. A 30 A **DC-DC** buck (TPS54KC23) makes **+3.3V** for the slots, the M.2 connectors and the board; a second, small buck makes the ASM1184e switch's core supply, and an **LDO** makes the **+1.8V** for the clock generator.  
 - Total power budget: **~70W**, with a guideline of **10W per slot**.
 
 #### Clock Distribution
-- On-board **100MHz PCIe-approved REFCLK Generator** provides the reference clock.
+- On-board **100MHz PCIE-approved REFCLK Generator** provides the reference clock.
 - The clock is distributed to all slots via differential buffers (**REFCLK+ / REFCLK-**).
 - The **REFCLK** is only distributed to a slot (both RC and EP) after a device has been inserted and asserts the **CLKREQ#** signal (by driving it to logic low). This feature ensures that clocks are only active when and where needed, thus reducing the power and EMI.
 
@@ -53,32 +53,32 @@ The system-wide PERST# reset signal is distributed to all slots and can be trigg
 
 ### 4-lane “Direct” Island (RC4 ⇔ EP4)
 
-Provides a direct, point-to-point, 4-lane PCIe link between two connectors.
+Provides a direct, point-to-point, 4-lane PCIE link between two connectors.
 
 **RC4 (Root Complex)**  
 - 4-lane connector intended for a card acting as the Root Complex.  
-- Mechanical option: *M.2 (M-key, PCIe)*.
+- Mechanical option: *M.2 (M-key, PCIE)*.
 
 **EP4 (Endpoint)**  
 - 4-lane connector for a standard Endpoint card.  
-- Mechanical option: *Standard PCIe slot*.
+- Mechanical option: *Standard PCIE slot*.
 
 ---
 ### 1-lane “Switched” Island (RC1 ⇔ SW ⇔ SW_EP0/1/2/3)
 
-Uses a PCIe switch to branch a single upstream lane into four downstream lanes.
+Uses a PCIE switch to branch a single upstream lane into four downstream lanes.
 
 **RC1 (Root Complex)**  
 - 1-lane connector for the upstream Root Complex card.  
-- Mechanical option: *Standard PCIe Slot*.
+- Mechanical option: *Standard PCIE Slot*.
 
-**PCIe Switch**  
-- Device: **Asmedia ASM1184e** (PCIe 2.0 switch).  
+**PCIE Switch**  
+- Device: **Asmedia ASM1184e** (PCIE 2.0 switch).  
 - Configuration: **1 × Upstream → 4 × Downstream** (1-to-4).
 
 **SW_EP0 – SW_EP3 (Endpoints)**  
 - Four 1-lane connectors for downstream Endpoint cards.  
-- Mechanical options: *Standard PCIe Slot* or *M.2 (M-key, PCIe)*.
+- Mechanical options: *Standard PCIE Slot* or *M.2 (M-key, PCIE)*.
 
 #### Note on “RC Connectors”
 
@@ -96,22 +96,22 @@ This pin-swapping allows the same physical FPGA plug-in card—always pinned as 
 ## PCB Views
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_left.JPG">
+    <img alt="Backplane 3D view, from the left" width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_left.JPG">
 </p>
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_right.JPG">
+    <img alt="Backplane 3D view, from the right" width="70%" src="0.doc/images/PCIe_mini_Backplane_3D_viewer_right.JPG">
 </p>
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/openPCIE-Bare-PCB.png">
+    <img alt="Bare backplane PCB" width="70%" src="0.doc/images/openPCIE-Bare-PCB.png">
 </p>
 
 
 Impedance-controlled traces:
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/Impedance-controlled-traces.png">
+    <img alt="Impedance-controlled traces on the backplane" width="70%" src="0.doc/images/Impedance-controlled-traces.png">
 </p>
 
 
@@ -121,20 +121,20 @@ Impedance-controlled traces:
 ### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen2 x1)
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
+    <img alt="Direct FPGA RC to FPGA EP setup, view 1" width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
 </p>
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 2.JPG">
+    <img alt="Direct FPGA RC to FPGA EP setup, view 2" width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 2.JPG">
 </p>
 
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img src="0.doc/images/openPCIE-direct2.jpg" width="100%">
+      <img alt="Direct connection on the backplane, view 2" src="0.doc/images/openPCIE-direct2.jpg" width="100%">
     </td>
     <td align="center" style="border: none;">
-      <img src="0.doc/images/openPCIE-direct1.jpg" width="100%">
+      <img alt="Direct connection on the backplane, view 1" src="0.doc/images/openPCIE-direct1.jpg" width="100%">
     </td>
   </tr>
 </table>
@@ -148,16 +148,16 @@ This same scenario is also envisioned for testing the interoperability of our [o
 ### Usecase 2: Switched FPGA_RC to FPGA_EP (Gen2 x1)
 
 <p align="center" width="100%">
-    <img width="70%" src="0.doc/images/openPCIE-switched-all-slots-populated.jpg">
+    <img alt="Switched island with all slots populated" width="70%" src="0.doc/images/openPCIE-switched-all-slots-populated.jpg">
 </p>
 
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img src="0.doc/images/openPCIE-switched-one-slot-populated1.jpg" width="95%">
+      <img alt="Switched island with one slot populated, view 1" src="0.doc/images/openPCIE-switched-one-slot-populated1.jpg" width="95%">
     </td>
     <td align="center" style="border: none;">
-      <img src="0.doc/images/openPCIE-switched-one-slot-populated2.jpg" width="100%">
+      <img alt="Switched island with one slot populated, view 2" src="0.doc/images/openPCIE-switched-one-slot-populated2.jpg" width="100%">
     </td>
   </tr>
 </table>
@@ -165,22 +165,22 @@ This same scenario is also envisioned for testing the interoperability of our [o
 The RootComplex has also been tested with EndPoints behind the on-board ASM1184e PCIE Switch, over a **Gen2 x1** link. This was a bonus deliverable, beyond the original plan - see [RC-switched](../2.rtl/3.Bonus--RC-switched.opensource) for the design.
 
 ### Usecase 3: PCIE Expansion or Extension
-By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specificaly to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
+By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specifically to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
 
 <p align="center" width="100%">
-    <img width="60%" src="0.doc/images/PCIE-Jumper-Cable-Male2Male.jpg">
+    <img alt="PCIE male-to-male jumper cable" width="60%" src="0.doc/images/PCIE-Jumper-Cable-Male2Male.jpg">
 </p>
 
 ## PCIE Layout Considerations
 
 The _characteristic impedance_ of the differential pairs on our backplane is `100ohm+/-10% for both data and clock signals`. They are all routed as `microstrips`, i.e. with reference to Ground/Power plane from only one side. The P-to-N skew is matched to no more than **5 mils**.
 
-The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. We use Through-Hole (TH) slot connectors for mechanical stability and better routability. The M.2 and RPi connectors are Surface-Mount Devices (SMD). All components are on the top side of the board. We did not use the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power), as they require vias and are typically used in setups with 6 or more layers. We used the _'microstrips'_, as they allowed getting away without any vias. 
+The number of vias or other impedance discontinuities on the path of `5Gbps signal wires` and `100MHz reference clocks` is minimized. We use Through-Hole (TH) slot connectors for mechanical stability and better routability. The M.2 and RPi connectors are Surface-Mount Devices (SMD). All components are on the top side of the board. We did not use the _'striplines'_, which is when the high-speed traces are sandwiched between two reference planes (ground or power), as they require vias and are typically used in setups with 6 or more layers. We used the _'microstrips'_: routed on the side where the connectors are, a differential pair connects without any via. Routed on the opposite side, it needs two vias per line, one at each end. 9 of the 31 pairs run on the connector side, the other 22 on the opposite side (see also [The P and N Swaps](#the-p-and-n-swaps)). 
 
-The size of our vias is the standard **0.3mm**. The blind, burried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be cautious about placing vias on the diff pairs. Such vias go through all layers, they are longer. They are also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
+The size of our vias is the standard **0.3mm**. The blind, buried, partial or any other advanced via technologies are not used. That makes for a less expensive PCB and final product, but it also stresses the need to be cautious about placing vias on the diff pairs. Such vias go through all layers, they are longer. They are also not with the smallest possible diameter, therefore overall bulkier and more of a disturbance.
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
+    <img alt="PCIE trace impedance" width="65%" src="0.doc/images/PCIE-Trace-Impedance.jpg">
 </p>
 
 Our stackup is **4-layer**:
@@ -191,11 +191,11 @@ Our stackup is **4-layer**:
 - `Bottom` - Microstrip for diff pairs and ordinary lines 
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/PCIE-stackup.jpg">
-    <img width="65%" src="0.doc/images/PCIE-trace-geometry.jpg">
-    <img width="65%" src="0.doc/images/PCIE-symmetry.jpg">
-    <img width="65%" src="0.doc/images/PCIE-ref-plane.jpg">
-    <img width="65%" src="0.doc/images/PCIE-no-stubs.jpg">
+    <img alt="4-layer PCB stackup" width="65%" src="0.doc/images/PCIE-stackup.jpg">
+    <img alt="Differential trace geometry" width="65%" src="0.doc/images/PCIE-trace-geometry.jpg">
+    <img alt="Differential pair symmetry" width="65%" src="0.doc/images/PCIE-symmetry.jpg">
+    <img alt="Reference plane under the traces" width="65%" src="0.doc/images/PCIE-ref-plane.jpg">
+    <img alt="Routing without stubs" width="65%" src="0.doc/images/PCIE-no-stubs.jpg">
 </p>
 
 Check [this](0.doc/PCIE-Layout-Guidelines.SIG.pdf) link for additional physical and routing considerations.
@@ -203,7 +203,7 @@ Check [this](0.doc/PCIE-Layout-Guidelines.SIG.pdf) link for additional physical 
 Since we have a unique feature with multiple connectors on the same line, special care is given to minimize the "stubs" at both the start and end of the transmission line. Here is an example of what not to do.
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/PCB-Stubs-MustAvoid.png">
+    <img alt="Example of stubs to avoid" width="65%" src="0.doc/images/PCB-Stubs-MustAvoid.png">
 </p>
 
 
@@ -212,10 +212,10 @@ Since we have a unique feature with multiple connectors on the same line, specia
 While the PCIE requirements stipulate that, in order to simplify the PCB layout, the electronics should be capable of internally swapping the P and N leads of differential pairs, we did not want to take chances, and have taken extra steps not to depend on the plug-in electronics -- All Ps are routed to the Ps, and all Ns to the Ns, even if that called for a via. 
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/PCIE-P-and-N-swaps.png">
+    <img alt="P and N routing without swaps" width="65%" src="0.doc/images/PCIE-P-and-N-swaps.png">
 </p>
 
-## PCIe Connection Model: Generators → Transport → Consumers
+## PCIE Connection Model: Generators → Transport → Consumers
 
 All signal generators should be placed as close as possible to each other. Likewise, all signal consumers should be grouped very close together. The goal is to minimize the stubs, both at the beginning of the transmission path (on the generator side) and at the end (on the consumer side).
 
@@ -242,7 +242,7 @@ The following four wiring topologies are examined in openEMS Electro-Magnetic Si
 - `One-2-Two` **Point-to-Multipoint**. Unique for high-speed
 - `Three-2-One` **Multipoint-to-Point**. Unique for high-speed
 
-Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusal, probably **unique topologies** to deal with. All representative combinations are analyzed and presented.
+Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the same diff lines, we have very unusual, probably **unique topologies** to deal with. All representative combinations are analyzed and presented.
 
 ### EMS topology 0: Bad (just for learning, not for using)
 - long stubs on both sides. We can use the analysis of the Rx and Tx SMA connectors for this case to show why it is better to place them at the end of their line, close to the Rx input termination.
@@ -261,22 +261,22 @@ Since we feature multiple mechanical connectors ("Slot", M.2, RPi5 FPC) on the s
 TODO
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/PCIE-Eye-Measurements.jpg">
+    <img alt="PCIE eye measurements" width="65%" src="0.doc/images/PCIE-Eye-Measurements.jpg">
 </p>
 
 
 ## 30 Amp DC/DC Buck Layout Considerations
 
-The layout of the PCIE backplane is not only about the 5Gbps differential pairs. The backplane also hosts a powerfull 12V-to-3.3V DC/DC. Given its 30 Amps(!) current capacity, the buck layout calls for special attention. While we have followed the TI recommendations to the letter, the question was also raised about the stability of the `long Remote Sense` wires:
+The layout of the PCIE backplane is not only about the 5Gbps differential pairs. The backplane also hosts a powerful 12V-to-3.3V DC/DC. Given its 30 Amps(!) current capacity, the buck layout calls for special attention. While we have followed the TI recommendations to the letter, the question was also raised about the stability of the `long Remote Sense` wires:
    1) Will they incentivize the buck to oscillate?
    2) Is the far-off Remote Sense really needed?
 
 The argument is that the digital logic can tolerate +/-10% voltage inaccuracy. Remote Sense, while allowing fine voltage tracking at the very load point, creates a long loop that opens the Pandora box of potential closed-loop instability. The digital logic is more sensitive to transients than to the absolute voltage levels. The argument goes that the design should therefore focus on providing fast dynamic response rather than the static accuracy. 
 
 <p align="center" width="100%">
-    <img width="65%" src="0.doc/images/Buck-Remote-Sense.0.JPG">
-    <img width="65%" src="0.doc/images/Buck-Remote-Sense.1.JPG">
-    <img width="65%" src="0.doc/images/Buck-Remote-Sense.2.png">
+    <img alt="DC/DC buck remote sense, part 1" width="65%" src="0.doc/images/Buck-Remote-Sense.0.JPG">
+    <img alt="DC/DC buck remote sense, part 2" width="65%" src="0.doc/images/Buck-Remote-Sense.1.JPG">
+    <img alt="DC/DC buck remote sense, part 3" width="65%" src="0.doc/images/Buck-Remote-Sense.2.png">
 </p>
 
 Check [here](https://e2e.ti.com/support/power-management-group/power-management/f/power-management-forum/1588097/tps54kc23-tps54kc23-remote-sense-stability-or-not) to see what the TI experts had to say on this question.
@@ -329,11 +329,11 @@ When the backplane comes out of the reflow oven with all components soldered, an
 
 **[13] [PMOD Interface Spec](0.doc/PMOD-interface-spec.V1_2_0.pdf)**
 
-**[14] Auto-routers: [Haas](https://github.com/drandyhaas/Ti375G529_projects/tree/main/LVDS_LPDDR4_G529/kicad/autorouter), [Ortho](https://bbenchoff.github.io/pages/OrthoRoute.html), [JITX (proprietary)](https://www.jitx.com)**
+**[14] Auto-routers: [Haas](https://github.com/drandyhaas/KiCadRoutingTools), [Ortho](https://bbenchoff.github.io/pages/OrthoRoute.html), [JITX (proprietary)](https://www.jitx.com)**
 
 **[15] [KiCanvas](https://kicanvas.org)**: Browser-based, interactive viewer for KiCAD schematics and boards
 
-**[16] [IHP_Flow_4_PCB](https://github.com/EngGhaith/VMH_Flow_4_PCB)**
+**[16] [VMH_Flow_4_PCB](https://github.com/EngGhaith/VMH_Flow_4_PCB)**: the openEMS workflow for IHP SG13G2, applied to PCBs
 
 ------
 #### End of Document

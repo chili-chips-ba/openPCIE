@@ -5,7 +5,7 @@ This is an opensource variant of what was first tested with the
 It is an extra / bonus deliverable, above and beyond our original plans.
 
 - [x] ✔️ Hardware FSM replaced with an opensource RISC-V based SOC
-- [x] ✔️ PCIe IP core replaced with opensource RTL
+- [x] ✔️ PCIE IP core replaced with opensource RTL
 - [x] ✔️ Builds with a **fully opensource toolchain**
 - [x] ✔️ Enumerates an ASM1184e switch and the endpoints behind it
 - [x] ✔️ SOC uses PeakRDL for CSR generation, from the same `csr.rdl` as RC-direct
@@ -13,7 +13,7 @@ It is an extra / bonus deliverable, above and beyond our original plans.
 The objectives of this dev track were to:
  - first design an opensource _RC-switched_ core, based on the already tested
    and familiarized with proprietary core
- - then validate and showcase its operation in a Switched PCIe context,
+ - then validate and showcase its operation in a Switched PCIE context,
    repeating the test procedure used for the AMD solution.
 
 With both this indirect/switched and [RC-direct](../2.RC-direct.opensource)
@@ -29,7 +29,7 @@ applications upon...
 |---|---|
 | Target device | `xc7a200tfbg484-3`, Acorn CLE-215P |
 | Switch | ASM1184e, 1 upstream + 4 downstream ports |
-| Link | PCIe Gen2 x1 |
+| Link | PCIE Gen2 x1 |
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
@@ -53,7 +53,7 @@ ASM1184e on the RevA backplane is fed by an undersized LDO - see slide 17 of the
 
 In the RTL: nothing. RC-direct and RC-switched are built from the very same
 sources in [`0.common.opensource`](../0.common.opensource) - one top
-(`RC_opensource`), one SOC, one PCIe stack. A switch changes nothing at
+(`RC_opensource`), one SOC, one PCIE stack. A switch changes nothing at
 the physical or link layer; the root port still trains a plain Gen2 x1 link, and
 what it talks to on the far end happens to be a switch upstream port instead of
 an endpoint. Everything that changes is one level up, in how Configuration TLPs
@@ -108,7 +108,7 @@ request either way. What does differ between the two projects:
 
 The AMD design drives the sequence from a 46-entry ROM
 (`cgator_cfg_rom.data`). Here it is plain C, in
-[`3.sw/RC-switched/main.c`](../../3.sw/RC-switched/main.c) on top of the PCIe
+[`3.sw/RC-switched/main.c`](../../3.sw/RC-switched/main.c) on top of the PCIE
 request layer both firmwares share ([`3.sw/common`](../../3.sw/common)), and it walks the same
 steps in the same order, producing the same bus map:
 
@@ -174,11 +174,11 @@ answered with CRS are re-issued up to 100 times.
 ```
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
-    RC_opensource.sv              top level: refclk buffer, PCIe bridge, SOC, LEDs
+    RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
     riscv_pcie_soc.sv             picorv32 SOC + the Type 0/Type 1 routing above
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
     picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
-    pcie/                         the opensource PCIe stack
+    pcie/                         the opensource PCIE stack
   xdc/
     RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
   RC.opensource.tcl               the Vivado project script behind both wrappers
@@ -189,7 +189,7 @@ answered with CRS are re-issued up to 100 times.
   RC-switched.opensource.tcl      regenerates the Vivado project from scratch
 ```
 
-For a file-by-file walk through the PCIe stack, see the
+For a file-by-file walk through the PCIE stack, see the
 [RC-direct README](../2.RC-direct.opensource/README.md), which applies here
 unchanged.
 
@@ -233,8 +233,8 @@ cd 4.build/sw_build
 make VARIANT=switched
 ```
 
-No `make clean` is needed to switch variants - the make file tracks the build
-configuration and rebuilds by itself.
+No `make clean` is needed to switch variants - every `make` there rebuilds the
+firmware from scratch (about a second).
 
 ### Vivado
 

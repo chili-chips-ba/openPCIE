@@ -17,8 +17,8 @@
 # firmware.hex -- riscv_pcie_soc.sv reads it with $readmemh("firmware.hex", ram),
 # one 32-bit word per line, hex, no prefix.
 #
-# The two variants share the output names, so switching variant means a clean
-# rebuild:  make clean && make VARIANT=switched
+# The two variants share the output names. Every make rebuilds from scratch
+# (see FORCE below), so switching variant needs no make clean.
 # =============================================================================
 
 # ---- Variant ----------------------------------------------------------------

@@ -169,16 +169,11 @@ BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)
 CONV_TIMESTAMP    = $(CONV_DIR)/.conversion_timestamp
 EXTRACT_TIMESTAMP = $(EXTRACTED_DIR)/.extraction_timestamp
 
-# Records the configuration the last build used, so that make can see a change
-# that lives only in a variable. Rewritten only when the signature really
-# changes, so an unchanged setup never re-triggers a build. One per variant,
-# matching the per-variant output directories.
-BUILD_CFG = .build-config$(OUT_SFX)
-BUILD_SIG := $(VARIANT)-$(CSR)
-
-$(BUILD_CFG): FORCE
-	@[ "$$(cat $@ 2>/dev/null)" = "$(BUILD_SIG)" ] || echo "$(BUILD_SIG)" > $@
-
+# Every make rebuilds the design from scratch (see the sv2v rule below). File
+# dates cannot be trusted -- a tree on a network share, or copied off one, can
+# carry timestamps from the future -- and switching CSR changes only the file
+# list, not any file. Rebuilding always sidesteps both. Only the chipdb, which
+# depends on the part and not on the design, stays cached.
 FORCE:
 
 # =============================================================================
@@ -224,8 +219,7 @@ SV_ORDERED = $(SV_PKG) $(SV_CSR_PKG) $(SV_IF) $(SV_PCIE_REST) $(SV_CSR) $(SV_TOP
         clean clean-converted clean-all info help FORCE
 
 # Must be explicit. The default goal is otherwise the first target in the file,
-# and that is the FORCE rule up in the BUILD_CFG section (.build-config is
-# skipped, make never picks a target starting with a period). Plain "make" then
+# and that is the FORCE rule further up. Plain "make" then
 # answers "Nothing to be done for 'FORCE'" and builds nothing.
 .DEFAULT_GOAL := all
 
@@ -322,13 +316,9 @@ check-sources:
 
 convert: $(EXTRACT_TIMESTAMP)
 
-# Switching CSR changes only the FILE LIST, not any file, so without the two
-# extra prerequisites below make would compare the timestamp against unchanged
-# sources, decide it is up to date, and quietly leave the previous conversion --
-# and therefore the previous bitstream -- in place. See BUILD_SIG above.
-# (VARIANT needs no such guard: it selects a separate $(CONV_DIR) and
-# $(BUILD_ARTIFACTS), so the two variants never share an output.)
-$(CONV_TIMESTAMP): $(SV_ORDERED) $(wildcard ../config.mk) $(BUILD_CFG) | check-sv2v
+# FORCE: always reconvert, so every later step -- synthesis, place & route,
+# bitstream -- runs again too. See the FORCE rule above.
+$(CONV_TIMESTAMP): $(SV_ORDERED) FORCE | check-sv2v
 	@echo "================================================================"
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
@@ -496,7 +486,7 @@ $(BUILD_ARTIFACTS)/top.bit: $(BUILD_ARTIFACTS)/top.frames
 # =============================================================================
 
 clean:
-	rm -rf $(BUILD_ARTIFACTS) firmware.hex $(BUILD_CFG)
+	rm -rf $(BUILD_ARTIFACTS) firmware.hex .build-config$(OUT_SFX)
 
 clean-converted:
 	rm -rf $(CONV_DIR)

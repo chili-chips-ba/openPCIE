@@ -13,16 +13,16 @@ serves as the reference the opensource variant is measured against.
 
 - **`0.common.opensource`**
   The RTL both Root Complex designs are built from - one top (`RC_opensource`),
-  the RISC-V SoC, the CSR wrapper, the opensource PCIe stack - plus the shared
+  the RISC-V SoC, the CSR wrapper, the opensource PCIE stack - plus the shared
   constraints and the Vivado project script. The two RC folders below hold only
   what really differs: the GT lane their x1 link uses (a one-line XDC) and a short
   wrapper that runs the shared script for them. The firmware differs too; it
   lives in [`3.sw`](../3.sw).
 
 - **`1.EP.opensource`**
-  Opensource PCIe EndPoints, used as the link partner when testing our Root
+  Opensource PCIE EndPoints, used as the link partner when testing our Root
   Complex. Rather than duplicating them here, this directory points to the
-  existing upstream projects - LiteFury PCIe EP, regymm's pcie_7x and LitePCIe -
+  existing upstream projects - LiteFury PCIE EP, regymm's pcie_7x and LitePCIe -
   any of which can be built on the side and paired with our RC. The
   [`1.EP.amd`](../2.amd-rtl-with-Vivado-build/1.EP.amd) replica is also available
   for the same purpose.
@@ -30,11 +30,11 @@ serves as the reference the opensource variant is measured against.
 - **`2.RC-direct.opensource`** — **implemented and working**
   
   A Root Complex design for **Direct (Point-to-Point)** connection, and the core
-  of the project. It includes the full stack: the opensource PCIe logic around the
+  of the project. It includes the full stack: the opensource PCIE logic around the
   `PCIE_2_1` and `GTPE2_CHANNEL` hard macros, a RISC-V SoC, and the software
   running on it.
 
-  Verified on hardware: **PCIe Gen2 x1, link up and trained** in a direct RC-to-EP
+  Verified on hardware: **PCIE Gen2 x1, link up and trained** in a direct RC-to-EP
   configuration. As a bonus, **Gen2 x4** has also been tested on hardware; x1
   remains the checked-in default. It builds both with Vivado and with a
   [fully opensource toolchain](../4.build/hw_build.openXC7) - sv2v, yosys,
@@ -44,7 +44,7 @@ serves as the reference the opensource variant is measured against.
   
   A Root Complex design for a **Switched** topology (RC ⇔ Switch ⇔ EP).
 
-  Verified on hardware through a standard PCIe switch (ASM1184e).
+  Verified on hardware through a standard PCIE switch (ASM1184e).
 
 
 ---
@@ -71,7 +71,7 @@ offsets.
 
 ### Common Physical Constraints (XDC)
 
-The **XDC file** is critical for mapping the logical PCIe signals to the specific physical pins on the `Acorn CLE-215+` board and the `openPCIE Backplane`. The following key elements are mandatory in all designs:
+The **XDC file** is critical for mapping the logical PCIE signals to the specific physical pins on the `Acorn CLE-215+` board and the `openPCIE Backplane`. The following key elements are mandatory in all designs:
 
 1.  **Clock Request (CRITICAL):**
     The backplane's clock generator will **NOT** output the 100 MHz reference clock unless the `CLKREQ#` pin (Pin **G1**) is actively driven **LOW**. If this is missing from the constraints, the FPGA will receive no clock, and the link will never establish.
@@ -85,7 +85,7 @@ The **XDC file** is critical for mapping the logical PCIe signals to the specifi
     The `LOC` alone is also **sufficient**: GT pads are dedicated, so each `GTPE2_CHANNEL` site fixes its own four RX/TX pins. The Vivado XDC files in this project therefore carry no `PACKAGE_PIN` constraints on the GT ports. (The openXC7 flow is the opposite case - nextpnr needs the pins and cannot take the `LOC`; see [`4.build/hw_build.openXC7`](../4.build/hw_build.openXC7/README.md#gt-channel).)
 
     **Procedure to identify the correct channel:**
-    1.  **Schematic Check:** Consult the [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master) schematic to map the physical M.2 or PCIe connector pins to the specific FPGA **Package Pins**.
+    1.  **Schematic Check:** Consult the [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master) schematic to map the physical M.2 or PCIE connector pins to the specific FPGA **Package Pins**.
     2.  **Vivado Device View:** Open the **Device Window** in Vivado, locate those specific RX/TX package pins, and identify the **GTP Channel Primitive** associated with them.
 
     <div align="center">

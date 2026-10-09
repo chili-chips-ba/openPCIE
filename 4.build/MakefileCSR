@@ -16,7 +16,7 @@
 #   csr.sv        : the CSR RTL for the hardware target
 #   csr_pkg.sv    : the hwif_in / hwif_out struct package for that RTL
 #   csr.h         : "peakrdl c-header" output, used by both HAL headers
-#   csr_hw.h      : HAL for the picorv32 target (and for the rv32 ISS)
+#   csr_hw.h      : C++ HAL for the hardware target (the C firmware uses csr.h)
 #   csr_cosim.h   : HAL for the VProc based co-simulation
 #   openpcie.md   : the register map as markdown
 #   html/         : the register map as a browsable HTML document

@@ -1,6 +1,6 @@
-# _openpcie2-rc_ Build
+# _openPCIE_ Build
 
-The build process for the _openpcie2-rc_ project consists of three steps:
+The build process for the _openPCIE_ project consists of three steps:
 - Compilation of the control and status registers (CSR) from their RDL
   specification into RTL for the hardware design and a hardware abstraction
   layer (HAL) for the software application
@@ -76,7 +76,7 @@ clock cycles. The `-v` and `-d` options have no affect if the `-c` option is not
 used. Finally the *VProc* test bench `soc_cpu` module's clock period in
 picoseconds can be specified for use in co-simulation abstraction of delay and
 timing functions. It defaults to 16000, i.e. the 62.5 MHz `user_clk` that the
-PCIe hard macro hands to `riscv_pcie_soc` in an x1 Gen2 link with a 64-bit
+PCIE hard macro hands to `riscv_pcie_soc` in an x1 Gen2 link with a 64-bit
 datapath.
 
 To generate all the required HAL headers and RTL a make file is provided as
@@ -88,7 +88,7 @@ To generate all the required HAL headers and RTL a make file is provided as
   * `csr.sv`        : The RTL for hardware target
   * `csr_pkg.sv`    : The structured RTL interface for hardware target
   * `csr.h`         : The `peakrdl c-header` output file used by the target header
-  * `csr_hw.h`      : The HAL for the RISC-V hardware target (and for the *rv32* ISS)
+  * `csr_hw.h`      : The C++ HAL for the hardware target, for C++ applications (the C firmware uses `csr.h`, see below)
   * `csr_cosim.h`   : The HAL for the *VProc* based openPCIE logic simulation test bench
   * `openpcie.md`   : The register map as markdown
   * `html/`         : The register map as a browsable HTML document
@@ -203,13 +203,13 @@ RISC-V toolchain and comparing the output: `firmware.bin` is byte-identical,
 for both RC-direct and RC-switched.
 
 The PeakRDL path is also the one exercised by the
-[co-simulation](../5.sim), which runs the real firmware against a PCIe endpoint
+[co-simulation](../5.sim), which runs the real firmware against a PCIE endpoint
 model and ends with the memory read-back check passing.
 
 ## SW Compilation
 
 Sources are in [`3.sw`](../3.sw): what both RC variants share in
-[`common`](../3.sw/common) (`start.S`, `sections.lds`, the PCIe request layer
+[`common`](../3.sw/common) (`start.S`, `sections.lds`, the PCIE request layer
 `pcie.c`/`.h`), and one `main.c` per variant in [`RC-direct`](../3.sw/RC-direct)
 and [`RC-switched`](../3.sw/RC-switched). This step only builds them. A Makefile is
 provided as `4.build/sw_build/Makefile`. Running `make` in that directory
@@ -282,7 +282,7 @@ The two variants keep separate output directories, so they never overwrite each
 other. They do share `../sw_build/firmware.hex`, so build the matching firmware
 first.
 
-**Verified on hardware:** the resulting bitstream brings the PCIe link up at
+**Verified on hardware:** the resulting bitstream brings the PCIE link up at
 **Gen2** against a second Artix-7 board acting as endpoint - the same state the
 Vivado bitstream reaches from identical RTL.
 
