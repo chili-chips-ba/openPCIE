@@ -518,8 +518,8 @@ These results confirm that PCIe link initialization and RC-to-EP data transfer o
 We are grateful to **NLnet Foundation** for their sponsorship of this development activity.
 
 <p align="center">
-   <a href="https://nlnet.nl"><img src="https://github.com/chili-chips-ba/openeye/assets/67533663/18e7db5c-8c52-406b-a58e-8860caa327c2"></a>
-   <a href="https://ngi.eu"><img width="25%" alt="NGI-Entrust-Logo" src="https://github.com/chili-chips-ba/openeye-CamSI/assets/67533663/013684f5-d530-42ab-807d-b4afd34c1522"></a>
+   <a href="https://nlnet.nl/project/OpenCologne-PCIe"><img width="15%" alt="NLnet logo" src="0.doc/artwork/NLnet-logo.png"></a>
+   <a href="https://nlnet.nl/core"><img width="15%" alt="NGI Zero, Next Gen Internet" src="0.doc/artwork/NGI0-logo.png"></a>
 </p>
 
 This project was funded through the NGI0 Core Fund, a fund established by NLnet with financial support from the European Commission's Next Generation Internet programme, under the aegis of DG Communications Networks, Content and Technology under grant agreement No 101092990.
