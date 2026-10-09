@@ -122,30 +122,37 @@ module clk_synth
     .STARTUP_WAIT         ("FALSE"),
     .DIVCLK_DIVIDE        (DIVCLK_DIVIDE),
     .CLKFBOUT_MULT_F      (CLKFBOUT_MULT_F),
-    .CLKFBOUT_PHASE       (0.000),
     .CLKFBOUT_USE_FINE_PS ("FALSE"),
     .CLKOUT0_DIVIDE_F     (CLKOUT0_DIVIDE_F),
-    .CLKOUT0_PHASE        (0.000),
-    .CLKOUT0_DUTY_CYCLE   (0.500),
     .CLKOUT0_USE_FINE_PS  ("FALSE"),
     .CLKOUT1_DIVIDE       (CLKOUT1_DIVIDE),
-    .CLKOUT1_PHASE        (0.000),
-    .CLKOUT1_DUTY_CYCLE   (0.500),
     .CLKOUT1_USE_FINE_PS  ("FALSE"),
     .CLKOUT2_DIVIDE       (CLKOUT2_DIVIDE),
-    .CLKOUT2_PHASE        (0.000),
-    .CLKOUT2_DUTY_CYCLE   (0.500),
     .CLKOUT2_USE_FINE_PS  ("FALSE"),
     .CLKOUT3_DIVIDE       (CLKOUT3_DIVIDE),
-    .CLKOUT3_PHASE        (0.000),
-    .CLKOUT3_DUTY_CYCLE   (0.500),
     .CLKOUT3_USE_FINE_PS  ("FALSE"),
     .CLKOUT4_DIVIDE       (CLKOUT4_DIVIDE),
+    .CLKOUT4_USE_FINE_PS  ("FALSE"),
+  // SYN_YOSYS_BUG: Yosys's SystemVerilog front end (read_slang / sv-elab)
+  // cannot pass real-valued parameters to a primitive -- see
+  // https://github.com/povik/sv-elab/issues/282 . The values below are all
+  // MMCME2_ADV defaults, so leaving them out builds the same MMCM. Only the
+  // openXC7 slang flow defines SYN_YOSYS_BUG; Vivado and sv2v use the block.
+`ifndef SYN_YOSYS_BUG
+    .CLKFBOUT_PHASE       (0.000),
+    .CLKOUT0_PHASE        (0.000),
+    .CLKOUT0_DUTY_CYCLE   (0.500),
+    .CLKOUT1_PHASE        (0.000),
+    .CLKOUT1_DUTY_CYCLE   (0.500),
+    .CLKOUT2_PHASE        (0.000),
+    .CLKOUT2_DUTY_CYCLE   (0.500),
+    .CLKOUT3_PHASE        (0.000),
+    .CLKOUT3_DUTY_CYCLE   (0.500),
     .CLKOUT4_PHASE        (0.000),
     .CLKOUT4_DUTY_CYCLE   (0.500),
-    .CLKOUT4_USE_FINE_PS  ("FALSE"),
-    .CLKIN1_PERIOD        (CLKIN1_PERIOD),
-    .REF_JITTER1          (0.010)
+    .REF_JITTER1          (0.010),
+`endif
+    .CLKIN1_PERIOD        (CLKIN1_PERIOD)
   ) mmcm_i (
     .CLKIN1       (refclk),
     .CLKIN2       (1'd0),

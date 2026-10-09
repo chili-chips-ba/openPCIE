@@ -290,8 +290,11 @@ Two things are worth knowing before the first build, both covered in detail in
 [`hw_build.openXC7/README.md`](./hw_build.openXC7/README.md):
 
 - **The nextpnr-xilinx version is critical.** Only commit `45a986b` works; the
-  version from the official installer is too old and current master has a router
-  regression.
+  version from the official installer was too old and the later master had a
+  router regression. That is the *old* openXC7 toolchain, which this project was
+  validated with; openXC7 has since replaced it with a new one that this flow has
+  not been ported to - see
+  [Old and new openXC7 toolchain](./hw_build.openXC7/README.md#old-and-new-openxc7-toolchain).
 - **nextpnr's GT attribute defaults do not match the Xilinx library.** Where the
   RTL omits an attribute, Vivado fills it from `unisim` while nextpnr substitutes
   its own default - almost always `0`. `lane_xcvr.sv` therefore sets 20 of them

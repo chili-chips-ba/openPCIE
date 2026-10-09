@@ -77,6 +77,42 @@ indices and failures that look like router bugs. The Makefile takes all four fro
 
 ---
 
+## Old and new openXC7 toolchain
+
+**This project was built and validated on hardware with the *old* openXC7
+toolchain**, and everything on this page refers to it:
+
+| Tool | Version used |
+|---|---|
+| nextpnr | `nextpnr-xilinx` at commit `45a986b` (Apr 2026), built from source as above |
+| Yosys | 0.38, from the openXC7 snap |
+| Bitstream | prjxray `fasm2frames` + `xc7frames2bit`, from the openXC7 snap |
+| SV conversion | `sv2v` |
+
+Since then, openXC7 has moved on. `nextpnr-xilinx` is archived, the `openxc7`
+snap is no longer published, and the one-line installer this page used to point
+to is gone. The **new** toolchain is built from source by
+[`toolchain-sources-builder.sh`](https://github.com/openXC7/toolchain-installer)
+(or installed through Nix or Apio, see that page):
+
+| Tool | New toolchain (as of Oct 2026) |
+|---|---|
+| nextpnr | [`openXC7/nextpnr`](https://github.com/openXC7/nextpnr), the *himbaechel* Xilinx engine |
+| Yosys | v0.69 |
+| Bitstream | `fpga-as`, replacing `fasm2frames` + `xc7frames2bit` |
+
+**The Makefile here has not been ported to the new toolchain, and no bitstream
+built with it has been tested on hardware.** Expect differences in the nextpnr
+binary and its options, in chipdb handling and in the bitstream step. Whether
+the openXC7 defects documented below still apply to the new engine has not been
+checked; some may be fixed there.
+
+To reproduce the validated result, use the old toolchain. `45a986b` can still be
+fetched from the archived repository, as shown under
+[Building the right version](#building-the-right-version).
+
+---
+
 ## ⚠ nextpnr's GT attribute defaults do not match Xilinx's
 
 **This was the root cause of the design not working on hardware, and it is the
@@ -222,14 +258,12 @@ implementation and bitstream, 0 errors, 0 critical warnings, link up at Gen2.
 
 ### 1. openXC7 toolchain
 
-Provides `yosys` and the prjxray tools. On Ubuntu 22.04:
-
-```bash
-wget -qO - https://raw.githubusercontent.com/openXC7/toolchain-installer/main/toolchain-installer.sh | bash
-```
-
-Then build nextpnr `45a986b` as above - the snap's nextpnr is not usable for this
-design.
+Provides `yosys` and the prjxray tools. This project used the openXC7 snap of
+the time (Yosys 0.38, prjxray `fasm2frames` / `xc7frames2bit`) together with
+nextpnr `45a986b` built as above - the snap's own nextpnr was not usable for this
+design. The snap and its installer script no longer exist; see
+[Old and new openXC7 toolchain](#old-and-new-openxc7-toolchain) for what replaces
+them, and for the fact that this flow has not been validated with the new one.
 
 ### 2. sv2v
 
