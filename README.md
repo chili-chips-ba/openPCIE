@@ -518,7 +518,7 @@ These results confirm that PCIe link initialization and RC-to-EP data transfer o
 We are grateful to **NLnet Foundation** for their sponsorship of this development activity.
 
 <p align="center">
-   <a href="https://nlnet.nl/project/OpenCologne-PCIe"><img width="15%" alt="NLnet logo" src="0.doc/artwork/NLnet-logo.png"></a>
+   <a href="https://nlnet.nl/project/OpenCologne-PCIe"><img width="30%" alt="NLnet logo" src="0.doc/artwork/NLnet-logo.png"></a>
    <a href="https://nlnet.nl/core"><img width="15%" alt="NGI Zero, Next Gen Internet" src="0.doc/artwork/NGI0-logo.png"></a>
 </p>
 
