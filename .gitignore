@@ -79,6 +79,12 @@ kibot_*.kicad_pro
 4.build/hw_build.openXC7/converted.switched/
 4.build/hw_build.openXC7/build_artifacts*/*
 !4.build/hw_build.openXC7/build_artifacts*/top.bit
+# New openXC7 toolchain (TOOLCHAIN=new): not hardware-validated, so its
+# bitstreams are NOT kept. Directory rules win over the top.bit exception above.
+4.build/hw_build.openXC7/build_artifacts*.new/
+4.build/hw_build.openXC7/build_artifacts*.slang/
+4.build/hw_build.openXC7/converted*.new/
+4.build/hw_build.openXC7/chipdb.new/
 
 #--------
 # Sim build products (5.sim)
