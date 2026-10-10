@@ -360,19 +360,13 @@ implementation and bitstream, 0 errors, 0 critical warnings, link up at Gen2.
 
 ### 1. openXC7 toolchain
 
-Provides `yosys` and the prjxray tools. This project used the openXC7 snap of
-the time (Yosys 0.38, prjxray `fasm2frames` / `xc7frames2bit`) together with
-nextpnr `45a986b` built as above - the snap's own nextpnr was not usable for this
-design. The snap and its installer script no longer exist; see
-[Old and new openXC7 toolchain](#old-and-new-openxc7-toolchain) for what replaces
-them, and [Building with the new toolchain](#building-with-the-new-toolchain)
-for how to use it.
+Provides `yosys` and the prjxray tools. This project used the openXC7 snap of the time (Yosys 0.38, prjxray `fasm2frames` / `xc7frames2bit`) together with nextpnr `45a986b` built as above - the snap's own nextpnr was not usable for this design. The snap and its installer script no longer exist; see [Old and new openXC7 toolchain](#old-and-new-openxc7-toolchain) for what replaces them, and [Building with the new toolchain](#building-with-the-new-toolchain) for how to use it.
 
 ### 2. sv2v
 
-**Not optional.** Yosys does not understand SystemVerilog packages, interfaces or
-packed structs, and this design uses all three (`link_pkg`, `stream_if`,
-`phy_lanes_if`).
+**Not optional with pre-v1.0.0 openXC7.** Yosys does not understand SystemVerilog packages, interfaces or packed structs, and this design uses all three (`link_pkg`, `stream_if`, `phy_lanes_if`).
+
+However, Yosys 0.69 that's packaged up into openXC7 v1.0.0 comes with Slang front-end, which was shown as sufficient for our SV design sources. Granted, the SV2V is still more polished, but not critical as it used to be.
 
 ```bash
 wget https://github.com/zachjs/sv2v/releases/latest/download/sv2v-Linux.zip
@@ -387,9 +381,7 @@ the sw_build stage must have run first. The Makefile expects
 
 ### 4. The generated CSR
 
-By default the SOC instantiates `soc_csr.sv`, which wraps the register block
-PeakRDL generates from `../csr_build/csr.rdl`. Two of the files that go into
-sv2v therefore come out of `../csr_build/generated-files/`:
+By default the SOC instantiates `soc_csr.sv`, which wraps the register block PeakRDL generates from `../csr_build/csr.rdl`. Two of the files that go into sv2v therefore come out of `../csr_build/generated-files/`:
 
 ```bash
 cd ..                     # 4.build/
@@ -398,24 +390,19 @@ make -f MakefileCSR       # -> csr_build/generated-files/{csr_pkg,csr}.sv
 
 They are checked in, so this is only needed after editing `csr.rdl`.
 
-Which register block gets built is set once, in
-[`4.build/config.mk`](../config.mk), and read by this build, the Vivado project
-and the firmware alike, so hardware and software are never built different ways:
+Which register block gets built is set once, in [`4.build/config.mk`](../config.mk), and read by this build, the Vivado project and the firmware alike, so hardware and software are never built different ways:
 
 ```makefile
 CSR ?= peakrdl        # or: legacy
 ```
 
-With `legacy` no generated file is needed at all. To override the file for a
-single build:
+With `legacy` no generated file is needed at all. To override the file for a single build:
 
 ```bash
 make CSR=legacy
 ```
 
-That passes `-DSOC_CSR_LEGACY` to sv2v and drops `csr_pkg.sv`, `csr.sv` and
-`soc_csr.sv` from the file list. The two register blocks are functionally
-identical, down to the byte offsets, so the same firmware runs on either.
+That passes `-DSOC_CSR_LEGACY` to sv2v and drops `csr_pkg.sv`, `csr.sv` and `soc_csr.sv` from the file list. The two register blocks are functionally identical, down to the byte offsets, so the same firmware runs on either.
 
 ---
 
@@ -439,15 +426,9 @@ make VARIANT=switched  # full build -> build_artifacts.switched/top.bit
 | `make clean-converted` | remove `converted/` |
 | `make clean-all` | all of the above, plus `chipdb/` |
 
-With `VARIANT=switched` the clean targets act on `build_artifacts.switched/` and
-`converted.switched/` instead.
+With `VARIANT=switched` the clean targets act on `build_artifacts.switched/` and `converted.switched/` instead.
 
-`VARIANT=switched` gives the switched build its own `converted.switched/` and
-`build_artifacts.switched/`, so the two never overwrite each other and neither
-picks up the other one's stale intermediates. The `chipdb/` is shared - it
-depends on the part, not on the design. What is **not** separated is
-`../sw_build/firmware.hex`, so build the matching firmware first
-(`make VARIANT=switched` over in `sw_build/`).
+`VARIANT=switched` gives the switched build its own `converted.switched/` and `build_artifacts.switched/`, so the two never overwrite each other and neither picks up the other one's stale intermediates. The `chipdb/` is shared - it depends on the part, not on the design. What is **not** separated is `../sw_build/firmware.hex`, so build the matching firmware first (`make VARIANT=switched` over in `sw_build/`).
 
 **Every `make` rebuilds the design from scratch**, from sv2v to the bitstream;
 only the chipdb is kept. Switching `CSR` changes only the **file list**, not any
