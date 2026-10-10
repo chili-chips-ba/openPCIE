@@ -478,7 +478,7 @@ Every openXC7 issue this project has run into, rechecked on the new toolchain (o
 | 18 | "Overriding derived constraint" warning prints its values swapped | new | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) |
 | 19 | Yosys: wrong `IBUFDS_GTE2.CLKSWING_CFG` default | new, Slang front end | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) |
 | 20 | sv-elab: no `real` primitive parameters | new, Slang front end | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) |
-| 21 | nextpnr leaves a truncated FASM on error, which `fpga-as` still assembles | new; the Makefile checks nextpnr's exit status | - |
+| 21 | nextpnr leaves a truncated FASM on error, which `fpga-as` still assembles | new; the Makefile checks nextpnr's exit status | [#26](https://github.com/chili-chips-ba/openPCIE/issues/26) |
 
 -----------
 #### End-of-Document
