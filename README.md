@@ -70,7 +70,9 @@ With the full end-to-end simulation thus in place, we hope that the need for har
  - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
  - [x] ✔ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
-Given that PCIE is an advanced, high-speed design, and our acute awareness of _nextpnr-xilinx_ and openXC7 shortcomings, we expected to run into showstoppers, and hoped that the upcoming _ScalePNR_ flow would be ready in time. In the end, _nextpnr-xilinx_ was enough: the openXC7 bitstream brings the link up at **Gen2** on hardware, the same as the Vivado one. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues worth filing against the toolchain. We have also tested it with _openXC7_ Fall 2026 update, which was a major step forward that brought to the forefront Yosys 0.69 with integrated Slang, nextpnr-himbaechel and fpga-as. With that, our earlier discrete SV2V preparatory step for SystemVerilog was not needed any longer.
+Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
+
+The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what "ScalePNR" idea eventually had evolved into. It brought to the forefront Yosys0.69 with integrated **Slang, nextpnr-himbaechel** (instead of _nextpnr-xilinx_) and _fpga-as_. With that, the earlier SV2V standalone preparatory step for our SystemVerilog design sources proved to be unnecessary, which greatly simplifies the build.
 
 
 --------------------
@@ -80,7 +82,7 @@ Given that PCIE is an advanced, high-speed design, and our acute awareness of _n
 The project relies on a modular hardware ecosystem that combines our custom-designed openPCIE Backplane with SQRL Acorn CLE-215+ FPGA modules and various PCIE adapters to create a flexible testing platform.
 
 <p align="center">
- <img alt="openPCIE hardware ecosystem" src="0.doc/pictures/openPCIE-hardware-ecosystem.jpg" width="80%">
+ <img alt="openPCIE hardware ecosystem" src="0.doc/pictures/openPCIE-hardware-ecosystem.jpg" width="60%">
 </p>
 
 
@@ -109,10 +111,10 @@ The system consists of two main components:
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img alt="M.2 FPGA module, top view" src="0.doc/pictures/M.2 FPGA Module (Top View).png" width="100%">
+      <img alt="M.2 FPGA module, top view" src="0.doc/pictures/M.2 FPGA Module (Top View).png" width="60%">
     </td>
     <td align="center" style="border: none;">
-      <img alt="M.2 FPGA module, bottom view" src="0.doc/pictures/M.2 FPGA Module (Bottom View).png" width="90%">
+      <img alt="M.2 FPGA module, bottom view" src="0.doc/pictures/M.2 FPGA Module (Bottom View).png" width="60%">
     </td>
   </tr>
   <tr style="border: none;">
@@ -126,10 +128,10 @@ The system consists of two main components:
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-      <img alt="PCIE adapter board, top view" src= "0.doc/pictures/PCIe Adapter Board (Top View).png" width="100%">
+      <img alt="PCIE adapter board, top view" src= "0.doc/pictures/PCIe Adapter Board (Top View).png" width="60%">
     </td>
     <td align="center" style="border: none;">
-      <img alt="PCIE adapter board, bottom view" src="0.doc/pictures/PCIe Adapter Board (Bottom View).png" width="90%">
+      <img alt="PCIE adapter board, bottom view" src="0.doc/pictures/PCIe Adapter Board (Bottom View).png" width="60%">
     </td>
   </tr>
   <tr style="border: none;">
@@ -140,7 +142,7 @@ The system consists of two main components:
 
 
 <p align="center">
-  <img alt="Fully assembled Acorn CLE-215+" src="0.doc/pictures/The fully assembled Acorn CLE-215+.png" width="80%">
+  <img alt="Fully assembled Acorn CLE-215+" src="0.doc/pictures/The fully assembled Acorn CLE-215+.png" width="60%">
   <br>
   <b>The fully assembled Acorn CLE-215+ development board, ready for use in a PCIE slot.</b>
 </p>
@@ -225,13 +227,13 @@ Properly programming and operating the Artix-7 FPGA on the SQRL board required t
 
 The JTAG connector on the Acorn CLE-215+ is non-standard and not directly compatible with the standard 14-pin connector on the Xilinx Platform Cable. A custom adapter cable is therefore required.
 
-<table align="center" style="border: none; border-collapse: collapse; width: 100%;">
+<table align="center" style="border: none; border-collapse: collapse; width="60%">
   <tr style="border: none;">
-    <td align="center" style="border: none;" width="70%">
-      <img alt="FPGA JTAG connection" src="0.doc/pictures/FPGA-JTAG.jpg" width="100%">
+    <td align="center" style="border: none;" width="60%">
+      <img alt="FPGA JTAG connection" src="0.doc/pictures/FPGA-JTAG.jpg" width="60%">
     </td>
     <td align="center" style="border: none;" width="30%">
-      <img alt="JTAG connector pinout on the board" src="0.doc/pictures/JTAG Connector Pinout on the Board.png" width="59%">
+      <img alt="JTAG connector pinout on the board" src="0.doc/pictures/JTAG Connector Pinout on the Board.png" width="50%">
     </td>
   </tr>
   <tr style="border: none;">
@@ -249,7 +251,7 @@ To simplify making the cable, we highly recommend purchasing a pre-assembled cab
 This cable has the correct female connector on both ends. The easiest method is to **cut the cable in half**, which gives you two connector cables with open ends. You can then splice one of these cable ends onto the wires of your Xilinx programmer cable, matching the signals according to the following wiring diagram.
 
 <p align="center">
-  <img alt="Acorn JTAG wiring diagram" src="0.doc/pictures/acorn-jtag-wiring-diagram.PNG" style="width:90%; height:90%;">
+  <img alt="Acorn JTAG wiring diagram" src="0.doc/pictures/acorn-jtag-wiring-diagram.PNG" width="60%">
   <br><em>JTAG Connection Guide: Physical Pinout and Wiring Diagram.</em>
 </p>
 
@@ -258,7 +260,7 @@ This cable has the correct female connector on both ends. The easiest method is 
 The board cannot be programmed or operated solely from the PCIE/M.2 slot power. It requires an external 12V supply to function correctly, especially when complex designs and high-speed transceivers are active. Power is provided via a standard 6-pin PCIE power connector from an ATX power supply.
 
 <p align="center">
-  <img alt="External 12 V power connection" src="0.doc/pictures/External 12V power connection.jpg" style="width:60%; height:60%;">
+  <img alt="External 12 V power connection" src="0.doc/pictures/External 12V power connection.jpg" width="40%">
   <br><em>External 12V power connection.</em>
 </p>
 
@@ -267,7 +269,7 @@ The board cannot be programmed or operated solely from the PCIE/M.2 slot power. 
 The complete system, including the custom cabling, is mounted in a test PC chassis for verification.
 
 <p align="center">
-  <img alt="Complete FPGA system mounted in a PCIE slot" src="0.doc/pictures/The complete FPGA system mounted in a PCIe slot.jpg" style="width:50%; height:50%;">
+  <img alt="Complete FPGA system mounted in a PCIE slot" src="0.doc/pictures/The complete FPGA system mounted in a PCIe slot.jpg" width="50%">
   <br><em>The complete FPGA system mounted in a PCIE slot.</em>
 </p>
 
@@ -276,7 +278,7 @@ The complete system, including the custom cabling, is mounted in a test PC chass
 After the hardware was prepared, the connection was verified using the **Vivado Hardware Manager**. As shown below, the tool successfully detected the JTAG programmer and identified the `xc7a200t_0` FPGA chip. This confirms that the physical connections are correct and the board is ready for programming.
 
 <p align="center">
-  <img alt="Successful device detection in Vivado Hardware Manager" src="0.doc/pictures/Successful device detection in Vivado Hardware Manager.png" style="width:40%; height:auto;">
+  <img alt="Successful device detection in Vivado Hardware Manager" src="0.doc/pictures/Successful device detection in Vivado Hardware Manager.png" width="50%">
   <br><em>Successful device detection in Vivado Hardware Manager.</em>
 </p>
 
@@ -284,8 +286,8 @@ After the hardware was prepared, the connection was verified using the **Vivado 
 ### openBackplane PCB
 
 <p align="center" width="100%">
-    <img alt="openPCIE backplane" width="65%" src="1.pcb/0.doc/openPCIE-backplane.png">
-    <img alt="openPCIE backplane block diagram" width="65%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
+    <img alt="openPCIE backplane" width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
+    <img alt="openPCIE backplane block diagram" width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
 Please, refer to [1.pcb](1.pcb) for additional detail.
@@ -312,7 +314,7 @@ The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to s
 The figure below shows an overview block diagram of the test bench HDL.
 
 <p align="center">
-<img alt="openPCIE Root Complex test bench structure" src="5.sim/images/openpcierc_tb.png" width=800>
+<img alt="openPCIE Root Complex test bench structure" src="5.sim/images/openpcierc_tb.png" width="75%">
 </p>
 
 More details on the architecture and usage of the openPCIE test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
@@ -320,7 +322,7 @@ More details on the architecture and usage of the openPCIE test bench can be fou
 The co-simulation can also be followed at TLP level in the [WaveCrux](https://wavecrux.app) waveform viewer, with an [open-source PCIE TLP decoder plugin](5.sim/tools/wavecrux-pcie-tlp/README.md) and a ready-made session -- here the firmware sizing BAR0 by readback and placing it at `0x80000000` ([more](5.sim/README.md#viewing-the-tlps-in-wavecrux)):
 
 <p align="center">
-<img alt="WaveCrux TLP view: firmware sizing BAR0" src="5.sim/images/wavecrux-tlp-bar-sizing.png" width=800>
+<img alt="WaveCrux TLP view: firmware sizing BAR0" src="5.sim/images/wavecrux-tlp-bar-sizing.png" width="75%">
 </p>
 
 One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) show the same link on the wire: link training, flow-control credits, and every TLP with its sequence number and Ack ([more](5.sim/README.md#viewing-the-pipe-in-wavecrux)). With all three layers in one view, you can also see how long a TLP spends inside the hard macro: about 0.4 µs each way ([more](5.sim/README.md#how-long-a-tlp-spends-in-the-hard-macro)).
@@ -442,7 +444,7 @@ Before diving into the results, here is the complete hardware validation setup u
 Dual **Xilinx Platform Cable USB** units are connected via custom adapters to allow simultaneous debugging and bitstream loading from two separate host workstations.
 
 <p align="center">
-  <img alt="Validation environment for the direct connection" src="0.doc/pictures/openPCIE-direct-connection-validation-environment.jpg" width="100%">
+  <img alt="Validation environment for the direct connection" src="0.doc/pictures/openPCIE-direct-connection-validation-environment.jpg" width="60%">
   <br>
   <em>The complete hardware validation environment for the Direct connection test.</em>
 </p>
@@ -472,10 +474,10 @@ These results confirm that PCIE link initialization and RC-to-EP data transfer o
 <table align="center" style="border: none; border-collapse: collapse;">
   <tr style="border: none;">
     <td align="center" style="border: none;">
-       <img alt="LEDs showing link up" src="0.doc/pictures/led_link_up.jpg" width="82%">
+       <img alt="LEDs showing link up" src="0.doc/pictures/led_link_up.jpg" width="60%">
     </td>
     <td align="center" style="border: none;">
-       <img alt="LEDs showing the data payload" src="0.doc/pictures/led_data_payload.jpg" width="80%">
+       <img alt="LEDs showing the data payload" src="0.doc/pictures/led_data_payload.jpg" width="60%">
     </td>
   </tr>
   <tr style="border: none;">
@@ -579,6 +581,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 
 ### Public posts:
+- [2026-10-10](https://lnkd.in/p/gvRhmPAY)
 - [2026-10-05](https://lnkd.in/p/gVDkcKni)
 - [2026-09-15](https://www.linkedin.com/posts/chili-chips_opensource-pcie-activity-7505034443674251264-eed-?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2026-06-23](https://www.linkedin.com/posts/andrew-e-wilson_its-fun-bringing-all-the-fpga-vendors-together-share-7475267075234607104-j50-)
