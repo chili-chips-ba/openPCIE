@@ -118,13 +118,13 @@ The new toolchain uses its own `chipdb.new/` (the database format differs) and i
 | Build time, chipdb cached | about 2 min | about 2 min (RC-switched 1 min 43 s) |
 | First build, incl. chipdb | several minutes | 6 min |
 | GT channel, link speed | channel 1, Gen2 | channel 1 (RC-switched: channel 2), Gen2 |
-| Flip-flops after synthesis | 1491 | 1702 (FDRE 1663, as in Vivado) |
+| Flip-flops after synthesis | 1770 (Yosys 0.38, RTL of 2026-08-19) | 1702 (Yosys 0.69, RTL of 2026-10-08) - not comparable, the RTL changed in between |
 | Pipe clock (`clk_oobclk`, 250 MHz) | misses 250 MHz - expected and verified harmless (see [Clocks](#clocks)) | 259 MHz (RC-switched 290 MHz), passes |
 | On hardware | **link up at Gen2** | not tested yet |
 
 nextpnr also warns "Overriding derived constraint of 250.0 MHz on net pcie_inst.clk_oobclk with user-specified constraint of 125.0 MHz". This is harmless: the warning prints its two values swapped, and the 250 MHz from `openxc7.xdc` is the constraint actually applied (to be reported to openXC7).
 
-Whether the openXC7 defects documented further down still apply to the new engine has not been checked one by one. The design-side fixes are in the RTL, so the new build gets them too.
+Which of the openXC7 defects documented further down still apply to the new engine is listed in the [Ledger of openXC7 findings](#ledger-of-openxc7-findings). The design-side fixes are in the RTL, so the new build gets them too.
 
 ## Native SV within Yosys, through Slang
 
@@ -451,6 +451,34 @@ The other decisive technique was an **A/B build**: the same RTL with the same pr
 | 14 | **`IBUFDS_GTE2` primitive model missing `ODIV2` pin** - `ERROR: No wire found for port ODIV2 on source cell ...` because nextpnr BEL definition only contains `['CEB', 'I', 'IB', 'O']` |
 | 15 | `pack_gt_xc7.cc:184` rejects constant zero (`PSEUDO_GND`) on `GTREFCLK` - `GTP_COMMON GTREFCLK connected to unsupported cell type PSEUDO_GND` when unused refclk inputs are tied to `1'd0` |
 | 16 | **`router2` fails to route `$PACKER_GND_NET` to `CARRY4.CIN`** - `ERROR: Unrouteable $PACKER_GND_NET sink ... genblk1.carry4.CIN` when carry chains are enabled, requiring `-nocarry` |
+
+## Ledger of openXC7 findings
+
+Every openXC7 issue this project has run into, rechecked on the new toolchain (openXC7 v1.0.0, nextpnr `3e5c2cdd`). Findings 1-16 are the ones in the table above. Open items are tracked in this repository under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report.
+
+| # | Finding | New toolchain | Tracked |
+|---|---|---|---|
+| 1 | GT attribute defaults differ from Xilinx's | still present | [#17](https://github.com/chili-chips-ba/openPCIE/issues/17) |
+| 2 | `IBUFDS_GTE2.O` -> `BUFG` dead clock | fixed upstream; hardware check pending | [#22](https://github.com/chili-chips-ba/openPCIE/issues/22) |
+| 3 | `PLL0_CFG`/`PLL1_CFG` hardcoded | still present | [#18](https://github.com/chili-chips-ba/openPCIE/issues/18) |
+| 4 | Router regression after `45a986b` | old toolchain only | - |
+| 5 | Snap lacks `PCIE_2_1` metadata | old toolchain only | - |
+| 6 | Unconstrained clock silently timed at 12 MHz | still present; also no constraint derived through `IBUFDS_GTE2` | [#23](https://github.com/chili-chips-ba/openPCIE/issues/23) |
+| 7 | `create_clock` on an unknown net dropped silently | fixed, now warns | - |
+| 8 | `BEL` attribute on non-IO cells rejected | that error is gone; `BEL` now needs nextpnr's grid names, not the site names it reports. Not used by openPCIE | - |
+| 9 | Yosys 0.38 `iopadmap -ignore` hangs | old toolchain only | - |
+| 10 | `--placer sa` placement invalid | still present on our design ("post-placement validity check failed"); the default placer is not affected | [#25](https://github.com/chili-chips-ba/openPCIE/issues/25) |
+| 11 | `TXPI_SYNFREQ_PPM` default 0 | matches Xilinx's default; a design requirement, see above | - |
+| 12 | prjxray `bitread` segfaults on xc7a200t | fixed | - |
+| 13 | SRL32 cascade `Q31` missing | fixed; `-nosrl` kept until the hardware test | - |
+| 14 | `IBUFDS_GTE2.ODIV2` unusable | still present | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24) |
+| 15 | `PSEUDO_GND` rejected on unused `GTREFCLK` | fixed | - |
+| 16 | `CARRY4.CIN` ground not routable | fixed; no `-nocarry`, 384 carry cells pack and pass timing | - |
+| 17 | `fasm2frames` KeyError on `IBUFDS_GTE2` | old toolchain only; the new flow uses `fpga-as` | [#14](https://github.com/chili-chips-ba/openPCIE/issues/14) (closed) |
+| 18 | "Overriding derived constraint" warning prints its values swapped | new | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) |
+| 19 | Yosys: wrong `IBUFDS_GTE2.CLKSWING_CFG` default | new, Slang front end | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) |
+| 20 | sv-elab: no `real` primitive parameters | new, Slang front end | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) |
+| 21 | nextpnr leaves a truncated FASM on error, which `fpga-as` still assembles | new; the Makefile checks nextpnr's exit status | - |
 
 -----------
 #### End-of-Document
