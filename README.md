@@ -514,6 +514,15 @@ These results confirm that PCIE link initialization and RC-to-EP data transfer o
 
 --------------------
 
+### Academic Outreach
+openPCIE has served as the basis for a number of Master's theses at the Faculty of Electrical Engineering, University of Sarajevo (ETF Sarajevo). Among them are the theses of Anes Vrce and [Aladin Brdar](https://www.linkedin.com/posts/abrdar1_proud-to-share-that-i-have-successfully-share-7512945056492904448-Ugtq/), the latter shown here presenting his work on the openPCIE platform, tapping into its hardware, software and simulation facets.
+
+<p align="center">
+ <img alt="Aladin Brdar presenting his work on the openPCIE platform at ETF Sarajevo" src="0.doc/pictures/Aladin-Brdar-Master-Thesis-Oct2026.png" width="80%">
+</p>
+
+--------------------
+
 ### Acknowledgements
 We are grateful to **NLnet Foundation** for their sponsorship of this development activity.
 
