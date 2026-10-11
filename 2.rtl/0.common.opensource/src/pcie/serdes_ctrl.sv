@@ -52,6 +52,8 @@ module serdes_ctrl
 
 )
 (
+    // TODO (SV interface): the GT-side PIPE ports below are flat. phy_lanes_if (16-bit,
+    // MAC side) does not fit; this would need its own interface.
     input                           PIPE_CLK,
     input                           PIPE_RESET_N,
    

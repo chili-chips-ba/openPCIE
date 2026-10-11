@@ -212,6 +212,8 @@ module txn_engine
 
   assign user_clk_out = user_clk;
 
+  // TODO (SV interface): the TRN bus (trn_t*/trn_r*) between stream_bridge and
+  // txn_engine is flat. Candidate for a new trn_if; stream_if does not fit (sof/eof/rem).
   wire [C_DATA_WIDTH-1:0]  trn_td;
   wire [REM_WIDTH-1:0]     trn_trem;
   wire                     trn_tsof;

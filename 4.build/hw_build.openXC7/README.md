@@ -124,7 +124,7 @@ The new toolchain has its own `chipdb.new/` (the database format differs) and it
 
 nextpnr also warns "Overriding derived constraint of 250.0 MHz on net pcie_inst.clk_oobclk with user-specified constraint of 125.0 MHz". This is harmless: the warning prints its two values swapped, and the 250 MHz from `openxc7.xdc` is what gets applied ([#21](https://github.com/chili-chips-ba/openPCIE/issues/21)).
 
-The [Ledger of openXC7 findings](#ledger-of-openxc7-findings) lists which openXC7 defects still apply to v1.0.0. The design-side fixes are in the RTL, so v1.0.0 builds get them too.
+[openXC7 findings](#openxc7-findings) lists which openXC7 defects still apply to v1.0.0. The design-side fixes are in the RTL, so v1.0.0 builds get them too.
 
 ## Native SV within Yosys, through Slang
 
@@ -438,28 +438,7 @@ The other decisive technique was an **A/B build**: the same RTL with the same pr
 
 ## openXC7 findings
 
-| # | Findings |
-|---|---|
-| 1 | **GT attribute defaults do not match the Xilinx library** - **80 mismatches** on `GTPE2_CHANNEL`, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV`/`RX_XCLK_SEL` among them (20 of those affected this design). Any design relying on library defaults gets a silently broken transceiver |
-| 2 | **`IBUFDS_GTE2.O` -> `BUFG` yields a dead clock in fabric.** The net routes without error and the FASM looks correct, but the BUFG output does not toggle on hardware |
-| 3 | **`fasm.cc:2118` hardcodes `PLL0_CFG`/`PLL1_CFG`** to `0x1F03DC` instead of reading the cell parameter (this design asks for `0x1F024C`), and writes only bits [20:0] of a 27-bit attribute |
-| 4 | **Regression between `45a986b` and `bab26c2`** - master cannot route `CARRY4_Ox` -> `xFFMUX_OUT` inside a slice, so any design with a counter fails; reproduced with a 4-line testcase. `common/router2.cc` is byte-identical between the two commits, so the change is in the xilinx packing code. On larger designs the same area instead runs for hours in `route_xilinx_const` |
-| 5 | nextpnr-xilinx 0.8.2 from the snap ships metadata without `site_type_PCIE_2_1.json`, so PCIE designs cannot place at all |
-| 6 | An unconstrained clock silently gets a 12 MHz target, so timing failures in that domain are never reported |
-| 7 | `create_clock [get_nets ...]` drops the constraint **silently** when the net name does not match |
-| 8 | `pack_io_xc7.cc:474` treats **any** cell carrying a `BEL` attribute as IO and errors on anything that is not IOB18/IOB33, so `BEL` cannot pin non-IO cells (the type check sits above the `rules.count(ci->type)` guard) |
-| 9 | Yosys 0.38 `iopadmap -ignore` hangs indefinitely; the same command without `-ignore` finishes in ~25 s |
-| 10 | `--placer sa` produces a placement that fails nextpnr's own post-placement validity check |
-| 11 | `TXPI_SYNFREQ_PPM` defaulting to 0 makes any design that omits the attribute fail |
-| 12 | prjxray `bitread` segfaults on `xc7a200t`, so `bit2fasm` cannot inspect a bitstream for this part |
-| 13 | **SRL32 cascade `Q31` port missing in nextpnr** - `ERROR: No wire found for port Q31 on source cell ... fpga_srl_0` when shift registers are inferred, hence `-nosrl` |
-| 14 | **`IBUFDS_GTE2` model missing the `ODIV2` pin** - `ERROR: No wire found for port ODIV2 on source cell ...`, because the nextpnr BEL has only `['CEB', 'I', 'IB', 'O']` |
-| 15 | `pack_gt_xc7.cc:184` rejects constant zero (`PSEUDO_GND`) on `GTREFCLK` - `GTP_COMMON GTREFCLK connected to unsupported cell type PSEUDO_GND` when unused refclk inputs are tied to `1'd0` |
-| 16 | **`router2` cannot route `$PACKER_GND_NET` to `CARRY4.CIN`** - `ERROR: Unrouteable $PACKER_GND_NET sink ... genblk1.carry4.CIN` when carry chains are enabled, hence `-nocarry` |
-
-## Ledger of openXC7 findings
-
-Every openXC7 issue this project ran into, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). Findings 1-16 are from the table above. Open items are tracked in this repository under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report.
+Every openXC7 issue this project ran into, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). The numbers are stable, so issues and commits can refer to them. Open items are tracked in this repository under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report.
 
 ### Open Issues (as of Oct. 10, 2026) we found
 

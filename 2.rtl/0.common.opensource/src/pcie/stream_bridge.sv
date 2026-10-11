@@ -48,6 +48,8 @@ module stream_bridge #(
   input                     user_turnoff_ok,
   input                     user_tcfg_gnt,
 
+  // TODO (SV interface): the TRN bus (trn_t*/trn_r*) between stream_bridge and
+  // txn_engine is flat. Candidate for a new trn_if; stream_if does not fit (sof/eof/rem).
   output [C_DATA_WIDTH-1:0] trn_td,
   output                    trn_tsof,
   output                    trn_teof,

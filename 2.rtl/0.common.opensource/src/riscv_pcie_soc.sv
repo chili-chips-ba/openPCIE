@@ -55,6 +55,8 @@ module riscv_pcie_soc (
     input  logic        m_axis_rx_tvalid,
     output logic        m_axis_rx_tready,
 
+    // TODO (SV interface): cfg sideband shared by host_bridge and the SOC
+    // (cfg_status, cfg_command, cfg_msg_received_err_fatal, tx_buf_av). Candidate for a small cfg_if.
     input  logic [15:0] cfg_status,
     input  logic [15:0] cfg_command,
     input  logic        cfg_msg_received_err_fatal,

@@ -68,6 +68,8 @@ module host_bridge
   output  [21:0]                m_axis_rx_tuser,
   input                         m_axis_rx_tready,
 
+  // TODO (SV interface): cfg sideband shared by host_bridge and the SOC
+  // (cfg_status, cfg_command, cfg_msg_received_err_fatal, tx_buf_av). Candidate for a small cfg_if.
   output  [5:0]                 tx_buf_av,
   output  [15:0]                cfg_status,
   output                        cfg_msg_received_err_fatal,

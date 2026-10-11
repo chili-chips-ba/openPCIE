@@ -41,6 +41,8 @@ module stream_tx_gate #(
   localparam int C_DATA_WIDTH = 64
   ) (
 
+  // TODO (SV interface): a read-only view of stream_if. Taking the interface needs
+  // a 'monitor' modport in stream_if (slave would claim tready).
   input  [C_DATA_WIDTH-1:0] s_axis_tx_tdata,
   input                     s_axis_tx_tvalid,
   input               [3:0] s_axis_tx_tuser,
