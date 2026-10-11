@@ -438,7 +438,7 @@ The other decisive technique was an **A/B build**: the same RTL with the same pr
 
 ## openXC7 findings
 
-| # | Finding |
+| # | Findings |
 |---|---|
 | 1 | **GT attribute defaults do not match the Xilinx library** - **80 mismatches** on `GTPE2_CHANNEL`, `TX_CLKMUX_EN`/`RX_CLKMUX_EN`/`PMA_RSV`/`RX_XCLK_SEL` among them (20 of those affected this design). Any design relying on library defaults gets a silently broken transceiver |
 | 2 | **`IBUFDS_GTE2.O` -> `BUFG` yields a dead clock in fabric.** The net routes without error and the FASM looks correct, but the BUFG output does not toggle on hardware |
@@ -461,7 +461,7 @@ The other decisive technique was an **A/B build**: the same RTL with the same pr
 
 Every openXC7 issue this project ran into, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). Findings 1-16 are from the table above. Open items are tracked in this repository under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report.
 
-### Current (as of Oct 2026)
+### Open Issues (as of Oct. 10, 2026) we found
 
 | # | Finding | Status | Tracked (openPCIE, upstream) |
 |---|---|---|---|
@@ -481,9 +481,9 @@ Every openXC7 issue this project ran into, rechecked on v1.0.0 (nextpnr `3e5c2cd
 | 23 | `LOC` on a `GTPE2_CHANNEL` that contradicts its pad pins is accepted silently | new: `LOC GTPE2_CHANNEL_X0Y6` with channel-1 pins builds with channel 2 | [#30](https://github.com/chili-chips-ba/openPCIE/issues/30), upstream [nextpnr#94](https://github.com/openXC7/nextpnr/issues/94) |
 | 24 | No XPM / UNIMACRO libraries | still absent in v1.0.0; [shims](#shims) stand in | not needed |
 
-### Workarounds marked FIXME
+#### Temp RTL Workarounds / FIXMEs
 
-Each tool workaround still in the sources carries a `FIXME` comment (`grep -rn FIXME`) and goes once its issue is fixed:
+Each tool workaround still in the sources carries a `FIXME` comment (`grep -rn FIXME`). The plan is to remove it once the original issue is fixed:
 
 | Where | Workaround | Issue |
 |---|---|---|
@@ -493,9 +493,9 @@ Each tool workaround still in the sources carries a `FIXME` comment (`grep -rn F
 | `clk_synth.sv` | MMCM `real` parameters left out under `SYN_YOSYS_BUG` (slang flow) | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) |
 | `gen_xilinx_bb.py` | whole script (blackbox stubs for slang), plus the `CLKSWING_CFG` fix | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29), [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) |
 
-### pre-v1.0.0 openXC7
+### Issues we found in the pre-v1.0.0 openXC7
 
-These affect only the pre-v1.0.0 toolchain; v1.0.0 no longer has the code in question.
+These affect only the pre-v1.0.0 tool chain; The v1.0.0 no longer suffers from them.
 
 | # | Finding | Note | Tracked |
 |---|---|---|---|
@@ -504,7 +504,7 @@ These affect only the pre-v1.0.0 toolchain; v1.0.0 no longer has the code in que
 | 9 | Yosys 0.38 `iopadmap -ignore` hangs | Yosys 0.38 only | not needed |
 | 17 | `fasm2frames` KeyError on `IBUFDS_GTE2` | v1.0.0 uses `fpga-as` | [#14](https://github.com/chili-chips-ba/openPCIE/issues/14) (closed) |
 
-### Fixed in v1.0.0
+#### Fixed in v1.0.0
 
 | # | Finding | Note | Tracked |
 |---|---|---|---|
