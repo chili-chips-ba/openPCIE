@@ -535,6 +535,8 @@ assign jtag_sl_iport = {PCIE_LANES{37'd0}};
 
 wire gt_cpllpdrefclk;
 
+// FIXME: workaround for openXC7's dead IBUFDS_GTE2.O -> BUFG clock (openPCIE #22).
+// Back to BUFG(PIPE_CLK) once a v1.0.0 bitstream proves the fix on hardware.
 assign gt_cpllpdrefclk = clk_dclk;
 
 generate for (i=0; i<PCIE_LANES; i=i+1) 

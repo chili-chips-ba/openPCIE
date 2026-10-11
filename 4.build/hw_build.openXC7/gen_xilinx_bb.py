@@ -23,10 +23,14 @@ Two adjustments, both for upstream problems:
 usage: python3 gen_xilinx_bb.py <yosys datdir>/xilinx <out.sv> PRIMITIVE [...]
 """
 
+# FIXME: this whole script is a tool workaround (openPCIE #29); drop it once
+# read_slang can take cells_sim.v or sv-elab#367 is merged.
+
 import re
 import sys
 
 # Defaults that Yosys's cells_xtra.v gets wrong (Vivado unisims are the reference)
+# FIXME: remove once Yosys fixes CLKSWING_CFG (openPCIE #19)
 DEFAULT_FIXES = {("IBUFDS_GTE2", "CLKSWING_CFG"): "2'b11"}
 
 

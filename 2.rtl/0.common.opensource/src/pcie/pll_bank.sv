@@ -93,6 +93,9 @@ generate if (PCIE_GT_DEVICE == "GTP")
         .SIM_RESET_SPEEDUP              ("FALSE"),
         .SIM_VERSION                    (PCIE_USE_MODE),
                                                                                                                                      
+        // FIXME: openXC7 ignores these and writes 0x1F03DC (openPCIE #18); the
+        // board-proven openXC7 bitstream runs on that value, not on this one.
+        // Test on hardware before relying on a fixed nextpnr.
         .PLL0_CFG                       (27'h01F024C),
         .PLL1_CFG                       (27'h01F024C),
         .PLL_CLKOUT_CFG                 (8'd0),

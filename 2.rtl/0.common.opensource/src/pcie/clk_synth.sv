@@ -133,7 +133,7 @@ module clk_synth
     .CLKOUT3_USE_FINE_PS  ("FALSE"),
     .CLKOUT4_DIVIDE       (CLKOUT4_DIVIDE),
     .CLKOUT4_USE_FINE_PS  ("FALSE"),
-  // SYN_YOSYS_BUG: Yosys's SystemVerilog front end (read_slang / sv-elab)
+  // FIXME SYN_YOSYS_BUG (openPCIE #20): Yosys's SystemVerilog front end (read_slang / sv-elab)
   // cannot pass real-valued parameters to a primitive -- see
   // https://github.com/povik/sv-elab/issues/282 . The values below are all
   // MMCME2_ADV defaults, so leaving them out builds the same MMCM. Only the

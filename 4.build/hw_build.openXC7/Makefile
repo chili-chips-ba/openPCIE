@@ -115,6 +115,8 @@ endif
 DB_DIR = $(PRJXRAY_DB_DIR)
 # The two toolchains' chip databases are different formats
 CHIPDB = chipdb$(if $(filter new,$(TOOLCHAIN)),.new)
+# -nosrl only for the pre-v1.0.0 toolchain; see the note at synthesis
+NOSRL  = $(if $(filter new,$(TOOLCHAIN)),,-nosrl)
 
 # ---- Meta -------------------------------------------------------------------
 # Acorn CLE-215P carries xc7a200tfbg484-3 (same as the Vivado build)
@@ -463,7 +465,7 @@ $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilin
 	      -p "read_slang $(SLANG_DEFS) --top $(TOP) -I $(PCIE_DIR) -I $(SRC_DIR) \
 	                     $(BUILD_ARTIFACTS)/xilinx_bb.sv $(SV_ORDERED) $(PURE_V_FILES); \
 	          proc; opt; clean; \
-	          synth_xilinx -flatten -abc9 -nosrl -arch xc7 -top $(TOP); \
+	          synth_xilinx -flatten -abc9 $(NOSRL) -arch xc7 -top $(TOP); \
 	          write_json $@"
 	@echo "OK -> $@"
 else
@@ -485,18 +487,17 @@ $(BUILD_ARTIFACTS)/top.json: $(EXTRACT_TIMESTAMP) $(PURE_V_FILES) $(FIRMWARE)
 	@# So the default flow stays, and the GT channel is pinned via PACKAGE_PIN
 	@# constraints on the GT pads themselves -- see openxc7.xdc.
 	@#
-	@# -nosrl is the ONLY required flag. Yosys would otherwise turn the
-	@# wake_timer shift registers into SRLC32E chains, and nextpnr then fails on
-	@# the cascade output:
-	@#   ERROR: No wire found for port Q31 on source cell ... fpga_srl_0
-	@# Without SRLs these are plain flip-flops -- 224 extra FFs on a chip with
-	@# 269200. This is a build-flow choice; the RTL is NOT touched.
+	@# -nosrl history (see README, "-nosrl at synthesis"):
+	@#   pre-v1.0.0: required. Yosys turns the wake_timer shift registers into
+	@#     SRLC32E chains, and nextpnr fails on the cascade output:
+	@#     ERROR: No wire found for port Q31 on source cell ... fpga_srl_0
+	@#   v1.0.0: fixed, so NOSRL (top of file) drops the flag there (216 fewer FFs).
 	@#
 	@# NOTE: -nocarry is NOT needed. It was only required with the broken master
 	@# nextpnr; with version 45a986b the carry chains route cleanly.
 	yosys -p "read_verilog $(wildcard $(EXTRACTED_DIR)/*.v) $(PURE_V_FILES); \
 	          proc; opt; clean; \
-	          synth_xilinx -flatten -abc9 -nosrl -arch xc7 -top $(TOP); \
+	          synth_xilinx -flatten -abc9 $(NOSRL) -arch xc7 -top $(TOP); \
 	          write_json $@"
 	@echo "OK -> $@"
 endif

@@ -410,6 +410,9 @@ generate if (PCIE_GT_DEVICE == "GTP")
         .TXBUF_EN                       (PCIE_TXBUF_EN),
         .TXBUF_RESET_ON_RATE_CHANGE     ("TRUE"),
 
+        // FIXME (openPCIE #27): 1 only gets past nextpnr's "must not be zero" check; Xilinx's
+        // default and its PCIE IP use 0. Back to 0 once nextpnr accepts it, see
+        // 4.build/hw_build.openXC7/README.md, TXPI_SYNFREQ_PPM forced to non-zero
         .TXPI_SYNFREQ_PPM               ( 3'd1),
 
         .PMA_RSV                        (32'h00000333),
