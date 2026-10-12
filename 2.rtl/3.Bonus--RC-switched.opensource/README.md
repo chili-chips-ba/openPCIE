@@ -210,15 +210,7 @@ Regenerate after every edit of `csr.rdl`:
 cd ../../4.build && make -f MakefileCSR
 ```
 
-The original hand-written register block is still in `riscv_pcie_soc.sv`, behind
-`` `ifdef SOC_CSR_LEGACY ``. Which one gets built is set once, in
-[`4.build/config.mk`](../../4.build/config.mk), and read by every build step, so
-hardware and software are never built different ways. Override it for a single
-run with `make CSR=legacy` (openXC7 or firmware) or `set ::use_legacy_csr 1`
-before sourcing the tcl (Vivado).
-
-The two are functionally identical, down to the byte offsets. Nothing about the
-CSR differs between this variant and RC-direct - the same `csr.rdl` feeds both.
+Nothing about the CSR differs between this variant and RC-direct - the same `csr.rdl` feeds both.
 Details: [`4.build/README.md`](../../4.build/README.md#csr-hal-compilation).
 
 ---

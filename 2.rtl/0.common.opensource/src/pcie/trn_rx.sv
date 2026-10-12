@@ -37,18 +37,12 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module stream_rx_path #(
+module trn_rx #(
   localparam int C_DATA_WIDTH = 64,
   localparam int KEEP_WIDTH   = 8,
   localparam int REM_WIDTH    = 1
   ) (
-
-  output logic [C_DATA_WIDTH-1:0] m_axis_rx_tdata,
-  output logic                    m_axis_rx_tvalid,
-  input                         m_axis_rx_tready,
-  output       [KEEP_WIDTH-1:0] m_axis_rx_tkeep,
-  output                        m_axis_rx_tlast,
-  output logic             [21:0] m_axis_rx_tuser,
+  axis_if.master              m_axis_rx,
 
   input      [C_DATA_WIDTH-1:0] trn_rd,
   input                         trn_rsof,
@@ -67,11 +61,9 @@ module stream_rx_path #(
   input                         null_rdst_rdy,
   input                   [4:0] null_is_eof,
 
-  output                  [2:0] np_counter,
   input                         user_clk,
   input                         user_rst
 );
-
 
 wire              [4:0] is_sof;
 wire              [4:0] is_sof_prev;
@@ -108,7 +100,6 @@ wire                    dsc_detect;
 logic                     reg_dsc_detect;
 logic                     trn_rsrc_dsc_d;
 
-
 assign rsrc_rdy_filtered = trn_rsrc_rdy &&
                                  (trn_in_packet || (trn_rsof && !trn_rsrc_dsc));
 
@@ -139,29 +130,26 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-
-
 assign trn_rd_DW_swapped = {trn_rd[31:0], trn_rd[63:32]};
-
 
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
-    m_axis_rx_tdata <= {C_DATA_WIDTH{1'b0}};
+    m_axis_rx.tdata <= {C_DATA_WIDTH{1'b0}};
   end
   else begin
     if(!data_hold) begin
       if(data_prev) begin
-        m_axis_rx_tdata <= trn_rd_prev;
+        m_axis_rx.tdata <= trn_rd_prev;
       end
 
       else begin
-        m_axis_rx_tdata <= trn_rd_DW_swapped;
+        m_axis_rx.tdata <= trn_rd_DW_swapped;
       end
     end
   end
 end
 
-assign data_hold = (!m_axis_rx_tready && m_axis_rx_tvalid);
+assign data_hold = (!m_axis_rx.tready && m_axis_rx.tvalid);
 
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
@@ -172,28 +160,27 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
-    m_axis_rx_tvalid <= 1'b0;
+    m_axis_rx.tvalid <= 1'b0;
     reg_tlast        <= 1'b0;
     reg_tkeep        <= {KEEP_WIDTH{1'b1}};
-    m_axis_rx_tuser  <= 22'h0;
+    m_axis_rx.tuser  <= 22'h0;
   end
   else begin
     if(!data_hold) begin
       if(null_mux_sel) begin
-        m_axis_rx_tvalid <= null_rx_tvalid;
+        m_axis_rx.tvalid <= null_rx_tvalid;
         reg_tlast        <= null_rx_tlast;
         reg_tkeep        <= null_rx_tkeep;
-        m_axis_rx_tuser  <= {null_is_eof, 17'h0000};
+        m_axis_rx.tuser  <= {null_is_eof, 17'h0000};
       end
 
       else if(data_prev) begin
-        m_axis_rx_tvalid <= (trn_rsrc_rdy_prev || dsc_flag);
+        m_axis_rx.tvalid <= (trn_rsrc_rdy_prev || dsc_flag);
         reg_tlast        <= trn_reof_prev;
         reg_tkeep        <= tkeep_prev;
-        m_axis_rx_tuser  <= {is_eof_prev,
+        m_axis_rx.tuser  <= {is_eof_prev,
                                   2'b00,
                                   is_sof_prev,
                                   1'b0,
@@ -203,10 +190,10 @@ always_ff @(posedge user_clk) begin
       end
 
       else begin
-        m_axis_rx_tvalid <= (rsrc_rdy_filtered || dsc_flag);
+        m_axis_rx.tvalid <= (rsrc_rdy_filtered || dsc_flag);
         reg_tlast        <= trn_reof;
         reg_tkeep        <= tkeep;
-        m_axis_rx_tuser  <= {is_eof,
+        m_axis_rx.tuser  <= {is_eof,
                                   2'b00,
                                   is_sof,
                                   1'b0,
@@ -218,29 +205,24 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-assign m_axis_rx_tlast = reg_tlast;
-assign m_axis_rx_tkeep = reg_tkeep;
-
+assign m_axis_rx.tlast = reg_tlast;
+assign m_axis_rx.tkeep = reg_tkeep;
 
 assign tkeep      = trn_rrem      ? 8'hFF : 8'h0F;
 assign tkeep_prev = trn_rrem_prev ? 8'hFF : 8'h0F;
 
-
 assign is_sof      = {(trn_rsof && !trn_rsrc_dsc), 4'b0000};
 assign is_sof_prev = {(trn_rsof_prev && !trn_rsrc_dsc_prev), 4'b0000};
 
-
 assign is_eof      = {trn_reof,      1'b0, trn_rrem,      2'b11};
 assign is_eof_prev = {trn_reof_prev, 1'b0, trn_rrem_prev, 2'b11};
-
-
 
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
     trn_rdst_rdy <= 1'b0;
   end
   else begin
-    if(null_mux_sel && m_axis_rx_tready) begin
+    if(null_mux_sel && m_axis_rx.tready) begin
       trn_rdst_rdy <= null_rdst_rdy;
     end
 
@@ -248,8 +230,8 @@ always_ff @(posedge user_clk) begin
       trn_rdst_rdy <= 1'b0;
     end
 
-    else if(m_axis_rx_tvalid) begin
-      trn_rdst_rdy <= m_axis_rx_tready;
+    else if(m_axis_rx.tvalid) begin
+      trn_rdst_rdy <= m_axis_rx.tready;
     end
 
     else begin
@@ -263,7 +245,7 @@ always_ff @(posedge user_clk) begin
     null_mux_sel <= 1'b0;
   end
   else begin
-    if(null_mux_sel && null_rx_tlast && m_axis_rx_tready)
+    if(null_mux_sel && null_rx_tlast && m_axis_rx.tready)
     begin
       null_mux_sel <= 1'b0;
     end
@@ -273,7 +255,6 @@ always_ff @(posedge user_clk) begin
     end
   end
 end
-
 
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
@@ -292,7 +273,6 @@ always_ff @(posedge user_clk) begin
     end
   end
 end
-
 
 assign dsc_detect = trn_rsrc_dsc && !trn_rsrc_dsc_d && trn_in_packet &&
                          (!trn_rsof || trn_reof) && !(trn_rdst_rdy && trn_reof);
@@ -315,11 +295,6 @@ always_ff @(posedge user_clk) begin
 end
 
 assign dsc_flag = dsc_detect || reg_dsc_detect;
-
-
-
-assign np_counter = 3'h0;
-
 
 endmodule
 // -----------------------------------------------------------------------------

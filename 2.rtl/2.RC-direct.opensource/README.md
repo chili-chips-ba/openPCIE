@@ -74,17 +74,16 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 
 | Layer | Files | Role |
 |---|---|---|
-| Transaction | `txn_engine.sv`, `silicon_core.sv` | `PCIE_2_1` instance and its TLP-side plumbing |
-| Buffering | `buffer_bank.sv`, `buffer_tile.sv` | RX/TX packet buffers (BRAM) |
-| Streaming | `stream_bridge.sv`, `stream_tx_path.sv`, `stream_rx_path.sv`, `stream_tx_gate.sv` | AXI-Stream TLP interface towards the SOC |
-| Bridge | `host_bridge.sv` | ties the transaction and PHY sides together |
-| PHY control | `serdes_front.sv`, `serdes_ctrl.sv` | PIPE-level control, reset and rate sequencing |
-| Bring-up FSMs | `init_ctrl.sv`, `pll_init_ctrl.sv`, `phase_align.sv`, `wake_timer.sv`, `lane_keeper.sv` | GT reset sequence, QPLL sequence, TX/RX phase alignment |
-| Transceiver | `lane_xcvr.sv`, `pll_bank.sv` | `GTPE2_CHANNEL` and `GTPE2_COMMON` instances |
-| Clocking | `clk_synth.sv` | MMCM: 125 / 250 / 62.5 MHz from the 100 MHz refclk |
-| Tuning | `chan_retune.sv`, `pll_retune.sv`, `speed_ctrl.sv`, `margin_tuner.sv`, `eios_squelch.sv` | DRP-based retuning on rate change, equalisation, electrical-idle detection |
-| Interfaces | `link_pkg.sv`, `stream_if.sv`, `phy_lanes_if.sv` | package and SystemVerilog interfaces |
-| Debug | `signal_probe.sv` | status/debug vector taps |
+| Transaction | `pcie_core.sv` | `PCIE_2_1` instance and its TLP-side plumbing |
+| Buffering | `buffer_bank.sv` | RX/TX packet buffers (BRAM) |
+| Streaming | `trn_bridge.sv`, `trn_tx.sv`, `trn_rx.sv`, `trn_tx_throttle.sv` | AXI-Stream TLP interface towards the SOC |
+| Bridge | `pcie_top.sv` | ties the transaction and PHY sides together |
+| PHY control | `phy_top.sv`, `gtp_wrapper.sv` | PIPE-level control, reset and rate sequencing |
+| Bring-up FSMs | `init_ctrl.sv`, `phase_align.sv`, `lane_status.sv` | GT reset sequence, TX/RX phase alignment, per-lane status |
+| Transceiver | `lane_xcvr.sv`, `gtp_wrapper.sv` | `GTPE2_CHANNEL` and `GTPE2_COMMON` instances |
+| Clocking | `clk_gen.sv` | MMCM: 125 / 250 / 62.5 MHz from the 100 MHz refclk |
+| Tuning | `chan_retune.sv`, `speed_ctrl.sv`, `rx_eios_filter.sv` | RX-reset DRP write (UG482), rate change, equalisation, electrical-idle detection |
+| Interfaces | `link_pkg.sv`, `axis_if.sv`, `trn_if.sv`, `pipe_if.sv`, `cfg_if.sv`, `mem_if.sv`, `mim_if.sv`, `gtp_if.sv` | package and SystemVerilog interfaces, see [SystemVerilog interfaces](../README.md#systemverilog-interfaces) |
 
 ### Clocking
 
@@ -93,7 +92,7 @@ sys_clk_p/n (100 MHz PCIE refclk)
    └─ IBUFDS_GTE2 ── GTREFCLK0 ─ GTPE2_COMMON ─ QPLL (2.5 GHz)
 
 GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dclk (DRP,
-                                      │                      and wake_timer)
+                                      │                      and PLL0 power-up)
                                       ├─ CLKOUT1  250 MHz  ─┐
                                       └─ CLKOUT2  62.5 MHz ─ userclk1/2
                                                              │
@@ -103,10 +102,7 @@ GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk_dcl
 The pipe clock is 125 MHz in Gen1 and 250 MHz in Gen2; the BUFGCTRL mux switches
 it on rate change. It is the tightest timing domain in the design.
 
-`wake_timer` (the startup sequencer) runs from `clk_dclk` rather than from the
-refclk buffer - see
-[`wake_timer` clocked from `clk_dclk`](../../4.build/hw_build.openXC7/README.md#wake_timer-clocked-from-clk_dclk)
-for why.
+The PLL0 power-up delay in `init_ctrl` runs from `clk_dclk` rather than from the refclk buffer - see [PLL0 power-up delay clocked from `clk_dclk`](../../4.build/hw_build.openXC7/README.md#pll0-power-up-delay-clocked-from-clk_dclk) for why.
 
 ---
 
@@ -134,26 +130,7 @@ Regenerate after every edit of `csr.rdl`:
 cd ../../4.build && make -f MakefileCSR
 ```
 
-The original hand-written register block is still in `riscv_pcie_soc.sv`, behind
-`` `ifdef SOC_CSR_LEGACY ``. Which one gets built is set once, in
-[`4.build/config.mk`](../../4.build/config.mk), and every build step reads it -
-this project, the openXC7 bitstream and the firmware - so hardware and software
-can never end up built different ways:
-
-```makefile
-CSR ?= peakrdl        # or: legacy
-```
-
-To override it for a single run without editing the file:
-
-```bash
-make CSR=legacy            # openXC7 or the firmware
-set ::use_legacy_csr 1     # Vivado, before sourcing the tcl
-```
-
-The two are functionally identical, down to the byte offsets, so the firmware
-never has to know which one is in the bitstream. Full description of the map and
-of the generation flow: [`4.build/README.md`](../../4.build/README.md#csr-hal-compilation).
+Full description of the map and of the generation flow: [`4.build/README.md`](../../4.build/README.md#csr-hal-compilation).
 
 ### The CPU
 

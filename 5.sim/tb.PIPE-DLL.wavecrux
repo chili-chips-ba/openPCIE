@@ -5,8 +5,8 @@
     {
       "kind": "signal",
       "id": "4d164393-0",
-      "ref": "75",
-      "path": "tb.dut.pcie_inst.pl_ltssm_state_int",
+      "ref": "61",
+      "path": "tb.dut.u_pcie.pl_ltssm_state_int",
       "name": "pl_ltssm_state_int",
       "color": 4283215696,
       "format": "hexadecimal",
@@ -15,8 +15,8 @@
     {
       "kind": "signal",
       "id": "4d164393-1",
-      "ref": "80",
-      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.RxData",
+      "ref": "66",
+      "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.RxData",
       "name": "RxData",
       "color": 4283417591,
       "format": "hexadecimal",
@@ -25,8 +25,8 @@
     {
       "kind": "signal",
       "id": "4d164393-2",
-      "ref": "81",
-      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.RxDataK",
+      "ref": "67",
+      "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.RxDataK",
       "name": "RxDataK",
       "color": 4283417591,
       "format": "hexadecimal",
@@ -35,8 +35,8 @@
     {
       "kind": "signal",
       "id": "4d164393-3",
-      "ref": "78",
-      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.TxData",
+      "ref": "64",
+      "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.TxData",
       "name": "TxData",
       "color": 4294948685,
       "format": "hexadecimal",
@@ -45,8 +45,8 @@
     {
       "kind": "signal",
       "id": "4d164393-4",
-      "ref": "79",
-      "path": "tb.dut.pcie_inst.serdes_front_i.u_pcie_ep.TxDataK",
+      "ref": "65",
+      "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.TxDataK",
       "name": "TxDataK",
       "color": 4294948685,
       "format": "hexadecimal",
@@ -83,7 +83,7 @@
       "tb.tlp_rx"
     ],
     "selected": [
-      "tb.dut.pcie_inst.pl_ltssm_state_int"
+      "tb.dut.u_pcie.pl_ltssm_state_int"
     ],
     "scroll": 448.20000000000005
   },

@@ -9,7 +9,7 @@
 # The RTL is taken straight out of 2.rtl/0.common.opensource -- no copies,
 # no forks. Exactly two files are swapped for co-simulation models:
 #
-#   src/pcie/serdes_front.sv  ->  models/serdes_front.PIPE.sv
+#   src/pcie/phy_top.sv  ->  models/phy_top.PIPE.sv
 #         the GT transceiver cannot talk to a PIPE-level VIP, so a behavioural
 #         PIPE PHY takes its place and carries the pcievhost endpoint
 #
@@ -33,8 +33,12 @@ sv work models/pcievhost/verilog/pcieVHost/pcieVHostPipex1.v
 # DUT: packages and interfaces
 # ---------------------------------------------------------------------
 sv work ../2.rtl/0.common.opensource/src/pcie/link_pkg.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/stream_if.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/phy_lanes_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/axis_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/trn_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/cfg_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/mem_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/mim_if.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/pipe_if.sv
 
 # ---------------------------------------------------------------------
 # DUT: PeakRDL-generated CSR
@@ -46,26 +50,23 @@ sv work ../2.rtl/0.common.opensource/src/soc_csr.sv
 # ---------------------------------------------------------------------
 # DUT: PCIe stack
 # ---------------------------------------------------------------------
-# serdes_front.sv is DELIBERATELY absent -- models/serdes_front.PIPE.sv below
-# provides that module instead. serdes_ctrl.sv, lane_xcvr.sv, pll_bank.sv,
-# chan_retune.sv, pll_retune.sv, pll_init_ctrl.sv, phase_align.sv,
-# margin_tuner.sv, signal_probe.sv, wake_timer.sv, lane_keeper.sv and
-# init_ctrl.sv only exist to serve the transceiver, so they go with it.
+# phy_top.sv is DELIBERATELY absent -- models/phy_top.PIPE.sv below
+# provides that module instead. mac2phy.sv, rx_eios_filter.sv, gtp_wrapper.sv,
+# lane_xcvr.sv, chan_retune.sv, phase_align.sv, speed_ctrl.sv,
+# lane_status.sv and init_ctrl.sv only exist inside phy_top,
+# so they go with it.
 sv work ../2.rtl/0.common.opensource/src/pcie/buffer_bank.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/buffer_tile.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/clk_synth.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/eios_squelch.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/silicon_core.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/clk_gen.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/speed_ctrl.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/stream_bridge.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/stream_rx_path.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/stream_tx_gate.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/stream_tx_path.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/txn_engine.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/host_bridge.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/trn_bridge.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/trn_rx.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/trn_tx_throttle.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/trn_tx.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/pcie_core.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/pcie_top.sv
 
-# PIPE PHY model, in place of src/pcie/serdes_front.sv
-sv work models/serdes_front.PIPE.sv
+# PIPE PHY model, in place of src/pcie/phy_top.sv
+sv work models/phy_top.PIPE.sv
 
 # ---------------------------------------------------------------------
 # DUT: SOC and top level
@@ -74,7 +75,7 @@ sv work ../2.rtl/0.common.opensource/src/picorv32.CHILI.sv
 sv work ../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv
 sv work ../2.rtl/0.common.opensource/src/RC_opensource.sv
 
-# xpm_cdc_single, used twice in host_bridge.sv. Vivado supplies the XPM
+# xpm_cdc_single, used twice in pcie_top.sv. Vivado supplies the XPM
 # library for synthesis; for xsim the open replacement from the openXC7 build
 # is simpler than compiling the XPM sources.
 verilog work ../4.build/hw_build.openXC7/xpm_shim.v

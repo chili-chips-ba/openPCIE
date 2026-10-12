@@ -37,17 +37,12 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module stream_tx_path #(
+module trn_tx #(
   localparam int C_DATA_WIDTH = 64,
   localparam int KEEP_WIDTH   = 8,
   localparam int REM_WIDTH    = 1
 ) (
-  input      [C_DATA_WIDTH-1:0] s_axis_tx_tdata,
-  input                         s_axis_tx_tvalid,
-  output                        s_axis_tx_tready,
-  input        [KEEP_WIDTH-1:0] s_axis_tx_tkeep,
-  input                         s_axis_tx_tlast,
-  input                   [3:0] s_axis_tx_tuser,
+  axis_if.slave               s_axis_tx,
 
   output     [C_DATA_WIDTH-1:0] trn_td,
   output                        trn_tsof,
@@ -78,8 +73,8 @@ module stream_tx_path #(
   logic                     reg_disable_trn;
   logic                     reg_tsrc_rdy;
 
-  wire axi_beat_live  = s_axis_tx_tvalid && s_axis_tx_tready;
-  wire axi_end_packet = axi_beat_live && s_axis_tx_tlast;
+  wire axi_beat_live  = s_axis_tx.tvalid && s_axis_tx.tready;
+  wire axi_end_packet = axi_beat_live && s_axis_tx.tlast;
 
   assign trn_td = {reg_tdata[31:0], reg_tdata[63:32]};
 
@@ -100,7 +95,7 @@ module stream_tx_path #(
     if (user_rst) begin
       axi_in_packet <= 1'b0;
     end else begin
-      if (axi_beat_live && !s_axis_tx_tlast)
+      if (axi_beat_live && !s_axis_tx.tlast)
         axi_in_packet <= 1'b1;
       else if (axi_beat_live)
         axi_in_packet <= 1'b0;
@@ -136,17 +131,17 @@ module stream_tx_path #(
       reg_tuser    <= 4'h0;
       reg_tsrc_rdy <= 1'b0;
     end else begin
-      reg_tdata    <= s_axis_tx_tdata;
-      reg_tvalid   <= s_axis_tx_tvalid;
-      reg_tkeep    <= s_axis_tx_tkeep;
-      reg_tlast    <= s_axis_tx_tlast;
-      reg_tuser    <= s_axis_tx_tuser;
+      reg_tdata    <= s_axis_tx.tdata;
+      reg_tvalid   <= s_axis_tx.tvalid;
+      reg_tkeep    <= s_axis_tx.tkeep;
+      reg_tlast    <= s_axis_tx.tlast;
+      reg_tuser    <= s_axis_tx.tuser;
       reg_tsrc_rdy <= axi_beat_live && !disable_trn;
     end
   end
 
   assign trn_tsrc_rdy     = reg_tsrc_rdy;
-  assign s_axis_tx_tready = tready_thrtl;
+  assign s_axis_tx.tready = tready_thrtl;
 
 endmodule
 // -----------------------------------------------------------------------------

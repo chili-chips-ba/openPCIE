@@ -37,55 +37,21 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module stream_bridge #(
+module trn_bridge #(
   localparam int C_DATA_WIDTH = 64,
   localparam int KEEP_WIDTH   = 8,
   localparam int REM_WIDTH    = 1
 ) (
-  stream_if.slave        s_axis_tx,
-  stream_if.master       m_axis_rx,
+  axis_if.slave        s_axis_tx,
+  axis_if.master       m_axis_rx,
 
-  input                     user_turnoff_ok,
-  input                     user_tcfg_gnt,
-
-  // TODO (SV interface): the TRN bus (trn_t*/trn_r*) between stream_bridge and
-  // txn_engine is flat. Candidate for a new trn_if; stream_if does not fit (sof/eof/rem).
-  output [C_DATA_WIDTH-1:0] trn_td,
-  output                    trn_tsof,
-  output                    trn_teof,
-  output                    trn_tsrc_rdy,
-  input                     trn_tdst_rdy,
-  output                    trn_tsrc_dsc,
-  output    [REM_WIDTH-1:0] trn_trem,
-  output                    trn_terrfwd,
-  output                    trn_tstr,
-  input               [5:0] trn_tbuf_av,
-  output                    trn_tecrc_gen,
-
-  input  [C_DATA_WIDTH-1:0] trn_rd,
-  input                     trn_rsof,
-  input                     trn_reof,
-  input                     trn_rsrc_rdy,
-  output                    trn_rdst_rdy,
-  input                     trn_rsrc_dsc,
-  input     [REM_WIDTH-1:0] trn_rrem,
-  input                     trn_rerrfwd,
-  input               [6:0] trn_rbar_hit,
-  input                     trn_recrc_err,
-
-  input                     trn_tcfg_req,
-  output                    trn_tcfg_gnt,
-  input                     trn_lnk_up,
+  trn_if.user               trn,          // TRN bus to PCIE_2_1 in pcie_core (see trn_if.sv)
 
   input               [2:0] cfg_pcie_link_state,
-  input                     cfg_pm_send_pme_to,
   input               [1:0] cfg_pmcsr_powerstate,
-  input              [31:0] trn_rdllp_data,
-  input                     trn_rdllp_src_rdy,
   input                     cfg_to_turnoff,
   output                    cfg_turnoff_ok,
 
-  output              [2:0] np_counter,
   input                     user_clk,
   input                     user_rst
 );
@@ -98,24 +64,19 @@ module stream_bridge #(
   wire                  null_rdst_rdy;
   logic           [4:0] null_is_eof;
 
-  stream_rx_path rx_path_i (
-    .m_axis_rx_tdata  (m_axis_rx.tdata),
-    .m_axis_rx_tvalid (m_axis_rx.tvalid),
-    .m_axis_rx_tready (m_axis_rx.tready),
-    .m_axis_rx_tkeep  (m_axis_rx.tkeep),
-    .m_axis_rx_tlast  (m_axis_rx.tlast),
-    .m_axis_rx_tuser  (m_axis_rx.tuser),
+  trn_rx u_trn_rx (
+    .m_axis_rx        (m_axis_rx),
 
-    .trn_rd           (trn_rd),
-    .trn_rsof         (trn_rsof),
-    .trn_reof         (trn_reof),
-    .trn_rsrc_rdy     (trn_rsrc_rdy),
-    .trn_rdst_rdy     (trn_rdst_rdy),
-    .trn_rsrc_dsc     (trn_rsrc_dsc),
-    .trn_rrem         (trn_rrem),
-    .trn_rerrfwd      (trn_rerrfwd),
-    .trn_rbar_hit     (trn_rbar_hit),
-    .trn_recrc_err    (trn_recrc_err),
+    .trn_rd           (trn.rd),
+    .trn_rsof         (trn.rsof),
+    .trn_reof         (trn.reof),
+    .trn_rsrc_rdy     (trn.rsrc_rdy),
+    .trn_rdst_rdy     (trn.rdst_rdy),
+    .trn_rsrc_dsc     (trn.rsrc_dsc),
+    .trn_rrem         (trn.rrem),
+    .trn_rerrfwd      (trn.rerrfwd),
+    .trn_rbar_hit     (trn.rbar_hit),
+    .trn_recrc_err    (trn.recrc_err),
 
     .null_rx_tvalid   (null_rx_tvalid),
     .null_rx_tlast    (null_rx_tlast),
@@ -123,7 +84,6 @@ module stream_bridge #(
     .null_rdst_rdy    (null_rdst_rdy),
     .null_is_eof      (null_is_eof),
 
-    .np_counter       (np_counter),
     .user_clk         (user_clk),
     .user_rst         (user_rst)
   );
@@ -220,53 +180,44 @@ module stream_bridge #(
   assign null_rdst_rdy  = null_rx_tlast;
   // ---------------------------------------------------------------------------
 
-  stream_tx_path tx_path_i (
-    .s_axis_tx_tdata  (s_axis_tx.tdata),
-    .s_axis_tx_tready (s_axis_tx.tready),
-    .s_axis_tx_tvalid (s_axis_tx.tvalid),
-    .s_axis_tx_tkeep  (s_axis_tx.tkeep),
-    .s_axis_tx_tlast  (s_axis_tx.tlast),
-    .s_axis_tx_tuser  (s_axis_tx.tuser),
+  trn_tx u_trn_tx (
+    .s_axis_tx        (s_axis_tx),
 
-    .trn_td           (trn_td),
-    .trn_tsof         (trn_tsof),
-    .trn_teof         (trn_teof),
-    .trn_tsrc_rdy     (trn_tsrc_rdy),
-    .trn_tdst_rdy     (trn_tdst_rdy),
-    .trn_tsrc_dsc     (trn_tsrc_dsc),
-    .trn_trem         (trn_trem),
-    .trn_terrfwd      (trn_terrfwd),
-    .trn_tstr         (trn_tstr),
-    .trn_tecrc_gen    (trn_tecrc_gen),
-    .trn_lnk_up       (trn_lnk_up),
+    .trn_td           (trn.td),
+    .trn_tsof         (trn.tsof),
+    .trn_teof         (trn.teof),
+    .trn_tsrc_rdy     (trn.tsrc_rdy),
+    .trn_tdst_rdy     (trn.tdst_rdy),
+    .trn_tsrc_dsc     (trn.tsrc_dsc),
+    .trn_trem         (trn.trem),
+    .trn_terrfwd      (trn.terrfwd),
+    .trn_tstr         (trn.tstr),
+    .trn_tecrc_gen    (trn.tecrc_gen),
+    .trn_lnk_up       (trn.lnk_up),
 
     .tready_thrtl     (tready_thrtl),
     .user_clk         (user_clk),
     .user_rst         (user_rst)
   );
 
-  stream_tx_gate tx_gate_i (
+  trn_tx_throttle u_trn_tx_throttle (
     .s_axis_tx_tdata      (s_axis_tx.tdata),
     .s_axis_tx_tvalid     (s_axis_tx.tvalid),
     .s_axis_tx_tuser      (s_axis_tx.tuser),
     .s_axis_tx_tlast      (s_axis_tx.tlast),
 
-    .user_turnoff_ok      (user_turnoff_ok),
-    .user_tcfg_gnt        (user_tcfg_gnt),
+    .trn_tbuf_av          (trn.tbuf_av),
+    .trn_tdst_rdy         (trn.tdst_rdy),
 
-    .trn_tbuf_av          (trn_tbuf_av),
-    .trn_tdst_rdy         (trn_tdst_rdy),
-
-    .trn_tcfg_req         (trn_tcfg_req),
-    .trn_tcfg_gnt         (trn_tcfg_gnt),
-    .trn_lnk_up           (trn_lnk_up),
+    .trn_tcfg_req         (trn.tcfg_req),
+    .trn_tcfg_gnt         (trn.tcfg_gnt),
+    .trn_lnk_up           (trn.lnk_up),
 
     .cfg_pcie_link_state  (cfg_pcie_link_state),
 
-    .cfg_pm_send_pme_to   (cfg_pm_send_pme_to),
     .cfg_pmcsr_powerstate (cfg_pmcsr_powerstate),
-    .trn_rdllp_data       (trn_rdllp_data),
-    .trn_rdllp_src_rdy    (trn_rdllp_src_rdy),
+    .trn_rx_dllp_data     (trn.rx_dllp_data),
+    .trn_rx_dllp_src_rdy  (trn.rx_dllp_src_rdy),
 
     .cfg_to_turnoff       (cfg_to_turnoff),
     .cfg_turnoff_ok       (cfg_turnoff_ok),

@@ -51,8 +51,7 @@ module chan_retune #(
   output              DRP_EN,
   output     [15:0]   DRP_DI,
   output              DRP_WE,
-  output              DRP_DONE,
-  output     [2:0]    DRP_FSM
+  output              DRP_DONE
 );
 
   localparam [8:0]  ADDR_RX_DW = 9'h011;
@@ -144,7 +143,6 @@ module chan_retune #(
   assign DRP_DI   = di_reg;
   assign DRP_WE   = (state == ST_WRITE);
   assign DRP_DONE = done;
-  assign DRP_FSM  = state;
 
 endmodule
 // -----------------------------------------------------------------------------

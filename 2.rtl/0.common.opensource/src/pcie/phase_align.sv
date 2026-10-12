@@ -41,7 +41,6 @@ module phase_align (
   input               SYNC_CLK,
   input               SYNC_RST_N,
   input               SYNC_SLAVE,
-  input               SYNC_GEN3,
   input               SYNC_RATE_IDLE,
   input               SYNC_MMCM_LOCK,
   input               SYNC_RXELECIDLE,
@@ -54,7 +53,6 @@ module phase_align (
   input               SYNC_TXPHALIGNDONE,
   input               SYNC_TXSYNCDONE,
 
-  input               SYNC_RXSYNC_START,
   input               SYNC_RXDLYSRESETDONE,
   input               SYNC_RXPHALIGNDONE_M,
   input               SYNC_RXPHALIGNDONE_S,
@@ -69,7 +67,6 @@ module phase_align (
   output              SYNC_TXDLYSRESET,
   output              SYNC_TXDLYEN,
   output              SYNC_TXSYNC_DONE,
-  output     [5:0]    SYNC_FSM_TX,
 
   output              SYNC_RXPHALIGN,
   output              SYNC_RXPHALIGNEN,
@@ -77,9 +74,7 @@ module phase_align (
   output              SYNC_RXDLYSRESET,
   output              SYNC_RXDLYEN,
   output              SYNC_RXDDIEN,
-  output              SYNC_RXSYNC_DONEM_OUT,
-  output              SYNC_RXSYNC_DONE,
-  output     [6:0]    SYNC_FSM_RX
+  output              SYNC_RXSYNC_DONEM_OUT
 );
 
   typedef enum logic [5:0] {
@@ -178,7 +173,6 @@ module phase_align (
   assign SYNC_TXPHALIGN    = (fsm_tx == TX_DONE1);
   assign SYNC_TXDLYEN      = txdlyen;
   assign SYNC_TXSYNC_DONE  = txsync_done;
-  assign SYNC_FSM_TX       = fsm_tx;
 
   assign SYNC_RXPHALIGNEN      = 1'b0;
   assign SYNC_RXDLYBYPASS      = 1'b1;
@@ -186,9 +180,7 @@ module phase_align (
   assign SYNC_RXPHALIGN        = 1'b0;
   assign SYNC_RXDLYEN          = 1'b0;
   assign SYNC_RXDDIEN          = 1'b0;
-  assign SYNC_RXSYNC_DONE      = 1'b0;
   assign SYNC_RXSYNC_DONEM_OUT = 1'b0;
-  assign SYNC_FSM_RX           = 7'b0000001;
 
 endmodule
 // -----------------------------------------------------------------------------

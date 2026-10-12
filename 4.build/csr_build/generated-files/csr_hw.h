@@ -21,245 +21,235 @@
 class imem_vp_t {
 public:
 
-    imem_vp_t(uint32_t* base_addr = (uint32_t*)0x0)
-    {
-    };
+    imem_vp_t* operator->() {return this;};
 
-} ;
+    uint8_t raw[8192];
+} __attribute__((packed));
+
+#define IMEM_VP_BASE_ADDR 0x0
 
 // -----------------------------------------------------
 //
 class csr__tx__header0_vp_t {
 public:
-    csr__tx__header0_vp_t (uint32_t* reg_addr = 0) : reg((csr__tx__header0_t*)reg_addr) {};
+    csr__tx__header0_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     hdr(const uint32_t data) {reg->f.hdr = data;};
-    inline uint32_t hdr()                    {return reg->f.hdr;};
+    inline void     hdr(const uint32_t data) {*(volatile uint32_t*)((volatile uint8_t*)&raw + 0) = (uint32_t)((data & 0xffffffffu));};
+    inline uint32_t hdr()                    {return raw.f.hdr;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__tx__header0_t* reg;
-};
+    volatile csr__tx__header0_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__tx__header1_vp_t {
 public:
-    csr__tx__header1_vp_t (uint32_t* reg_addr = 0) : reg((csr__tx__header1_t*)reg_addr) {};
+    csr__tx__header1_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     hdr(const uint32_t data) {reg->f.hdr = data;};
-    inline uint32_t hdr()                    {return reg->f.hdr;};
+    inline void     hdr(const uint32_t data) {*(volatile uint32_t*)((volatile uint8_t*)&raw + 0) = (uint32_t)((data & 0xffffffffu));};
+    inline uint32_t hdr()                    {return raw.f.hdr;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__tx__header1_t* reg;
-};
+    volatile csr__tx__header1_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__tx__header2_vp_t {
 public:
-    csr__tx__header2_vp_t (uint32_t* reg_addr = 0) : reg((csr__tx__header2_t*)reg_addr) {};
+    csr__tx__header2_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     hdr(const uint32_t data) {reg->f.hdr = data;};
-    inline uint32_t hdr()                    {return reg->f.hdr;};
+    inline void     hdr(const uint32_t data) {*(volatile uint32_t*)((volatile uint8_t*)&raw + 0) = (uint32_t)((data & 0xffffffffu));};
+    inline uint32_t hdr()                    {return raw.f.hdr;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__tx__header2_t* reg;
-};
+    volatile csr__tx__header2_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__tx__data_vp_t {
 public:
-    csr__tx__data_vp_t (uint32_t* reg_addr = 0) : reg((csr__tx__data_t*)reg_addr) {};
+    csr__tx__data_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     payload(const uint32_t data) {reg->f.payload = data;};
-    inline uint32_t payload()                    {return reg->f.payload;};
+    inline void     payload(const uint32_t data) {*(volatile uint32_t*)((volatile uint8_t*)&raw + 0) = (uint32_t)((data & 0xffffffffu));};
+    inline uint32_t payload()                    {return raw.f.payload;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__tx__data_t* reg;
-};
+    volatile csr__tx__data_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 class csr__tx_vp_t {
 public:
 
-    csr__tx_vp_t(uint32_t* base_addr)
-    {
-        header0 = new csr__tx__header0_vp_t (base_addr + 0x0/4);
-        header1 = new csr__tx__header1_vp_t (base_addr + 0x4/4);
-        header2 = new csr__tx__header2_vp_t (base_addr + 0x8/4);
-        data = new csr__tx__data_vp_t (base_addr + 0xc/4);
-    };
+    csr__tx_vp_t* operator->() {return this;};
 
-    csr__tx__header0_vp_t* header0;
-    csr__tx__header1_vp_t* header1;
-    csr__tx__header2_vp_t* header2;
-    csr__tx__data_vp_t* data;
-} ;
+    csr__tx__header0_vp_t header0;
+    csr__tx__header1_vp_t header1;
+    csr__tx__header2_vp_t header2;
+    csr__tx__data_vp_t data;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__rx__status_vp_t {
 public:
-    csr__rx__status_vp_t (uint32_t* reg_addr = 0) : reg((csr__rx__status_t*)reg_addr) {};
+    csr__rx__status_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     cpl_status(const uint32_t data) {reg->f.cpl_status = data;};
-    inline uint32_t cpl_status()                    {return reg->f.cpl_status;};
+    inline void     cpl_status(const uint32_t data) {*(volatile uint8_t*)((volatile uint8_t*)&raw + 0) = (uint8_t)((data & 0x7u));};
+    inline uint32_t cpl_status()                    {return raw.f.cpl_status;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__rx__status_t* reg;
-};
+    volatile csr__rx__status_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__rx__data_vp_t {
 public:
-    csr__rx__data_vp_t (uint32_t* reg_addr = 0) : reg((csr__rx__data_t*)reg_addr) {};
+    csr__rx__data_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     payload(const uint32_t data) {reg->f.payload = data;};
-    inline uint32_t payload()                    {return reg->f.payload;};
+    inline void     payload(const uint32_t data) {*(volatile uint32_t*)((volatile uint8_t*)&raw + 0) = (uint32_t)((data & 0xffffffffu));};
+    inline uint32_t payload()                    {return raw.f.payload;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__rx__data_t* reg;
-};
+    volatile csr__rx__data_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__rx__header_info_vp_t {
 public:
-    csr__rx__header_info_vp_t (uint32_t* reg_addr = 0) : reg((csr__rx__header_info_t*)reg_addr) {};
+    csr__rx__header_info_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     lower_addr(const uint32_t data) {reg->f.lower_addr = data;};
-    inline uint32_t lower_addr()                    {return reg->f.lower_addr;};
-    inline void     tag(const uint32_t data) {reg->f.tag = data;};
-    inline uint32_t tag()                    {return reg->f.tag;};
-    inline void     requester_id(const uint32_t data) {reg->f.requester_id = data;};
-    inline uint32_t requester_id()                    {return reg->f.requester_id;};
+    inline void     lower_addr(const uint32_t data) {*(volatile uint8_t*)((volatile uint8_t*)&raw + 0) = (uint8_t)((data & 0x7fu));};
+    inline uint32_t lower_addr()                    {return raw.f.lower_addr;};
+    inline void     tag(const uint32_t data) {*(volatile uint8_t*)((volatile uint8_t*)&raw + 1) = (uint8_t)((data & 0xffu));};
+    inline uint32_t tag()                    {return raw.f.tag;};
+    inline void     requester_id(const uint32_t data) {*(volatile uint16_t*)((volatile uint8_t*)&raw + 2) = (uint16_t)((data & 0xffffu));};
+    inline uint32_t requester_id()                    {return raw.f.requester_id;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__rx__header_info_t* reg;
-};
+    volatile csr__rx__header_info_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 class csr__rx_vp_t {
 public:
 
-    csr__rx_vp_t(uint32_t* base_addr)
-    {
-        status = new csr__rx__status_vp_t (base_addr + 0x0/4);
-        data = new csr__rx__data_vp_t (base_addr + 0x4/4);
-        header_info = new csr__rx__header_info_vp_t (base_addr + 0x8/4);
-    };
+    csr__rx_vp_t* operator->() {return this;};
 
-    csr__rx__status_vp_t* status;
-    csr__rx__data_vp_t* data;
-    csr__rx__header_info_vp_t* header_info;
-} ;
+    csr__rx__status_vp_t status;
+    csr__rx__data_vp_t data;
+    csr__rx__header_info_vp_t header_info;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__status__err_vp_t {
 public:
-    csr__status__err_vp_t (uint32_t* reg_addr = 0) : reg((csr__status__err_t*)reg_addr) {};
+    csr__status__err_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     cfg_status(const uint32_t data) {reg->f.cfg_status = data;};
-    inline uint32_t cfg_status()                    {return reg->f.cfg_status;};
-    inline void     msg_err_fatal(const uint32_t data) {reg->f.msg_err_fatal = data;};
-    inline uint32_t msg_err_fatal()                    {return reg->f.msg_err_fatal;};
+    inline void     msg_err_fatal(const uint32_t data) {*(volatile uint8_t*)((volatile uint8_t*)&raw + 2) = (uint8_t)((data & 0x1u));};
+    inline uint32_t msg_err_fatal()                    {return raw.f.msg_err_fatal;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__status__err_t* reg;
-};
+    volatile csr__status__err_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 //
 class csr__status__phy_vp_t {
 public:
-    csr__status__phy_vp_t (uint32_t* reg_addr = 0) : reg((csr__status__phy_t*)reg_addr) {};
+    csr__status__phy_vp_t* operator->() {return this;};
 
-    inline void     full(const uint32_t data) {reg->w = data;};
-    inline uint32_t full()                    {return reg->w;};
+    inline void     full(const uint32_t data) {raw.w = data;};
+    inline uint32_t full()                    {return raw.w;};
 
-    inline void     tx_buf_av(const uint32_t data) {reg->f.tx_buf_av = data;};
-    inline uint32_t tx_buf_av()                    {return reg->f.tx_buf_av;};
-    inline void     tx_state(const uint32_t data) {reg->f.tx_state = data;};
-    inline uint32_t tx_state()                    {return reg->f.tx_state;};
+    inline void     tx_buf_avail(const uint32_t data) {raw.f.tx_buf_avail = data;};
+    inline uint32_t tx_buf_avail()                    {return raw.f.tx_buf_avail;};
+    inline void     tx_state(const uint32_t data) {raw.f.tx_state = data;};
+    inline uint32_t tx_state()                    {return raw.f.tx_state;};
 
-    inline uint32_t* get_addr() {return (uint32_t*)((uint64_t)reg);}
+
+    inline uint32_t* get_addr() {return (uint32_t*)(uintptr_t)this;}
 
 private:
-    csr__status__phy_t* reg;
-};
+    volatile csr__status__phy_t raw;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 class csr__status_vp_t {
 public:
 
-    csr__status_vp_t(uint32_t* base_addr)
-    {
-        err = new csr__status__err_vp_t (base_addr + 0x0/4);
-        phy = new csr__status__phy_vp_t (base_addr + 0x4/4);
-    };
+    csr__status_vp_t* operator->() {return this;};
 
-    csr__status__err_vp_t* err;
-    csr__status__phy_vp_t* phy;
-} ;
+    csr__status__err_vp_t err;
+    csr__status__phy_vp_t phy;
+} __attribute__((packed));
 
 // -----------------------------------------------------
 class csr_vp_t {
 public:
 
-    csr_vp_t(uint32_t* base_addr = (uint32_t*)0x30000000)
-    {
-        tx = new csr__tx_vp_t (base_addr + 0x0/4);
-        rx = new csr__rx_vp_t (base_addr + 0x10/4);
-        status = new csr__status_vp_t (base_addr + 0x1c/4);
-    };
+    csr_vp_t* operator->() {return this;};
 
-    csr__tx_vp_t* tx;
-    csr__rx_vp_t* rx;
-    csr__status_vp_t* status;
-} ;
+    csr__tx_vp_t tx;
+    csr__rx_vp_t rx;
+    csr__status_vp_t status;
+} __attribute__((packed));
+
+#define CSR_VP_BASE_ADDR 0x30000000
 
 
 #endif

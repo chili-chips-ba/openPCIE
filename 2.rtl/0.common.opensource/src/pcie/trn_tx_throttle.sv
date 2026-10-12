@@ -37,19 +37,13 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module stream_tx_gate #(
+module trn_tx_throttle #(
   localparam int C_DATA_WIDTH = 64
   ) (
-
-  // TODO (SV interface): a read-only view of stream_if. Taking the interface needs
-  // a 'monitor' modport in stream_if (slave would claim tready).
   input  [C_DATA_WIDTH-1:0] s_axis_tx_tdata,
   input                     s_axis_tx_tvalid,
   input               [3:0] s_axis_tx_tuser,
   input                     s_axis_tx_tlast,
-
-  input                     user_turnoff_ok,
-  input                     user_tcfg_gnt,
 
   input               [5:0] trn_tbuf_av,
   input                     trn_tdst_rdy,
@@ -60,10 +54,9 @@ module stream_tx_gate #(
 
   input               [2:0] cfg_pcie_link_state,
 
-  input                     cfg_pm_send_pme_to,
   input               [1:0] cfg_pmcsr_powerstate,
-  input              [31:0] trn_rdllp_data,
-  input                     trn_rdllp_src_rdy,
+  input              [31:0] trn_rx_dllp_data,
+  input                     trn_rx_dllp_src_rdy,
 
   input                     cfg_to_turnoff,
   output logic                cfg_turnoff_ok,
@@ -73,6 +66,8 @@ module stream_tx_gate #(
   input                     user_rst
 );
 
+  wire  user_turnoff_ok = 1'b0;
+  wire  user_tcfg_gnt = 1'b0;
 localparam TBUF_AV_MIN = (C_DATA_WIDTH == 128) ? 5 :
                                                    (C_DATA_WIDTH == 64) ? 1 : 0;
 
@@ -81,7 +76,6 @@ localparam TBUF_AV_GAP = TBUF_AV_MIN + 1;
 localparam TBUF_GAP_TIME = (C_DATA_WIDTH == 128) ? 4 : 1;
 
 localparam TCFG_LATENCY_TIME = 2'd2;
-
 
 logic        lnk_up_thrtl;
 wire       lnk_up_trig;
@@ -124,7 +118,7 @@ logic        ppm_L1_thrtl;
 wire       ppm_L1_trig;
 wire       ppm_L1_exit;
 logic  [2:0] cfg_pcie_link_state_d;
-logic        trn_rdllp_src_rdy_d;
+logic        trn_rx_dllp_src_rdy_d;
 
 logic        ppm_L23_thrtl;
 wire       ppm_L23_trig;
@@ -161,7 +155,6 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-
 assign tbuf_av_min_trig = (trn_tbuf_av <= TBUF_AV_MIN);
 
 always_ff @(posedge user_clk) begin
@@ -178,8 +171,6 @@ always_ff @(posedge user_clk) begin
     end
   end
 end
-
-
 
 assign gap_trig_tlast = (trn_tbuf_av <= TBUF_AV_GAP) &&
                             s_axis_tx_tvalid && tready_thrtl && s_axis_tx_tlast;
@@ -217,7 +208,6 @@ always_ff @(posedge user_clk) begin
     tbuf_av_d <= trn_tbuf_av;
   end
 end
-
 
 assign tcfg_req_trig = trn_tcfg_req && reg_tcfg_gnt;
 assign tcfg_req_exit = (tcfg_req_cnt == 2'd0) && !trn_tdst_rdy_d &&
@@ -261,7 +251,6 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-
 assign ppm_L1_trig = (cfg_pcie_link_state_d == LINKSTATE_L0) &&
                        (cfg_pcie_link_state == LINKSTATE_PPM_L1_TRANS);
 assign ppm_L1_exit = cfg_pcie_link_state == LINKSTATE_L0;
@@ -270,7 +259,7 @@ always_ff @(posedge user_clk) begin
   if(user_rst) begin
     ppm_L1_thrtl          <= 1'b0;
     cfg_pcie_link_state_d <= 3'b0;
-    trn_rdllp_src_rdy_d   <= 1'b0;
+    trn_rx_dllp_src_rdy_d   <= 1'b0;
   end
   else begin
     if(ppm_L1_trig) begin
@@ -280,10 +269,9 @@ always_ff @(posedge user_clk) begin
       ppm_L1_thrtl <= 1'b0;
     end
     cfg_pcie_link_state_d <= cfg_pcie_link_state;
-    trn_rdllp_src_rdy_d   <= trn_rdllp_src_rdy;
+    trn_rx_dllp_src_rdy_d   <= trn_rx_dllp_src_rdy;
   end
 end
-
 
 assign ppm_L23_trig = wire_to_turnoff && reg_turnoff_ok;
 
@@ -318,7 +306,6 @@ always_ff @(posedge user_clk) begin
   end
 end
 
-
 always_ff @(posedge user_clk) begin
   if(user_rst) begin
     reg_axi_in_pkt <= 1'b0;
@@ -338,11 +325,8 @@ assign axi_pkt_ending = s_axis_tx_tvalid && s_axis_tx_tlast;
 assign axi_throttled  = !tready_thrtl;
 assign axi_thrtl_ok   = !axi_in_pkt || axi_pkt_ending || axi_throttled;
 
-
-
 assign pre_throttle = tbuf_av_min_trig || tbuf_av_gap_trig || lnk_up_trig
                                 || tcfg_req_trig || ppm_L1_trig || ppm_L23_trig;
-
 
 assign reg_throttle = tbuf_av_min_thrtl || tbuf_av_gap_thrtl || lnk_up_thrtl
                              || tcfg_req_thrtl || ppm_L1_thrtl || ppm_L23_thrtl;
@@ -461,7 +445,6 @@ end
 
 assign tx_ecrc_pause = ((tx_ecrc_pkt || reg_tx_ecrc_pkt) &&
                        s_axis_tx_tlast && s_axis_tx_tvalid && tready_thrtl);
-
 
 assign trn_tcfg_gnt = tcfg_gnt_log;
 

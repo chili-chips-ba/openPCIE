@@ -104,7 +104,7 @@ static void send_tlp(uint32_t h0, uint32_t h1, uint32_t h2, uint32_t data)
         uint32_t phy = csr->status->phy->full();
 
         if (RDL_GET(phy, CSR__STATUS__PHY__TX_STATE)  == 0 &&
-            RDL_GET(phy, CSR__STATUS__PHY__TX_BUF_AV) != 0)
+            RDL_GET(phy, CSR__STATUS__PHY__TX_BUF_AVAIL) != 0)
         {
             break;
         }
@@ -328,7 +328,7 @@ extern "C" void VUserMain0(int node)
     tx_tag = 0;
 
     // No start-up delay. The firmware needs one because it cannot tell when
-    // the link is up; here send_tlp() blocks on tx_buf_av, which stays zero
+    // the link is up; here send_tlp() blocks on tx_buf_avail, which stays zero
     // until the hard macro has trained, so the wait happens by itself.
 
     uint32_t dev_id;

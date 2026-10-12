@@ -1,5 +1,5 @@
 [![NLnet Foundation](https://img.shields.io/badge/funded%20by-NLnet%20Foundation-74AA00)](https://nlnet.nl/)
-[![GitHub stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=social)](https://github.com/chili-chips-ba/openPCIE/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=flat)](https://github.com/chili-chips-ba/openPCIE/stargazers)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 
@@ -22,58 +22,6 @@ This first phase is about implementing an open source PCIE Root Complex (RC) for
 
 #### References
 - [PCIE Primer](http://www.anita-simulators.org.uk/wyvernsemi/articles/pci_express.pdf) by Simon Southwell ✔
-
---------------------
-
-# Project Status
-
-#### `PART 1. Mini PCIE Backplane PCB`
-
-Almost all consumer PCIE installations have the RC chip soldered down on the motherboard, typically embodied in the CPU or "North Bridge" ASIC, where PCIE connectors are used solely for the EP cards. Similarly, all FPGA boards on the market are designed for EP applications. As such, they expect clock, reset and a few other signals from the infrastructure. It is only the professional and military-grade electronics that may have both RC and EP functions on add-on cards, with a backplane or mid-plane connecting them (see VPX chassis, or VITA 46.4).
-
-This dev activity is about creating the minimal PCIE infrastructure necessary for using a plethora of ready-made FPGA EP cards as a Root Complex. This infrastructure takes the physical form of a mini backplane that provides the necessary PCIE context similarly to what a typical motherboard would give, but without a soldered-down RC chip that would be conflicting with our own FPGA RC node.
-
-Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
-
- - [x] ✔ Create requirements document.
- - [x] ✔ Select components. Schematic and PCB layout design.
- - [x] ✔ Review and iterate design to ensure robust operation at 5 GT/s (PCIE Gen2), using openEMS for simulation of high-speed traces.
- - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
- - [x] ✔ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
-
-#### `PART 2. Project setup and preparatory activities`
- - [x] ✔ Procure FPGA development boards and PCIE accessories.
- - [x] ✔ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
- 
-#### `PART 3. Initial HW/SW implementation`
- - [x] ✔ HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
- - [x] ✔ SW development of opensource driver for the PCIE RC HW function. It runs bare-metal on the RISC-V SOC, without Linux - see [SW Architecture](#sw-architecture).
- - [x] ✔ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
-
-#### `PART 4. HW/SW co-simulation using full PCIE EP model`
-
-This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
-
-Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE model. The PCIE model has some EP capabilities with a configurable configuration space, which can be paired in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
-
-With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
-
- - [x] ✔ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
- - [x] ✔ Testbench development and build up. Execution and debug of sim testcases.
- - [x] ✔ Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
- 
-#### `PART 5. Integration, testing and iterative design refinements`
- - [x] ✔ One-by-one replace proprietary design elements of the PART 2 prototype system with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
- 
-#### `PART 6. Prepare Demo and port it to openXC7`
-
- - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
- - [x] ✔ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
-
-Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
-
-The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what "ScalePNR" idea eventually had evolved into. It brought to the forefront Yosys0.69 with integrated **Slang, nextpnr-himbaechel** (instead of _nextpnr-xilinx_) and _fpga-as_. With that, the earlier SV2V standalone preparatory step for our SystemVerilog design sources proved to be unnecessary, which greatly simplifies the build.
-
 
 --------------------
 
@@ -290,7 +238,46 @@ After the hardware was prepared, the connection was verified using the **Vivado 
     <img alt="openPCIE backplane block diagram" width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
-Please, refer to [1.pcb](1.pcb) for additional detail.
+Please, refer to [1.pcb](1.pcb) for additional detail, and to [1.pcb/KiCad-library](1.pcb/KiCad-library/README.md) for the self-contained KiCad library. Plain-text versions of the PDF and slide documents are in [0.doc/1.pcb](0.doc/1.pcb/README.md).
+
+--------------------
+
+# RTL Architecture
+
+The opensource Root Complex RTL is a chain of blocks joined by SystemVerilog interfaces: the RISC-V SoC hands TLPs over AXI-Stream to the PCIE stack, which converts them for the `PCIE_2_1` hard block and drives the GTP transceiver over PIPE.
+
+<p align="center">
+ <img alt="RTL blocks of the opensource Root Complex and the SystemVerilog interfaces between them" src="0.doc/2.rtl/block-diagram.drawio.svg" width="100%">
+</p>
+
+Details are in the [RTL README](2.rtl/README.md#systemverilog-interfaces). Per design: [common RTL](2.rtl/0.common.opensource/README.md), [EP](2.rtl/1.EP.opensource/README.md), [RC-direct](2.rtl/2.RC-direct.opensource/README.md), [RC-switched](2.rtl/3.Bonus--RC-switched.opensource/README.md). The AMD/Vivado-IP reference designs are in [2.amd-rtl-with-Vivado-build](2.amd-rtl-with-Vivado-build/README.md) ([EP](2.amd-rtl-with-Vivado-build/1.EP.amd/README.md), [RC-direct](2.amd-rtl-with-Vivado-build/2.RC-direct.amd/README.md), [RC-switched](2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd/README.md)).
+
+--------------------
+
+# SW Architecture
+
+The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIE enumeration automatically in the background, hiding the complexity from the developer. In this project, our **open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIE Host.
+
+The architecture follows a layered approach:
+
+1.  **Application Layer (The "User" Logic)**: 
+    - The final stage of the program that executes the high-level task.
+    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
+
+2.  **PCIE Driver (Enumeration & Setup)**:
+    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
+    - It manually performs device discovery, sizes the BARs by readback, assigns aligned memory addresses, checks the completion status of every request, and configures the **Command Register** to enable the device for communication.
+      
+3.  **HAL (Hardware Abstraction Layer)**:
+    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
+
+> **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
+
+<p align="center">
+ <img alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints" src="0.doc/3.sw/sw-structure.drawio.svg" width="100%">
+</p>
+
+Details are in the [SW README](3.sw/README.md).
 
 --------------------
 
@@ -314,7 +301,7 @@ The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to s
 The figure below shows an overview block diagram of the test bench HDL.
 
 <p align="center">
-<img alt="openPCIE Root Complex test bench structure" src="5.sim/images/openpcierc_tb.png" width="75%">
+<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.svg" width="75%">
 </p>
 
 More details on the architecture and usage of the openPCIE test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
@@ -331,9 +318,7 @@ One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://githu
 
 The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the picorv32 memory bus, and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
 
-The hand-written register block that came first is kept alongside it, behind `` `ifdef SOC_CSR_LEGACY `` in `riscv_pcie_soc.sv`, and every build flow can pick either one. The two describe the same map down to the byte offset.
-
-More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file.
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
   
 #### References
 - [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
@@ -342,30 +327,13 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 
 --------------------
 
-# SW Architecture
-
-The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIE enumeration automatically in the background, hiding the complexity from the developer. In this project, our **open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIE Host.
-
-The architecture follows a layered approach:
-
-1.  **Application Layer (The "User" Logic)**: 
-    - The final stage of the program that executes the high-level task.
-    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
-
-2.  **PCIE Driver (Enumeration & Setup)**:
-    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
-    - It manually performs device discovery, sizes the BARs by readback, assigns aligned memory addresses, checks the completion status of every request, and configures the **Command Register** to enable the device for communication.
-      
-3.  **HAL (Hardware Abstraction Layer)**:
-    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
-
-> **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
-
---------------------
-
 # Implementation Workflow
 
 The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
+
+<p align="center">
+ <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
+</p>
 
 ## Prerequisites
 
@@ -379,7 +347,7 @@ The co-simulation flow is used to test essential operations such as device initi
 
 ## Software Build
 
-Compile the bare-metal RISC-V driver and test application using the configured cross-compilation toolchain.
+Compile the bare-metal RISC-V driver and test application using the configured cross-compilation toolchain, see [4.build/sw_build](4.build/sw_build/README.md).
 
 The software is responsible for initializing the required hardware components, configuring the PCIE communication flow, and transferring test payloads between the RC and EP. The generated executable can be used during simulation or deployed together with the FPGA design for hardware verification.
 
@@ -435,7 +403,9 @@ The goal of this test is to verify that the Root Complex can successfully enumer
 
 ---
 
-# Functional Verification: 
+<a name="functional-verification"></a>
+
+# Bench Validation and Demo
 
 ### Verification Environment
 
@@ -495,6 +465,58 @@ These results confirm that PCIE link initialization and RC-to-EP data transfer o
 
 --------------------
 
+# Project Status
+
+#### `PART 1. Mini PCIE Backplane PCB`
+
+Almost all consumer PCIE installations have the RC chip soldered down on the motherboard, typically embodied in the CPU or "North Bridge" ASIC, where PCIE connectors are used solely for the EP cards. Similarly, all FPGA boards on the market are designed for EP applications. As such, they expect clock, reset and a few other signals from the infrastructure. It is only the professional and military-grade electronics that may have both RC and EP functions on add-on cards, with a backplane or mid-plane connecting them (see VPX chassis, or VITA 46.4).
+
+This dev activity is about creating the minimal PCIE infrastructure necessary for using a plethora of ready-made FPGA EP cards as a Root Complex. This infrastructure takes the physical form of a mini backplane that provides the necessary PCIE context similarly to what a typical motherboard would give, but without a soldered-down RC chip that would be conflicting with our own FPGA RC node.
+
+Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
+
+ - [x] ✔ Create requirements document.
+ - [x] ✔ Select components. Schematic and PCB layout design.
+ - [x] ✔ Review and iterate design to ensure robust operation at 5 GT/s (PCIE Gen2), using openEMS for simulation of high-speed traces.
+ - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
+ - [x] ✔ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
+
+#### `PART 2. Project setup and preparatory activities`
+ - [x] ✔ Procure FPGA development boards and PCIE accessories.
+ - [x] ✔ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
+ 
+#### `PART 3. Initial HW/SW implementation`
+ - [x] ✔ HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
+ - [x] ✔ SW development of opensource driver for the PCIE RC HW function. It runs bare-metal on the RISC-V SOC, without Linux - see [SW Architecture](#sw-architecture).
+ - [x] ✔ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
+
+#### `PART 4. HW/SW co-simulation using full PCIE EP model`
+
+This dev activity is significantly beefed up compared to our original plan, which was to use a much simpler PCIE EP BFM, and non-SOC sim framework. While that would have reduced the time and effort spent on the sim, prompted by NLnet astute questions, we're happy to announce that **[wyvernSemi](https://github.com/wyvernSemi/pcievhost)** is now also onboard!
+
+Their VProc can be used not only to faithfully model the RISC-V CPU and SW interactions with HW, but it also comes with an implementation of the PCIE model. The PCIE model has some EP capabilities with a configurable configuration space, which can be paired in sim with our RC RTL design. Moreover, the existence of both RC and EP models paves the way for future plug-and-play, pick-and-choose opensource sims of the entire PCIE subsystem.
+
+With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
+
+ - [x] ✔ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
+ - [x] ✔ Testbench development and build up. Execution and debug of sim testcases.
+ - [x] ✔ Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
+ 
+#### `PART 5. Integration, testing and iterative design refinements`
+ - [x] ✔ One-by-one replace proprietary design elements of the PART 2 prototype system with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
+ 
+#### `PART 6. Prepare Demo and port it to openXC7`
+
+ - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
+ - [x] ✔ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
+
+Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
+
+The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what "ScalePNR" idea eventually had evolved into. It brought to the forefront Yosys0.69 with integrated **Slang, nextpnr-himbaechel** (instead of _nextpnr-xilinx_) and _fpga-as_. With that, the earlier SV2V standalone preparatory step for our SystemVerilog design sources proved to be unnecessary, which greatly simplifies the build.
+
+
+--------------------
+
 # PCIE Protocol Analyzer
 
 #### References
@@ -546,6 +568,12 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 <p align="center">
   <a href="https://www.envox.eu"><img alt="EEZ / Envox logo" width="25%" src="0.doc/artwork/EEZ-web-logo.png"></a>
+</p>
+
+**PeakRDL** turns our single SystemRDL file into the CSR RTL, the firmware and co-simulation headers, and the register map documentation -- thank you for this toolset.
+
+<p align="center">
+  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="12%" src="0.doc/artwork/PeakRDL.logo.png"></a>
 </p>
 
 ### Crowd Supply Campaign

@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //--------------------------------------------------------------------------
 // Description:
-//   Co-simulation stand-in for 2.rtl/0.common.opensource/src/pcie/serdes_front.sv
+//   Co-simulation stand-in for 2.rtl/0.common.opensource/src/pcie/phy_top.sv
 //
 //   Same module name, same port list, so it is a drop-in replacement: the
 //   simulation file list picks this file INSTEAD of the synthesis one and
@@ -13,7 +13,7 @@
 //
 //   What it replaces
 //   ----------------
-//   The synthesis serdes_front wraps serdes_ctrl -> lane_xcvr -> GTPE2_CHANNEL,
+//   The synthesis phy_top wraps gtp_wrapper -> lane_xcvr -> GTPE2_CHANNEL,
 //   i.e. the 7-series gigabit transceiver, and presents a PIPE interface to
 //   the PCIE_2_1 hard macro above it. The transceiver is what turns PIPE
 //   symbols into a 5 GT/s serial bit stream.
@@ -29,14 +29,14 @@
 //        ENDPOINT, so the openPCIE Root Complex has something to enumerate
 //
 //        PCIE_2_1  <--16-bit PIPE-->  this PHY  <--16-bit PIPE-->  pcieVHost EP
-//              (silicon_core.sv)                                   (VUserMain1)
+//              (pcie_core.sv)                                 (VUserMain1)
 //
 //   Clocking
 //   --------
-//   In hardware the GT recovers TXOUTCLK (125 MHz) and clk_synth's MMCM makes
+//   In hardware the GT recovers TXOUTCLK (125 MHz) and clk_gen's MMCM makes
 //   PCLK (125 MHz Gen1 / 250 MHz Gen2) and USERCLK1/2 (62.5 MHz) from it. Here
 //   TXOUTCLK is a behavioural oscillator and everything downstream is the real
-//   clk_synth, so the clock topology the design sees is unchanged.
+//   clk_gen, so the clock topology the design sees is unchanged.
 //
 //   The pcievhost wrapper needs a symbol clock at twice the 16-bit PIPE rate;
 //   it is generated from the same behavioural source so the two stay edge
@@ -45,12 +45,12 @@
 
 `timescale 1ps/1ps
 
-module serdes_front
+module phy_top
   import link_pkg::*;
 (
   input  wire [5:0]                             pl_ltssm_state,
 
-  phy_lanes_if.phy                              pipe,
+  pipe_if.phy                              pipe_mac,
 
   output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txn,
   output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txp,
@@ -59,23 +59,14 @@ module serdes_front
 
   input  wire                                   sys_clk,
   input  wire                                   sys_rst_n,
-  input  wire                                   PIPE_MMCM_RST_N,
-  output wire                                   pipe_clk,
-  output wire                                   user_clk,
-  output wire                                   user_clk2,
 
   input  wire                                   PIPE_PCLK_IN,
   input  wire                                   PIPE_RXUSRCLK_IN,
-  input  wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     PIPE_RXOUTCLK_IN,
   input  wire                                   PIPE_DCLK_IN,
-  input  wire                                   PIPE_USERCLK1_IN,
-  input  wire                                   PIPE_USERCLK2_IN,
   input  wire                                   PIPE_OOBCLK_IN,
   input  wire                                   PIPE_MMCM_LOCK_IN,
   output wire                                   PIPE_TXOUTCLK_OUT,
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     PIPE_RXOUTCLK_OUT,
   output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     PIPE_PCLK_SEL_OUT,
-  output wire                                   PIPE_GEN3_OUT,
 
   output wire                                   phy_rdy_n
 );
@@ -87,8 +78,8 @@ module serdes_front
   //------------------------------------------------------------------
   // Behavioural clocks
   //------------------------------------------------------------------
-  // TXOUTCLK is what the GT recovers and feeds to clk_synth's MMCM. It has to
-  // be 100 MHz: clk_synth is parameterised with PCIE_REFCLK_FREQ = 0, i.e.
+  // TXOUTCLK is what the GT recovers and feeds to clk_gen's MMCM. It has to
+  // be 100 MHz: clk_gen is parameterised with PCIE_REFCLK_FREQ = 0, i.e.
   // CLKIN1_PERIOD = 10 ns and CLKFBOUT_MULT_F = 10, so the VCO lands on
   // 1000 MHz and the outputs come out as
   //     CLKOUT0 = 1000/8  = 125   MHz   PCLK, Gen1
@@ -115,7 +106,7 @@ module serdes_front
   // hangs the simulator at time 0.
   logic rate_sel = 1'b0;
 
-  always @(pipe.tx_ctrl.rate) rate_sel = (pipe.tx_ctrl.rate === 1'b1);
+  always @(pipe_mac.tx_ctrl.rate) rate_sel = (pipe_mac.tx_ctrl.rate === 1'b1);
 
   always begin
     #((rate_sel ? SYMCLK_HALF_GEN2_PS : SYMCLK_HALF_GEN1_PS) * 1ps);
@@ -123,17 +114,13 @@ module serdes_front
   end
 
   assign PIPE_TXOUTCLK_OUT = txoutclk;
-  assign PIPE_RXOUTCLK_OUT = {LINK_CAP_MAX_LINK_WIDTH{txoutclk}};
 
-  // PCLK, USERCLK1 and USERCLK2 come straight back from clk_synth, exactly as
-  // serdes_ctrl passes them through in the synthesis build
-  assign pipe_clk  = PIPE_PCLK_IN;
-  assign user_clk  = PIPE_USERCLK1_IN;
-  assign user_clk2 = PIPE_USERCLK2_IN;
+  // PCLK, USERCLK1 and USERCLK2 come straight back from clk_gen, exactly as
+  // gtp_wrapper passes them through in the synthesis build
+  wire   pipe_clk  = PIPE_PCLK_IN;
 
-  // Tell clk_synth which PCLK to select. Gen3 does not exist on this device.
-  assign PIPE_PCLK_SEL_OUT = {LINK_CAP_MAX_LINK_WIDTH{pipe.tx_ctrl.rate}};
-  assign PIPE_GEN3_OUT     = 1'b0;
+  // Tell clk_gen which PCLK to select. Gen3 does not exist on this device.
+  assign PIPE_PCLK_SEL_OUT = {LINK_CAP_MAX_LINK_WIDTH{pipe_mac.tx_ctrl.rate}};
 
   //------------------------------------------------------------------
   // PHY ready
@@ -176,8 +163,8 @@ module serdes_front
       ep_rx_datak <= 2'b00;
     end
     else begin
-      ep_rx_data  <= pipe.tx[0].data;
-      ep_rx_datak <= pipe.tx[0].char_is_k;
+      ep_rx_data  <= pipe_mac.tx[0].data;
+      ep_rx_datak <= pipe_mac.tx[0].char_is_k;
     end
   end
 
@@ -228,10 +215,10 @@ module serdes_front
   logic       phy_status_r;
   logic [2:0] rx_status_r;
 
-  wire pipe_reset_fall = pipe_reset_q & ~pipe.tx_ctrl.reset;
-  wire powerdown_chg   = (powerdown_q != pipe.tx[0].powerdown);
-  wire rate_chg        = (rate_q      != pipe.tx_ctrl.rate);
-  wire rcvr_det_rise   = ~rcvr_det_q  &  pipe.tx_ctrl.rcvr_det;
+  wire pipe_reset_fall = pipe_reset_q & ~pipe_mac.tx_ctrl.reset;
+  wire powerdown_chg   = (powerdown_q != pipe_mac.tx[0].powerdown);
+  wire rate_chg        = (rate_q      != pipe_mac.tx_ctrl.rate);
+  wire rcvr_det_rise   = ~rcvr_det_q  &  pipe_mac.tx_ctrl.rcvr_det;
 
   always_ff @(posedge pipe_clk or negedge sys_rst_n) begin
     if (!sys_rst_n) begin
@@ -246,10 +233,10 @@ module serdes_front
       rx_status_r    <= 3'b000;
     end
     else begin
-      powerdown_q  <= pipe.tx[0].powerdown;
-      rate_q       <= pipe.tx_ctrl.rate;
-      pipe_reset_q <= pipe.tx_ctrl.reset;
-      rcvr_det_q   <= pipe.tx_ctrl.rcvr_det;
+      powerdown_q  <= pipe_mac.tx[0].powerdown;
+      rate_q       <= pipe_mac.tx_ctrl.rate;
+      pipe_reset_q <= pipe_mac.tx_ctrl.reset;
+      rcvr_det_q   <= pipe_mac.tx_ctrl.rcvr_det;
 
       phy_status_r <= 1'b0;
       rx_status_r  <= 3'b000;
@@ -296,16 +283,16 @@ module serdes_front
   generate
     for (i = 0; i < PIPE_MAX_LANES; i = i + 1) begin : lane_map
       if (i < LINK_CAP_MAX_LINK_WIDTH) begin : active
-        assign pipe.rx[i].data          = ep_tx_data;
-        assign pipe.rx[i].char_is_k     = ep_tx_datak;
-        assign pipe.rx[i].valid         = rx_active;
-        assign pipe.rx[i].chanisaligned = rx_active;
-        assign pipe.rx[i].status        = rx_status_r;
-        assign pipe.rx[i].phy_status    = phy_status_r;
-        assign pipe.rx[i].elec_idle     = ~rx_active;
+        assign pipe_mac.rx[i].data          = ep_tx_data;
+        assign pipe_mac.rx[i].char_is_k     = ep_tx_datak;
+        assign pipe_mac.rx[i].valid         = rx_active;
+        assign pipe_mac.rx[i].chanisaligned = rx_active;
+        assign pipe_mac.rx[i].status        = rx_status_r;
+        assign pipe_mac.rx[i].phy_status    = phy_status_r;
+        assign pipe_mac.rx[i].elec_idle     = ~rx_active;
       end
       else begin : unused
-        assign pipe.rx[i] = PIPE_RX_LANE_TIE;
+        assign pipe_mac.rx[i] = PIPE_RX_LANE_TIE;
       end
     end
   endgenerate
@@ -399,8 +386,8 @@ module serdes_front
   integer dump_n = 0;
   always @(posedge pipe_clk) if (sys_rst_n && rx_active && dump_n < 40 && $time > `PIPE_DUMP_FROM) begin
     $display("%t  RAW  tx=%02h%s %02h%s   rx=%02h%s %02h%s", $time,
-             pipe.tx[0].data[7:0],  pipe.tx[0].char_is_k[0] ? "K" : "d",
-             pipe.tx[0].data[15:8], pipe.tx[0].char_is_k[1] ? "K" : "d",
+             pipe_mac.tx[0].data[7:0],  pipe_mac.tx[0].char_is_k[0] ? "K" : "d",
+             pipe_mac.tx[0].data[15:8], pipe_mac.tx[0].char_is_k[1] ? "K" : "d",
              ep_tx_data[7:0],       ep_tx_datak[0] ? "K" : "d",
              ep_tx_data[15:8],      ep_tx_datak[1] ? "K" : "d");
     dump_n <= dump_n + 1;
@@ -408,8 +395,8 @@ module serdes_front
 `endif
 
   always @(posedge pipe_clk) if (sys_rst_n) begin
-    feed_tx(pipe.tx[0].data[7:0],   pipe.tx[0].char_is_k[0]);
-    feed_tx(pipe.tx[0].data[15:8],  pipe.tx[0].char_is_k[1]);
+    feed_tx(pipe_mac.tx[0].data[7:0],   pipe_mac.tx[0].char_is_k[0]);
+    feed_tx(pipe_mac.tx[0].data[15:8],  pipe_mac.tx[0].char_is_k[1]);
     feed_rx(ep_tx_data[7:0],        ep_tx_datak[0]);
     feed_rx(ep_tx_data[15:8],       ep_tx_datak[1]);
   end

@@ -19,18 +19,7 @@ land here, next to the Makefile.
 | `direct` (default) | `3.sw/RC-direct/` | one endpoint, straight RC-to-EP link |
 | `switched` | `3.sw/RC-switched/` | ASM1184e switch with up to 4 endpoints |
 
-Where the register map comes from is **not** set here - it comes from
-[`4.build/config.mk`](../config.mk), which the hardware builds read as well, so
-firmware and bitstream always match:
-
-| `CSR` | Register map |
-|---|---|
-| `peakrdl` (default) | `../csr_build/generated-files/csr.h`, generated from `csr.rdl` |
-| `legacy` | addresses hard-coded in `3.sw/common/pcie.h` |
-
-`make CSR=legacy` overrides it for one build. Either way the image is
-byte-identical, because both describe the same map. See
-[`4.build/README.md`](../README.md#csr-hal-compilation).
+The register map comes from `../csr_build/generated-files/` (`csr.h`, `openpcie_regs.h`), generated from `csr.rdl` - see [`4.build/README.md`](../README.md#csr-hal-compilation).
 
 ---
 
@@ -64,12 +53,8 @@ make
 | `make info` | print the resolved configuration |
 | `make clean` | remove the three generated files |
 
-The register map is deliberately **not** in that table -- it is set once in
-[`config.mk`](../config.mk), for the firmware and the hardware together, as
-described at the top of this file.
-
 **Every `make` rebuilds the firmware from scratch** - it takes about a second.
-Both variants write the same three output names, and `VARIANT`, `CSR` and `SIM`
+Both variants write the same three output names, and `VARIANT` and `SIM`
 leave no trace in the sources, so a date-based make would compare the same
 inputs against the same outputs, report `Nothing to be done`, and leave the
 **previous** image in place. File dates cannot be trusted either: a tree on a

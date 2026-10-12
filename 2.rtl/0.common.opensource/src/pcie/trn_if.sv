@@ -37,20 +37,42 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-interface phy_lanes_if;
-  import link_pkg::*;
+interface trn_if #(
+  parameter int DATA_W = 64,
+  parameter int REM_W  = 1
+);
+  // TRN ("transaction") bus: the native TLP port of the PCIE_2_1 hard block.
+  // trn_bridge converts AXI-Stream to and from it.
 
-  pipe_tx_ctrl_t                      tx_ctrl;
-  pipe_tx_lane_t [PIPE_MAX_LANES-1:0] tx;
-  logic          [PIPE_MAX_LANES-1:0] rx_polarity;
-  pipe_rx_lane_t [PIPE_MAX_LANES-1:0] rx;
+  // TX: user -> core
+  logic [DATA_W-1:0] td;
+  logic [REM_W-1:0]  trem;
+  logic              tsof, teof, tsrc_rdy, tsrc_dsc, terrfwd, tstr, tecrc_gen, tcfg_gnt;
+  logic              tdst_rdy, tcfg_req;
+  logic        [5:0] tbuf_av;
 
-  modport mac (output tx_ctrl, tx, rx_polarity, input  rx);
-  modport phy (input  tx_ctrl, tx, rx_polarity, output rx);
+  // RX: core -> user
+  logic [DATA_W-1:0] rd;
+  logic [REM_W-1:0]  rrem;
+  logic              rsof, reof, rsrc_rdy, rsrc_dsc, rerrfwd, recrc_err;
+  logic        [6:0] rbar_hit;
+  logic              rdst_rdy;
+
+  // status: core -> user
+  logic              lnk_up;           // link up, in the user clock domain
+  logic       [31:0] rx_dllp_data;     // received DLLP (tied off: not used yet)
+  logic              rx_dllp_src_rdy;
+
+  modport user (output td, trem, tsof, teof, tsrc_rdy, tsrc_dsc, terrfwd, tstr, tecrc_gen, tcfg_gnt, rdst_rdy,
+                input  tdst_rdy, tcfg_req, tbuf_av, rd, rrem, rsof, reof, rsrc_rdy, rsrc_dsc, rerrfwd, recrc_err, rbar_hit,
+                       lnk_up, rx_dllp_data, rx_dllp_src_rdy);
+  modport core (input  td, trem, tsof, teof, tsrc_rdy, tsrc_dsc, terrfwd, tstr, tecrc_gen, tcfg_gnt, rdst_rdy,
+                output tdst_rdy, tcfg_req, tbuf_av, rd, rrem, rsof, reof, rsrc_rdy, rsrc_dsc, rerrfwd, recrc_err, rbar_hit,
+                       lnk_up, rx_dllp_data, rx_dllp_src_rdy);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE
 // Description: NLnet-sponsored open-source implementation
 // Version:     1.0
-// Date:        May 24, 2024
+// Date:        Oct 11, 2026
 // -----------------------------------------------------------------------------

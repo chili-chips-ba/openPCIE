@@ -5,7 +5,7 @@
 // -----------------------------------------------------------------------------
 // UNIMACRO shim for the openXC7 build -- open-source flow ONLY.
 //
-// buffer_tile.sv instantiates BRAM_TDP_MACRO, the Xilinx UNIMACRO wrapper around
+// buffer_bank.sv instantiates BRAM_TDP_MACRO, the Xilinx UNIMACRO wrapper around
 // RAMB36E1. Vivado pulls it from its own unimacro library; Yosys/openXC7 do not
 // have it, so synthesis fails with:
 //     ERROR: Module `\BRAM_TDP_MACRO' ... is not part of the design
@@ -40,7 +40,7 @@ module BRAM_TDP_MACRO #(
     parameter integer W = (READ_WIDTH_A > READ_WIDTH_B) ? READ_WIDTH_A : READ_WIDTH_B,
 
     // Address width and number of WE bits -- computed exactly as in
-    // buffer_tile.sv so the instance widths match.
+    // buffer_bank.sv so the instance widths match.
     parameter integer ADDR_W = (W == 4)  ? 13 :
                                (W == 9)  ? 12 :
                                (W == 18) ? 11 :

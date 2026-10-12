@@ -41,7 +41,7 @@ module speed_ctrl #(
   localparam TXDATA_WAIT_MAX = 4'd15) (
   input               RATE_CLK,
   input               RATE_RST_N,
-  input       [1:0]   RATE_RATE_IN,
+  input               RATE_RATE_IN,        // 0 = Gen1, 1 = Gen2
   input               RATE_DRP_DONE,
   input               RATE_RXPMARESETDONE,
   input               RATE_TXRATEDONE,
@@ -55,8 +55,7 @@ module speed_ctrl #(
   output      [2:0]   RATE_RATE_OUT,
   output              RATE_TXSYNC_START,
   output              RATE_DONE,
-  output              RATE_IDLE,
-  output      [4:0]   RATE_FSM
+  output              RATE_IDLE
 );
 
   typedef enum logic [3:0] {
@@ -68,7 +67,7 @@ module speed_ctrl #(
   state_e state = ST_IDLE;
   state_e state_nx;
 
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [1:0] rate_in_r1, rate_in_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic rate_in_r1, rate_in_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic drp_done_r1,  drp_done_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic rxpma_r1,     rxpma_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txrate_r1,    txrate_r2;
@@ -91,7 +90,7 @@ module speed_ctrl #(
     end
   end
 
-  wire [2:0] rate = (rate_in_r2 == 2'd1) ? 3'd1 : 3'd0;
+  wire [2:0] rate = rate_in_r2 ? 3'd1 : 3'd0;
 
   logic [3:0] txdata_wait_cnt = 4'd0;
   always_ff @(posedge RATE_CLK) begin
@@ -145,7 +144,7 @@ module speed_ctrl #(
   logic       pclk_sel = 1'b0;
   logic [2:0] rate_out = 3'd0;
 
-  wire       pclk_sel_d = (state == ST_PCLK_SEL) ? (rate_in_r2 == 2'd1) : pclk_sel;
+  wire       pclk_sel_d = (state == ST_PCLK_SEL) ? rate_in_r2 : pclk_sel;
   wire [2:0] rate_out_d = (state == ST_RATE_SEL) ? rate                 : rate_out;
 
   always_ff @(posedge RATE_CLK) begin
@@ -167,7 +166,6 @@ module speed_ctrl #(
   assign RATE_TXSYNC_START = (state == ST_TXSYNC_REQ);
   assign RATE_DONE         = (state == ST_DONE);
   assign RATE_IDLE         = (state == ST_IDLE);
-  assign RATE_FSM          = {1'b0, state};
 
 endmodule
 // -----------------------------------------------------------------------------

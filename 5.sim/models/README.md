@@ -7,8 +7,8 @@ This directory contains the following bus functional models
   -- see [The three CPU options](../README.md#the-three-cpu-options).
 * `soc_cpu.VPROC.sv` : the inherited _VProc_ based `soc_cpu`, which speaks the
   `soc_if` bus. Kept for reference; not instantiated here (see below).
-* `serdes_front.PIPE.sv` : behavioural PIPE PHY that stands in for
-  `2.rtl/0.common.opensource/src/pcie/serdes_front.sv` and carries the _pcieVHost_ endpoint. Described
+* `phy_top.PIPE.sv` : behavioural PIPE PHY that stands in for
+  `2.rtl/0.common.opensource/src/pcie/phy_top.sv` and carries the _pcieVHost_ endpoint. Described
   [here](../README.md#the-pipe-phy-model).
 * `bfm_uart.sv` : UART bus functional model.
 
@@ -51,6 +51,6 @@ The `soc_cpu.VPROC` module is pin compatible with the other `soc_cpu` components
 
 ## Others
 
-`serdes_front.PIPE.sv` and the PIPE-level endpoint it carries are described in
+`phy_top.PIPE.sv` and the PIPE-level endpoint it carries are described in
 the [test bench README](../README.md#the-pipe-phy-model). `bfm_uart.sv` is not
 instantiated by the current test bench.

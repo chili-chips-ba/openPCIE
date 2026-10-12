@@ -37,25 +37,22 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module wake_timer (
-    input  logic  i_ibufds_gte2,
-    output logic  o_cpllpd_ovrd,
-    output logic  o_cpllreset_ovrd
-);
-    (* equivalent_register_removal = "no" *) logic  [95:0] cpllpd_wait    = 96'hFFFFFFFFFFFFFFFFFFFFFFFF;
-    (* equivalent_register_removal = "no" *) logic [127:0] cpllreset_wait = 128'h000000000000000000000000000000FF;
+interface mim_if #(parameter int DATA_W = 72);
+  // Packet buffer port of PCIE_2_1 (MIMTX*/MIMRX* pins) to its BRAM: a simple
+  // dual-port RAM with fixed latency, no handshake. One instance per direction.
+  logic              wen;
+  logic       [12:0] waddr;
+  logic [DATA_W-1:0] wdata;
+  logic              ren;
+  logic       [12:0] raddr;
+  logic [DATA_W-1:0] rdata;
 
-    always_ff @(posedge i_ibufds_gte2) begin
-        cpllpd_wait    <= {cpllpd_wait[94:0],     1'b0};
-        cpllreset_wait <= {cpllreset_wait[126:0], 1'b0};
-    end
-
-    assign o_cpllpd_ovrd    = cpllpd_wait[95];
-    assign o_cpllreset_ovrd = cpllreset_wait[127];
-endmodule
+  modport hm  (output wen, waddr, wdata, ren, raddr, input  rdata);
+  modport ram (input  wen, waddr, wdata, ren, raddr, output rdata);
+endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE
 // Description: NLnet-sponsored open-source implementation
 // Version:     1.0
-// Date:        May 24, 2024
+// Date:        Oct 11, 2026
 // -----------------------------------------------------------------------------

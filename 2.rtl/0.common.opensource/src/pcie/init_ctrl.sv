@@ -40,8 +40,7 @@
 module init_ctrl
   import link_pkg::*;
 #(
-  localparam CFG_WAIT_MAX = 6'd63,
-  localparam BYPASS_RXCDRLOCK = 1) (
+  localparam CFG_WAIT_MAX = 6'd63) (
   input                       RST_CLK,
   input                       RST_RXUSRCLK,
   input                       RST_DCLK,
@@ -50,14 +49,14 @@ module init_ctrl
   input      [PCIE_LANES-1:0] RST_RXPMARESETDONE,
   input                       RST_PLLLOCK,
   input      [PCIE_LANES-1:0] RST_RATE_IDLE,
-  input      [PCIE_LANES-1:0] RST_RXCDRLOCK,
   input                       RST_MMCM_LOCK,
   input      [PCIE_LANES-1:0] RST_RESETDONE,
   input      [PCIE_LANES-1:0] RST_PHYSTATUS,
   input      [PCIE_LANES-1:0] RST_TXSYNC_DONE,
 
   output                      RST_CPLLRESET,
-  output                      RST_CPLLPD,
+  output                      RST_PLLPD,
+  output                      RST_PLLRESET,
   output logic                RST_DRP_START,
   output logic                RST_DRP_X16,
   output                      RST_RXUSRCLK_RESET,
@@ -65,8 +64,7 @@ module init_ctrl
   output                      RST_GTRESET,
   output                      RST_USERRDY,
   output                      RST_TXSYNC_START,
-  output                      RST_IDLE,
-  output     [4:0]            RST_FSM
+  output                      RST_IDLE
 );
 
   typedef enum logic [4:0] {
@@ -82,7 +80,6 @@ module init_ctrl
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rxpma_r1,          rxpma_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 plllock_r1,        plllock_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rate_idle_r1,      rate_idle_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rxcdrlock_r1,      rxcdrlock_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 mmcmlock_r1,       mmcmlock_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] resetdone_r1,      resetdone_r2;
   (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] phystatus_r1,      phystatus_r2;
@@ -90,15 +87,14 @@ module init_ctrl
 
   always_ff @(posedge RST_CLK) begin
     if (!RST_RST_N) begin
-      {drp_done_r1, rxpma_r1, rate_idle_r1, rxcdrlock_r1, resetdone_r1, phystatus_r1, txsyncdone_r1} <= '0;
-      {drp_done_r2, rxpma_r2, rate_idle_r2, rxcdrlock_r2, resetdone_r2, phystatus_r2, txsyncdone_r2} <= '0;
+      {drp_done_r1, rxpma_r1, rate_idle_r1, resetdone_r1, phystatus_r1, txsyncdone_r1} <= '0;
+      {drp_done_r2, rxpma_r2, rate_idle_r2, resetdone_r2, phystatus_r2, txsyncdone_r2} <= '0;
       {plllock_r1, mmcmlock_r1, plllock_r2, mmcmlock_r2} <= '0;
     end else begin
       drp_done_r1  <= RST_DRP_DONE;       drp_done_r2  <= drp_done_r1;
       rxpma_r1     <= RST_RXPMARESETDONE; rxpma_r2     <= rxpma_r1;
       plllock_r1   <= RST_PLLLOCK;        plllock_r2   <= plllock_r1;
       rate_idle_r1 <= RST_RATE_IDLE;      rate_idle_r2 <= rate_idle_r1;
-      rxcdrlock_r1 <= RST_RXCDRLOCK;      rxcdrlock_r2 <= rxcdrlock_r1;
       mmcmlock_r1  <= RST_MMCM_LOCK;      mmcmlock_r2  <= mmcmlock_r1;
       resetdone_r1 <= RST_RESETDONE;      resetdone_r2 <= resetdone_r1;
       phystatus_r1 <= RST_PHYSTATUS;      phystatus_r2 <= phystatus_r1;
@@ -117,7 +113,7 @@ module init_ctrl
   wire phystatus_lo = &(~phystatus_r2);
   wire txsync_lo    = &(~txsyncdone_r2);
   wire txsync_hi    = &txsyncdone_r2;
-  wire locks_ok     = mmcmlock_r2 && (&rxcdrlock_r2 || (BYPASS_RXCDRLOCK == 1));
+  wire locks_ok     = mmcmlock_r2;
 
   logic [5:0] cfg_wait_cnt = 6'd0;
 
@@ -204,14 +200,27 @@ module init_ctrl
   end
 
   assign RST_CPLLRESET      = cpllreset_q;
-  assign RST_CPLLPD         = 1'b0;
   assign RST_RXUSRCLK_RESET = rxusrclk_rst_r2;
   assign RST_DCLK_RESET     = dclk_rst_r2;
   assign RST_GTRESET        = gtreset_q;
   assign RST_USERRDY        = userrdy_q;
   assign RST_TXSYNC_START   = (state == ST_TXSYNC_REQ);
   assign RST_IDLE           = (state == ST_IDLE);
-  assign RST_FSM            = state;
+
+  // PLL0 power-up after configuration: power-down for 96, then reset until
+  // 128 clock cycles. FIXME: clocked from RST_DCLK as a workaround for openXC7's
+  // dead IBUFDS_GTE2.O -> BUFG clock (openPCIE #22). Back to BUFG(PIPE_CLK)
+  // once a v1.0.0 bitstream proves the fix on hardware.
+  (* equivalent_register_removal = "no" *) logic  [95:0] pll_pd_sr  = '1;
+  (* equivalent_register_removal = "no" *) logic [127:0] pll_rst_sr = 128'hFF;
+
+  always_ff @(posedge RST_DCLK) begin
+    pll_pd_sr  <= {pll_pd_sr[94:0],   1'b0};
+    pll_rst_sr <= {pll_rst_sr[126:0], 1'b0};
+  end
+
+  assign RST_PLLPD    = pll_pd_sr[95];
+  assign RST_PLLRESET = pll_rst_sr[127] | RST_CPLLRESET;
 
 endmodule
 // -----------------------------------------------------------------------------

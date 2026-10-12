@@ -131,17 +131,13 @@ typedef struct __attribute__ ((__packed__)) {
 } csr__rx_t;
 
 // reg - csr::status::err
-#define CSR__STATUS__ERR__CFG_STATUS_bm 0xffff
-#define CSR__STATUS__ERR__CFG_STATUS_bp 0
-#define CSR__STATUS__ERR__CFG_STATUS_bw 16
-#define CSR__STATUS__ERR__CFG_STATUS_reset 0x0
 #define CSR__STATUS__ERR__MSG_ERR_FATAL_bm 0x10000
 #define CSR__STATUS__ERR__MSG_ERR_FATAL_bp 16
 #define CSR__STATUS__ERR__MSG_ERR_FATAL_bw 1
 #define CSR__STATUS__ERR__MSG_ERR_FATAL_reset 0x0
 typedef union {
     struct __attribute__ ((__packed__)) {
-        uint32_t cfg_status :16;
+        uint32_t :16;
         uint32_t msg_err_fatal :1;
         uint32_t :15;
     } f;
@@ -149,17 +145,17 @@ typedef union {
 } csr__status__err_t;
 
 // reg - csr::status::phy
-#define CSR__STATUS__PHY__TX_BUF_AV_bm 0x3f
-#define CSR__STATUS__PHY__TX_BUF_AV_bp 0
-#define CSR__STATUS__PHY__TX_BUF_AV_bw 6
-#define CSR__STATUS__PHY__TX_BUF_AV_reset 0x0
+#define CSR__STATUS__PHY__TX_BUF_AVAIL_bm 0x3f
+#define CSR__STATUS__PHY__TX_BUF_AVAIL_bp 0
+#define CSR__STATUS__PHY__TX_BUF_AVAIL_bw 6
+#define CSR__STATUS__PHY__TX_BUF_AVAIL_reset 0x0
 #define CSR__STATUS__PHY__TX_STATE_bm 0xc0
 #define CSR__STATUS__PHY__TX_STATE_bp 6
 #define CSR__STATUS__PHY__TX_STATE_bw 2
 #define CSR__STATUS__PHY__TX_STATE_reset 0x0
 typedef union {
     struct __attribute__ ((__packed__)) {
-        uint32_t tx_buf_av :6;
+        uint32_t tx_buf_avail :6;
         uint32_t tx_state :2;
         uint32_t :24;
     } f;

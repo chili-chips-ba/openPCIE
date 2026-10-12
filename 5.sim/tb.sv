@@ -9,11 +9,11 @@
 //   The DUT is the REAL Root Complex, 2.rtl/0.common.opensource:
 //
 //        RC_opensource
-//          |- host_bridge
-//          |    |- clk_synth        MMCM, real RTL
-//          |    |- txn_engine       real RTL
-//          |    |    `- silicon_core -> PCIE_2_1   Xilinx hard macro
-//          |    `- serdes_front     <-- SWAPPED for models/serdes_front.PIPE.sv
+//          |- pcie_top
+//          |    |- clk_gen        MMCM, real RTL
+//          |    |- pcie_core       real RTL
+//          |    |    `- PCIE_2_1     Xilinx hard macro
+//          |    `- phy_top     <-- SWAPPED for models/phy_top.PIPE.sv
 //          |                            (PIPE PHY model + pcievhost endpoint)
 //          `- riscv_pcie_soc
 //               |- picorv32         real RTL, runs the real firmware.hex
@@ -21,7 +21,7 @@
 //
 //   Only two files differ from the bitstream build:
 //
-//     serdes_front  the 7-series transceiver cannot be paired with a PIPE
+//     phy_top  the 7-series transceiver cannot be paired with a PIPE
 //                   level VIP, so a behavioural PIPE PHY takes its place and
 //                   carries the pcieVHost endpoint on its far side
 //     firmware.hex  read by riscv_pcie_soc.sv with $readmemh, copied into the
@@ -66,7 +66,7 @@ module tb;
 //--------------------------------------------------------------
 
   // The 100 MHz PCIe reference clock, as supplied by the backplane. The link
-  // clocks themselves are made inside the design (clk_synth's MMCM) from the
+  // clocks themselves are made inside the design (clk_gen's MMCM) from the
   // TXOUTCLK that the PIPE PHY model provides.
   localparam HALF_REFCLK_PERIOD_PS = 5_000;   // 100 MHz
   localparam RST_CYCLES            = 200;
@@ -143,10 +143,10 @@ module tb;
     $display("%t  TB     user_lnk_up  = %b", $time, dut.user_lnk_up);
   always @(dut.user_reset)
     $display("%t  TB     user_reset   = %b", $time, dut.user_reset);
-  always @(dut.pcie_inst.trn_lnk_up)
-    $display("%t  TB     trn_lnk_up   = %b", $time, dut.pcie_inst.trn_lnk_up);
-  always @(dut.pcie_inst.pl_phy_lnk_up_wire)
-    $display("%t  TB     phy_lnk_up   = %b", $time, dut.pcie_inst.pl_phy_lnk_up_wire);
+  always @(dut.u_pcie.trn_lnk_up)
+    $display("%t  TB     trn_lnk_up   = %b", $time, dut.u_pcie.trn_lnk_up);
+  always @(dut.u_pcie.pl_phy_lnk_up_wire)
+    $display("%t  TB     phy_lnk_up   = %b", $time, dut.u_pcie.pl_phy_lnk_up_wire);
 
   always @(negedge led_link_up[2]) begin
     if (!link_up_seen) begin
@@ -164,12 +164,12 @@ module tb;
 
 `ifndef NO_TLP_TRACE
   always @(posedge dut.user_clk) begin
-    if (dut.s_axis_tx_tvalid && dut.s_axis_tx_tready && !dut.s_axis_tx_tlast) begin
+    if (dut.s_axis_tx.tvalid && dut.s_axis_tx.tready && !dut.s_axis_tx.tlast) begin
       $display("%t  TX-TLP hdr0=%08h hdr1=%08h", $time,
-               dut.s_axis_tx_tdata[31:0], dut.s_axis_tx_tdata[63:32]);
+               dut.s_axis_tx.tdata[31:0], dut.s_axis_tx.tdata[63:32]);
     end
-    if (dut.m_axis_rx_tvalid && dut.m_axis_rx_tready) begin
-      $display("%t  RX-TLP %016h", $time, dut.m_axis_rx_tdata);
+    if (dut.m_axis_rx.tvalid && dut.m_axis_rx.tready) begin
+      $display("%t  RX-TLP %016h", $time, dut.m_axis_rx.tdata);
     end
   end
 `endif
@@ -183,20 +183,20 @@ module tb;
   tlp_dw_if rx_dw (dut.user_clk);
 
   tlp_dw_monitor tlp_tx (
-    .axis_tdata  (dut.s_axis_tx_tdata),
-    .axis_tkeep  (dut.s_axis_tx_tkeep),
-    .axis_tlast  (dut.s_axis_tx_tlast),
-    .axis_tvalid (dut.s_axis_tx_tvalid),
-    .axis_tready (dut.s_axis_tx_tready),
+    .axis_tdata  (dut.s_axis_tx.tdata),
+    .axis_tkeep  (dut.s_axis_tx.tkeep),
+    .axis_tlast  (dut.s_axis_tx.tlast),
+    .axis_tvalid (dut.s_axis_tx.tvalid),
+    .axis_tready (dut.s_axis_tx.tready),
     .dw          (tx_dw)
   );
 
   tlp_dw_monitor tlp_rx (
-    .axis_tdata  (dut.m_axis_rx_tdata),
-    .axis_tkeep  (dut.m_axis_rx_tkeep),
-    .axis_tlast  (dut.m_axis_rx_tlast),
-    .axis_tvalid (dut.m_axis_rx_tvalid),
-    .axis_tready (dut.m_axis_rx_tready),
+    .axis_tdata  (dut.m_axis_rx.tdata),
+    .axis_tkeep  (dut.m_axis_rx.tkeep),
+    .axis_tlast  (dut.m_axis_rx.tlast),
+    .axis_tvalid (dut.m_axis_rx.tvalid),
+    .axis_tready (dut.m_axis_rx.tready),
     .dw          (rx_dw)
   );
 
@@ -224,17 +224,17 @@ module tb;
     $dumpvars(1, tlp_tx);
     $dumpvars(1, tlp_rx);
     $dumpvars(1, tlp_view);
-    $dumpvars(1, dut.soc_inst);
-    $dumpvars(0, dut.pcie_inst.pl_ltssm_state_int);
+    $dumpvars(1, dut.u_soc);
+    $dumpvars(0, dut.u_pcie.pl_ltssm_state_int);
     // PIPE pins only: the model's level-1 scope also has its 500 MHz symbol
     // clock and shift registers, which would make the file four times larger
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.pclk);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.nreset);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.TxData);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.TxDataK);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.RxData);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.u_pcie_ep.RxDataK);
-    $dumpvars(0, dut.pcie_inst.serdes_front_i.rx_active);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.pclk);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.nreset);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.TxData);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.TxDataK);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxData);
+    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxDataK);
+    $dumpvars(0, dut.u_pcie.u_phy_top.rx_active);
   end
 `endif
 
@@ -248,22 +248,22 @@ module tb;
   // What the firmware polls before it will send anything: send_tlp() spins on
   // status.phy until the Tx FSM is idle AND the hard macro reports at least one
   // free transmit buffer.
-  always @(dut.rport_tx_buf_av)
-    $display("%t  CSR    tx_buf_av = %0d", $time, dut.rport_tx_buf_av);
+  always @(dut.cfg.tx_buf_avail)
+    $display("%t  CSR    tx_buf_avail = %0d", $time, dut.cfg.tx_buf_avail);
 
   // Every CPU access into the CSR window
   integer csr_acc;
   initial csr_acc = 0;
 
   always @(posedge dut.user_clk) begin
-    if (dut.soc_inst.mem_valid && dut.soc_inst.is_bridge && dut.soc_inst.mem_ready) begin
+    if (dut.u_soc.mem.valid && dut.u_soc.is_bridge && dut.u_soc.mem.ready) begin
       csr_acc = csr_acc + 1;
       if (csr_acc <= 300 || (csr_acc % 5000) == 0) begin
         $display("%t  CSR    %s [0x%02h] data=%08h  (#%0d)", $time,
-                 (|dut.soc_inst.mem_wstrb) ? "WR" : "RD",
-                 dut.soc_inst.mem_addr[7:0],
-                 (|dut.soc_inst.mem_wstrb) ? dut.soc_inst.mem_wdata
-                                           : dut.soc_inst.mem_rdata, csr_acc);
+                 (|dut.u_soc.mem.wstrb) ? "WR" : "RD",
+                 dut.u_soc.mem.addr[7:0],
+                 (|dut.u_soc.mem.wstrb) ? dut.u_soc.mem.wdata
+                                           : dut.u_soc.mem.rdata, csr_acc);
       end
     end
   end
@@ -277,13 +277,13 @@ module tb;
   initial first_n = 0;
 
   always @(posedge dut.user_clk) begin
-    if (dut.soc_inst.mem_valid && dut.soc_inst.mem_ready && first_n < `BUS_TRACE_N) begin
+    if (dut.u_soc.mem.valid && dut.u_soc.mem.ready && first_n < `BUS_TRACE_N) begin
       first_n = first_n + 1;
       $display("%t  BUS  %2d  addr=%08h %s data=%08h", $time, first_n,
-               dut.soc_inst.mem_addr,
-               (|dut.soc_inst.mem_wstrb) ? "WR" : "RD",
-               (|dut.soc_inst.mem_wstrb) ? dut.soc_inst.mem_wdata
-                                         : dut.soc_inst.mem_rdata);
+               dut.u_soc.mem.addr,
+               (|dut.u_soc.mem.wstrb) ? "WR" : "RD",
+               (|dut.u_soc.mem.wstrb) ? dut.u_soc.mem.wdata
+                                         : dut.u_soc.mem.rdata);
     end
   end
 
@@ -295,11 +295,11 @@ module tb;
   end
 
   always @(posedge dut.user_clk) begin
-    if (dut.soc_inst.mem_valid && dut.soc_inst.mem_ready) begin
+    if (dut.u_soc.mem.valid && dut.u_soc.mem.ready) begin
       cpu_acc = cpu_acc + 1;
-      if (dut.soc_inst.is_ram) begin
-        if (dut.soc_inst.mem_addr < cpu_pc_min) cpu_pc_min = dut.soc_inst.mem_addr;
-        if (dut.soc_inst.mem_addr > cpu_pc_max) cpu_pc_max = dut.soc_inst.mem_addr;
+      if (dut.u_soc.is_ram) begin
+        if (dut.u_soc.mem.addr < cpu_pc_min) cpu_pc_min = dut.u_soc.mem.addr;
+        if (dut.u_soc.mem.addr > cpu_pc_max) cpu_pc_max = dut.u_soc.mem.addr;
       end
     end
   end
@@ -351,37 +351,37 @@ module tb;
   // Every firmware read of rx.data. The last one before the marker is the
   // memory read-back, so it is frozen into mem_rd_payload when the marker lands.
   always @(posedge dut.user_clk) begin
-    if (dut.soc_inst.mem_valid && dut.soc_inst.mem_ready &&
-        dut.soc_inst.is_bridge && !(|dut.soc_inst.mem_wstrb) &&
-        dut.soc_inst.mem_addr[7:0] == 8'h14) begin
-      rx_data_last = dut.soc_inst.mem_rdata;
+    if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
+        dut.u_soc.is_bridge && !(|dut.u_soc.mem.wstrb) &&
+        dut.u_soc.mem.addr[7:0] == 8'h14) begin
+      rx_data_last = dut.u_soc.mem.rdata;
     end
   end
 
   always @(posedge dut.user_clk) begin
-    if (dut.soc_inst.mem_valid && dut.soc_inst.mem_ready &&
-        dut.soc_inst.is_bridge && (|dut.soc_inst.mem_wstrb) &&
-        dut.soc_inst.mem_addr[7:0] == 8'h0c) begin
+    if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
+        dut.u_soc.is_bridge && (|dut.u_soc.mem.wstrb) &&
+        dut.u_soc.mem.addr[7:0] == 8'h0c) begin
 
       tlp_tx_count = tlp_tx_count + 1;
 
       // Fmt/Type 0x40 is a Memory Write; its payload is this very dword
-      if (dut.soc_inst.tx_header0[31:24] == 8'h40) begin
-        mem_wr_payload = dut.soc_inst.mem_wdata;
+      if (dut.u_soc.tx_header0[31:24] == 8'h40) begin
+        mem_wr_payload = dut.u_soc.mem.wdata;
         mem_wr_seen    = 1'b1;
       end
 
-      if (dut.soc_inst.mem_wdata == 32'h0000_face ||
-          dut.soc_inst.mem_wdata == 32'h0000_dead ||
-          dut.soc_inst.mem_wdata == 32'hbad0_0000 ||
-          dut.soc_inst.mem_wdata == 32'hbad0_0001 ||
-          dut.soc_inst.mem_wdata == 32'hbad0_0002 ||
-          dut.soc_inst.mem_wdata == 32'hbad0_0003) begin
-        result_marker  = dut.soc_inst.mem_wdata;
+      if (dut.u_soc.mem.wdata == 32'h0000_face ||
+          dut.u_soc.mem.wdata == 32'h0000_dead ||
+          dut.u_soc.mem.wdata == 32'hbad0_0000 ||
+          dut.u_soc.mem.wdata == 32'hbad0_0001 ||
+          dut.u_soc.mem.wdata == 32'hbad0_0002 ||
+          dut.u_soc.mem.wdata == 32'hbad0_0003) begin
+        result_marker  = dut.u_soc.mem.wdata;
         mem_rd_payload = rx_data_last;
         $display("\n%t  TB     ===> FIRMWARE RESULT 0x%08h  (%s)\n", $time,
-                 dut.soc_inst.mem_wdata,
-                 (dut.soc_inst.mem_wdata == 32'h0000_face) ? "PASS" : "FAIL");
+                 dut.u_soc.mem.wdata,
+                 (dut.u_soc.mem.wdata == 32'h0000_face) ? "PASS" : "FAIL");
       end
     end
   end
@@ -396,8 +396,7 @@ module tb;
     $display("--------------------------------------------------------");
     $display("  PCIe link up ............ %s", link_up_seen ? "YES" : "NO");
     $display("  LTSSM final state ....... 0x%02h",
-             dut.pcie_inst.pl_ltssm_state_int);
-    $display("  cfg_status .............. 0x%04h", dut.cfg_status_wire);
+             dut.u_pcie.pl_ltssm_state_int);
     $display("  TLPs sent by firmware ... %0d", tlp_tx_count);
 
     if (mem_wr_seen) begin

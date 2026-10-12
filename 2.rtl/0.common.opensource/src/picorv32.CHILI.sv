@@ -228,19 +228,9 @@ module picorv32 #(
 //=============================================================
 // Internal PCPI Cores
 //=============================================================
-   // pcpi_insn: registered when WITH_PCPI actually needs it (feeds the
-   // generate-instantiated PCPI coprocessor cores below), tied to a fixed
-   // constant otherwise -- genuine mutual exclusion via generate, not two
-   // simultaneous drivers. picorv32.ORIG.sv unconditionally registers
-   // pcpi_insn every Stage-2 decode regardless of WITH_PCPI (wasted
-   // toggling on a signal nothing consumes when WITH_PCPI=0, since none of
-   // the PCPI cores are even generate-instantiated in that case either).
-   // CHILI previously added an unconditional `assign pcpi_insn = '0;`
-   // alongside that always-on register -- a genuine, always-active
-   // multi-driver conflict on the same reg (confirmed absent from
-   // picorv32.ORIG.sv; Verilator's MULTIDRIVEN correctly caught it), not
-   // just a width/exclusivity subtlety like the other picorv32.CHILI.sv
-   // fixes this session.
+   // pcpi_insn: registered only when WITH_PCPI (it feeds the PCPI cores
+   // below), tied to 0 otherwise -- one driver either way.
+   // picorv32.ORIG.sv registers it on every Stage-2 decode regardless.
    generate if (WITH_PCPI) begin: _pcpi_insn_reg
       always_ff @(posedge clk) begin
          if (stage2_decode_trigger) pcpi_insn <= mem_rdata_q;
@@ -831,17 +821,8 @@ module picorv32 #(
    always_ff @(posedge clk) begin
       is_lui_auipc_jal                   <= |{instr_lui, instr_auipc, instr_jal};
       is_lui_auipc_jal_jalr_addi_add_sub <= |{instr_lui, instr_auipc, instr_jal, instr_jalr, instr_addi, instr_add, instr_sub};
-      // is_slti_blt_slt / is_sltiu_bltu_sltu are NOT updated here anymore --
-      // ORing the already-registered instr_slti/instr_blt/instr_slt flags
-      // unconditionally, every cycle, made them lag one Stage-2 decode event
-      // behind instr_beq/bne/bge/bgeu (which update conditionally, only when
-      // decoder_trigger && !decoder_pseudo_trigger). That lag let both sides
-      // of the alu_out_0 unique case (below) go true simultaneously -- not
-      // because one instruction is ambiguous, but because the two flags
-      // silently referred to two different instructions one decode apart.
-      // See the direct, same-edge derivation near instr_slti/instr_blt/
-      // instr_slt for the fix, which makes them provably exclusive with
-      // instr_beq/bne/bge/bgeu instead.
+      // is_slti_blt_slt / is_sltiu_bltu_sltu are set in the decode block,
+      // next to instr_slti/instr_blt/instr_slt.
       is_lbu_lhu_lw                      <= |{instr_lbu, instr_lhu, instr_lw};
       is_compare                         <= |{is_beq_bne_blt_bge_bltu_bgeu, instr_slti, instr_slt, instr_sltiu, instr_sltu};
 
@@ -1076,11 +1057,9 @@ module picorv32 #(
          instr_or    <= is_alu_reg_reg && mem_rdata_q[14:12] == 3'b110 && mem_rdata_q[31:25] == 7'b0000000;
          instr_and   <= is_alu_reg_reg && mem_rdata_q[14:12] == 3'b111 && mem_rdata_q[31:25] == 7'b0000000;
 
-         // is_slti_blt_slt / is_sltiu_bltu_sltu, re-derived directly from the
-         // same decode terms as instr_slti/instr_blt/instr_slt (and the *u
-         // variants) above, on this same edge -- instead of ORing the
-         // *registered* instr_* flags a cycle later, as the unconditional
-         // block used to. This makes them provably exclusive with
+         // is_slti_blt_slt / is_sltiu_bltu_sltu, derived from the same decode
+         // terms as instr_slti/instr_blt/instr_slt (and the *u variants)
+         // above, on this same edge. This makes them provably exclusive with
          // instr_beq/bne/bge/bgeu: for a given mem_rdata_q sample,
          // is_beq_bne_blt_bge_bltu_bgeu, is_alu_reg_imm and is_alu_reg_reg are
          // mutually-exclusive opcode decodes (independent equality checks
@@ -1255,19 +1234,9 @@ module picorv32 #(
    wire buserror_irq_allowed;
    assign buserror_irq_allowed = ENABLE_IRQ && !irq_mask[IRQ_BUSERROR] && !irq_active;
 
-   // NOTE: is_slti_blt_slt / is_sltiu_bltu_sltu (used directly, unguarded, in
-   // the alu_out_0 case below) used to need an explicit-width guard here
-   // (`slt_compare_ok`, restored from picorv32.ORIG.sv's
-   // `!TWO_CYCLE_COMPARE || !{instr_beq,instr_bne,instr_bge,instr_bgeu}`) to
-   // work around a width-corruption bug in that guard, and separately to
-   // paper over is_slti_blt_slt/is_sltiu_bltu_sltu lagging one decode event
-   // behind instr_beq/bne/bge/bgeu. Both root causes are now fixed instead of
-   // guarded around: is_slti_blt_slt/is_sltiu_bltu_sltu are re-derived
-   // directly from the same decode terms as instr_slti/instr_blt/instr_slt
-   // on the same edge (see their assignment above, near instr_slti), making
-   // them provably exclusive with instr_beq/bne/bge/bgeu by construction --
-   // so the guard is unconditionally true and has been removed rather than
-   // kept as dead logic.
+   // NOTE: the alu_out_0 case below uses is_slti_blt_slt / is_sltiu_bltu_sltu
+   // without picorv32.ORIG.sv's TWO_CYCLE_COMPARE guard: they are exclusive
+   // with instr_beq/bne/bge/bgeu by construction (see their assignment).
 
    reg [31:0] alu_add_sub;
    reg [31:0] alu_shl, alu_shr;

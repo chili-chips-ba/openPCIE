@@ -83,51 +83,12 @@ set cpu_v  "$src_dir/picorv32.CHILI.sv"
 # csr_pkg.sv and csr.sv are generated from 4.build/csr_build/csr.rdl by
 # "make -f MakefileCSR" in 4.build/. soc_csr.sv wraps that register block and
 # bridges it to the picorv32 memory interface.
-#
-# To build the hand-written CSR instead, set this BEFORE sourcing the script:
-#   set ::use_legacy_csr 1
-# The choice comes from the shared configuration, 4.build/config.mk, so that
-# the Vivado project and the firmware are always built the same way. Override
-# it for a single run by setting this BEFORE sourcing the script:
-#   set ::use_legacy_csr 1
-# Capture the user's override BEFORE the default is assigned. A sourced script
-# runs in the caller's scope, so "use_legacy_csr" and "::use_legacy_csr" are the
-# same variable -- setting the default first would silently wipe the override.
-if { [info exists ::use_legacy_csr] } {
-  set user_legacy_csr $::use_legacy_csr
-}
-
-set use_legacy_csr 0
-
-set cfg_file [file normalize "$common_dir/../../4.build/config.mk"]
-if { [file isfile $cfg_file] } {
-  set fh [open $cfg_file r]
-  set cfg [read $fh]
-  close $fh
-  if { [regexp -line {^\s*CSR\s*\?*=\s*(\S+)} $cfg -> cfg_csr] } {
-    if { $cfg_csr eq "legacy" } {
-      set use_legacy_csr 1
-    } elseif { $cfg_csr ne "peakrdl" } {
-      return -code error "config.mk: CSR must be \"peakrdl\" or \"legacy\", got \"$cfg_csr\""
-    }
-  }
-}
-
-if { [info exists user_legacy_csr] } {
-  set use_legacy_csr $user_legacy_csr
-  unset user_legacy_csr
-}
-
 set csr_gen_dir [file normalize "$common_dir/../../4.build/csr_build/generated-files"]
 set csr_pkg_sv  "$csr_gen_dir/csr_pkg.sv"
 set csr_sv      "$csr_gen_dir/csr.sv"
 set soc_csr_sv  "$src_dir/soc_csr.sv"
 
-if { $use_legacy_csr } {
-  set csr_files {}
-} else {
-  set csr_files [list $csr_pkg_sv $csr_sv $soc_csr_sv]
-}
+set csr_files [list $csr_pkg_sv $csr_sv $soc_csr_sv]
 
 # firmware.hex is a product of the sw_build stage. The copy checked in is the
 # RC-direct one; for RC-switched, rebuild it with  make VARIANT=switched
@@ -161,7 +122,7 @@ set_property -name "target_language"    -value "Verilog" -objects $obj
 set_property -name "simulator_language" -value "Mixed"   -objects $obj
 set_property -name "default_lib"        -value "xil_defaultlib" -objects $obj
 
-# host_bridge.sv instantiates xpm_cdc_single (2x). Vivado finds XPM by itself for
+# pcie_top.sv instantiates xpm_cdc_single (2x). Vivado finds XPM by itself for
 # synthesis, but for simulation/elaboration the library must be included explicitly.
 set_property -name "xpm_libraries" -value "XPM_CDC" -objects $obj
 
@@ -181,7 +142,7 @@ if { ![llength $svfiles] } {
 add_files -norecurse [concat $svfiles $vfiles $csr_files [list $cpu_v $soc_sv $top_sv]]
 
 # Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
-# package (link_pkg.sv) and two SV interfaces (stream_if.sv, phy_lanes_if.sv) --
+# package (link_pkg.sv) and SV interfaces (axis_if, trn_if, pipe_if, cfg_if, mem_if) --
 # if Vivado treats them as plain Verilog, elaboration fails. picorv32.CHILI.sv is
 # SystemVerilog too.
 foreach f [concat $svfiles $csr_files [list $cpu_v $soc_sv $top_sv]] {
@@ -205,10 +166,6 @@ foreach f $xdc_files {
 set_property top RC_opensource [current_fileset]
 set_property top_auto_set 0 [current_fileset]
 
-# The legacy CSR sits behind `ifdef SOC_CSR_LEGACY in riscv_pcie_soc.sv
-if { $use_legacy_csr } {
-  set_property verilog_define {SOC_CSR_LEGACY} [current_fileset]
-}
 update_compile_order -fileset sources_1
 
 # ---- Summary ----------------------------------------------------------------
@@ -222,7 +179,7 @@ puts "  variant   : $::rc_variant"
 puts "  top       : RC_opensource"
 puts "  src/pcie  : [llength $svfiles] .sv  +  [llength $vfiles] .v   (0.common.opensource)"
 puts "  src/      : picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_opensource.sv"
-puts "  csr       : [expr {$use_legacy_csr ? {hand-written (SOC_CSR_LEGACY)} : {PeakRDL -- csr_pkg.sv, csr.sv, soc_csr.sv}}]"
+puts "  csr       : PeakRDL -- csr_pkg.sv, csr.sv, soc_csr.sv"
 puts "  xdc       : [join [lmap f $xdc_files {file tail $f}] {, }]"
 puts "  firmware  : $hex_file"
 puts "--------------------------------------------------------------"

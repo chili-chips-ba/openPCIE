@@ -41,9 +41,7 @@
 //   openPCIE Root Complex SOC -- the TLP transmit/receive window that the
 //   picorv32 firmware uses in place of the AMD-proprietary hardware FSM.
 //
-//   The byte offsets below are IDENTICAL to those of the hand-written
-//   register block in riscv_pcie_soc.sv, so both implementations present
-//   exactly the same map to the software:
+//   Register map:
 //
 //     0x3000_0000  tx.header0      TLP header DW0            (W)
 //     0x3000_0004  tx.header1      TLP header DW1            (W)
@@ -52,7 +50,7 @@
 //     0x3000_0010  rx.status       Completion status         (R)
 //     0x3000_0014  rx.data         Completion payload DW     (R)
 //     0x3000_0018  rx.header_info  Completion header DW2     (R)
-//     0x3000_001C  status.err      cfg_status + fatal error  (R)
+//     0x3000_001C  status.err      fatal error received      (R)
 //     0x3000_0020  status.phy      Tx FSM state + buffers    (R)
 //==========================================================================
 
@@ -211,14 +209,6 @@ addrmap csr {
             sw = r;
             hw = w;
          } msg_err_fatal[16:16] = 0;
-
-         field {
-            name = "csr.status.err.cfg_status[15:0]";
-            desc = "Configuration Space Status Register of the PCIe hard macro
-                    (cfg_status)";
-            sw = r;
-            hw = w;
-         } cfg_status[15:0] = 0;
       } err;
 
       reg {
@@ -235,12 +225,12 @@ addrmap csr {
          } tx_state[7:6] = 0;
 
          field {
-            name = "csr.status.phy.tx_buf_av[5:0]";
+            name = "csr.status.phy.tx_buf_avail[5:0]";
             desc = "Number of free transmit buffers in the PCIe hard macro
-                    (tx_buf_av). Software waits for a non-zero value.";
+                    (tx_buf_avail). Software waits for a non-zero value.";
             sw = r;
             hw = w;
-         } tx_buf_av[5:0] = 0;
+         } tx_buf_avail[5:0] = 0;
       } phy;
    } status @ 0x1C;
 };

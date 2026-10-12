@@ -57,28 +57,23 @@ package csr_pkg;
     } csr__rx__in_t;
 
     typedef struct {
-        logic [15:0] next;
-    } csr__status__err__cfg_status__in_t;
-
-    typedef struct {
         logic next;
     } csr__status__err__msg_err_fatal__in_t;
 
     typedef struct {
-        csr__status__err__cfg_status__in_t cfg_status;
         csr__status__err__msg_err_fatal__in_t msg_err_fatal;
     } csr__status__err__in_t;
 
     typedef struct {
         logic [5:0] next;
-    } csr__status__phy__tx_buf_av__in_t;
+    } csr__status__phy__tx_buf_avail__in_t;
 
     typedef struct {
         logic [1:0] next;
     } csr__status__phy__tx_state__in_t;
 
     typedef struct {
-        csr__status__phy__tx_buf_av__in_t tx_buf_av;
+        csr__status__phy__tx_buf_avail__in_t tx_buf_avail;
         csr__status__phy__tx_state__in_t tx_state;
     } csr__status__phy__in_t;
 

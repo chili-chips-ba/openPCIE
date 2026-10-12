@@ -226,15 +226,9 @@ compares it against its own ID to filter foreign traffic.</p>
 
 <p>PCIe Error Status Register</p>
 
-|Bits|  Identifier |Access|Reset|              Name             |
-|----|-------------|------|-----|-------------------------------|
-|15:0|  cfg_status |   r  | 0x0 |csr.status.err.cfg_status[15:0]|
-| 16 |msg_err_fatal|   r  | 0x0 |  csr.status.err.msg_err_fatal |
-
-#### cfg_status field
-
-<p>Configuration Space Status Register of the PCIe hard macro
-(cfg_status)</p>
+|Bits|  Identifier |Access|Reset|            Name            |
+|----|-------------|------|-----|----------------------------|
+| 16 |msg_err_fatal|   r  | 0x0 |csr.status.err.msg_err_fatal|
 
 #### msg_err_fatal field
 
@@ -249,15 +243,15 @@ compares it against its own ID to filter foreign traffic.</p>
 
 <p>PCIe PHY / Tx FSM Status Register</p>
 
-|Bits|Identifier|Access|Reset|             Name            |
-|----|----------|------|-----|-----------------------------|
-| 5:0| tx_buf_av|   r  | 0x0 |csr.status.phy.tx_buf_av[5:0]|
-| 7:6| tx_state |   r  | 0x0 | csr.status.phy.tx_state[1:0]|
+|Bits| Identifier |Access|Reset|              Name              |
+|----|------------|------|-----|--------------------------------|
+| 5:0|tx_buf_avail|   r  | 0x0 |csr.status.phy.tx_buf_avail[5:0]|
+| 7:6|  tx_state  |   r  | 0x0 |  csr.status.phy.tx_state[1:0]  |
 
-#### tx_buf_av field
+#### tx_buf_avail field
 
 <p>Number of free transmit buffers in the PCIe hard macro
-(tx_buf_av). Software waits for a non-zero value.</p>
+(tx_buf_avail). Software waits for a non-zero value.</p>
 
 #### tx_state field
 

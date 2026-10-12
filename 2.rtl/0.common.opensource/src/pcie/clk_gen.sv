@@ -37,46 +37,29 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module clk_synth
+module clk_gen
   import link_pkg::*;
-#(
-  localparam PCIE_REFCLK_FREQ = 0,
-  localparam PCIE_USERCLK1_FREQ = 2,
-  localparam PCIE_USERCLK2_FREQ = 2) (
+(
   input                        CLK_CLK,
   input                        CLK_TXOUTCLK,
-  input        [PCIE_LANES-1:0] CLK_RXOUTCLK_IN,
   input                        CLK_RST_N,
   input        [PCIE_LANES-1:0] CLK_PCLK_SEL,
-  input        [PCIE_LANES-1:0] CLK_PCLK_SEL_SLAVE,
-  input                        CLK_GEN3,
 
   output                       CLK_PCLK,
-  output                       CLK_PCLK_SLAVE,
   output                       CLK_RXUSRCLK,
-  output       [PCIE_LANES-1:0] CLK_RXOUTCLK_OUT,
   output                       CLK_DCLK,
   output                       CLK_OOBCLK,
   output                       CLK_USERCLK1,
-  output                       CLK_USERCLK2,
   output                       CLK_MMCM_LOCK
 );
 
   localparam DIVCLK_DIVIDE    = 1;
-  localparam CLKFBOUT_MULT_F  = (PCIE_REFCLK_FREQ == 2) ? 4 :
-                                (PCIE_REFCLK_FREQ == 1) ? 8 : 10;
-  localparam CLKIN1_PERIOD    = (PCIE_REFCLK_FREQ == 2) ? 4 :
-                                (PCIE_REFCLK_FREQ == 1) ? 8 : 10;
-  localparam CLKOUT0_DIVIDE_F = 8;
-  localparam CLKOUT1_DIVIDE   = 4;
-  localparam CLKOUT2_DIVIDE   = (PCIE_USERCLK1_FREQ == 5) ?  2 :
-                                (PCIE_USERCLK1_FREQ == 4) ?  4 :
-                                (PCIE_USERCLK1_FREQ == 3) ?  8 :
-                                (PCIE_USERCLK1_FREQ == 1) ? 32 : 16;
-  localparam CLKOUT3_DIVIDE   = (PCIE_USERCLK2_FREQ == 5) ?  2 :
-                                (PCIE_USERCLK2_FREQ == 4) ?  4 :
-                                (PCIE_USERCLK2_FREQ == 3) ?  8 :
-                                (PCIE_USERCLK2_FREQ == 1) ? 32 : 16;
+  localparam CLKFBOUT_MULT_F  = 10;     // 100 MHz refclk -> 1 GHz VCO
+  localparam CLKIN1_PERIOD    = 10;
+  localparam CLKOUT0_DIVIDE_F = 8;      // 125 MHz
+  localparam CLKOUT1_DIVIDE   = 4;      // 250 MHz
+  localparam CLKOUT2_DIVIDE   = 16;     // 62.5 MHz user clock (USERCLK and USERCLK2 of PCIE_2_1)
+  localparam CLKOUT3_DIVIDE   = 16;     // CLKOUT3 unused
   localparam CLKOUT4_DIVIDE   = 20;
 
   wire refclk;
@@ -85,7 +68,6 @@ module clk_synth
   wire clk_250mhz;
   wire userclk1;
   wire userclk1_1;
-  wire userclk2_1;
   wire mmcm_lock;
   wire pclk_1;
   wire pclk;
@@ -110,7 +92,7 @@ module clk_synth
     else if (&(~pclk_sel_reg2))   pclk_sel <= 1'b0;
   end
 
-  BUFG txoutclk_i (
+  BUFG u_txoutclk (
     .I (CLK_TXOUTCLK),
     .O (refclk)
   );
@@ -153,7 +135,7 @@ module clk_synth
     .REF_JITTER1          (0.010),
 `endif
     .CLKIN1_PERIOD        (CLKIN1_PERIOD)
-  ) mmcm_i (
+  ) u_mmcm (
     .CLKIN1       (refclk),
     .CLKIN2       (1'd0),
     .CLKINSEL     (1'd1),
@@ -175,10 +157,10 @@ module clk_synth
     .CLKOUT6      (),
     .LOCKED       (mmcm_lock),
     .DCLK         (1'd0),
-    .DADDR        (7'd0),
+    .DADDR        ('0),
     .DEN          (1'd0),
     .DWE          (1'd0),
-    .DI           (16'd0),
+    .DI           ('0),
     .DO           (),
     .DRDY         (),
     .PSCLK        (1'd0),
@@ -189,7 +171,7 @@ module clk_synth
     .CLKFBSTOPPED ()
   );
 
-  BUFGCTRL pclk_i1 (
+  BUFGCTRL u_pclk (
     .CE0     (1'd1),
     .CE1     (1'd1),
     .I0      (clk_125mhz),
@@ -201,26 +183,22 @@ module clk_synth
     .O       (pclk_1)
   );
 
-  BUFG dclk_i (
+  BUFG u_dclk (
     .I (clk_125mhz),
     .O (CLK_DCLK)
   );
 
-  BUFG usrclk1_i1 (
+  BUFG u_usrclk1 (
     .I (userclk1),
     .O (userclk1_1)
   );
 
-  assign userclk2_1 = userclk1_1;
 
   assign pclk             = pclk_1;
   assign CLK_PCLK         = pclk;
-  assign CLK_PCLK_SLAVE   = 1'b0;
   assign CLK_RXUSRCLK     = pclk_1;
-  assign CLK_RXOUTCLK_OUT = {PCIE_LANES{1'b0}};
   assign CLK_OOBCLK       = pclk;
   assign CLK_USERCLK1     = userclk1_1;
-  assign CLK_USERCLK2     = userclk2_1;
   assign CLK_MMCM_LOCK    = mmcm_lock;
 
 endmodule

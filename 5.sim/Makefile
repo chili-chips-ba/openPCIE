@@ -204,7 +204,7 @@ FIRMWARE         = $(BLD_DIR)/sw_build/firmware.hex
 
 # Flags for xsim
 # SIM_FAST_TRAIN turns on the hard macro's shortened LTSSM training timers.
-# It is a simulation-only parameter of PCIE_2_1 -- see silicon_core.sv.
+# It is a simulation-only parameter of PCIE_2_1 -- see pcie_core.sv.
 ANALYSEFLAGS       = -i $(PCIEDIR)/verilog/headers --define VPROC_SV --define VPROC_BYTE_ENABLE --define SIM_FAST_TRAIN --define SIM_GEN1_ONLY --define SIM_PIPE_CODING $(CPUDEFINE) $(USRSIMOPTS) --prj tb.prj
 ELABFLAGS          = -sv_lib $(VPROC_PLI) --timescale 1ps/1ps --debug typical $(XILLIBS) $(TB_NAME) glbl
 # The snapshot xelab produces when two tops are elaborated is named

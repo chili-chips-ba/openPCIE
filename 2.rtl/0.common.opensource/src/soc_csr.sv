@@ -66,16 +66,13 @@ module soc_csr
 
    // picorv32 native memory interface, already decoded for this slave
    input  logic                sel,      // address hits the CSR window
-   input  logic                vld,      // mem_valid
-   input  logic [3:0]          we,       // mem_wstrb
-   input  logic [5:2]          addr,     // mem_addr[5:2], the CSR word index
-   input  logic [31:0]         wdat,     // mem_wdata
+   mem_if.target               mem,      // CPU request; addr[5:2] is the CSR word index
    output logic [31:0]         rdat,     // -> mem_rdata
    output logic                rdy,      // -> mem_ready
 
    // Hardware side of the register block
-   input  csr_pkg::csr__in_t   hwif_in,
-   output csr_pkg::csr__out_t  hwif_out
+   input  csr_pkg::csr__in_t   csr_in,
+   output csr_pkg::csr__out_t  csr_out
 );
 
    logic        cpuif_req;
@@ -89,17 +86,17 @@ module soc_csr
    logic        csr_busy;
 
    // mem_wstrb is one bit per byte, s_cpuif_wr_biten one bit per bit
-   assign cpuif_wr_biten[31:24] = we[3] ? '1 : '0;
-   assign cpuif_wr_biten[23:16] = we[2] ? '1 : '0;
-   assign cpuif_wr_biten[15:8]  = we[1] ? '1 : '0;
-   assign cpuif_wr_biten[7:0]   = we[0] ? '1 : '0;
+   assign cpuif_wr_biten[31:24] = mem.wstrb[3] ? '1 : '0;
+   assign cpuif_wr_biten[23:16] = mem.wstrb[2] ? '1 : '0;
+   assign cpuif_wr_biten[15:8]  = mem.wstrb[1] ? '1 : '0;
+   assign cpuif_wr_biten[7:0]   = mem.wstrb[0] ? '1 : '0;
 
    assign cpuif_ack = cpuif_rd_ack | cpuif_wr_ack;
 
    // One request per CPU access: not while one is outstanding (csr_busy), and
    // not in the cycle the CPU is being told "ready" -- mem_valid is still high
    // there and would otherwise start a second, spurious transaction.
-   assign cpuif_req = sel & vld & ~csr_busy & ~rdy;
+   assign cpuif_req = sel & mem.valid & ~csr_busy & ~rdy;
 
    // PeakRDL-regblock answers in the SAME cycle as the request when the block
    // has no external or buffered registers: decoded_req is combinational from
@@ -130,14 +127,14 @@ module soc_csr
       end
    end
 
-   csr csr_inst (
+   csr u_csr (
       .clk                  (clk),
       .rst                  (~resetn),
 
       .s_cpuif_req          (cpuif_req),
-      .s_cpuif_req_is_wr    (|we),
-      .s_cpuif_addr         ({addr, 2'b00}),
-      .s_cpuif_wr_data      (wdat),
+      .s_cpuif_req_is_wr    (|mem.wstrb),
+      .s_cpuif_addr         ({mem.addr[5:2], 2'b00}),
+      .s_cpuif_wr_data      (mem.wdata),
       .s_cpuif_wr_biten     (cpuif_wr_biten),
       .s_cpuif_req_stall_wr (),
       .s_cpuif_req_stall_rd (),
@@ -147,8 +144,8 @@ module soc_csr
       .s_cpuif_wr_ack       (cpuif_wr_ack),
       .s_cpuif_wr_err       (),
 
-      .hwif_in              (hwif_in),
-      .hwif_out             (hwif_out)
+      .hwif_in              (csr_in),
+      .hwif_out             (csr_out)
    );
 
 //=========================================
@@ -159,11 +156,11 @@ module soc_csr
 
    always @(posedge clk) begin
       if ({cpuif_req, cpuif_ack} != 2'b00 && rdy) begin
-         if (|we == 1) begin
-            $display("%t %m WRITE [%08x]<=%08x", $time, {addr, 2'b00}, wdat);
+         if (|mem.wstrb == 1) begin
+            $display("%t %m WRITE [%08x]<=%08x", $time, {mem.addr[5:2], 2'b00}, mem.wdata);
          end
          else begin
-            $display("%t %m READ [%08x]=>%08x", $time, {addr, 2'b00}, rdat);
+            $display("%t %m READ [%08x]=>%08x", $time, {mem.addr[5:2], 2'b00}, rdat);
          end
       end
    end

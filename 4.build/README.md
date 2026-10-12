@@ -16,7 +16,11 @@ bitstream.
 |---|---|---|
 | 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h`, `csr_hw.h`, `csr_cosim.h` |
 | 2. SW | [`sw_build`](./sw_build) | `firmware.elf`, `firmware.bin`, `firmware.hex` |
-| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts/top.bit` |
+| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.slang/top.bit` |
+
+<p align="center"><img src="../0.doc/4.build/build-flow.drawio.svg" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation and the formal equivalence check alongside"></p>
+
+The diagram source is [`0.doc/4.build/build-flow.drawio`](../0.doc/4.build/build-flow.drawio).
 
 ## CSR HAL Compilation
 
@@ -165,46 +169,14 @@ the SOC address map:
 | `0x10` | `rx.status` | R | Completion Status of the last Completion TLP |
 | `0x14` | `rx.data` | R | Payload DWORD of the last Completion TLP |
 | `0x18` | `rx.header_info` | R | `requester_id`, `tag`, `lower_addr` |
-| `0x1C` | `status.err` | R | `cfg_status` + fatal-error message flag |
+| `0x1C` | `status.err` | R | fatal-error message flag |
 | `0x20` | `status.phy` | R | Tx FSM state + free hard-macro Tx buffers |
 
-The send trigger is the `swmod` strobe PeakRDL raises on `tx.data` - the same
-"write the payload last" protocol the hand-written block used, only now it is
-described in the RDL rather than in a case statement.
+The send trigger is the `swmod` strobe PeakRDL raises on `tx.data`: the
+firmware writes the payload last.
 
-### Two interchangeable CSR implementations
-
-The hand-written register block is **not** gone. It lives on inside
-`riscv_pcie_soc.sv` behind `` `ifdef SOC_CSR_LEGACY `` as the reference
-implementation, and every build flow can select it:
-
-The choice is made once, in [`config.mk`](./config.mk), and every build step
-reads it - the firmware, the openXC7 bitstream and the Vivado project:
-
-```makefile
-CSR ?= peakrdl        # or: legacy
-```
-
-so that hardware and software are never built different ways by accident. With
-`legacy` nothing generated is used at all, and `make -f MakefileCSR` never has
-to be run.
-
-A single build can still override it without editing the file:
-
-| Flow | Override |
-|---|---|
-| openXC7 | `make CSR=legacy` |
-| Firmware | `make CSR=legacy` |
-| Vivado tcl | `set ::use_legacy_csr 1` before sourcing the script |
-
-Both describe the same map down to the byte offset, so any firmware runs on
-either bitstream. That was checked by compiling `main.c` both ways with the
-RISC-V toolchain and comparing the output: `firmware.bin` is byte-identical,
-for both RC-direct and RC-switched.
-
-The PeakRDL path is also the one exercised by the
-[co-simulation](../5.sim), which runs the real firmware against a PCIE endpoint
-model and ends with the memory read-back check passing.
+The [co-simulation](../5.sim) runs the real firmware against a PCIE endpoint
+model on this register block and ends with the memory read-back check passing.
 
 ## SW Compilation
 
@@ -235,11 +207,7 @@ make VARIANT=switched
 Both variants write the same three output names, but every `make` rebuilds the
 firmware (about a second), so no `make clean` is needed to switch.
 
-By default (`CSR ?= peakrdl` in `config.mk`) the firmware takes its register map
-from the headers generated in step 1; `make CSR=legacy` uses the addresses
-hard-coded in `3.sw/common/pcie.h` instead - see
-[Two interchangeable CSR implementations](#two-interchangeable-csr-implementations)
-above.
+The firmware takes its register map from the headers generated in step 1.
 
 > **Run this step on Windows** (`cmd` or PowerShell). The RISC-V toolchain and
 > Python are Windows programs, whereas the openXC7 step below runs in WSL because
@@ -267,36 +235,22 @@ two short wrappers around the shared
 
 ### Opensource openXC7 flow
 
-Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and
-README in it. The chain is `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `prjxray`, with
-no proprietary tool anywhere in it:
+Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and README in it. No proprietary tool is used anywhere in the chain. The default is openXC7 v1.0.0:
 
-```bash
-cd hw_build.openXC7
-make check-env         # verifies the tools, and warns on a wrong nextpnr version
-make                   # -> build_artifacts/top.bit
-make VARIANT=switched  # -> build_artifacts.switched/top.bit
-```
+| Build | Chain | Output |
+|---|---|---|
+| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.slang/top.bit` |
+| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.new/top.bit` |
+| `make TOOLCHAIN=old` | `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `fasm2frames` -> `xc7frames2bit` | `build_artifacts/top.bit` |
 
-The two variants keep separate output directories, so they never overwrite each
-other. They do share `../sw_build/firmware.hex`, so build the matching firmware
-first.
+Add `VARIANT=switched` for RC-switched; its folders carry `.switched` (e.g. `build_artifacts.switched.slang/`), so the variants never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` verifies the tools first.
 
-**Verified on hardware:** the resulting bitstream brings the PCIE link up at
-**Gen2** against a second Artix-7 board acting as endpoint - the same state the
-Vivado bitstream reaches from identical RTL.
+**Verified on hardware:** the pre-v1.0.0 bitstream (`TOOLCHAIN=old`) brings the PCIE link up at **Gen2** against a second Artix-7 board acting as endpoint - the same state the Vivado bitstream reaches from identical RTL. The v1.0.0 bitstreams build and meet timing but are not yet tested on hardware.
 
 Two things are worth knowing before the first build, both covered in detail in
 [`hw_build.openXC7/README.md`](./hw_build.openXC7/README.md):
 
-- **The nextpnr-xilinx version is critical.** Only commit `45a986b` works; the
-  version from the official installer was too old and the later master had a
-  router regression. That is the *pre-v1.0.0* openXC7 toolchain, which this project was
-  validated with on hardware. openXC7 has since replaced it with a new one;
-  `make TOOLCHAIN=new` builds with that (not yet tested on hardware), and
-  `make TOOLCHAIN=new FRONTEND=slang` does so without sv2v - see
-  [Pre-v1.0.0 and new openXC7 toolchain](./hw_build.openXC7/README.md#pre-v100-and-new-openxc7-toolchain)
-  and [Native SV within Yosys, through Slang](./hw_build.openXC7/README.md#native-sv-within-yosys-through-slang).
+- **With `TOOLCHAIN=old`, the nextpnr-xilinx version is critical.** Only commit `45a986b` works; the version from the official installer was too old and the later master had a router regression. See [Pre-v1.0.0 and new openXC7 toolchain](./hw_build.openXC7/README.md#pre-v100-and-new-openxc7-toolchain) and [Native SV within Yosys, through Slang](./hw_build.openXC7/README.md#native-sv-within-yosys-through-slang).
 - **nextpnr's GT attribute defaults do not match the Xilinx library.** Where the
   RTL omits an attribute, Vivado fills it from `unisim` while nextpnr substitutes
   its own default - almost always `0`. `lane_xcvr.sv` therefore sets 20 of them

@@ -418,22 +418,6 @@ public:
 
                         return rdata;
                     };
-    inline void     cfg_status (const uint32_t data) {
-                        uint32_t wdata = (uint32_t)(data & 0xffffffff);
-
-                        VWriteBE(reg + 0, wdata << 0, 0x3, NO_DELTA_UPDATE, SOC_CPU_VPNODE);
-                        VTick(rand() % 33, SOC_CPU_VPNODE);
-                    };
-
-    inline uint32_t cfg_status () {
-                        uint32_t rdata;
-
-                        VRead(reg + 0, &rdata, NO_DELTA_UPDATE, SOC_CPU_VPNODE);
-                        VTick(rand() % 33, SOC_CPU_VPNODE);
-
-                        return (((uint32_t)rdata << 0) & CSR__STATUS__ERR__CFG_STATUS_bm) >> CSR__STATUS__ERR__CFG_STATUS_bp;
-                    };
-
     inline void     msg_err_fatal (const uint32_t data) {
                         uint32_t wdata = (uint32_t)(data & 0xffffffff);
 
@@ -475,20 +459,20 @@ public:
 
                         return rdata;
                     };
-    inline void     tx_buf_av (const uint32_t data) {
+    inline void     tx_buf_avail (const uint32_t data) {
                         uint32_t wdata = (uint32_t)(data & 0xffffffff);
 
                         VWriteBE(reg + 0, wdata << 0, 0x1, NO_DELTA_UPDATE, SOC_CPU_VPNODE);
                         VTick(rand() % 33, SOC_CPU_VPNODE);
                     };
 
-    inline uint32_t tx_buf_av () {
+    inline uint32_t tx_buf_avail () {
                         uint32_t rdata;
 
                         VRead(reg + 0, &rdata, NO_DELTA_UPDATE, SOC_CPU_VPNODE);
                         VTick(rand() % 33, SOC_CPU_VPNODE);
 
-                        return (((uint32_t)rdata << 0) & CSR__STATUS__PHY__TX_BUF_AV_bm) >> CSR__STATUS__PHY__TX_BUF_AV_bp;
+                        return (((uint32_t)rdata << 0) & CSR__STATUS__PHY__TX_BUF_AVAIL_bm) >> CSR__STATUS__PHY__TX_BUF_AVAIL_bp;
                     };
 
     inline void     tx_state (const uint32_t data) {

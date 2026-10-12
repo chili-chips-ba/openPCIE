@@ -476,11 +476,10 @@ module csr (
             readback_data_var[31:16] = field_storage.rx.header_info.requester_id.value;
         end
         if(rd_mux_addr == 6'h1c) begin
-            readback_data_var[15:0] = hwif_in.status.err.cfg_status.next;
             readback_data_var[16] = hwif_in.status.err.msg_err_fatal.next;
         end
         if(rd_mux_addr == 6'h20) begin
-            readback_data_var[5:0] = hwif_in.status.phy.tx_buf_av.next;
+            readback_data_var[5:0] = hwif_in.status.phy.tx_buf_avail.next;
             readback_data_var[7:6] = hwif_in.status.phy.tx_state.next;
         end
         readback_data = readback_data_var;

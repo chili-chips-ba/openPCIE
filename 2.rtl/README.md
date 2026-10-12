@@ -60,12 +60,26 @@ picorv32 memory interface. Regenerate with `make -f MakefileCSR` in
 [`4.build`](../4.build); the details are in
 [`4.build/README.md`](../4.build/README.md#csr-hal-compilation).
 
-The hand-written register block that came first is still there, inside
-`riscv_pcie_soc.sv` behind `` `ifdef SOC_CSR_LEGACY ``. Which one is built is set
-once, in [`4.build/config.mk`](../4.build/config.mk), and read by every build
-step - Vivado, openXC7 and the firmware - so the hardware and the software are
-never built different ways. The two are functionally identical, down to the byte
-offsets.
+---
+
+### SystemVerilog interfaces
+
+The opensource RTL passes its buses as SystemVerilog interfaces, all in [`0.common.opensource/src/pcie/`](0.common.opensource/src/pcie). Each has two modports, one per side.
+
+<p align="center"><img src="../0.doc/2.rtl/block-diagram.drawio.svg" width="100%" alt="SV interfaces between the RC blocks: axis_if from the SOC to trn_bridge, trn_if to the PCIE_2_1 hard block, mim_if to its packet buffers, pipe_if (pipe_mac, pipe_phy) down to the GTP, gtp_if per lane, cfg_if back to the SOC"></p>
+
+| Interface | Between | Carries |
+|---|---|---|
+| `axis_if` | SOC ⇄ `pcie_top` ⇄ `trn_bridge` | TLPs as AXI-Stream (`tdata`, `tkeep`, `tuser`, `tlast`, `tvalid`, `tready`), one instance per direction |
+| `mem_if` | picorv32 ⇄ RAM, CSR (in `riscv_pcie_soc`) | picorv32 native memory bus (`valid`, `addr`, `wdata`, `wstrb`, `ready`, `rdata`) |
+| `cfg_if` | `pcie_top` → SOC | status sideband: ERR_FATAL received, free TX buffers |
+| `trn_if` | `trn_bridge` ⇄ `PCIE_2_1` (in `pcie_core`) | TLPs on the TRN bus (below) |
+| `mim_if` | `PCIE_2_1` ⇄ `tx_buf_bank` / `rx_buf_bank` | packet buffer RAM port (`MIMTX*`/`MIMRX*` pins): separate write and read ports, fixed latency, one instance per direction |
+| `pipe_if` | `pcie_core` ⇄ `phy_top` ⇄ `gtp_wrapper` | PIPE, as two instances: `pipe_mac` (16 bits per lane, at the MAC) and `pipe_phy` (32 bits per lane, at the GTP); `phy_top` adapts between them |
+
+**TRN** ("transaction") is Xilinx's name for the native TLP port of the 7-series PCIE hard block, the `TRNTD`/`TRNRD`/`TRNTSOF`/... pins of `PCIE_2_1`. It predates AXI: frames are marked by start/end-of-frame flags and a remainder bit instead of byte enables. `trn_bridge` converts between it and the AXI-Stream used everywhere else.
+
+The `PCIE_2_1` and `GTPE2` hard macros keep their flat pins; the unused ones are tied off right at the instance. The diagram source is [`0.doc/2.rtl/block-diagram.drawio`](../0.doc/2.rtl/block-diagram.drawio).
 
 ---
 

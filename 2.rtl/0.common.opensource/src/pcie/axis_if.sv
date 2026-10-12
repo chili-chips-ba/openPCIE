@@ -37,7 +37,7 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-interface stream_if #(
+interface axis_if #(
   parameter int DATA_W = 64,
   parameter int USER_W = 4
 );

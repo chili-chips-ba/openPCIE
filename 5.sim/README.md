@@ -42,7 +42,7 @@ The *openPCIE* top level test bench is based around the [*pcievhost*](https://gi
 The diagram below is a block diagram of the top level test bench showing the main features.
 
 <p align=center>
-<img alt="openPCIE Root Complex test bench structure" width=1000 src="images/openpcierc_tb.png">
+<img alt="openPCIE Root Complex test bench structure" width=1000 src="../0.doc/5.sim/tb-structure.drawio.svg">
 </p>
 
 The DUT PCIE link is connected to the _pcievhost_, instantiated in a wrapper x1 PIPE link (`pcieVHostPipex1.v`) configured as an endpoint, and running some user code  to generate PCIE traffic as required, though it will automatically respond to transactions requiring a completion. The model is capable of displaying link traffic on both the up- and downstream links to the console, configurable via a `ContDisps.hex` file. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device&mdash;in this case PCIE. A program can then be run on the virtual processor to access the device's memory mapped registers etc. and update the TX link signals and read from the RX link signals.
@@ -61,11 +61,11 @@ tb.sv
  |
  +- RC_opensource                                   2.rtl/0.common.opensource/src/
       |
-      +- host_bridge                                real RTL
-      |    +- clk_synth       MMCM                  real RTL
-      |    +- txn_engine                            real RTL
-      |    |    `- silicon_core -> PCIE_2_1         Xilinx hard macro (secureip)
-      |    `- serdes_front    <-- REPLACED -->      5.sim/models/serdes_front.PIPE.sv
+      +- pcie_top                                real RTL
+      |    +- clk_gen       MMCM                  real RTL
+      |    +- pcie_core                            real RTL
+      |    |    `- PCIE_2_1                     Xilinx hard macro (secureip)
+      |    `- phy_top    <-- REPLACED -->      5.sim/models/phy_top.PIPE.sv
       |                                                +- PIPE PHY model
       |                                                `- pcieVHostPipex1 (endpoint,
       |                                                   VProc node 1, VUserMain1.cpp)
@@ -78,7 +78,7 @@ Exactly **one** RTL file is swapped for the simulation, and one file is copied i
 
 | Item | Why |
 |---|---|
-| `serdes_front.sv` becomes `models/serdes_front.PIPE.sv` | the 7-series GTP transceiver turns PIPE symbols into a 5 GT/s serial stream; _pcievhost_ models the link at PIPE symbol level, so the transceiver has to come out |
+| `phy_top.sv` becomes `models/phy_top.PIPE.sv` | the 7-series GTP transceiver turns PIPE symbols into a 5 GT/s serial stream; _pcievhost_ models the link at PIPE symbol level, so the transceiver has to come out |
 | `firmware.hex` copied into `5.sim/` | `riscv_pcie_soc.sv` reads it with `$readmemh` and a bare file name |
 
 Everything else -- the hard macro, the transaction layer, the CPU, the CSR and
@@ -93,13 +93,13 @@ Three simulation-only parameters ARE selected with defines, all set only in
 
 | Define | Effect | Why |
 |---|---|---|
-| `SIM_FAST_TRAIN` | `PL_FAST_TRAIN = "TRUE"` on the hard macro (`silicon_core.sv`) | shortens the LTSSM training timers. This is a simulation feature of the macro -- with the real 12/24 ms timers link training is longer than any practical run |
+| `SIM_FAST_TRAIN` | `PL_FAST_TRAIN = "TRUE"` on the hard macro (`pcie_core.sv`) | shortens the LTSSM training timers. This is a simulation feature of the macro -- with the real 12/24 ms timers link training is longer than any practical run |
 | `SIM_GEN1_ONLY` | `PCIE_GEN = 1` (`link_pkg.sv`) | the endpoint VIP advertises Gen1 and its LTSSM helper cannot follow a Gen1 to Gen2 retrain |
-| `SIM_PIPE_CODING` | `DISABLE_SCRAMBLING = "TRUE"` on the hard macro (`silicon_core.sv`) | matches how the endpoint VIP is configured over PIPE |
+| `SIM_PIPE_CODING` | `DISABLE_SCRAMBLING = "TRUE"` on the hard macro (`pcie_core.sv`) | matches how the endpoint VIP is configured over PIPE |
 
 ### The PIPE PHY model
 
-`models/serdes_front.PIPE.sv` stands in for the transceiver and carries the link
+`models/phy_top.PIPE.sv` stands in for the transceiver and carries the link
 partner on its far side. It provides the three things the `PCIE_2_1` LTSSM needs
 from a PHY:
 
@@ -111,9 +111,9 @@ from a PHY:
   sends, standing in for a squelch detector
 
 It also generates the clocks. `TXOUTCLK` is a behavioural 100 MHz oscillator and
-everything downstream is the real `clk_synth` MMCM, so the design sees its normal
+everything downstream is the real `clk_gen` MMCM, so the design sees its normal
 clock topology: PCLK at 125 MHz (Gen1) or 250 MHz (Gen2), USERCLK1/2 at 62.5 MHz.
-**The 100 MHz matters**: `clk_synth` is parameterised with `CLKIN1_PERIOD = 10 ns`
+**The 100 MHz matters**: `clk_gen` is parameterised with `CLKIN1_PERIOD = 10 ns`
 and `CLKFBOUT_MULT_F = 10`, so any other input frequency scales every clock in
 the design, and the PIPE then over- or under-samples the link partner. Feeding it
 125 MHz, for instance, makes PCLK 156.25 MHz and duplicates one symbol in five.
@@ -132,7 +132,7 @@ reports `phy_lnk_up`, `trn_lnk_up`, `user_lnk_up` and `user_reset` as they chang
 
 _pcievhost_ was written as a root complex model, and its endpoint side is a
 parameter on top of that -- `EndPoint = 1`, set where the model is instantiated
-in `models/serdes_front.PIPE.sv`. It is enough to train a link and answer
+in `models/phy_top.PIPE.sv`. It is enough to train a link and answer
 Configuration and Memory requests, which is exactly what testing a root complex
 needs, but it is not a device model. What it does and does not give you:
 
@@ -241,7 +241,6 @@ no hardware involved (this run used `RUN_US=3000`; the default is 2000):
  openpcie2-rc co-simulation summary
   PCIe link up ............ YES
   LTSSM final state ....... 0x16
-  cfg_status .............. 0x0000
   TLPs sent by firmware ... 22
   Payload written to EP ... 0x00000006  (Memory Write TLP)
   Payload read back ....... 0x00000006  (match)
@@ -396,7 +395,7 @@ them again with **Ctrl+Shift+D** -- auto-bind fills in all nine inputs.
 The same `tb.vcd` also carries the 16-bit PIPE between the Root Complex's
 PCIE_2_1 hard macro and the pcieVHost endpoint, one level below the TLPs:
 the symbols as they go on the wire, before 8b/10b. All signals are under
-`tb.dut.pcie_inst.serdes_front_i.u_pcie_ep`:
+`tb.dut.u_pcie.u_phy_top.u_pcie_ep`:
 
 | Signal | Direction |
 |---|---|
@@ -421,7 +420,7 @@ once per direction: prefix `Rx`, then `Tx`, each time **Apply confirmed only**.
 Take the 16-bit variants: each decoder comes in 8, 16, 32 and 64 bits, and only
 the one matching the bus binds. Leave `scrambling` at `auto`: the simulation
 link runs unscrambled, and the decoder locks to that by itself.
-`serdes_front_i.rx_active` can be bound to `rxvalid` by hand on the `Tx`
+`u_phy_top.rx_active` can be bound to `rxvalid` by hand on the `Tx`
 instances (it gates what the Root Complex receives).
 
 In the pictures, the four signal rows under the LTSSM state are the PIPE:
@@ -718,7 +717,7 @@ Note that, as C functions, there are no default parameters and the <tt>little_en
 Compiling co-designed application code, either compiled for the native host machine, or to run on the <tt>rv32</tt> RISC-V ISS will need further layers on top of these APIs, which will be virtualised away by that point ([see the sections below](#co-simulation-hal)). The diagram below summarises the software layers that make up a program running on the _VProc_ HDL component. The "native test code" use case, shown at the top left, is for the case just described above  that use the APIs directly, though they can optionally use the HAL.
 
 <p align="center">
-<img alt="Software layers on the VProc soc_cpu" src="images/soc_cpu_vproc_stack.png" width=800>
+<img alt="Software layers on the VProc soc_cpu" src="../0.doc/5.sim/soc-cpu-vproc-stack.drawio.svg" width=800>
 </p>
 
 ### Other Software Use Cases

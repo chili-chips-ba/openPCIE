@@ -15,22 +15,24 @@
 # What they DO share is ../sw_build/firmware.hex -- build the matching firmware
 # first (make VARIANT=switched over in sw_build/).
 #
-# Flow (TOOLCHAIN=old, the default and the one validated on hardware):
+# Flow (TOOLCHAIN=old, pre-v1.0.0, the one validated on hardware):
 #        .sv --sv2v--> .v --yosys--> .json --nextpnr-xilinx--> .fasm
 #            --fasm2frames--> .frames --xc7frames2bit--> .bit
-# TOOLCHAIN=new  (openXC7's current toolchain, not yet tested on hardware):
+# TOOLCHAIN=new  (openXC7 v1.0.0, the default; not yet tested on hardware),
+# FRONTEND=slang (the default with TOOLCHAIN=new, no sv2v):
+#        .sv --yosys read_slang--> .json --nextpnr (himbaechel)--> .fasm
+#            --fpga-as--> .bit
+# TOOLCHAIN=new FRONTEND=sv2v:
 #        .sv --sv2v--> .v --yosys--> .json --nextpnr (himbaechel)--> .fasm
 #            --fpga-as--> .bit
-# TOOLCHAIN=new FRONTEND=slang  (no sv2v):
-#        .sv --yosys read_slang--> .json --nextpnr--> .fasm --fpga-as--> .bit
 #
 # Recipes that use a pipeline need  set -o pipefail  -- otherwise make sees the
 # exit status of the last command in the pipe (tee) and a tool crash passes as
 # success.
 #
-# The design is SystemVerilog (a package + 2 interfaces + packed structs), which
-# Yosys does not understand. Hence sv2v in two steps, as in the wireguard-fpga
-# project:
+# The design is SystemVerilog (packages, interfaces, packed structs). Yosys reads
+# it natively through read_slang (FRONTEND=slang). With FRONTEND=sv2v, and always
+# with TOOLCHAIN=old, it goes through sv2v in two steps:
 #   1) batch conversion of ALL .sv together (so sv2v can resolve dependencies)
 #   2) splitting all_converted.v into individual modules
 # =============================================================================
@@ -44,22 +46,23 @@
 # command line.
 
 # ---- Toolchain and front end ------------------------------------------------
-# TOOLCHAIN=old (default): the toolchain this project was validated with on
+# TOOLCHAIN=old: the pre-v1.0.0 toolchain this project was validated with on
 #   hardware -- nextpnr-xilinx 45a986b, Yosys 0.38, prjxray fasm2frames +
 #   xc7frames2bit. See "THE nextpnr VERSION IS CRITICAL" below.
-# TOOLCHAIN=new: openXC7's current toolchain, as built by
+# TOOLCHAIN=new (default): openXC7 v1.0.0, as built by
 #   toolchain-sources-builder.sh (github.com/openXC7/toolchain-installer) --
 #   the himbaechel engine behind a nextpnr-xilinx shim, Yosys 0.67 or later,
 #   fpga-as. Builds both variants; NOT yet tested on hardware. Source its
 #   export.sh first.
-# FRONTEND=sv2v (default): SystemVerilog through sv2v, as always.
-# FRONTEND=slang: Yosys's own SystemVerilog front end (read_slang) instead, no
-#   sv2v. New toolchain only. Defines SYN_YOSYS_BUG for the RTL.
+# FRONTEND=slang (default with TOOLCHAIN=new): Yosys's own SystemVerilog front
+#   end (read_slang), no sv2v. Defines SYN_YOSYS_BUG for the RTL.
+# FRONTEND=sv2v: SystemVerilog through sv2v. The only choice with TOOLCHAIN=old
+#   (Yosys 0.38 has no read_slang), so that is its default.
 # New-toolchain output goes to its own folders (build_artifacts*.new,
 # build_artifacts*.slang, chipdb.new), so it never touches the validated
 # build_artifacts*/top.bit.
-TOOLCHAIN ?= old
-FRONTEND  ?= sv2v
+TOOLCHAIN ?= new
+FRONTEND  ?= $(if $(filter old,$(TOOLCHAIN)),sv2v,slang)
 
 ifeq ($(TOOLCHAIN),new)
     # export.sh sets NEXTPNR_XILINX_DIR (and PRJXRAY_DB_DIR) to its prefix
@@ -146,37 +149,12 @@ else
     $(error VARIANT must be "direct" or "switched", got "$(VARIANT)")
 endif
 
-# ---- CSR back-end -----------------------------------------------------------
-# peakrdl -> riscv_pcie_soc.sv instantiates soc_csr.sv, which wraps the register
-#            block PeakRDL generates from 4.build/csr_build/csr.rdl. This is the
-#            default. Regenerate the RTL first if csr.rdl changed:
-#              cd .. && make -f MakefileCSR
-# legacy  -> the hand-written register block inside riscv_pcie_soc.sv, selected
-#            with `define SOC_CSR_LEGACY. Kept as the reference implementation.
-#
-# The two are functionally identical, down to the byte offsets, so the firmware
-# does not care which one is in the bitstream.
-# The choice lives in one place, ../config.mk, so that the hardware and the
-# firmware are always built the same way. Override it for a single build with
-#   make CSR=legacy
-# A command line assignment wins over the file.
--include ../config.mk
-
-CSR ?= peakrdl
-
+# ---- CSR: soc_csr.sv wraps the register block PeakRDL generates from
+# 4.build/csr_build/csr.rdl. Regenerate it first if csr.rdl changed:
+#   cd .. && make -f MakefileCSR
 CSR_GEN_DIR = ../csr_build/generated-files
-
-ifeq ($(CSR),peakrdl)
-    SV_CSR_PKG = $(CSR_GEN_DIR)/csr_pkg.sv
-    SV_CSR     = $(CSR_GEN_DIR)/csr.sv $(SRC_DIR)/soc_csr.sv
-    SV2V_DEFS  =
-else ifeq ($(CSR),legacy)
-    SV_CSR_PKG =
-    SV_CSR     =
-    SV2V_DEFS  = -DSOC_CSR_LEGACY
-else
-    $(error CSR must be "peakrdl" or "legacy", got "$(CSR)")
-endif
+SV_CSR_PKG  = $(CSR_GEN_DIR)/csr_pkg.sv
+SV_CSR      = $(CSR_GEN_DIR)/csr.sv $(SRC_DIR)/soc_csr.sv
 
 # ---- THE nextpnr VERSION IS CRITICAL ----------------------------------------
 # This design builds ONLY with nextpnr-xilinx around commit 45a986b
@@ -250,8 +228,13 @@ PURE_V_FILES = \
 SV_PKG = $(PCIE_DIR)/link_pkg.sv
 
 SV_IF = \
-    $(PCIE_DIR)/stream_if.sv \
-    $(PCIE_DIR)/phy_lanes_if.sv
+    $(PCIE_DIR)/axis_if.sv \
+    $(PCIE_DIR)/trn_if.sv \
+    $(PCIE_DIR)/cfg_if.sv \
+    $(PCIE_DIR)/mem_if.sv \
+    $(PCIE_DIR)/mim_if.sv \
+    $(PCIE_DIR)/gtp_if.sv \
+    $(PCIE_DIR)/pipe_if.sv
 
 # All other .sv from pcie/, excluding the package and the interfaces.
 # _catB_backup/ holds the original Xilinx files as *.sv.orig -- the *.sv wildcard
@@ -287,14 +270,13 @@ all: $(BUILD_ARTIFACTS)/top.bit
 
 help:
 	@echo "================================================================"
-	@echo " openXC7 build -- opensource RC  [$(VARIANT), CSR=$(CSR), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
+	@echo " openXC7 build -- opensource RC  [$(VARIANT), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
 	@echo "================================================================"
 	@echo " make                 full build up to top.bit"
 	@echo " make VARIANT=switched  build the RC-switched variant"
-	@echo " make CSR=legacy      build with the hand-written CSR instead"
-	@echo " make TOOLCHAIN=new    openXC7's current toolchain (not hardware-tested)"
-	@echo " make TOOLCHAIN=new FRONTEND=slang   ... and Yosys read_slang, no sv2v"
-	@echo " make convert         sv2v conversion + splitting only"
+	@echo " make FRONTEND=sv2v   v1.0.0 through sv2v instead of read_slang"
+	@echo " make TOOLCHAIN=old   pre-v1.0.0 toolchain (hardware-validated), sv2v"
+	@echo " make convert         sv2v conversion + splitting only (FRONTEND=sv2v)"
 	@echo " make check-env       verify the tools are present"
 	@echo " make check-sources   verify all source files exist"
 	@echo " make info            print the configuration"
@@ -304,7 +286,6 @@ help:
 
 info:
 	@echo "VARIANT        : $(VARIANT)"
-	@echo "CSR            : $(CSR)"
 	@echo "TOOLCHAIN      : $(TOOLCHAIN)"
 	@echo "FRONTEND       : $(FRONTEND)"
 	@echo "BUILD_ARTIFACTS: $(BUILD_ARTIFACTS)"
@@ -406,7 +387,7 @@ $(CONV_TIMESTAMP): $(SV_ORDERED) FORCE | check-sv2v
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
 	@mkdir -p $(CONV_DIR)
-	@if sv2v -I$(PCIE_DIR) -I$(SRC_DIR) $(SV2V_DEFS) \
+	@if sv2v -I$(PCIE_DIR) -I$(SRC_DIR) \
 	        $(SV_ORDERED) > $(CONV_DIR)/all_converted.v 2> $(CONV_DIR)/sv2v.log; then \
 	    echo "  lines   : $$(wc -l < $(CONV_DIR)/all_converted.v)"; \
 	    echo "  modules : $$(grep -c '^module ' $(CONV_DIR)/all_converted.v)"; \
@@ -452,7 +433,7 @@ ifeq ($(FRONTEND),slang)
 # take yet (real-valued primitive parameters, povik/sv-elab#282).
 XILINX_PRIMS = PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 \
                BUFG BUFGCTRL RAMB36E1
-SLANG_DEFS   = -D SYN_YOSYS_BUG $(patsubst -D%,-D %,$(SV2V_DEFS))
+SLANG_DEFS   = -D SYN_YOSYS_BUG
 
 $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilinx_bb.py FORCE
 	@echo "================================================================"
@@ -488,7 +469,7 @@ $(BUILD_ARTIFACTS)/top.json: $(EXTRACT_TIMESTAMP) $(PURE_V_FILES) $(FIRMWARE)
 	@# constraints on the GT pads themselves -- see openxc7.xdc.
 	@#
 	@# -nosrl history (see README, "-nosrl at synthesis"):
-	@#   pre-v1.0.0: required. Yosys turns the wake_timer shift registers into
+	@#   pre-v1.0.0: required. Yosys turns the PLL0 power-up shift registers into
 	@#     SRLC32E chains, and nextpnr fails on the cascade output:
 	@#     ERROR: No wire found for port Q31 on source cell ... fpga_srl_0
 	@#   v1.0.0: fixed, so NOSRL (top of file) drops the flag there (216 fewer FFs).
