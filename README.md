@@ -33,23 +33,18 @@ The project relies on a modular hardware ecosystem that combines our custom-desi
  <img alt="openPCIE hardware ecosystem" src="0.doc/pictures/openPCIE-hardware-ecosystem.jpg" width="60%">
 </p>
 
+--------------------
+### openBackplane PCB
 
-#### References:
-- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
-- [Regymm PCIE](https://github.com/regymm/pcie_7x)
-- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
-- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
-- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
-- [Xilinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
-- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+<p align="center" width="100%">
+    <img alt="openPCIE backplane" width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
+    <img alt="openPCIE backplane block diagram" width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
+</p>
 
-## FPGA hardware platform
+Please, refer to [1.pcb](1.pcb) for additional detail, and to [1.pcb/KiCad-library](1.pcb/KiCad-library/README.md) for the self-contained KiCad library. Plain-text versions of the PDF and slide documents are in [0.doc/1.pcb](0.doc/1.pcb/README.md).
 
-#### References:
-- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
-- [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
-- [fpgas.online-test-designs](https://github.com/fpgas-online/fpgas.online-test-designs/tree/main/designs/pcie-enumeration) PCIE ENUMERATION by RPI, for Acorn-CLE215+ EP
-  
+### FPGA Carrier
+
 The hardware platform for this project is the **SQRL Acorn CLE-215+**, a versatile FPGA development board. Although originally designed as a crypto-accelerator, its powerful Artix-7 FPGA and modular design make it an excellent choice for general-purpose PCIE development.
 
 The system consists of two main components:
@@ -167,9 +162,155 @@ The key specifications are summarized below:
 <p><small>¹ The 'Logic Cells' count is a Xilinx metric derived from the physical 6-input LUTs to provide an estimated equivalent in simpler 4-input LUTs for comparison purposes. The number of physical LUTs and other resources are the exact counts for the XC7A200T chip.</small></p>
 </div>
 
+#### References:
+- [Acorn-CLE215+ QuickStart](https://github.com/SMB784/SQRL_quickstart)
+- [NiteFury](https://github.com/RHSResearchLLC/NiteFury-and-LiteFury/tree/master)
+- [fpgas.online-test-designs](https://github.com/fpgas-online/fpgas.online-test-designs/tree/main/designs/pcie-enumeration) PCIE ENUMERATION by RPI, for Acorn-CLE215+ EP
+  
+--------------------
+
+# RTL Architecture
+
+The opensource Root Complex RTL is a chain of blocks joined by SystemVerilog interfaces: the RISC-V SoC hands TLPs over AXI-Stream to the PCIE stack, which converts them for the `PCIE_2_1` hard block and drives the GTP transceiver over PIPE.
+
+<p align="center">
+ <img alt="RTL blocks of the opensource Root Complex and the SystemVerilog interfaces between them" src="0.doc/2.rtl/block-diagram.drawio.svg" width="100%">
+</p>
+
+Details are in the [RTL README](2.rtl/README.md#systemverilog-interfaces). Per design: [common RTL](2.rtl/0.common.opensource/README.md), [EP](2.rtl/1.EP.opensource/README.md), [RC-direct](2.rtl/2.RC-direct.opensource/README.md), [RC-switched](2.rtl/3.Bonus--RC-switched.opensource/README.md). The AMD/Vivado-IP reference designs are in [2.amd-rtl-with-Vivado-build](2.amd-rtl-with-Vivado-build/README.md) ([EP](2.amd-rtl-with-Vivado-build/1.EP.amd/README.md), [RC-direct](2.amd-rtl-with-Vivado-build/2.RC-direct.amd/README.md), [RC-switched](2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd/README.md)).
+
+#### References:
+- [Basic PCIE EP for LiteFury](https://github.com/hdlguy/litefury_pcie)
+- [Regymm PCIE](https://github.com/regymm/pcie_7x)
+- [LiteX PCIE EP](https://github.com/enjoy-digital/litepcie)
+- [PCIE EP DMA - Wupper](https://gitlab.nikhef.nl/franss/wupper)
+- [Xilinx UG477 - 7Series Integrated Block PCIe](https://docs.xilinx.com/v/u/en-US/ug477_7Series_IntBlock_PCIe)
+- [Xilinx DS821 - 7series_PCIE Datasheet](https://docs.xilinx.com/v/u/en-US/ds821_7series_pcie)
+- [Xapp1052 - BusMaster DMA for EP](https://docs.xilinx.com/v/u/en-US/xapp1052)
+  
+--------------------
+
+# SW Architecture
+
+The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIE enumeration automatically in the background, hiding the complexity from the developer. In this project, our **baremetal open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIE Host.
+
+<p align="center">
+ <img alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints" src="0.doc/3.sw/sw-structure.drawio.svg" width="100%">
+</p>
+
+The architecture adopts a clean, well-defined, layered approach:
+
+1.  **Application Layer (The "User" Logic)**: 
+    - The final stage of the program that executes the high-level task.
+    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
+
+2.  **PCIE Driver (Enumeration & Setup)**:
+    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
+    - It manually performs device discovery, sizes the BARs by readback, assigns aligned memory addresses, checks the completion status of every request, and configures the **Command Register** to enable the device for communication.
+      
+3.  **HAL (Hardware Abstraction Layer)**:
+    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
+
+> **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
+
+Details are in the [SW README](3.sw/README.md).
+
+--------------------
+
+# Simulation Architecture
+
+### Sim Test Bench
+
+The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the picorv32 RISC-V RTL core that goes into the bitstream, or to co-simulate software using the virtual processor, with a significant speed up in simulation times.
+
+<p align="center">
+<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.svg" width="75%">
+</p>
+
+The test bench has the following features:
+
+* A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.picorv32`](5.sim/models/README.md#soc_cpuvprocpicorv32) component
+  * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL picorv32, with `make CPU=rtl|vproc|iss`
+  * Can run natively compiled test code
+  * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#csr-hal-compilation)
+  * Can run RISC-V compiled code using the [rv32 RISC-V ISS model](5.sim/models/rv32/README.md)
+  * All three have been [built and measured](5.sim/README.md#what-they-cost); each reaches the same result over the same PCIE link
+* The [_pcieVHost VIP_](https://github.com/wyvernSemi/pcievhost) is used to drive the logic's PCIE link
+* Uses a C [sparse memory model](https://github.com/wyvernSemi/mem_model)
+  * An [HDL component](5.sim/models/cosim/README.md) instantiated in logic gives logic access to this memory
+  * An API is provided to _VProc_ running code for direct access from the _pcieVHost_ software, which implements this sparse memory C model.
+
+More details on the architecture and usage of the openPCIE test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
+
+The co-simulation can also be followed at TLP level in the [WaveCrux](https://wavecrux.app) waveform viewer, with an [open-source PCIE TLP decoder plugin](5.sim/tools/wavecrux-pcie-tlp/README.md) and a ready-made session -- here the firmware sizing BAR0 by readback and placing it at `0x80000000` ([more](5.sim/README.md#viewing-the-tlps-in-wavecrux)):
+
+<p align="center">
+<img alt="WaveCrux TLP view: firmware sizing BAR0" src="5.sim/images/wavecrux-tlp-bar-sizing.png" width="75%">
+</p>
+
+One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) show the same link on the wire: link training, flow-control credits, and every TLP with its sequence number and Ack ([more](5.sim/README.md#viewing-the-pipe-in-wavecrux)). With all three layers in one view, you can also see how long a TLP spends inside the hard macro: about 0.4 µs each way ([more](5.sim/README.md#how-long-a-tlp-spends-in-the-hard-macro)).
+
+### Co-sim HAL
+
+The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the picorv32 memory bus, and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
+
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
+  
+#### References
+- [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
+- [WaveCrux](https://wavecrux.app) waveform viewer, [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
+- [wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders): Ferrite's open-source PCIE PIPE and Data Link Layer decoders for WaveCrux
+
+--------------------
+
+# Implementation Workflow
+
+The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
+
+<p align="center">
+ <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
+</p>
+
+## Prerequisites
+
+Before building the project, install and configure the required development tools. These include an FPGA toolchain such as **AMD Vivado** or **openXC7**, a bare-metal **RISC-V cross-compilation toolchain**, Python, and the project-specific dependencies listed in the corresponding directories.
+
+### HW/SW Co-Sim
+
+Before deploying the design to physical hardware, run the available simulation environment to verify the interaction between the PCIE hardware design and the software components.
+
+The co-simulation flow is used to test essential operations such as device initialization, register access, PCIE link behavior, and data exchange between the Root Complex (RC) and Endpoint (EP). This stage helps identify hardware and software integration issues before synthesis and hardware deployment.
+
+### SW Build
+
+Compile the bare-metal RISC-V driver and test application using the configured cross-compilation toolchain, see [4.build/sw_build](4.build/sw_build/README.md).
+
+The software is responsible for initializing the required hardware components, configuring the PCIE communication flow, and transferring test payloads between the RC and EP. The generated executable can be used during simulation or deployed together with the FPGA design for hardware verification.
+
+### HW Synth and Bitstream Generation
+
+The FPGA design can be synthesized and implemented using either the commercial **AMD Vivado** toolchain or the open-source **openXC7** toolchain. Depending on the selected flow, the process includes design elaboration, synthesis, placement, routing, timing analysis, and final bitstream generation.
+
+The resulting `.bit` file contains the complete hardware configuration for the selected FPGA board. The appropriate board-specific constraints, build configuration, and target design must be selected depending on whether the board operates as the Root Complex (RC) or Endpoint (EP).
+
+Detailed build instructions for both the Vivado and openXC7 flows are provided in the corresponding project directories.
+
+### Flashing and Deployment
+
+Program the RC and EP FPGA boards with their corresponding bitstreams. After both designs have been loaded, start the software application and allow the boards to initialize the PCIE connection.
+
+The deployed system can then be verified by checking the PCIE link-status indicators and comparing the transmitted payload with the data displayed or received on the Endpoint.
+
+Detailed commands, configuration options, supported boards, and stage-specific instructions are provided in the corresponding project directories.
+
+---
+<a name="functional-verification"></a>
+
+# Bringup, Debug, Bench Testing and Demo
+
 ### FPGA Board Setup
 
-Properly programming and operating the Artix-7 FPGA on the SQRL board required two key hardware modifications.
+Properly programming and operating the Artix-7 FPGA on the SQRL board requires some soldering and work on open desktop motherboard.
 
 #### 1. Custom JTAG Cable
 
@@ -221,7 +362,7 @@ The complete system, including the custom cabling, is mounted in a test PC chass
   <br><em>The complete FPGA system mounted in a PCIE slot.</em>
 </p>
 
-#### 4. Connection Verification
+#### 4. JTAG Connectivity Test
 
 After the hardware was prepared, the connection was verified using the **Vivado Hardware Manager**. As shown below, the tool successfully detected the JTAG programmer and identified the `xc7a200t_0` FPGA chip. This confirms that the physical connections are correct and the board is ready for programming.
 
@@ -230,186 +371,12 @@ After the hardware was prepared, the connection was verified using the **Vivado 
   <br><em>Successful device detection in Vivado Hardware Manager.</em>
 </p>
 
---------------------
-### openBackplane PCB
-
-<p align="center" width="100%">
-    <img alt="openPCIE backplane" width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
-    <img alt="openPCIE backplane block diagram" width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
-</p>
-
-Please, refer to [1.pcb](1.pcb) for additional detail, and to [1.pcb/KiCad-library](1.pcb/KiCad-library/README.md) for the self-contained KiCad library. Plain-text versions of the PDF and slide documents are in [0.doc/1.pcb](0.doc/1.pcb/README.md).
-
---------------------
-
-# RTL Architecture
-
-The opensource Root Complex RTL is a chain of blocks joined by SystemVerilog interfaces: the RISC-V SoC hands TLPs over AXI-Stream to the PCIE stack, which converts them for the `PCIE_2_1` hard block and drives the GTP transceiver over PIPE.
-
-<p align="center">
- <img alt="RTL blocks of the opensource Root Complex and the SystemVerilog interfaces between them" src="0.doc/2.rtl/block-diagram.drawio.svg" width="100%">
-</p>
-
-Details are in the [RTL README](2.rtl/README.md#systemverilog-interfaces). Per design: [common RTL](2.rtl/0.common.opensource/README.md), [EP](2.rtl/1.EP.opensource/README.md), [RC-direct](2.rtl/2.RC-direct.opensource/README.md), [RC-switched](2.rtl/3.Bonus--RC-switched.opensource/README.md). The AMD/Vivado-IP reference designs are in [2.amd-rtl-with-Vivado-build](2.amd-rtl-with-Vivado-build/README.md) ([EP](2.amd-rtl-with-Vivado-build/1.EP.amd/README.md), [RC-direct](2.amd-rtl-with-Vivado-build/2.RC-direct.amd/README.md), [RC-switched](2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd/README.md)).
-
---------------------
-
-# SW Architecture
-
-The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIE enumeration automatically in the background, hiding the complexity from the developer. In this project, our **open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIE Host.
-
-The architecture follows a layered approach:
-
-1.  **Application Layer (The "User" Logic)**: 
-    - The final stage of the program that executes the high-level task.
-    - It performs **Memory Write** operations to send a data payload to the Endpoint and uses **Memory Read** to verify the integrity of the data path.
-
-2.  **PCIE Driver (Enumeration & Setup)**:
-    - Responsible for the **initialization sequence** required to perform enumeration and establish a functional connection (link).
-    - It manually performs device discovery, sizes the BARs by readback, assigns aligned memory addresses, checks the completion status of every request, and configures the **Command Register** to enable the device for communication.
-      
-3.  **HAL (Hardware Abstraction Layer)**:
-    - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
-
-> **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
-
-<p align="center">
- <img alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints" src="0.doc/3.sw/sw-structure.drawio.svg" width="100%">
-</p>
-
-Details are in the [SW README](3.sw/README.md).
-
---------------------
-
-# TB/Sim Architecture
-
-## Simulation Test Bench
-
-The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the picorv32 RISC-V RTL core that goes into the bitstream, or to co-simulate software using the virtual processor, with a significant speed up in simulation times. The test bench has the following features:
-
-* A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.picorv32`](5.sim/models/README.md#soc_cpuvprocpicorv32) component
-  * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL picorv32, with `make CPU=rtl|vproc|iss`
-  * Can run natively compiled test code
-  * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#csr-hal-compilation)
-  * Can run RISC-V compiled code using the [rv32 RISC-V ISS model](5.sim/models/rv32/README.md)
-  * All three have been [built and measured](5.sim/README.md#what-they-cost); each reaches the same result over the same PCIE link
-* The [_pcieVHost VIP_](https://github.com/wyvernSemi/pcievhost) is used to drive the logic's PCIE link
-* Uses a C [sparse memory model](https://github.com/wyvernSemi/mem_model)
-  * An [HDL component](5.sim/models/cosim/README.md) instantiated in logic gives logic access to this memory
-  * An API is provided to _VProc_ running code for direct access from the _pcieVHost_ software, which implements this sparse memory C model.
-
-The figure below shows an overview block diagram of the test bench HDL.
-
-<p align="center">
-<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.svg" width="75%">
-</p>
-
-More details on the architecture and usage of the openPCIE test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
-
-The co-simulation can also be followed at TLP level in the [WaveCrux](https://wavecrux.app) waveform viewer, with an [open-source PCIE TLP decoder plugin](5.sim/tools/wavecrux-pcie-tlp/README.md) and a ready-made session -- here the firmware sizing BAR0 by readback and placing it at `0x80000000` ([more](5.sim/README.md#viewing-the-tlps-in-wavecrux)):
-
-<p align="center">
-<img alt="WaveCrux TLP view: firmware sizing BAR0" src="5.sim/images/wavecrux-tlp-bar-sizing.png" width="75%">
-</p>
-
-One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) show the same link on the wire: link training, flow-control credits, and every TLP with its sequence number and Ack ([more](5.sim/README.md#viewing-the-pipe-in-wavecrux)). With all three layers in one view, you can also see how long a TLP spends inside the hard macro: about 0.4 µs each way ([more](5.sim/README.md#how-long-a-tlp-spends-in-the-hard-macro)).
-
-## Co-simulation HAL
-
-The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the picorv32 memory bus, and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
-
-More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
-  
-#### References
-- [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
-- [WaveCrux](https://wavecrux.app) waveform viewer, [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
-- [wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders): Ferrite's open-source PCIE PIPE and Data Link Layer decoders for WaveCrux
-
---------------------
-
-# Implementation Workflow
-
-The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
-
-<p align="center">
- <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
-</p>
-
-## Prerequisites
-
-Before building the project, install and configure the required development tools. These include an FPGA toolchain such as **AMD Vivado** or **openXC7**, a bare-metal **RISC-V cross-compilation toolchain**, Python, and the project-specific dependencies listed in the corresponding directories.
-
-## Simulation (Hardware/Software Co-Simulation)
-
-Before deploying the design to physical hardware, run the available simulation environment to verify the interaction between the PCIE hardware design and the software components.
-
-The co-simulation flow is used to test essential operations such as device initialization, register access, PCIE link behavior, and data exchange between the Root Complex (RC) and Endpoint (EP). This stage helps identify hardware and software integration issues before synthesis and hardware deployment.
-
-## Software Build
-
-Compile the bare-metal RISC-V driver and test application using the configured cross-compilation toolchain, see [4.build/sw_build](4.build/sw_build/README.md).
-
-The software is responsible for initializing the required hardware components, configuring the PCIE communication flow, and transferring test payloads between the RC and EP. The generated executable can be used during simulation or deployed together with the FPGA design for hardware verification.
-
-## Hardware Synthesis and Bitstream Generation
-
-The FPGA design can be synthesized and implemented using either the commercial **AMD Vivado** toolchain or the open-source **openXC7** toolchain. Depending on the selected flow, the process includes design elaboration, synthesis, placement, routing, timing analysis, and final bitstream generation.
-
-The resulting `.bit` file contains the complete hardware configuration for the selected FPGA board. The appropriate board-specific constraints, build configuration, and target design must be selected depending on whether the board operates as the Root Complex (RC) or Endpoint (EP).
-
-Detailed build instructions for both the Vivado and openXC7 flows are provided in the corresponding project directories.
-
-## Flashing and Deployment
-
-Program the RC and EP FPGA boards with their corresponding bitstreams. After both designs have been loaded, start the software application and allow the boards to initialize the PCIE connection.
-
-The deployed system can then be verified by checking the PCIE link-status indicators and comparing the transmitted payload with the data displayed or received on the Endpoint.
-
-Detailed commands, configuration options, supported boards, and stage-specific instructions are provided in the corresponding project directories.
-
---------------------
-
-# Debug, Bringup, Testing
-
-### Hardware Infrastructure
+### Test Jig
 - **PCB:** **openPCIE Backplane** (see [1.pcb](1.pcb/))  which provides slots for the RC, EP, and the Switch.
 - **FPGA Boards:** Two **SQRL Acorn CLE-215+** (Artix-7) boards.
 - **JTAG Programmers:** Two **Xilinx Platform Cable USB** units are used, each equipped with a **custom adapter cable**.
-    
-### The "Dual-PC" Debugging Approach 
-We used a **two-PC** setup to streamline development:
--  **PC 1:** Connected to the **Root Complex (RC)** FPGA via JTAG.
--  **PC 2:** Connected to the **EndPoint (EP)** FPGA via JTAG.
-   
-**Why this setup?**
-- **Speed and Efficiency:** This setup avoids the repetitive task of manually swapping the JTAG cable between boards and eliminates the time-consuming process of flashing onboard memory for every test iteration.
-- **Simultaneous Debugging:** This allows us to run two instances of **Vivado Hardware Manager** (ILA - Integrated Logic Analyzer) at the same time. We can trigger on the RC and EP simultaneously to view the transaction from both sides of the link.
 
-### Testing Procedure
-
-To bring up the system and verify the PCIE link, follow these steps:
-
-*   **Hardware Assembly:** Insert the FPGA cards into their designated slots on the **openPCIE Backplane** (RC and EP) and connect the external **12V power supply**.
-*   **Bitstream Programming:** Program both FPGAs using Vivado Hardware Manager. **PC 1** is used to program the Root Complex, while **PC 2** programs the EndPoint.
-*   **Manual Reset:** Once both devices are programmed, press the **manual reset button** on the backplane.
-*   **Enumeration:** Upon releasing the reset button, the Root Complex initiates the **enumeration process** and establishes the link with the EndPoint.
-*   **Re-Initialization:** Every subsequent press of the reset button triggers a full re-initialization of the PCIE connection, allowing for repeated testing and debugging without the need to re-program the FPGAs.
-
-### Objective
-The goal of this test is to verify that the Root Complex can successfully enumerate the link and perform both **Memory Write** and **Memory Read** transactions.
-1. **Write:** The RC sends a data payload to the EP.
-2. **Transfer:** The EP receives the TLP and writes it into its internal Block RAM (BRAM).
-3. **Read:** The RC requests to read the data back from the EP memory.
-
----
-
-<a name="functional-verification"></a>
-
-# Bench Validation and Demo
-
-### Verification Environment
-
-Before diving into the results, here is the complete hardware validation setup used for the Direct (Point-to-Point) connection scenario. It features the **openPCIE Backplane** powered by an external 12V supply, populated with two **Acorn CLE-215+** FPGA modules (one configured as RC, the other as EP).
+Before interacting over PCIE, here is the complete bench validation setup used for the Direct (Point-to-Point) connection scenario. It features the **openPCIE Backplane** powered by an external 12V supply, populated with two **Acorn CLE-215+** FPGA modules (one configured as RC, the other as EP).
 
 Dual **Xilinx Platform Cable USB** units are connected via custom adapters to allow simultaneous debugging and bitstream loading from two separate host workstations.
 
@@ -419,8 +386,32 @@ Dual **Xilinx Platform Cable USB** units are connected via custom adapters to al
   <em>The complete hardware validation environment for the Direct connection test.</em>
 </p>
 
+#### The "Dual-PC" JTAG Approach 
+We used a two-PC setup to streamline development:
+-  **PC 1:** Connected to the **Root Complex (RC)** FPGA via JTAG.
+-  **PC 2:** Connected to the **EndPoint (EP)** FPGA via JTAG.
+   
+**Why this setup?**
+- **Speed and Efficiency:** This setup avoids the repetitive task of manually swapping the JTAG cable between boards and eliminates the time-consuming process of flashing onboard memory for every test iteration.
+- **Simultaneous Debugging:** This allows us to run two instances of **Vivado Hardware Manager** (ILA - Integrated Logic Analyzer) at the same time. We can trigger on the RC and EP simultaneously to view the transaction from both sides of the link.
+  
+### Test Procedure
 
-### Verification Methods
+To bring up the system and verify the PCIE link, follow these steps:
+
+*   **Hardware Assembly:** Insert the FPGA cards into their designated slots on the **openPCIE Backplane** (RC and EP) and connect the external **12V power supply**.
+*   **Bitstream Programming:** Program both FPGAs using Vivado Hardware Manager. **PC 1** is used to program the Root Complex, while **PC 2** programs the EndPoint.
+*   **Manual Reset:** Once both devices are programmed, press the **manual reset button** on the backplane.
+*   **Enumeration:** Upon releasing the reset button, the Root Complex initiates the **enumeration process** and establishes the link with the EndPoint.
+*   **Re-Initialization:** Every subsequent press of the reset button triggers a full re-initialization of the PCIE connection, allowing for repeated testing and debugging without the need to re-program the FPGAs.
+
+#### Objectives
+The goal of this test is to verify that the Root Complex can successfully enumerate the link and perform both **Memory Write** and **Memory Read** transactions.
+1. **Write:** The RC sends a data payload to the EP.
+2. **Transfer:** The EP receives the TLP and writes it into its internal Block RAM (BRAM).
+3. **Read:** The RC requests to read the data back from the EP memory.
+
+### Bench Validation Steps
 
 **1. Visual Verification (LEDs)**
 Visual feedback is provided via the **4 user LEDs** on both FPGA boards:
@@ -430,12 +421,11 @@ Visual feedback is provided via the **4 user LEDs** on both FPGA boards:
 **2. Internal Signal Monitoring (ILA)**
 Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed monitoring of internal signals to see exactly what data was sent and received, its precise timing, and the low-level transaction details.
 
-
-### Verification Results
+### Bench Validation Results
 
 The implementation was verified on physical hardware by checking both PCIE link establishment and successful payload transfer between the Root Complex (RC) and Endpoint (EP).
 
-On the RC board, LED **A3** indicates the PCIE link status. When this LED is illuminated, the PCIE link has been successfully established. As shown in the verification setup, LED A3 is active, confirming that the link between the RC and EP is up.
+On the RC board, LED **A3** indicates the PCIE link status. When this LED is illuminated, the PCIE link has been successfully established. We can see that the LED A3 is active, confirming that the link between the RC and EP is up.
 
 On the EP board, the LEDs display the received data payload. The RC transmitted the decimal value **6**, represented in binary as **`0110`**. The LED pattern on the EP matches this value, confirming that the payload was transferred and received correctly.
 
@@ -456,12 +446,27 @@ These results confirm that PCIE link initialization and RC-to-EP data transfer o
   </tr>
 </table>
 
-
-#### References
+#### Primary References
 - [PCIE Utils](https://mj.ucw.cz/sw/pciutils)
 - [Debug PCIE issues using 'lspci' and 'setpci'](https://adaptivesupport.amd.com/s/article/1148199?language=en_US)
 - Using [busybox (devmem)](0.doc/using-busybox-devmem-for-reg-access.txt) for register access 
 
+#### Secondary References
+PCIE Protocol Analyzers
+- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
+- [Stark 75T Card](https://www.ebay.com/itm/396313189094?var=664969332633)
+- [ngscopeclient](http://www.ngscopeclient.org/protocol-analysis)
+- [PCI Leech](https://github.com/ufrisk/pcileech)
+- [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
+- [LiteX PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
+- [LiteX PCIE Analyzer](https://github.com/enjoy-digital/pcie_analyzer)
+- [Wireshark PCIe Dissector](https://github.com/antmicro/wireshark-pcie-dissector)
+- [PCIe Tool Hunt](https://scolton.blogspot.com/2023/05/pcie-deep-dive-part-1-tool-hunt.html)
+- [PCIe network simulator](https://github.com/antmicro/warp-pipe)
+- [An interesting PCIE tidbit: Peer-to-Peer communication](https://xilinx.github.io/XRT/2025.1/html/p2p.html). Also see [this](https://xillybus.com/tutorials/pci-express-tlp-pcie-primer-tutorial-guide-1)
+- [NetTLP - An invasive method for intercepting PCIE TLPs](https://haeena.dev/nettlp)
+- [PCIe on STM32MP257 with ngscopeclient](https://www.youtube.com/watch?v=qxdK3mjHNBM)
+- [opensource PCIE Controller](https://www.mdpi.com/2076-3417/16/7/3409)
 
 --------------------
 
@@ -514,28 +519,6 @@ Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xili
 
 The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what "ScalePNR" idea eventually had evolved into. It brought to the forefront Yosys0.69 with integrated **Slang, nextpnr-himbaechel** (instead of _nextpnr-xilinx_) and _fpga-as_. With that, the earlier SV2V standalone preparatory step for our SystemVerilog design sources proved to be unnecessary, which greatly simplifies the build.
 
-
---------------------
-
-# PCIE Protocol Analyzer
-
-#### References
-- [PCIE Sniffing](https://ctf.re/pcie/experiment/linux/keysight/protocol-analyzer/2024/03/26/pcie-experiment-1)
-- [Stark 75T Card](https://www.ebay.com/itm/396313189094?var=664969332633)
-- [ngscopeclient](http://www.ngscopeclient.org/protocol-analysis)
-- [PCI Leech](https://github.com/ufrisk/pcileech)
-- [PCI Leech/ZDMA](https://github.com/ufrisk/pcileech-fpga/tree/master/ZDMA)
-- [LiteX PCIE Screamer](https://github.com/enjoy-digital/pcie_screamer)
-- [LiteX PCIE Analyzer](https://github.com/enjoy-digital/pcie_analyzer)
-- [Wireshark PCIe Dissector](https://github.com/antmicro/wireshark-pcie-dissector)
-- [PCIe Tool Hunt](https://scolton.blogspot.com/2023/05/pcie-deep-dive-part-1-tool-hunt.html)
-- [PCIe network simulator](https://github.com/antmicro/warp-pipe)
-- [An interesting PCIE tidbit: Peer-to-Peer communication](https://xilinx.github.io/XRT/2025.1/html/p2p.html). Also see [this](https://xillybus.com/tutorials/pci-express-tlp-pcie-primer-tutorial-guide-1)
-- [NetTLP - An invasive method for intercepting PCIE TLPs](https://haeena.dev/nettlp)
-- [PCIe on STM32MP257 with ngscopeclient](https://www.youtube.com/watch?v=qxdK3mjHNBM)
-- [opensource PCIE Controller](https://www.mdpi.com/2076-3417/16/7/3409)
-
-
 --------------------
 
 ### Academic Outreach
@@ -570,11 +553,27 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://www.envox.eu"><img alt="EEZ / Envox logo" width="25%" src="0.doc/artwork/EEZ-web-logo.png"></a>
 </p>
 
-**PeakRDL** turns our single SystemRDL file into the CSR RTL, the firmware and co-simulation headers, and the register map documentation -- thank you for this toolset.
+**KiCad** turns electrical idea into a manufacturable board. **openXC7** turns RTL into a loadable FPGA bitfile. **PeakRDL** turns our SystemRDL file into the CSR RTL, the firmware and co-simulation headers, and the register map documentation. **WaveCrux** greatly facilitates wavefrom decoding and viewing. And, that's not everything that made this project possible -- Thank you all for these wonderful opensource tools.
 
 <p align="center">
+  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
   <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="12%" src="0.doc/artwork/PeakRDL.logo.png"></a>
+  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="25%" src="0.doc/artwork/WaveCrux.logo.png"></a>
 </p>
+
+<p align="center">
+  <a href="https://www.kicad.org"><img alt="KiCad logo" width="25%" src="0.doc/artwork/kicad_logo.png"></a>
+  <a href="https://www.openems.de"><img alt="openEMS logo" width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png"></a>
+</p>
+
+<p align="center">
+  <a href="https://www.symbioticeda.com"><img alt="Symbiotic EDA logo" width="25%" src="0.doc/artwork/symbioticeda.logo.png"></a>
+</p>   
+
+<p align="center">
+  <a href="https://verilator.org"><img alt="Verilator logo" width="25%" src="0.doc/artwork/Verilator.logo.png"></a>
+</p>
+
 
 ### Crowd Supply Campaign
  - [Info Page](https://www.chili-chips.xyz/openpcie-backplane-put-your-fpga-in-control), [Intro Video](https://www.canva.com/design/DAHXSTcjxEc/odZj_VbgU20EEeZ1zuJlJA/watch?utm_content=DAHXSTcjxEc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h8306e0024f)
@@ -591,21 +590,6 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://www.elecrow.com"><img alt="Elecrow logo" width="25%" src="0.doc/artwork/Elecrow-logo.png"></a>
   <a href="https://www.kickstarter.com"><img alt="Kickstarter logo" width="25%" src="0.doc/artwork/kickstarter.logo.png"></a>
 </p> 
-
-<p align="center">
-  <a href="https://www.symbioticeda.com"><img alt="Symbiotic EDA logo" width="25%" src="0.doc/artwork/symbioticeda.logo.png"></a>
-  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
-</p>   
-
-<p align="center">
-  <a href="https://www.kicad.org"><img alt="KiCad logo" width="25%" src="0.doc/artwork/kicad_logo.png"></a>
-  <a href="https://www.openems.de"><img alt="openEMS logo" width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png"></a>
-</p>
-
-<p align="center">
-  <a href="https://verilator.org"><img alt="Verilator logo" width="25%" src="0.doc/artwork/Verilator.logo.png"></a>
-  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="25%" src="0.doc/artwork/WaveCrux.logo.png"></a>
-</p>
 
 
 ### Public posts:
