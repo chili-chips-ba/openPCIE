@@ -522,11 +522,11 @@ With the full end-to-end simulation thus in place, we hope that the need for har
 
 Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
 
-The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what "ScalePNR" idea eventually had evolved into. It brought to the forefront Yosys0.69 with integrated **Slang, nextpnr-himbaechel** (instead of _nextpnr-xilinx_) and _fpga-as_. With that, the earlier SV2V standalone preparatory step for our SystemVerilog design sources proved to be unnecessary, which greatly simplifies the build.
+The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what _"ScalePNR"_ idea eventually evolved into. It brought to the forefront _Yosys0.69_ with integrated _**Slang**_, _**nextpnr-himbaechel**_ (instead of _nextpnr-xilinx_) and _**fpga-as**_. With that, the earlier SV2V standalone prep step for our SystemVerilog design sources proved to be unnecessary, which simplified the build process. The SV2V option is however still retained for cross-tool checking.
 
 --------------------
 
-### Academic Outreach
+### Academia Outreach
 openPCIE has served as the basis for a number of Master's theses at the Faculty of Electrical Engineering, University of Sarajevo (ETF Sarajevo). Among them are the theses of Anes Vrce and [Aladin Brdar](https://www.linkedin.com/posts/abrdar1_proud-to-share-that-i-have-successfully-share-7512945056492904448-Ugtq/), the latter shown here presenting his work on the openPCIE platform, tapping into its hardware, software and simulation facets.
 
 <p align="center">
@@ -602,7 +602,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 </p> 
 
 
-### Public posts:
+### Community Outreach:
 - [2026-10-10](https://www.linkedin.com/feed/update/urn:li:activity:7509048253993242624?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7509048253993242624%2C7514858764861104128%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287514858764861104128%2Curn%3Ali%3Aactivity%3A7509048253993242624%29)
 - [2026-10-05](https://lnkd.in/p/gVDkcKni)
 - [2026-09-15](https://www.linkedin.com/posts/chili-chips_opensource-pcie-activity-7505034443674251264-eed-?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
@@ -613,11 +613,19 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 - [2025-07-22](https://www.linkedin.com/posts/simon-southwell-7684482_pcie-vhdl-nvc-activity-7354160318052220929-K0Ku?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2025-04-03](https://www.linkedin.com/feed/update/urn:li:activity:7313386031125303296?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7313386031125303296%2C7313594045216223236%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287313594045216223236%2Curn%3Ali%3Aactivity%3A7313386031125303296%29)
 
+### Community Involvement
+
+Feel like helping opensource PCIE community grow better and larger?! See [Contributions](CONTRIBUTING.md).
+
+Don't feel shy to reach out and ask for help -- [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues).
+
 --------------------
 
-# GenAI Policy
+### GenAI
 
-Our repo may contain elements of work facilitated by GenAI tools <img alt="Claude" height="16" src="https://cdn.simpleicons.org/claude/D97757">, used under strict guidance and tight supervision of the blood-and-flesh developers, solely as suggestions. In the end, it is the developers who are fully responsible for any shortcomings you may uncover in the course of tapping into the resources within this repo. For more on that and how to contribute, check [Contributions](CONTRIBUTING.md). For anything else, open an Issue [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues)
+Our repo may contain elements of work facilitated by the modern GenAI tools <img alt="Claude" height="16" src="https://cdn.simpleicons.org/claude/D97757">, used under strict guidance and tight supervision of the blood-and-flesh developers, and solely as suggestions.
+
+In the end, it is us, the human devs, who are fully responsible for any shortfalls you may uncover while tapping into repo resources.
 
 --------------------
 #### End of Document
