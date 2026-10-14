@@ -189,7 +189,7 @@ run_slang() {
   # Yosys' built-in read_slang prints "file:line:col: warning:", the yosys-slang
   # plugin (OSS CAD Suite, CI) prints "file:line: Warning:"; bring both to the
   # first form so the waivers match either
-  found slang < <(sed -E 's/^([^ :]+:[0-9]+): Warning:/:0: warning:/; s/^([^ :]+:[0-9]+): Error:/:0: error:/' slang.log |
+  found slang < <(sed -E 's/^([^ :]+:[0-9]+): Warning:/\1:0: warning:/; s/^([^ :]+:[0-9]+): Error:/\1:0: error:/' slang.log |
                   grep -E 'warning:|error:')
 }
 
