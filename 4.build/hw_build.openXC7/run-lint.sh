@@ -186,7 +186,11 @@ run_slang() {
   bb || { skip slang "no Xilinx stubs"; return; }
   "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $P -I src \
       -Wextra bb.sv $SV $SHIMS" >/dev/null 2>&1
-  found slang < <(grep -E 'warning:|error:' slang.log)
+  # Yosys' built-in read_slang prints "file:line:col: warning:", the yosys-slang
+  # plugin (OSS CAD Suite, CI) prints "file:line: Warning:"; bring both to the
+  # first form so the waivers match either
+  found slang < <(sed -E 's/^([^ :]+:[0-9]+): Warning:/:0: warning:/; s/^([^ :]+:[0-9]+): Error:/:0: error:/' slang.log |
+                  grep -E 'warning:|error:')
 }
 
 run_verible() {
