@@ -617,7 +617,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 Feel like helping opensource PCIE community grow better and larger?! See [Contributions](CONTRIBUTING.md).
 
-Don't feel shy to reach out and ask for help -- [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues).
+Don't feel shy to reach out and ask for help ===> [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues).
 
 --------------------
 
