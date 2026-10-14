@@ -39,188 +39,204 @@
 
 module init_ctrl
   import link_pkg::*;
-#(
-  localparam CFG_WAIT_MAX = 6'd63) (
-  input                       RST_CLK,
-  input                       RST_RXUSRCLK,
-  input                       RST_DCLK,
-  input                       RST_RST_N,
-  input      [PCIE_LANES-1:0] RST_DRP_DONE,
-  input      [PCIE_LANES-1:0] RST_RXPMARESETDONE,
-  input                       RST_PLLLOCK,
-  input      [PCIE_LANES-1:0] RST_RATE_IDLE,
-  input                       RST_MMCM_LOCK,
-  input      [PCIE_LANES-1:0] RST_RESETDONE,
-  input      [PCIE_LANES-1:0] RST_PHYSTATUS,
-  input      [PCIE_LANES-1:0] RST_TXSYNC_DONE,
+(
+    input logic pipe_clk,     // PIPE clock
+    input logic clk125,       // 125 MHz, runs before PLL0 is powered up
+    input logic pipe_rst_n,   // released on pipe_clk
+    input logic gtpll0_lock,  // PLL0LOCK of GTPE2_COMMON
+    input logic mmcm_lock,
 
-  output                      RST_CPLLRESET,
-  output                      RST_PLLPD,
-  output                      RST_PLLRESET,
-  output logic                RST_DRP_START,
-  output logic                RST_DRP_X16,
-  output                      RST_RXUSRCLK_RESET,
-  output                      RST_DCLK_RESET,
-  output                      RST_GTRESET,
-  output                      RST_USERRDY,
-  output                      RST_TXSYNC_START,
-  output                      RST_IDLE
+    gtp_if.ctrl gtp,  // reads the lane status, drives gtp.rst
+
+    output logic gtpll0_reset_req  // hold PLL0 in reset (lane init and DRP)
 );
 
+  localparam logic [5:0] CFG_WAIT_MAX = 6'd63;
+
   typedef enum logic [4:0] {
-    ST_IDLE, ST_CFG_WAIT, ST_PLL_HOLD, ST_DRP16_REQ, ST_DRP16_ACK,
-    ST_PLL_LOCK, ST_GT_RELEASE, ST_RXPMA_UP, ST_RXPMA_DN, ST_DRP20_REQ,
-    ST_DRP20_ACK, ST_LOCK_WAIT, ST_RESET_DONE, ST_TXSYNC_REQ, ST_TXSYNC_ACK
+    ST_IDLE,
+    ST_CFG_WAIT,
+    ST_GTPLL0_HOLD,
+    ST_DRP16_REQ,
+    ST_DRP16_ACK,
+    ST_GTPLL0_LOCK,
+    ST_GT_RELEASE,
+    ST_RXPMA_UP,
+    ST_RXPMA_DN,
+    ST_DRP20_REQ,
+    ST_DRP20_ACK,
+    ST_LOCK_WAIT,
+    ST_RESET_DONE,
+    ST_TXSYNC_REQ,
+    ST_TXSYNC_ACK
   } state_e;
 
-  state_e state = ST_CFG_WAIT;
+  state_e state;
   state_e state_nx;
 
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] drp_done_r1,       drp_done_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rxpma_r1,          rxpma_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 plllock_r1,        plllock_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] rate_idle_r1,      rate_idle_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic                 mmcmlock_r1,       mmcmlock_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] resetdone_r1,      resetdone_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] phystatus_r1,      phystatus_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0] txsyncdone_r1,     txsyncdone_r2;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0]
+      drp_done_r1, drp_done_r2;  // gtp.drp_done: chan_retune, clk125 -> pipe_clk
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0]
+      rxpma_r1, rxpma_r2;  // RXPMARESETDONE: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      gtpll0_lock_r1, gtpll0_locked;  // PLL0LOCK: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      mmcm_lock_r1, mmcm_locked;  // MMCM LOCKED: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0]
+      resetdone_r1, resetdone_r2;  // lane_xcvr: pipe_clk, latency only
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0]
+      phystatus_r1, phystatus_r2;  // PHYSTATUS: RXUSRCLK2 = pipe_clk, latency only
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic [PCIE_LANES-1:0]
+      txsyncdone_r1, txsyncdone_r2;  // phase_align: pipe_clk, latency only
 
-  always_ff @(posedge RST_CLK) begin
-    if (!RST_RST_N) begin
-      {drp_done_r1, rxpma_r1, rate_idle_r1, resetdone_r1, phystatus_r1, txsyncdone_r1} <= '0;
-      {drp_done_r2, rxpma_r2, rate_idle_r2, resetdone_r2, phystatus_r2, txsyncdone_r2} <= '0;
-      {plllock_r1, mmcmlock_r1, plllock_r2, mmcmlock_r2} <= '0;
-    end else begin
-      drp_done_r1  <= RST_DRP_DONE;       drp_done_r2  <= drp_done_r1;
-      rxpma_r1     <= RST_RXPMARESETDONE; rxpma_r2     <= rxpma_r1;
-      plllock_r1   <= RST_PLLLOCK;        plllock_r2   <= plllock_r1;
-      rate_idle_r1 <= RST_RATE_IDLE;      rate_idle_r2 <= rate_idle_r1;
-      mmcmlock_r1  <= RST_MMCM_LOCK;      mmcmlock_r2  <= mmcmlock_r1;
-      resetdone_r1 <= RST_RESETDONE;      resetdone_r2 <= resetdone_r1;
-      phystatus_r1 <= RST_PHYSTATUS;      phystatus_r2 <= phystatus_r1;
-      txsyncdone_r1<= RST_TXSYNC_DONE;    txsyncdone_r2<= txsyncdone_r1;
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      {drp_done_r1, rxpma_r1, resetdone_r1, phystatus_r1, txsyncdone_r1} <= '0;
+      {drp_done_r2, rxpma_r2, resetdone_r2, phystatus_r2, txsyncdone_r2} <= '0;
+      {gtpll0_lock_r1, mmcm_lock_r1, gtpll0_locked, mmcm_locked}         <= '0;
+    end
+    else begin
+      drp_done_r1    <= gtp.drp_done;
+      drp_done_r2    <= drp_done_r1;
+      rxpma_r1       <= gtp.rxpmaresetdone;
+      rxpma_r2       <= rxpma_r1;
+      gtpll0_lock_r1 <= gtpll0_lock;
+      gtpll0_locked  <= gtpll0_lock_r1;
+      mmcm_lock_r1   <= mmcm_lock;
+      mmcm_locked    <= mmcm_lock_r1;
+      resetdone_r1   <= gtp.resetdone;
+      resetdone_r2   <= resetdone_r1;
+      phystatus_r1   <= gtp.phystatus;
+      phystatus_r2   <= phystatus_r1;
+      txsyncdone_r1  <= gtp.txsync_done;
+      txsyncdone_r2  <= txsyncdone_r1;
     end
   end
 
-  wire pll_unlocked = ~plllock_r2;
-  wire pll_locked   =  plllock_r2;
-  wire resetdone_lo = &(~resetdone_r2);
-  wire resetdone_hi = &resetdone_r2;
-  wire drp_busy     = &(~drp_done_r2);
-  wire drp_ready    = &drp_done_r2;
-  wire rxpma_hi     = &rxpma_r2;
-  wire rxpma_lo     = &(~rxpma_r2);
-  wire phystatus_lo = &(~phystatus_r2);
-  wire txsync_lo    = &(~txsyncdone_r2);
-  wire txsync_hi    = &txsyncdone_r2;
-  wire locks_ok     = mmcmlock_r2;
+  logic resetdone_lo;
+  assign resetdone_lo = &(~resetdone_r2);
+  logic resetdone_hi;
+  assign resetdone_hi = &resetdone_r2;
+  logic drp_busy;
+  assign drp_busy = &(~drp_done_r2);
+  logic drp_ready;
+  assign drp_ready = &drp_done_r2;
+  logic rxpma_hi;
+  assign rxpma_hi = &rxpma_r2;
+  logic rxpma_lo;
+  assign rxpma_lo = &(~rxpma_r2);
+  logic phystatus_lo;
+  assign phystatus_lo = &(~phystatus_r2);
+  logic txsync_lo;
+  assign txsync_lo = &(~txsyncdone_r2);
+  logic txsync_hi;
+  assign txsync_hi = &txsyncdone_r2;
 
-  logic [5:0] cfg_wait_cnt = 6'd0;
+  logic [5:0] cfg_wait_cnt;
 
-  always_ff @(posedge RST_CLK) begin
-    if      (!RST_RST_N)                  cfg_wait_cnt <= 6'd0;
-    else if (state != ST_CFG_WAIT)        cfg_wait_cnt <= 6'd0;
-    else if (cfg_wait_cnt < CFG_WAIT_MAX) cfg_wait_cnt <= cfg_wait_cnt + 6'd1;
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      cfg_wait_cnt <= 6'd0;
+    end
+    else if (state != ST_CFG_WAIT) begin
+      cfg_wait_cnt <= 6'd0;
+    end
+    else if (cfg_wait_cnt < CFG_WAIT_MAX) begin
+      cfg_wait_cnt <= cfg_wait_cnt + 6'd1;
+    end
   end
-  wire cfg_wait_done = (cfg_wait_cnt == CFG_WAIT_MAX);
+  logic cfg_wait_done;
+  assign cfg_wait_done = (cfg_wait_cnt == CFG_WAIT_MAX);
 
   always_comb begin
     state_nx = state;
     unique case (state)
-      ST_IDLE       : state_nx = ST_IDLE;
-      ST_CFG_WAIT   : state_nx = cfg_wait_done                    ? ST_PLL_HOLD    : ST_CFG_WAIT;
-      ST_PLL_HOLD   : state_nx = (pll_unlocked && resetdone_lo)   ? ST_DRP16_REQ   : ST_PLL_HOLD;
-      ST_DRP16_REQ  : state_nx = drp_busy                        ? ST_DRP16_ACK   : ST_DRP16_REQ;
-      ST_DRP16_ACK  : state_nx = drp_ready                       ? ST_PLL_LOCK    : ST_DRP16_ACK;
-      ST_PLL_LOCK   : state_nx = pll_locked                      ? ST_GT_RELEASE  : ST_PLL_LOCK;
-      ST_GT_RELEASE : state_nx = ST_RXPMA_UP;
-      ST_RXPMA_UP   : state_nx = rxpma_hi                        ? ST_RXPMA_DN    : ST_RXPMA_UP;
-      ST_RXPMA_DN   : state_nx = rxpma_lo                        ? ST_DRP20_REQ   : ST_RXPMA_DN;
-      ST_DRP20_REQ  : state_nx = drp_busy                        ? ST_DRP20_ACK   : ST_DRP20_REQ;
-      ST_DRP20_ACK  : state_nx = drp_ready                       ? ST_LOCK_WAIT   : ST_DRP20_ACK;
-      ST_LOCK_WAIT  : state_nx = locks_ok                        ? ST_RESET_DONE  : ST_LOCK_WAIT;
-      ST_RESET_DONE : state_nx = (resetdone_hi && phystatus_lo)  ? ST_TXSYNC_REQ  : ST_RESET_DONE;
-      ST_TXSYNC_REQ : state_nx = txsync_lo                       ? ST_TXSYNC_ACK  : ST_TXSYNC_REQ;
-      ST_TXSYNC_ACK : state_nx = txsync_hi                       ? ST_IDLE        : ST_TXSYNC_ACK;
-      default       : state_nx = ST_CFG_WAIT;
+      ST_IDLE:        state_nx = ST_IDLE;
+      ST_CFG_WAIT:    state_nx = cfg_wait_done ? ST_GTPLL0_HOLD : ST_CFG_WAIT;
+      ST_GTPLL0_HOLD: state_nx = (!gtpll0_locked && resetdone_lo) ? ST_DRP16_REQ : ST_GTPLL0_HOLD;
+      ST_DRP16_REQ:   state_nx = drp_busy ? ST_DRP16_ACK : ST_DRP16_REQ;
+      ST_DRP16_ACK:   state_nx = drp_ready ? ST_GTPLL0_LOCK : ST_DRP16_ACK;
+      ST_GTPLL0_LOCK: state_nx = gtpll0_locked ? ST_GT_RELEASE : ST_GTPLL0_LOCK;
+      ST_GT_RELEASE:  state_nx = ST_RXPMA_UP;
+      ST_RXPMA_UP:    state_nx = rxpma_hi ? ST_RXPMA_DN : ST_RXPMA_UP;
+      ST_RXPMA_DN:    state_nx = rxpma_lo ? ST_DRP20_REQ : ST_RXPMA_DN;
+      ST_DRP20_REQ:   state_nx = drp_busy ? ST_DRP20_ACK : ST_DRP20_REQ;
+      ST_DRP20_ACK:   state_nx = drp_ready ? ST_LOCK_WAIT : ST_DRP20_ACK;
+      ST_LOCK_WAIT:   state_nx = mmcm_locked ? ST_RESET_DONE : ST_LOCK_WAIT;
+      ST_RESET_DONE:  state_nx = (resetdone_hi && phystatus_lo) ? ST_TXSYNC_REQ : ST_RESET_DONE;
+      ST_TXSYNC_REQ:  state_nx = txsync_lo ? ST_TXSYNC_ACK : ST_TXSYNC_REQ;
+      ST_TXSYNC_ACK:  state_nx = txsync_hi ? ST_IDLE : ST_TXSYNC_ACK;
     endcase
   end
 
-  logic cpllreset_q = 1'b0;
-  logic gtreset_q   = 1'b0;
-  logic userrdy_q   = 1'b0;
+  logic gtreset_q;
+  logic userrdy_q;
 
-  wire cpllreset_d = (state == ST_PLL_HOLD)  || (state == ST_DRP16_REQ) || (state == ST_DRP16_ACK);
-  wire gtreset_d   = (state == ST_PLL_HOLD)  || (state == ST_DRP16_REQ) || (state == ST_DRP16_ACK) || (state == ST_PLL_LOCK);
-  wire userrdy_d   = (state == ST_LOCK_WAIT) ? locks_ok : userrdy_q;
+  logic gtpll0_reset_d;
+  assign gtpll0_reset_d = (state == ST_GTPLL0_HOLD)  || (state == ST_DRP16_REQ) ||
+                          (state == ST_DRP16_ACK);
+  logic gtreset_d;
+  assign gtreset_d = (state == ST_GTPLL0_HOLD)  || (state == ST_DRP16_REQ) ||
+                     (state == ST_DRP16_ACK) || (state == ST_GTPLL0_LOCK);
+  logic userrdy_d;
+  assign userrdy_d = (state == ST_LOCK_WAIT) ? mmcm_locked : userrdy_q;
 
-  always_ff @(posedge RST_CLK) begin
-    if (!RST_RST_N) begin
-      state       <= ST_CFG_WAIT;
-      cpllreset_q <= 1'b0;
-      gtreset_q   <= 1'b0;
-      userrdy_q   <= 1'b0;
-    end else begin
-      state       <= state_nx;
-      cpllreset_q <= cpllreset_d;
-      gtreset_q   <= gtreset_d;
-      userrdy_q   <= userrdy_d;
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      state            <= ST_CFG_WAIT;
+      gtpll0_reset_req <= 1'b0;
+      gtreset_q        <= 1'b0;
+      userrdy_q        <= 1'b0;
+    end
+    else begin
+      state            <= state_nx;
+      gtpll0_reset_req <= gtpll0_reset_d;
+      gtreset_q        <= gtreset_d;
+      userrdy_q        <= userrdy_d;
     end
   end
 
-  always_ff @(posedge RST_CLK) begin
-    if (!RST_RST_N) begin
-      RST_DRP_START <= 1'b0;
-      RST_DRP_X16   <= 1'b0;
-    end else begin
-      RST_DRP_START <= (state == ST_DRP16_REQ) || (state == ST_DRP20_REQ);
-      RST_DRP_X16   <= (state == ST_DRP16_REQ) || (state == ST_DRP16_ACK);
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      gtp.rst.drp_start <= 1'b0;
+      gtp.rst.drp_x16   <= 1'b0;
+    end
+    else begin
+      gtp.rst.drp_start <= (state == ST_DRP16_REQ) || (state == ST_DRP20_REQ);
+      gtp.rst.drp_x16   <= (state == ST_DRP16_REQ) || (state == ST_DRP16_ACK);
     end
   end
 
-  logic rxusrclk_rst_r1 = 1'b0;
-  logic rxusrclk_rst_r2 = 1'b0;
+  logic rxusrclk_rst_r1;
+  logic rxusrclk_rst_r2;
 
-  always_ff @(posedge RST_RXUSRCLK) begin
-    if (cpllreset_q) begin
+  always_ff @(posedge pipe_clk) begin
+    if (gtpll0_reset_req) begin
       rxusrclk_rst_r1 <= 1'b1;
       rxusrclk_rst_r2 <= 1'b1;
-    end else begin
+    end
+    else begin
       rxusrclk_rst_r1 <= 1'b0;
       rxusrclk_rst_r2 <= rxusrclk_rst_r1;
     end
   end
 
-  logic dclk_rst_r1 = 1'b0;
-  logic dclk_rst_r2 = 1'b0;
+  logic drp_clk_rst_r1;
+  logic drp_clk_rst_r2;
 
-  always_ff @(posedge RST_DCLK) begin
-    dclk_rst_r1 <= (state == ST_CFG_WAIT);
-    dclk_rst_r2 <= dclk_rst_r1;
+  always_ff @(posedge clk125) begin
+    drp_clk_rst_r1 <= (state == ST_CFG_WAIT);
+    drp_clk_rst_r2 <= drp_clk_rst_r1;
   end
 
-  assign RST_CPLLRESET      = cpllreset_q;
-  assign RST_RXUSRCLK_RESET = rxusrclk_rst_r2;
-  assign RST_DCLK_RESET     = dclk_rst_r2;
-  assign RST_GTRESET        = gtreset_q;
-  assign RST_USERRDY        = userrdy_q;
-  assign RST_TXSYNC_START   = (state == ST_TXSYNC_REQ);
-  assign RST_IDLE           = (state == ST_IDLE);
+  assign gtp.rst.gtpll0_reset   = gtpll0_reset_req;
+  assign gtp.rst.rxusrclk_reset = rxusrclk_rst_r2;
+  assign gtp.rst.drp_clk_reset  = drp_clk_rst_r2;
+  assign gtp.rst.gtreset        = gtreset_q;
+  assign gtp.rst.userrdy        = userrdy_q;
+  assign gtp.rst.txsync_start   = (state == ST_TXSYNC_REQ);
+  assign gtp.rst.idle           = (state == ST_IDLE);
 
-  // PLL0 power-up after configuration: power-down for 96, then reset until
-  // 128 clock cycles. FIXME: clocked from RST_DCLK as a workaround for openXC7's
-  // dead IBUFDS_GTE2.O -> BUFG clock (openPCIE #22). Back to BUFG(PIPE_CLK)
-  // once a v1.0.0 bitstream proves the fix on hardware.
-  (* equivalent_register_removal = "no" *) logic  [95:0] pll_pd_sr  = '1;
-  (* equivalent_register_removal = "no" *) logic [127:0] pll_rst_sr = 128'hFF;
-
-  always_ff @(posedge RST_DCLK) begin
-    pll_pd_sr  <= {pll_pd_sr[94:0],   1'b0};
-    pll_rst_sr <= {pll_rst_sr[126:0], 1'b0};
-  end
-
-  assign RST_PLLPD    = pll_pd_sr[95];
-  assign RST_PLLRESET = pll_rst_sr[127] | RST_CPLLRESET;
 
 endmodule
 // -----------------------------------------------------------------------------

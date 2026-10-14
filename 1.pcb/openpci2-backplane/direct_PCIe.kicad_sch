@@ -14,6 +14,432 @@
 		(comment 3 "OSHW - Open Source HardWare: https://oshwa.org")
 	)
 	(lib_symbols
+		(symbol "KiCad-stock:+12V"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "+12V"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+12V\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "+12V_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+12V_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "KiCad-stock:+3V3"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "+3V3"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+3V3\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "+3V3_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+3V3_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "KiCad-stock:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "PCM_BWSMA-KWE-Z001:Conn_Coaxial"
 			(pin_names
 				(offset 1.016)
@@ -66,7 +492,7 @@
 					)
 				)
 			)
-			(property "MPN" "BWSMA-KWE-Z001"
+			(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -77,7 +503,7 @@
 					)
 				)
 			)
-			(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+			(property "MPN" "BWSMA-KWE-Z001"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -275,8 +701,8 @@
 					)
 				)
 			)
-			(property "MPN" "10061913-111PLF"
-				(at 7.62 -45.72 0)
+			(property "Description" "PCIe card connector, 64-pins, SMD"
+				(at 7.62 -93.98 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -286,8 +712,8 @@
 					)
 				)
 			)
-			(property "Description" "PCIe card connector, 64-pins, SMD"
-				(at 7.62 -93.98 0)
+			(property "MPN" "10061913-111PLF"
+				(at 7.62 -45.72 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1544,8 +1970,8 @@
 					)
 				)
 			)
-			(property "MPN" ""
-				(at 7.62 -68.58 0)
+			(property "Description" ""
+				(at 7.62 -50.8 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1555,8 +1981,8 @@
 					)
 				)
 			)
-			(property "Description" ""
-				(at 7.62 -50.8 0)
+			(property "MPN" ""
+				(at 7.62 -68.58 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3026,7 +3452,7 @@
 					)
 				)
 			)
-			(property "MPN" "LTST-C170KGKT"
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3037,7 +3463,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" "LTST-C170KGKT"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3234,8 +3660,8 @@
 					)
 				)
 			)
-			(property "MPN" ""
-				(at 0 2.54 0)
+			(property "Description" ""
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3245,8 +3671,8 @@
 					)
 				)
 			)
-			(property "Description" ""
-				(at 0 0 0)
+			(property "MPN" ""
+				(at 0 2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3392,7 +3818,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3403,7 +3829,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3587,7 +4013,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3598,7 +4024,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3750,7 +4176,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3761,7 +4187,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3816,432 +4242,6 @@
 					)
 					(fill
 						(type outline)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:+12V"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "+12V"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+12V\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+12V_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+12V_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:+3V3"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "+3V3"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+3V3_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:GND"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -6.35 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "GND"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "GND_0_1"
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "GND_1_1"
-				(pin power_in line
-					(at 0 0 270)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
 					)
 				)
 			)
@@ -18781,8 +18781,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 207.01 72.39 0)
+		(property "Description" ""
+			(at 207.01 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18792,8 +18792,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 207.01 69.85 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 207.01 72.39 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18962,7 +18962,7 @@
 				)
 			)
 		)
-		(property "MPN" "RMCF0603FT33R0"
+		(property "Description" ""
 			(at 59.69 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -18973,7 +18973,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RMCF0603FT33R0"
 			(at 59.69 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -19208,8 +19208,8 @@
 				)
 			)
 		)
-		(property "MPN" "AS0BC21-S30BM-7H"
-			(at 66.04 195.58 0)
+		(property "Description" ""
+			(at 66.04 177.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19219,8 +19219,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 66.04 177.8 0)
+		(property "MPN" "AS0BC21-S30BM-7H"
+			(at 66.04 195.58 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19599,7 +19599,7 @@
 				)
 			)
 		)
-		(property "MPN" "EEE-1CA101WAP"
+		(property "Description" ""
 			(at 186.69 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -19610,7 +19610,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "EEE-1CA101WAP"
 			(at 186.69 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -19779,8 +19779,8 @@
 				)
 			)
 		)
-		(property "MPN" "AS0BC21-S30BM-7H"
-			(at 64.77 109.22 0)
+		(property "Description" ""
+			(at 64.77 91.44 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19790,8 +19790,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 64.77 91.44 0)
+		(property "MPN" "AS0BC21-S30BM-7H"
+			(at 64.77 109.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20167,7 +20167,7 @@
 				)
 			)
 		)
-		(property "MPN" "LTST-C170KGKT"
+		(property "Description" ""
 			(at 93.98 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -20178,7 +20178,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "LTST-C170KGKT"
 			(at 93.98 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -20258,8 +20258,8 @@
 				)
 			)
 		)
-		(property "MPN" "X3113WVS-64-9TV01"
-			(at 168.91 87.63 0)
+		(property "Description" "PCIe card connector, 64-pins, SMD"
+			(at 168.91 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20269,8 +20269,8 @@
 				)
 			)
 		)
-		(property "Description" "PCIe card connector, 64-pins, SMD"
-			(at 168.91 135.89 0)
+		(property "MPN" "X3113WVS-64-9TV01"
+			(at 168.91 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20549,8 +20549,8 @@
 				)
 			)
 		)
-		(property "MPN" "GRM155R71C103KA01D"
-			(at 41.91 114.3 0)
+		(property "Description" ""
+			(at 41.91 111.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20560,8 +20560,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 41.91 111.76 0)
+		(property "MPN" "GRM155R71C103KA01D"
+			(at 41.91 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20730,7 +20730,7 @@
 				)
 			)
 		)
-		(property "MPN" "BWSMA-KWE-Z001"
+		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
 			(at 170.18 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -20741,7 +20741,7 @@
 				)
 			)
 		)
-		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+		(property "MPN" "BWSMA-KWE-Z001"
 			(at 170.18 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -20910,8 +20910,8 @@
 				)
 			)
 		)
-		(property "MPN" "AS0BC21-S30BM-7H"
-			(at 76.2 195.58 0)
+		(property "Description" ""
+			(at 76.2 177.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20921,8 +20921,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 76.2 177.8 0)
+		(property "MPN" "AS0BC21-S30BM-7H"
+			(at 76.2 195.58 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21222,8 +21222,8 @@
 				)
 			)
 		)
-		(property "MPN" "GRM155R71C103KA01D"
-			(at 201.93 72.39 0)
+		(property "Description" ""
+			(at 201.93 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21233,8 +21233,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 201.93 69.85 0)
+		(property "MPN" "GRM155R71C103KA01D"
+			(at 201.93 72.39 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21325,7 +21325,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603JR-07220RL"
+		(property "Description" ""
 			(at 93.98 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -21336,7 +21336,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603JR-07220RL"
 			(at 93.98 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -21494,8 +21494,8 @@
 				)
 			)
 		)
-		(property "MPN" "AS0BC21-S30BM-7H"
-			(at 71.12 195.58 0)
+		(property "Description" ""
+			(at 71.12 177.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21505,8 +21505,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 71.12 177.8 0)
+		(property "MPN" "AS0BC21-S30BM-7H"
+			(at 71.12 195.58 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21884,8 +21884,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 46.99 114.3 0)
+		(property "Description" ""
+			(at 46.99 111.76 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21895,8 +21895,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 46.99 111.76 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 46.99 114.3 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22141,7 +22141,7 @@
 				)
 			)
 		)
-		(property "MPN" "RMCF0603FT33R0"
+		(property "Description" ""
 			(at 154.94 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -22152,7 +22152,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RMCF0603FT33R0"
 			(at 154.94 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -22234,7 +22234,7 @@
 				)
 			)
 		)
-		(property "MPN" "BWSMA-KWE-Z001"
+		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
 			(at 74.93 144.78 0)
 			(hide yes)
 			(show_name no)
@@ -22245,7 +22245,7 @@
 				)
 			)
 		)
-		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+		(property "MPN" "BWSMA-KWE-Z001"
 			(at 74.93 144.78 0)
 			(hide yes)
 			(show_name no)

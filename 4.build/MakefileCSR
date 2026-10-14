@@ -89,7 +89,7 @@ $(PKRDLHDR): $(COSIMRDL)
 	$(call spdx_c,$@)
 
 rtl: $(RDLSRC)
-	@peakrdl regblock $^ -o $(GENDIR)/ --cpuif passthrough --top $(RDLCSRTOP)
+	@peakrdl regblock $^ -o $(GENDIR)/ --cpuif passthrough --default-reset arst_n --top $(RDLCSRTOP)
 	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP).sv)
 	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP)_pkg.sv)
 

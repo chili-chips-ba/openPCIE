@@ -71,18 +71,20 @@ kibot_*.kicad_pro
 # Intermediates -- rebuilt on every run. Kept on purpose (not ignored):
 #   4.build/csr_build/generated-files/  so a build never needs peakrdl
 #   4.build/sw_build/firmware.hex       hard dependency of the Vivado tcl
-#   build_artifacts*/top.bit            prebuilt bitstreams
+#   build_artifacts*/top.x*.bit         prebuilt bitstreams (pre-v1.0.0, board-tested)
+#   build_artifacts*.slang/top.x*.bit   prebuilt bitstreams (v1.0.0, not yet board-tested)
 4.build/sw_build/firmware.elf
 4.build/sw_build/firmware.bin
 4.build/hw_build.openXC7/firmware.hex
 4.build/hw_build.openXC7/converted/
 4.build/hw_build.openXC7/converted.switched/
 4.build/hw_build.openXC7/build_artifacts*/*
-!4.build/hw_build.openXC7/build_artifacts*/top.bit
-# New openXC7 toolchain (TOOLCHAIN=new): not hardware-validated, so its
-# bitstreams are NOT kept. Directory rules win over the top.bit exception above.
+!4.build/hw_build.openXC7/build_artifacts*/top.x*.bit
+# openXC7 v1.0.0: only the read_slang bitstreams are kept; the sv2v ones
+# (*.new) are not. Directory rules win over the top.x*.bit exception above.
 4.build/hw_build.openXC7/build_artifacts*.new/
-4.build/hw_build.openXC7/build_artifacts*.slang/
+4.build/hw_build.openXC7/build_artifacts*.slang/*
+!4.build/hw_build.openXC7/build_artifacts*.slang/top.x*.bit
 4.build/hw_build.openXC7/converted*.new/
 4.build/hw_build.openXC7/chipdb.new/
 

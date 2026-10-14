@@ -16,11 +16,31 @@ bitstream.
 |---|---|---|
 | 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h`, `csr_hw.h`, `csr_cosim.h` |
 | 2. SW | [`sw_build`](./sw_build) | `firmware.elf`, `firmware.bin`, `firmware.hex` |
-| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.slang/top.bit` |
+| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.x4.slang/top.x4.direct.bit` |
 
-<p align="center"><img src="../0.doc/4.build/build-flow.drawio.svg" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation and the formal equivalence check alongside"></p>
+<p align="center"><img src="../0.doc/4.build/build-flow.drawio.svg" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
 
 The diagram source is [`0.doc/4.build/build-flow.drawio`](../0.doc/4.build/build-flow.drawio).
+
+## Tool versions
+
+The versions the build was validated with. "Board" means the bitstream was tested on hardware; "builds" means it completes, but has not been on the board yet.
+
+| Tool | Version | Used for | Status |
+|---|---|---|---|
+| openXC7 v1.0.0: Yosys, nextpnr-himbaechel, fpga-as | Yosys 0.69 (9f75ca1f9), nextpnr 1.0.0-41-g3e5c2cdd | bitstream, default flow (`read_slang`) | builds, x4 and x1 |
+| openXC7 pre-v1.0.0: Yosys, nextpnr-xilinx, prjxray | Yosys 0.38, nextpnr-xilinx 45a986b | bitstream, `TOOLCHAIN=old` | board, x1 |
+| sv2v | v0.0.13 | `FRONTEND=sv2v`, `TOOLCHAIN=old` | builds |
+| AMD Vivado | 2024.2 | Vivado projects, co-sim (`xsim`) | board, x1 |
+| AMD Vivado | 2025.1 | `run-lint.sh` CDC phase, project scripts | checks |
+| PeakRDL | 1.5.0: regblock 1.3.1, html 2.12.2, markdown 1.0.3, c-header 1.1.0; systemrdl-compiler 1.33.0 | CSR RTL, headers, docs | generates |
+| xPack RISC-V GCC | 15.2.0-1 | firmware | board |
+| MSYS2 MinGW64 GCC | 16.1.0 | co-sim (VProc, pcievhost) | runs |
+| Verilator | 5.052 | `run-lint.sh` | checks |
+| Verible | v0.0-4296-g0f262651 | `run-format.sh`, `run-lint.sh` | formats, checks |
+| WaveCrux Pro | 1.0.1 (our TLP plugin needs 1.0.1 or later) | waveform viewing, TLP decoding | runs |
+| Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE and DLL decoding in WaveCrux | runs |
+| Python | 3.12 | build scripts | runs |
 
 ## CSR HAL Compilation
 
@@ -79,9 +99,8 @@ the delay can range from 0 to `DELAY` clock cycles. The default for this is 32
 clock cycles. The `-v` and `-d` options have no affect if the `-c` option is not
 used. Finally the *VProc* test bench `soc_cpu` module's clock period in
 picoseconds can be specified for use in co-simulation abstraction of delay and
-timing functions. It defaults to 16000, i.e. the 62.5 MHz `user_clk` that the
-PCIE hard macro hands to `riscv_pcie_soc` in an x1 Gen2 link with a 64-bit
-datapath.
+timing functions. It defaults to 16000, i.e. the 62.5 MHz `clk62m5` (MMCM in `clk_rst_gen`) that
+clocks `riscv_pcie_soc` and the 64-bit TRN side of the PCIE hard macro.
 
 To generate all the required HAL headers and RTL a make file is provided as
 `4.build/MakefileCSR` to wrap up the script calls. Running this make file
@@ -239,9 +258,10 @@ Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and 
 
 | Build | Chain | Output |
 |---|---|---|
-| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.slang/top.bit` |
-| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.new/top.bit` |
-| `make TOOLCHAIN=old` | `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `fasm2frames` -> `xc7frames2bit` | `build_artifacts/top.bit` |
+| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.x4.slang/top.x4.direct.bit` |
+| `make LANES=1` | same, x1 link | `build_artifacts.slang/top.x1.direct.bit` |
+| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.x4.new/top.x4.direct.bit` |
+| `make TOOLCHAIN=old LANES=1` | `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `fasm2frames` -> `xc7frames2bit` | `build_artifacts/top.x1.direct.bit` |
 
 Add `VARIANT=switched` for RC-switched; its folders carry `.switched` (e.g. `build_artifacts.switched.slang/`), so the variants never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` verifies the tools first.
 

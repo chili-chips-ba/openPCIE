@@ -14,6 +14,582 @@
 		(comment 3 "OSHW - Open Source HardWare: https://oshwa.org")
 	)
 	(lib_symbols
+		(symbol "KiCad-stock:+12V"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "+12V"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+12V\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "+12V_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+12V_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "KiCad-stock:+3V3"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "+3V3"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+3V3\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "+3V3_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+3V3_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "KiCad-stock:+5V"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "+5V"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+5V\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "+5V_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+5V_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "KiCad-stock:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "KiCad-stock:L"
 			(pin_numbers
 				(hide yes)
@@ -69,7 +645,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" "Inductor"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -80,7 +656,7 @@
 					)
 				)
 			)
-			(property "Description" "Inductor"
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -203,6 +779,132 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "KiCad-stock:PWR_FLAG"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#FLG"
+				(at 0 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "PWR_FLAG"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "flag power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "PWR_FLAG_0_0"
+				(pin power_out line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "PCM_Chili-chips:10061913-111PLF"
 			(pin_names
 				(offset 1.016)
@@ -257,8 +959,8 @@
 					)
 				)
 			)
-			(property "MPN" "10061913-111PLF"
-				(at 7.62 -45.72 0)
+			(property "Description" "PCIe card connector, 64-pins, SMD"
+				(at 7.62 -93.98 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -268,8 +970,8 @@
 					)
 				)
 			)
-			(property "Description" "PCIe card connector, 64-pins, SMD"
-				(at 7.62 -93.98 0)
+			(property "MPN" "10061913-111PLF"
+				(at 7.62 -45.72 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1530,6 +2232,17 @@
 					)
 				)
 			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
 			(property "MPN" "M2510V-04P-N3"
 				(at 2.286 -15.494 0)
 				(show_name no)
@@ -1539,17 +2252,6 @@
 					(font
 						(size 1.27 1.27)
 						(italic yes)
-					)
-				)
-			)
-			(property "Description" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
 					)
 				)
 			)
@@ -1988,8 +2690,8 @@
 					)
 				)
 			)
-			(property "MPN" "ASM1184E"
-				(at 50.8 -45.72 0)
+			(property "Description" "PCIe x1 Gen 2 to 4 PCIe x1 Gen 2"
+				(at 12.7 -102.87 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -1999,8 +2701,8 @@
 					)
 				)
 			)
-			(property "Description" "PCIe x1 Gen 2 to 4 PCIe x1 Gen 2"
-				(at 12.7 -102.87 0)
+			(property "MPN" "ASM1184E"
+				(at 50.8 -45.72 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3245,9 +3947,9 @@
 					)
 				)
 			)
-			(property "MPN" "10129382-912001BLF"
-				(at 12.7 -27.94 0)
-				(show_name no)
+			(property "Description" "PMOD Type 1A"
+				(at 0 -15.24 0)
+				(show_name yes)
 				(do_not_autoplace no)
 				(hide yes)
 				(effects
@@ -3256,9 +3958,9 @@
 					)
 				)
 			)
-			(property "Description" "PMOD Type 1A"
-				(at 0 -15.24 0)
-				(show_name yes)
+			(property "MPN" "10129382-912001BLF"
+				(at 12.7 -27.94 0)
+				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
 				(effects
@@ -3546,7 +4248,7 @@
 					)
 				)
 			)
-			(property "MPN" "RY3420"
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3557,7 +4259,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" "RY3420"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3723,8 +4425,8 @@
 					)
 				)
 			)
-			(property "MPN" ""
-				(at 0 2.54 0)
+			(property "Description" ""
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3734,8 +4436,8 @@
 					)
 				)
 			)
-			(property "Description" ""
-				(at 0 0 0)
+			(property "MPN" ""
+				(at 0 2.54 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -3881,7 +4583,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -3892,7 +4594,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4076,7 +4778,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4087,7 +4789,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4239,7 +4941,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4250,7 +4952,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4360,8 +5062,8 @@
 					)
 				)
 			)
-			(property "MPN" ""
-				(at 0 0 90)
+			(property "Description" ""
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -4371,8 +5073,8 @@
 					)
 				)
 			)
-			(property "Description" ""
-				(at 0 0 0)
+			(property "MPN" ""
+				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -4596,8 +5298,8 @@
 					)
 				)
 			)
-			(property "MPN" ""
-				(at 0 0 90)
+			(property "Description" ""
+				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -4607,8 +5309,8 @@
 					)
 				)
 			)
-			(property "Description" ""
-				(at 0 0 0)
+			(property "MPN" ""
+				(at 0 0 90)
 				(show_name no)
 				(do_not_autoplace no)
 				(hide yes)
@@ -4832,7 +5534,7 @@
 					)
 				)
 			)
-			(property "MPN" ""
+			(property "Description" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4843,7 +5545,7 @@
 					)
 				)
 			)
-			(property "Description" ""
+			(property "MPN" ""
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4894,708 +5596,6 @@
 								(size 0 0)
 							)
 						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:+12V"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "+12V"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+12V\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+12V_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+12V_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:+3V3"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "+3V3"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3V3\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+3V3_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3V3_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:+5V"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "+5V"
-				(at 0 3.556 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+5V\""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "+5V_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+5V_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:GND"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#PWR"
-				(at 0 -6.35 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "GND"
-				(at 0 -3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "GND_0_1"
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "GND_1_1"
-				(pin power_in line
-					(at 0 0 270)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "KiCad-stock:PWR_FLAG"
-			(power global)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "#FLG"
-				(at 0 1.905 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "PWR_FLAG"
-				(at 0 3.81 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "MPN" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Special symbol for telling ERC where power comes from"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "flag power"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "PWR_FLAG_0_0"
-				(pin power_out line
-					(at 0 0 90)
-					(length 0)
-					(name ""
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(symbol "PWR_FLAG_0_1"
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
 					)
 				)
 			)
@@ -16931,8 +16931,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 50.8 87.63 0)
+		(property "Description" ""
+			(at 50.8 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16942,8 +16942,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 50.8 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 50.8 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17110,8 +17110,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-072K2L"
-			(at 39.37 151.13 90)
+		(property "Description" ""
+			(at 39.37 151.13 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17121,8 +17121,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 39.37 151.13 0)
+		(property "MPN" "RC0603FR-072K2L"
+			(at 39.37 151.13 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17440,6 +17440,17 @@
 				)
 			)
 		)
+		(property "Description" ""
+			(at 233.68 161.29 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MPN" "M2510V-04P-N3"
 			(at 235.966 145.796 0)
 			(hide yes)
@@ -17449,17 +17460,6 @@
 				(font
 					(size 1.27 1.27)
 					(italic yes)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 233.68 161.29 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
 				)
 			)
 		)
@@ -17547,7 +17547,7 @@
 				)
 			)
 		)
-		(property "MPN" "RY3420"
+		(property "Description" ""
 			(at 46.99 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -17558,7 +17558,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RY3420"
 			(at 46.99 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -17924,7 +17924,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1312K1L"
+		(property "Description" ""
 			(at 78.74 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -17935,7 +17935,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-1312K1L"
 			(at 78.74 146.05 0)
 			(hide yes)
 			(show_name no)
@@ -18247,8 +18247,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 269.24 85.09 0)
+		(property "Description" ""
+			(at 269.24 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18258,8 +18258,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 269.24 82.55 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 269.24 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18349,8 +18349,8 @@
 				)
 			)
 		)
-		(property "MPN" "GRM155R71C103KA01D"
-			(at 264.16 85.09 0)
+		(property "Description" ""
+			(at 264.16 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18360,8 +18360,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 264.16 82.55 0)
+		(property "MPN" "GRM155R71C103KA01D"
+			(at 264.16 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18452,8 +18452,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 81.28 69.85 0)
+		(property "Description" ""
+			(at 81.28 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18463,8 +18463,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 81.28 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 81.28 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18707,8 +18707,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-072K2L"
-			(at 53.34 167.64 90)
+		(property "Description" ""
+			(at 53.34 167.64 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18718,8 +18718,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 53.34 167.64 0)
+		(property "MPN" "RC0603FR-072K2L"
+			(at 53.34 167.64 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18812,8 +18812,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 144.78 64.77 0)
+		(property "Description" ""
+			(at 147.32 64.77 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18823,8 +18823,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 147.32 64.77 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 144.78 64.77 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19069,8 +19069,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 50.8 69.85 0)
+		(property "Description" ""
+			(at 50.8 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19080,8 +19080,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 50.8 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 50.8 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19169,7 +19169,7 @@
 				)
 			)
 		)
-		(property "MPN" "DFE252012P-2R2M=P2"
+		(property "Description" "Inductor"
 			(at 64.77 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -19180,7 +19180,7 @@
 				)
 			)
 		)
-		(property "Description" "Inductor"
+		(property "MPN" "DFE252012P-2R2M=P2"
 			(at 64.77 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -19305,7 +19305,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1312K1L"
+		(property "Description" ""
 			(at 78.74 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -19316,7 +19316,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-1312K1L"
 			(at 78.74 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -19396,8 +19396,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
-			(at 20.32 109.22 90)
+		(property "Description" ""
+			(at 20.32 109.22 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19407,8 +19407,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 20.32 109.22 0)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 20.32 109.22 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20110,8 +20110,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 139.7 62.23 0)
+		(property "Description" ""
+			(at 142.24 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20121,8 +20121,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 142.24 62.23 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 139.7 62.23 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20211,8 +20211,8 @@
 				)
 			)
 		)
-		(property "MPN" "X3113WVS-64-9TV01"
-			(at 233.68 101.6 0)
+		(property "Description" "PCIe card connector, 64-pins, SMD"
+			(at 233.68 149.86 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20222,8 +20222,8 @@
 				)
 			)
 		)
-		(property "Description" "PCIe card connector, 64-pins, SMD"
-			(at 233.68 149.86 0)
+		(property "MPN" "X3113WVS-64-9TV01"
+			(at 233.68 101.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20503,8 +20503,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 73.66 87.63 0)
+		(property "Description" ""
+			(at 73.66 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20514,8 +20514,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 73.66 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 73.66 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20605,8 +20605,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-072K2L"
-			(at 31.75 128.27 90)
+		(property "Description" ""
+			(at 31.75 128.27 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20616,8 +20616,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 31.75 128.27 0)
+		(property "MPN" "RC0603FR-072K2L"
+			(at 31.75 128.27 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20854,8 +20854,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 139.7 80.01 0)
+		(property "Description" ""
+			(at 142.24 80.01 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20865,8 +20865,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 142.24 80.01 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 139.7 80.01 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20957,8 +20957,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 66.04 87.63 0)
+		(property "Description" ""
+			(at 66.04 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -20968,8 +20968,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 66.04 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 66.04 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21060,8 +21060,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 58.42 105.41 0)
+		(property "Description" ""
+			(at 58.42 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21071,8 +21071,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 58.42 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 58.42 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21162,8 +21162,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL21A226KPCLRNC"
-			(at 81.28 40.64 0)
+		(property "Description" ""
+			(at 81.28 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21173,8 +21173,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 81.28 43.18 0)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 81.28 40.64 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21297,8 +21297,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 140.97 97.79 0)
+		(property "Description" ""
+			(at 143.51 97.79 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21308,8 +21308,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 143.51 97.79 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 140.97 97.79 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21400,7 +21400,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
+		(property "Description" ""
 			(at 29.21 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -21411,7 +21411,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-1310KL"
 			(at 29.21 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -21604,8 +21604,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 58.42 69.85 0)
+		(property "Description" ""
+			(at 58.42 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21615,8 +21615,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 58.42 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 58.42 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21784,8 +21784,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 50.8 105.41 0)
+		(property "Description" ""
+			(at 50.8 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21795,8 +21795,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 50.8 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 50.8 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21886,8 +21886,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 140.97 115.57 0)
+		(property "Description" ""
+			(at 143.51 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -21897,8 +21897,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 143.51 115.57 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 140.97 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22066,8 +22066,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 66.04 69.85 0)
+		(property "Description" ""
+			(at 66.04 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22077,8 +22077,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 66.04 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 66.04 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22246,8 +22246,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 43.18 87.63 0)
+		(property "Description" ""
+			(at 43.18 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22257,8 +22257,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 43.18 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 43.18 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22349,7 +22349,7 @@
 				)
 			)
 		)
-		(property "MPN" "EEE-1CA101WAP"
+		(property "Description" ""
 			(at 251.46 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -22360,7 +22360,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "EEE-1CA101WAP"
 			(at 251.46 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -22529,8 +22529,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 43.18 105.41 0)
+		(property "Description" ""
+			(at 43.18 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22540,8 +22540,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 43.18 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 43.18 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22631,8 +22631,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 140.97 133.35 0)
+		(property "Description" ""
+			(at 143.51 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22642,8 +22642,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 143.51 133.35 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 140.97 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22890,8 +22890,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 81.28 105.41 0)
+		(property "Description" ""
+			(at 81.28 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -22901,8 +22901,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 81.28 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 81.28 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23147,8 +23147,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 144.78 100.33 0)
+		(property "Description" ""
+			(at 147.32 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23158,8 +23158,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 147.32 100.33 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 144.78 100.33 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23251,7 +23251,7 @@
 				)
 			)
 		)
-		(property "MPN" "5000"
+		(property "Description" ""
 			(at 91.44 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -23262,7 +23262,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "5000"
 			(at 91.44 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -23429,8 +23429,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 58.42 87.63 0)
+		(property "Description" ""
+			(at 58.42 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23440,8 +23440,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 58.42 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 58.42 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23531,8 +23531,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL21A226KPCLRNC"
-			(at 20.32 41.91 0)
+		(property "Description" ""
+			(at 20.32 44.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23542,8 +23542,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 20.32 44.45 0)
+		(property "MPN" "CL21A226KPCLRNC"
+			(at 20.32 41.91 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23667,7 +23667,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
+		(property "Description" ""
 			(at 72.39 38.1 0)
 			(hide yes)
 			(show_name no)
@@ -23678,7 +23678,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-1310KL"
 			(at 72.39 38.1 0)
 			(hide yes)
 			(show_name no)
@@ -24025,7 +24025,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-072K2L"
+		(property "Description" ""
 			(at 78.74 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -24036,7 +24036,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-072K2L"
 			(at 78.74 140.97 0)
 			(hide yes)
 			(show_name no)
@@ -24118,8 +24118,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 73.66 105.41 0)
+		(property "Description" ""
+			(at 73.66 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24129,8 +24129,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 73.66 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 73.66 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24221,8 +24221,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 73.66 69.85 0)
+		(property "Description" ""
+			(at 73.66 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24232,8 +24232,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 73.66 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 73.66 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24322,8 +24322,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
-			(at 60.96 172.72 90)
+		(property "Description" ""
+			(at 60.96 172.72 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24333,8 +24333,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 60.96 172.72 0)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 60.96 172.72 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24417,8 +24417,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 144.78 118.11 0)
+		(property "Description" ""
+			(at 147.32 118.11 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24428,8 +24428,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 147.32 118.11 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 144.78 118.11 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24597,8 +24597,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 81.28 87.63 0)
+		(property "Description" ""
+			(at 81.28 85.09 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24608,8 +24608,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 81.28 85.09 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 81.28 87.63 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24700,7 +24700,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
+		(property "Description" ""
 			(at 72.39 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -24711,7 +24711,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "MPN" "RC0603FR-1310KL"
 			(at 72.39 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -24901,8 +24901,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
-			(at 26.67 118.11 90)
+		(property "Description" ""
+			(at 26.67 118.11 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24912,8 +24912,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 26.67 118.11 0)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 26.67 118.11 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25005,8 +25005,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
-			(at 45.72 160.02 90)
+		(property "Description" ""
+			(at 45.72 160.02 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25016,8 +25016,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 45.72 160.02 0)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 45.72 160.02 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25256,8 +25256,8 @@
 				)
 			)
 		)
-		(property "MPN" "10129382-912001BLF"
-			(at 107.95 201.93 0)
+		(property "Description" "PMOD Type 1A"
+			(at 108.712 248.412 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25267,8 +25267,8 @@
 				)
 			)
 		)
-		(property "Description" "PMOD Type 1A"
-			(at 108.712 248.412 0)
+		(property "MPN" "10129382-912001BLF"
+			(at 107.95 201.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25399,8 +25399,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 144.78 82.55 0)
+		(property "Description" ""
+			(at 147.32 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25410,8 +25410,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 147.32 82.55 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 144.78 82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25502,8 +25502,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 43.18 69.85 0)
+		(property "Description" ""
+			(at 43.18 67.31 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25513,8 +25513,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 43.18 67.31 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 43.18 69.85 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25603,8 +25603,8 @@
 				)
 			)
 		)
-		(property "MPN" "RC0603FR-1310KL"
-			(at 35.56 138.43 90)
+		(property "Description" ""
+			(at 35.56 138.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25614,8 +25614,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 35.56 138.43 0)
+		(property "MPN" "RC0603FR-1310KL"
+			(at 35.56 138.43 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25777,8 +25777,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 66.04 105.41 0)
+		(property "Description" ""
+			(at 66.04 102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25788,8 +25788,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 66.04 102.87 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 66.04 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25879,8 +25879,8 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A104KA5NNNC"
-			(at 144.78 135.89 0)
+		(property "Description" ""
+			(at 147.32 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25890,8 +25890,8 @@
 				)
 			)
 		)
-		(property "Description" ""
-			(at 147.32 135.89 0)
+		(property "MPN" "CL05A104KA5NNNC"
+			(at 144.78 135.89 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25979,8 +25979,8 @@
 				)
 			)
 		)
-		(property "MPN" "ASM1184E"
-			(at 142.24 105.41 0)
+		(property "Description" "PCIe x1 Gen 2 to 4 PCIe x1 Gen 2"
+			(at 104.14 162.56 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -25990,8 +25990,8 @@
 				)
 			)
 		)
-		(property "Description" "PCIe x1 Gen 2 to 4 PCIe x1 Gen 2"
-			(at 104.14 162.56 0)
+		(property "MPN" "ASM1184E"
+			(at 142.24 105.41 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

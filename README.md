@@ -1,5 +1,10 @@
 [![NLnet Foundation](https://img.shields.io/badge/funded%20by-NLnet%20Foundation-74AA00)](https://nlnet.nl/)
 [![GitHub stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=flat)](https://github.com/chili-chips-ba/openPCIE/stargazers)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause%20%7C%20CC--BY--SA--4.0-blue)](LICENSES)
+[![lint](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml/badge.svg)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
+[![format](https://github.com/chili-chips-ba/openPCIE/actions/workflows/format.yml/badge.svg)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/format.yml)
+[![Sim](https://img.shields.io/badge/sim-pass-brightgreen)](5.sim)
+[![openXC7 v1.0.0+](https://img.shields.io/badge/openXC7%20v1.0.0%2B-pass-brightgreen)](4.build/hw_build.openXC7)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 
@@ -268,7 +273,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
 
 <p align="center">
- <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
+ <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation, lint and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
 </p>
 
 ## Prerequisites
@@ -553,17 +558,18 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://www.envox.eu"><img alt="EEZ / Envox logo" width="25%" src="0.doc/artwork/EEZ-web-logo.png"></a>
 </p>
 
-**KiCad** turns electrical idea into a manufacturable board. **openXC7** turns RTL into a loadable FPGA bitfile. **PeakRDL** turns our SystemRDL file into the CSR RTL, the firmware and co-simulation headers, and the register map documentation. **WaveCrux** greatly facilitates wavefrom decoding and viewing. And, that's not everything that made this project possible -- Thank you all for these wonderful opensource tools.
-
-<p align="center">
-  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
-  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="12%" src="0.doc/artwork/PeakRDL.logo.png"></a>
-  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="25%" src="0.doc/artwork/WaveCrux.logo.png"></a>
-</p>
+**KiCad** turns electrical idea into a manufacturable board. **openXC7**, with **Yosys** at its core, turns RTL into a loadable FPGA bitfile. **PeakRDL** turns our SystemRDL file into CSR RTL+headers+RegMap docs. **WaveCrux** greatly facilitates waveform decoding and viewing. But, that's not everything that made this project possible -- Thank you all for these wonderful opensource tools :sparkles:.
 
 <p align="center">
   <a href="https://www.kicad.org"><img alt="KiCad logo" width="25%" src="0.doc/artwork/kicad_logo.png"></a>
   <a href="https://www.openems.de"><img alt="openEMS logo" width="15%" src="0.doc/artwork/openEMS.logo.short.noBG.png"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
+  <a href="https://www.yosyshq.com"><img alt="YosysHQ logo" width="25%" src="0.doc/artwork/YosysHQ.logo.png"></a>
+  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="12%" src="0.doc/artwork/PeakRDL.logo.png"></a>
+  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="35%" src="0.doc/artwork/WaveCrux.logo.png"></a>
 </p>
 
 <p align="center">
@@ -572,6 +578,10 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 <p align="center">
   <a href="https://verilator.org"><img alt="Verilator logo" width="25%" src="0.doc/artwork/Verilator.logo.png"></a>
+  <a href="https://www.drawio.com"><img alt="draw.io logo" width="25%" src="0.doc/artwork/drawio.logo.png"></a>
+  <a href="https://github.com/MikePopoloski/slang"><img alt="MikePopoloski slang logo" width="25%" src="0.doc/artwork/slang.logo.png"></a>
+  <a href="https://www.chipsalliance.org/projects"><img alt="Chips Alliance SV Tools logo" width="15%" src="0.doc/artwork/ChipsAlliance-SV-Tools.logo.png"></a>
+  <a href="https://github.com/chipsalliance/verible"><img alt="Verible logo" width="25%" src="0.doc/artwork/Verible.logo.png"></a>
 </p>
 
 
@@ -602,6 +612,12 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 - [2025-08-17](https://www.linkedin.com/pulse/pcie-model-c-simon-southwell-m2fve/?trackingId=CA4nW3if5DVRR%2BXN%2FIkQoQ%3D%3D)
 - [2025-07-22](https://www.linkedin.com/posts/simon-southwell-7684482_pcie-vhdl-nvc-activity-7354160318052220929-K0Ku?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAJv-TcBSi_5ff0VNMrInrT-xg44YF3jnyU)
 - [2025-04-03](https://www.linkedin.com/feed/update/urn:li:activity:7313386031125303296?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7313386031125303296%2C7313594045216223236%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287313594045216223236%2Curn%3Ali%3Aactivity%3A7313386031125303296%29)
+
+--------------------
+
+# GenAI Policy
+
+Our repo may contain elements of work facilitated by GenAI tools <img alt="Claude" height="16" src="https://cdn.simpleicons.org/claude/D97757">, used under strict guidance and tight supervision of the blood-and-flesh developers, solely as suggestions. In the end, it is the developers who are fully responsible for any shortcomings you may uncover in the course of tapping into the resources within this repo. For more on that and how to contribute, check [Contributions](CONTRIBUTING.md). For anything else, open an Issue [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues)
 
 --------------------
 #### End of Document

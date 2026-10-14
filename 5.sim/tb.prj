@@ -33,6 +33,7 @@ sv work models/pcievhost/verilog/pcieVHost/pcieVHostPipex1.v
 # DUT: packages and interfaces
 # ---------------------------------------------------------------------
 sv work ../2.rtl/0.common.opensource/src/pcie/link_pkg.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/pcie_pkg.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/axis_if.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/trn_if.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/cfg_if.sv
@@ -52,11 +53,11 @@ sv work ../2.rtl/0.common.opensource/src/soc_csr.sv
 # ---------------------------------------------------------------------
 # phy_top.sv is DELIBERATELY absent -- models/phy_top.PIPE.sv below
 # provides that module instead. mac2phy.sv, rx_eios_filter.sv, gtp_wrapper.sv,
-# lane_xcvr.sv, chan_retune.sv, phase_align.sv, speed_ctrl.sv,
-# lane_status.sv and init_ctrl.sv only exist inside phy_top,
+# lane_xcvr.sv, chan_retune.sv, phase_align.sv, speed_ctrl.sv
+# and init_ctrl.sv only exist inside phy_top,
 # so they go with it.
 sv work ../2.rtl/0.common.opensource/src/pcie/buffer_bank.sv
-sv work ../2.rtl/0.common.opensource/src/pcie/clk_gen.sv
+sv work ../2.rtl/0.common.opensource/src/pcie/clk_rst_gen.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/speed_ctrl.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/trn_bridge.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/trn_rx.sv
@@ -75,10 +76,6 @@ sv work ../2.rtl/0.common.opensource/src/picorv32.CHILI.sv
 sv work ../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv
 sv work ../2.rtl/0.common.opensource/src/RC_opensource.sv
 
-# xpm_cdc_single, used twice in pcie_top.sv. Vivado supplies the XPM
-# library for synthesis; for xsim the open replacement from the openXC7 build
-# is simpler than compiling the XPM sources.
-verilog work ../4.build/hw_build.openXC7/xpm_shim.v
 
 # ---------------------------------------------------------------------
 # Test bench

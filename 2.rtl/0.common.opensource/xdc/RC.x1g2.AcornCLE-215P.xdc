@@ -1,32 +1,34 @@
 
-set_property PACKAGE_PIN F6 [get_ports sys_clk_p]
-set_property PACKAGE_PIN E6 [get_ports sys_clk_n]
-create_clock -period 10.000 -name sys_clk [get_ports sys_clk_p]
+set_property PACKAGE_PIN F6 [get_ports refclk_p]
+set_property PACKAGE_PIN E6 [get_ports refclk_n]
+create_clock -period 10.000 -name refclk [get_ports refclk_p]
 
-set_property PACKAGE_PIN J1 [get_ports sys_rst_n]
-set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
-set_property PULLTYPE PULLUP [get_ports sys_rst_n]
-set_false_path -from [get_ports sys_rst_n]
+set_property PACKAGE_PIN J1 [get_ports perst_n]
+set_property IOSTANDARD LVCMOS33 [get_ports perst_n]
+set_property PULLTYPE PULLUP [get_ports perst_n]
+set_false_path -from [get_ports perst_n]
 
 create_clock -name txoutclk_x0y0 -period 10 [get_pins {u_pcie/u_phy_top/u_gtp_wrapper/lane_gen[0].u_xcvr/u_gtpe2_channel/TXOUTCLK}]
 
-# The GT channel LOC -- which of the four lane positions the x1 link uses --
-# is the one line that differs between the two root complexes, so it lives in
-# each variant's own xdc/, which Vivado reads together with this file:
-#   2.RC-direct.opensource/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc
-#   3.Bonus--RC-switched.opensource/xdc/RC-switched.sv.x1g2.AcornCLE-215P.xdc
+# The GT channel LOCs -- which of the four lane positions the link uses -- are
+# what differs between the root complexes and link widths, so they live in each
+# variant's own xdc/, one file per width, which Vivado reads together with this
+# file (RC.opensource.tcl picks the one for PCIE_LANES):
+#   2.RC-direct.opensource/xdc/RC-direct.x4g2.AcornCLE-215P.xdc       (default)
+#   2.RC-direct.opensource/xdc/RC-direct.x1g2.AcornCLE-215P.xdc
+#   3.Bonus--RC-switched.opensource/xdc/RC-switched.x1g2.AcornCLE-215P.xdc
 
 set_property LOC GTPE2_COMMON_X0Y1 [get_cells {u_pcie/u_phy_top/u_gtp_wrapper/u_gtpe2_common}]
-set_property LOC PCIE_X0Y0 [get_cells u_pcie/u_pcie_core/u_pcie_block]
+set_property LOC PCIE_X0Y0 [get_cells u_pcie/u_core/u_pcie_block]
 
-set_property LOC RAMB36_X2Y46 [get_cells {u_pcie/u_pcie_core/rx_buf_bank/tiles[3].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y47 [get_cells {u_pcie/u_pcie_core/rx_buf_bank/tiles[2].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y46 [get_cells {u_pcie/u_pcie_core/rx_buf_bank/tiles[1].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y45 [get_cells {u_pcie/u_pcie_core/rx_buf_bank/tiles[0].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y44 [get_cells {u_pcie/u_pcie_core/tx_buf_bank/tiles[0].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y43 [get_cells {u_pcie/u_pcie_core/tx_buf_bank/tiles[1].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y42 [get_cells {u_pcie/u_pcie_core/tx_buf_bank/tiles[2].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
-set_property LOC RAMB36_X1Y41 [get_cells {u_pcie/u_pcie_core/tx_buf_bank/tiles[3].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X2Y46 [get_cells {u_pcie/u_core/rx_buf_bank/tiles[3].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y47 [get_cells {u_pcie/u_core/rx_buf_bank/tiles[2].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y46 [get_cells {u_pcie/u_core/rx_buf_bank/tiles[1].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y45 [get_cells {u_pcie/u_core/rx_buf_bank/tiles[0].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y44 [get_cells {u_pcie/u_core/tx_buf_bank/tiles[0].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y43 [get_cells {u_pcie/u_core/tx_buf_bank/tiles[1].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y42 [get_cells {u_pcie/u_core/tx_buf_bank/tiles[2].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
+set_property LOC RAMB36_X1Y41 [get_cells {u_pcie/u_core/tx_buf_bank/tiles[3].ramb36/genblk*.bram36_tdp_bl.bram36_tdp_bl}]
 
 set_property PACKAGE_PIN G3 [get_ports {led_link_up[0]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[0]}]
@@ -39,14 +41,14 @@ set_property IOSTANDARD LVCMOS33 [get_ports {led_link_up[3]}]
 set_property PACKAGE_PIN G1 [get_ports clk_req]
 set_property IOSTANDARD LVCMOS33 [get_ports clk_req]
 
-create_generated_clock -name clk_125mhz_x0y0 [get_pins u_pcie/u_clk_gen/u_mmcm/CLKOUT0]
-create_generated_clock -name clk_250mhz_x0y0 [get_pins u_pcie/u_clk_gen/u_mmcm/CLKOUT1]
+create_generated_clock -name clk_125mhz_x0y0 [get_pins u_pcie/u_clk_rst_gen/u_mmcm/CLKOUT0]
+create_generated_clock -name clk_250mhz_x0y0 [get_pins u_pcie/u_clk_rst_gen/u_mmcm/CLKOUT1]
 
-set_false_path -to [get_pins u_pcie/u_clk_gen/u_pclk/S0]
-set_false_path -to [get_pins u_pcie/u_clk_gen/u_pclk/S1]
+set_false_path -to [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/S0]
+set_false_path -to [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/S1]
 
-create_generated_clock -name clk_125mhz_mux_x0y0 -source [get_pins u_pcie/u_clk_gen/u_pclk/I0] -divide_by 1 [get_pins u_pcie/u_clk_gen/u_pclk/O]
-create_generated_clock -name clk_250mhz_mux_x0y0 -source [get_pins u_pcie/u_clk_gen/u_pclk/I1] -divide_by 1 -add -master_clock [get_clocks -of [get_pins u_pcie/u_clk_gen/u_pclk/I1]] [get_pins u_pcie/u_clk_gen/u_pclk/O]
+create_generated_clock -name clk_125mhz_mux_x0y0 -source [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/I0] -divide_by 1 [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/O]
+create_generated_clock -name clk_250mhz_mux_x0y0 -source [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/I1] -divide_by 1 -add -master_clock [get_clocks -of [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/I1]] [get_pins u_pcie/u_clk_rst_gen/u_pipe_clk/O]
 
 set_clock_groups -name pcieclkmux -physically_exclusive -group clk_125mhz_mux_x0y0 -group clk_250mhz_mux_x0y0
 

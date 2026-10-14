@@ -39,11 +39,11 @@
 
 interface cfg_if;
   // Status sideband from the PCIE core (pcie_top) to the SOC CSRs.
-  logic        msg_err_fatal;   // ERR_FATAL message received
-  logic  [5:0] tx_buf_avail;       // free TX buffers in the core
+  logic       msg_err_fatal;  // ERR_FATAL message received
+  logic [5:0] tx_buf_avail;  // free TX buffers in the core
 
-  modport core (output msg_err_fatal, tx_buf_avail);
-  modport soc  (input  msg_err_fatal, tx_buf_avail);
+  modport core(output msg_err_fatal, tx_buf_avail);
+  modport soc(input msg_err_fatal, tx_buf_avail);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE

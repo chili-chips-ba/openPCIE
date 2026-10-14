@@ -38,8 +38,8 @@
 //--------------------------------------------------------------------------
 
 interface pipe_if #(
-  parameter int LANES  = link_pkg::PIPE_MAX_LANES,
-  parameter int DATA_W = 16             // 16 at the MAC, 32 at the GTP
+    parameter int LANES  = link_pkg::PCIE_LANES,
+    parameter int DATA_W = 16                     // 16 at the MAC, 32 at the GTP
 );
   // PIPE between the MAC (PCIE_2_1) and the PHY (phy_top + gtp_wrapper).
   // Two instances: pipe_mac (16-bit, at the MAC) and pipe_phy (32-bit, at the
@@ -65,13 +65,13 @@ interface pipe_if #(
     logic              elec_idle;
   } rx_lane_t;
 
-  link_pkg::pipe_tx_ctrl_t tx_ctrl;     // common to all lanes
-  tx_lane_t [LANES-1:0]    tx;
-  logic     [LANES-1:0]    rx_polarity;
-  rx_lane_t [LANES-1:0]    rx;
+  link_pkg::pipe_tx_ctrl_t             tx_ctrl;  // common to all lanes
+  tx_lane_t                [LANES-1:0] tx;
+  logic                    [LANES-1:0] rx_polarity;
+  rx_lane_t                [LANES-1:0] rx;
 
-  modport mac (output tx_ctrl, tx, rx_polarity, input  rx);
-  modport phy (input  tx_ctrl, tx, rx_polarity, output rx);
+  modport mac(output tx_ctrl, tx, rx_polarity, input rx);
+  modport phy(input tx_ctrl, tx, rx_polarity, output rx);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE

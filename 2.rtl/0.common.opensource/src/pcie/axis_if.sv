@@ -38,8 +38,8 @@
 //--------------------------------------------------------------------------
 
 interface axis_if #(
-  parameter int DATA_W = 64,
-  parameter int USER_W = 4
+    parameter int DATA_W = 64,
+    parameter int USER_W = 4
 );
   localparam int KEEP_W = DATA_W / 8;
 
@@ -50,8 +50,8 @@ interface axis_if #(
   logic              tvalid;
   logic              tready;
 
-  modport master (output tdata, tkeep, tuser, tlast, tvalid, input  tready);
-  modport slave  (input  tdata, tkeep, tuser, tlast, tvalid, output tready);
+  modport master(output tdata, tkeep, tuser, tlast, tvalid, input tready);
+  modport slave(input tdata, tkeep, tuser, tlast, tvalid, output tready);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE

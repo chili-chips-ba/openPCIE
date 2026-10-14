@@ -13,7 +13,7 @@ src/
   picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
   pcie/                         the opensource PCIE stack
 xdc/
-  RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+  RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
 RC.opensource.tcl               the Vivado project script behind both wrappers
 ```
 

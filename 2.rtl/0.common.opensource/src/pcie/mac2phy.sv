@@ -40,93 +40,62 @@
 module mac2phy
   import link_pkg::*;
 (
-  // MAC side: 16-bit PIPE from pcie_core
-  pipe_if.phy                         pipe_mac,
-  // PHY side: 32-bit PIPE to gtp_wrapper
-  pipe_if.mac                         pipe_phy,
+    // MAC side: 16-bit PIPE from pcie_core
+    pipe_if.phy pipe_mac,
+    // PHY side: 32-bit PIPE to gtp_wrapper
+    pipe_if.mac pipe_phy,
 
-  input  wire [5:0]                   pl_ltssm_state,   // gates the EIOS filter
-  input  wire                         pipe_clk,
-  input  wire                         clock_locked,     // async reset of the LTSSM register
-  input  wire                         phy_rdy_n         // reset of the EIOS filters
+    input logic [5:0] pl_ltssm_state,  // gates the EIOS filter
+    input logic       pipe_clk,
+    input logic       pipe_rst_n,      // released on pipe_clk
+    input logic       phy_rdy_n        // reset of the EIOS filters
 );
-
-  // Per lane: TX 16 -> 32 bit widening, RX EIOS filter then 32 -> 16 bit.
-
-  wire [  7:0]                       gt_rx_phy_status_wire;
-  wire [ 31:0]                       gt_rx_data_k_wire;
-  wire [255:0]                       gt_rx_data_wire;
-  wire [  7:0]                       gt_rx_elec_idle_wire;
-  wire [ 23:0]                       gt_rx_status_wire;
-  wire [  7:0]                       gt_rx_valid_wire;
 
   logic [5:0] pl_ltssm_state_q;
 
-  always_ff @(posedge pipe_clk or negedge clock_locked) begin
-    if (!clock_locked) pl_ltssm_state_q <= 6'b0;
-    else               pl_ltssm_state_q <= pl_ltssm_state;
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      pl_ltssm_state_q <= 6'b0;
+    end
+    else begin
+      pl_ltssm_state_q <= pl_ltssm_state;
+    end
   end
 
-  wire plm_in_l0 = (pl_ltssm_state_q == 6'h16);
-  wire plm_in_rs = (pl_ltssm_state_q == 6'h1f);
+  logic plm_in_l0;
+  assign plm_in_l0 = (pl_ltssm_state_q == 6'h16);
 
   genvar i;
-  generate for (i = 0; i < LINK_CAP_MAX_LINK_WIDTH; i = i + 1)
-    begin : rx_eios_filter_gen
+  generate
+    for (i = 0; i < PCIE_LANES; i = i + 1) begin : lane_gen
+
+      // RX: the 16 bits used of the 32-bit GTP lane, EIOS filter, MAC lane
+      pipe_rx_lane_t gt_rx;
+      assign gt_rx = '{
+              char_is_k: pipe_phy.rx[i].char_is_k[1:0],
+              data: pipe_phy.rx[i].data[15:0],
+              valid: pipe_phy.rx[i].valid,
+              chanisaligned: pipe_phy.rx[i].chanisaligned,
+              status: pipe_phy.rx[i].status,
+              phy_status: pipe_phy.rx[i].phy_status,
+              elec_idle: pipe_phy.rx[i].elec_idle
+          };
 
       rx_eios_filter u_rx_eios_filter (
-        .USER_RXCHARISK     (gt_rx_data_k_wire[(4*i)+:2]),
-        .USER_RXDATA        (gt_rx_data_wire[(32*i)+:16]),
-        .USER_RXVALID       (gt_rx_valid_wire[i]),
-        .USER_RXELECIDLE    (gt_rx_elec_idle_wire[i]),
-        .USER_RX_STATUS     (gt_rx_status_wire[(3*i)+:3]),
-        .USER_RX_PHY_STATUS (gt_rx_phy_status_wire[i]),
-
-        .GT_RXCHARISK       (pipe_phy.rx[i].char_is_k[1:0]),
-        .GT_RXDATA          (pipe_phy.rx[i].data[15:0]),
-        .GT_RXVALID         (pipe_phy.rx[i].valid),
-        .GT_RXELECIDLE      (pipe_phy.rx[i].elec_idle),
-        .GT_RX_STATUS       (pipe_phy.rx[i].status),
-        .GT_RX_PHY_STATUS   (pipe_phy.rx[i].phy_status),
-
-        .PLM_IN_L0          (plm_in_l0),
-        .PLM_IN_RS          (plm_in_rs),
-        .USER_CLK           (pipe_clk),
-        .RESET              (phy_rdy_n)
+          .user_rx  (pipe_mac.rx[i]),
+          .gt_rx    (gt_rx),
+          .plm_in_l0(plm_in_l0),
+          .pipe_clk (pipe_clk),
+          .reset    (phy_rdy_n)
       );
 
-    end
-  endgenerate
-
-  generate for (i = 0; i < PIPE_MAX_LANES; i = i + 1)
-    begin : lane_map
-
-      if (i < LINK_CAP_MAX_LINK_WIDTH) begin : active
-        // 16-bit MAC lane -> 32-bit GTP lane (upper half unused at 2.5/5 GT/s)
-        assign pipe_phy.tx[i].char_is_k  = { 2'd0, pipe_mac.tx[i].char_is_k};
-        assign pipe_phy.tx[i].data       = {16'd0, pipe_mac.tx[i].data};
-        assign pipe_phy.tx[i].compliance = pipe_mac.tx[i].compliance;
-        assign pipe_phy.tx[i].elec_idle  = pipe_mac.tx[i].elec_idle;
-        assign pipe_phy.tx[i].powerdown  = pipe_mac.tx[i].powerdown;
-        assign pipe_phy.rx_polarity[i]   = pipe_mac.rx_polarity[i];
-
-        assign pipe_mac.rx[i].char_is_k     = gt_rx_data_k_wire[(4*i)+:2];
-        assign pipe_mac.rx[i].data          = gt_rx_data_wire[(32*i)+:16];
-        assign pipe_mac.rx[i].valid         = gt_rx_valid_wire[i];
-        assign pipe_mac.rx[i].chanisaligned = pipe_phy.rx[i].chanisaligned;
-        assign pipe_mac.rx[i].status        = gt_rx_status_wire[(3*i)+:3];
-        assign pipe_mac.rx[i].phy_status    = gt_rx_phy_status_wire[i];
-        assign pipe_mac.rx[i].elec_idle     = gt_rx_elec_idle_wire[i];
-
-        assign gt_rx_data_wire  [(32*i)+16+:16] = 16'b0;
-        assign gt_rx_data_k_wire[( 4*i)+ 2+: 2] =  2'b0;
-      end
-      else begin : unused
-        assign pipe_mac.rx[i] = PIPE_RX_LANE_TIE;
-
-        assign gt_rx_data_wire  [(32*i)+:32] = 32'b0;
-        assign gt_rx_data_k_wire[( 4*i)+: 4] =  4'b0;
-      end
+      // TX: 16-bit MAC lane -> 32-bit GTP lane (upper half unused at 2.5/5 GT/s)
+      assign pipe_phy.tx[i].char_is_k  = {2'd0, pipe_mac.tx[i].char_is_k};
+      assign pipe_phy.tx[i].data       = {16'd0, pipe_mac.tx[i].data};
+      assign pipe_phy.tx[i].compliance = pipe_mac.tx[i].compliance;
+      assign pipe_phy.tx[i].elec_idle  = pipe_mac.tx[i].elec_idle;
+      assign pipe_phy.tx[i].powerdown  = pipe_mac.tx[i].powerdown;
+      assign pipe_phy.rx_polarity[i]   = pipe_mac.rx_polarity[i];
 
     end
   endgenerate

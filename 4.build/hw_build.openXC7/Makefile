@@ -7,11 +7,13 @@
 #
 # Run FROM THIS FOLDER:
 #   source /opt/openxc7/export.sh
-#   make                      RC-direct   (default)
-#   make VARIANT=switched     RC-switched
+#   make                      RC-direct, x4   (default)
+#   make LANES=1              RC-direct, x1
+#   make VARIANT=switched     RC-switched (x1 only)
 #
-# The two variants use separate converted/ and build_artifacts/ folders, so they
-# do not overwrite each other and neither picks up the other one's stale output.
+# Each variant and link width uses its own converted/ and build_artifacts/
+# folders, so they do not overwrite each other and none picks up another one's
+# stale output.
 # What they DO share is ../sw_build/firmware.hex -- build the matching firmware
 # first (make VARIANT=switched over in sw_build/).
 #
@@ -60,7 +62,7 @@
 #   (Yosys 0.38 has no read_slang), so that is its default.
 # New-toolchain output goes to its own folders (build_artifacts*.new,
 # build_artifacts*.slang, chipdb.new), so it never touches the validated
-# build_artifacts*/top.bit.
+# build_artifacts*/top.x1.*.bit.
 TOOLCHAIN ?= new
 FRONTEND  ?= $(if $(filter old,$(TOOLCHAIN)),sv2v,slang)
 
@@ -129,22 +131,39 @@ PART = xc7a200tfbg484-3
 # direct   -> one endpoint on the far end of the link
 # switched -> ASM1184e switch with up to 4 endpoints behind it.
 # Both build the very same RTL, 2.rtl/0.common.opensource (top RC_opensource);
-# they differ only in the GT lane (XDC_FILE) and in the firmware.
+# they differ only in the GT lanes (XDC_FILE) and in the firmware.
 VARIANT ?= direct
+
+# ---- Link width -------------------------------------------------------------
+# LANES=4 (default for direct) or 1; passed to link_pkg.sv as PCIE_LANES. x4
+# runs only on the direct link: the switch ports are x1. Direct x1 keeps the
+# unsuffixed folders (build_artifacts/top.x1.direct.bit is the hardware-validated
+# x1 build).
+LANES ?= $(if $(filter switched,$(VARIANT)),1,4)
+
+# The bitstream's name says what it is for: top.x4.direct.bit, top.x1.direct.bit,
+# top.x1.switched.bit
+BITFILE = top.x$(LANES).$(VARIANT).bit
+ifeq ($(filter 1 4,$(LANES)),)
+    $(error LANES must be 1 or 4, got "$(LANES)")
+endif
 
 TOP        = RC_opensource
 COMMON_DIR = ../../2.rtl/0.common.opensource
 
 ifeq ($(VARIANT),switched)
+    ifneq ($(LANES),1)
+        $(error RC-switched is x1 only -- the switch ports are x1)
+    endif
     RTL_DIR   = ../../2.rtl/3.Bonus--RC-switched.opensource
-    RTL_XDC   = $(RTL_DIR)/xdc/RC-switched.sv.x1g2.AcornCLE-215P.xdc
+    RTL_XDC   = $(RTL_DIR)/xdc/RC-switched.x1g2.AcornCLE-215P.xdc
     XDC_FILE  = openxc7.switched.xdc
     OUT_SFX   = .switched
 else ifeq ($(VARIANT),direct)
     RTL_DIR   = ../../2.rtl/2.RC-direct.opensource
-    RTL_XDC   = $(RTL_DIR)/xdc/RC-direct.sv.x1g2.AcornCLE-215P.xdc
-    XDC_FILE  = openxc7.xdc
-    OUT_SFX   =
+    RTL_XDC   = $(RTL_DIR)/xdc/RC-direct.x$(LANES)g2.AcornCLE-215P.xdc
+    XDC_FILE  = openxc7.x$(LANES).xdc
+    OUT_SFX   = $(if $(filter 4,$(LANES)),.x4)
 else
     $(error VARIANT must be "direct" or "switched", got "$(VARIANT)")
 endif
@@ -187,9 +206,10 @@ PCIE_DIR = $(SRC_DIR)/pcie
 # the full Vivado XDC from 2.rtl/ (shared part in $(COMMON_DIR)/xdc/, GT lane in
 # $(RTL_DIR)/xdc/). A reduced version lives here; what was left
 # out and why is documented in the header of that file. XDC_FILE is set by the
-# variant block above -- the two differ only in the GT lane:
-#   openxc7.xdc          C5/D5/C11/D11  -> GTP_CHANNEL_1 = GTPE2_CHANNEL_X0Y5  (lane 2)
+# variant block above -- they differ only in the GT lanes:
+#   openxc7.x1.xdc       C5/D5/C11/D11  -> GTP_CHANNEL_1 = GTPE2_CHANNEL_X0Y5  (lane 2)
 #   openxc7.switched.xdc A6/B6/A10/B10  -> GTP_CHANNEL_2 = GTPE2_CHANNEL_X0Y6  (lane 0)
+#   openxc7.x4.xdc       lanes 0..3     -> GTP_CHANNEL_2, 0, 1, 3
 # The pin-to-channel mapping is straight out of prjxray package_pins.csv.
 
 # firmware.hex is a product of the sw_build stage; riscv_pcie_soc.sv reads it via
@@ -216,16 +236,12 @@ FORCE:
 
 # Pure Verilog files -- these do not go through sv2v
 #
-# xpm_shim.v: open replacement for xpm_cdc_single. Vivado supplies that macro
-# itself from the XPM library, Yosys/openXC7 do not have it. See the comment in
-# the file.
 PURE_V_FILES = \
-    xpm_shim.v \
     unimacro_shim.v
 
 # SystemVerilog, ORDER MATTERS for sv2v:
 #   package -> interfaces -> modules -> soc -> top
-SV_PKG = $(PCIE_DIR)/link_pkg.sv
+SV_PKG = $(PCIE_DIR)/link_pkg.sv $(PCIE_DIR)/pcie_pkg.sv
 
 SV_IF = \
     $(PCIE_DIR)/axis_if.sv \
@@ -266,14 +282,15 @@ SV_ORDERED = $(SV_PKG) $(SV_CSR_PKG) $(SV_IF) $(SV_PCIE_REST) $(SV_CSR) $(SV_TOP
 # date -- in particular a truncated .fasm or .bit.
 .DELETE_ON_ERROR:
 
-all: $(BUILD_ARTIFACTS)/top.bit
+all: $(BUILD_ARTIFACTS)/$(BITFILE)
 
 help:
 	@echo "================================================================"
-	@echo " openXC7 build -- opensource RC  [$(VARIANT), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
+	@echo " openXC7 build -- opensource RC  [$(VARIANT) x$(LANES), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
 	@echo "================================================================"
-	@echo " make                 full build up to top.bit"
-	@echo " make VARIANT=switched  build the RC-switched variant"
+	@echo " make                 full build up to $(BITFILE)"
+	@echo " make LANES=1         RC-direct as x1 (default x4)"
+	@echo " make VARIANT=switched  build the RC-switched variant (x1)"
 	@echo " make FRONTEND=sv2v   v1.0.0 through sv2v instead of read_slang"
 	@echo " make TOOLCHAIN=old   pre-v1.0.0 toolchain (hardware-validated), sv2v"
 	@echo " make convert         sv2v conversion + splitting only (FRONTEND=sv2v)"
@@ -286,6 +303,7 @@ help:
 
 info:
 	@echo "VARIANT        : $(VARIANT)"
+	@echo "LANES          : $(LANES)"
 	@echo "TOOLCHAIN      : $(TOOLCHAIN)"
 	@echo "FRONTEND       : $(FRONTEND)"
 	@echo "BUILD_ARTIFACTS: $(BUILD_ARTIFACTS)"
@@ -387,7 +405,7 @@ $(CONV_TIMESTAMP): $(SV_ORDERED) FORCE | check-sv2v
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
 	@mkdir -p $(CONV_DIR)
-	@if sv2v -I$(PCIE_DIR) -I$(SRC_DIR) \
+	@if sv2v -DPCIE_LANES=$(LANES) -I$(PCIE_DIR) -I$(SRC_DIR) \
 	        $(SV_ORDERED) > $(CONV_DIR)/all_converted.v 2> $(CONV_DIR)/sv2v.log; then \
 	    echo "  lines   : $$(wc -l < $(CONV_DIR)/all_converted.v)"; \
 	    echo "  modules : $$(grep -c '^module ' $(CONV_DIR)/all_converted.v)"; \
@@ -432,8 +450,8 @@ ifeq ($(FRONTEND),slang)
 # unknown module. SYN_YOSYS_BUG makes the RTL leave out what sv-elab cannot
 # take yet (real-valued primitive parameters, povik/sv-elab#282).
 XILINX_PRIMS = PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 \
-               BUFG BUFGCTRL RAMB36E1
-SLANG_DEFS   = -D SYN_YOSYS_BUG
+               BUFG BUFGCTRL FDCE RAMB36E1
+SLANG_DEFS   = -D SYN_YOSYS_BUG -D PCIE_LANES=$(LANES)
 
 $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilinx_bb.py FORCE
 	@echo "================================================================"
@@ -568,7 +586,7 @@ $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $
 ifeq ($(TOOLCHAIN),new)
 # fpga-as replaces fasm2frames + xc7frames2bit. It writes through a
 # redirection; .DELETE_ON_ERROR removes a partial .bit if it fails.
-$(BUILD_ARTIFACTS)/top.bit: $(BUILD_ARTIFACTS)/top.fasm
+$(BUILD_ARTIFACTS)/$(BITFILE): $(BUILD_ARTIFACTS)/top.fasm
 	@echo "================================================================"
 	@echo " FASM -> bitstream (fpga-as)"
 	@echo "================================================================"
@@ -586,7 +604,7 @@ $(BUILD_ARTIFACTS)/top.frames: $(BUILD_ARTIFACTS)/top.fasm
 	fasm2frames --part $(PART) --db-root $(DB_DIR)/artix7 $< > $@
 	@echo "OK -> $@"
 
-$(BUILD_ARTIFACTS)/top.bit: $(BUILD_ARTIFACTS)/top.frames
+$(BUILD_ARTIFACTS)/$(BITFILE): $(BUILD_ARTIFACTS)/top.frames
 	@echo "================================================================"
 	@echo " frames -> bitstream"
 	@echo "================================================================"

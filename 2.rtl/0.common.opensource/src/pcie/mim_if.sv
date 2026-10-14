@@ -37,18 +37,20 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-interface mim_if #(parameter int DATA_W = 72);
+interface mim_if #(
+    parameter int DATA_W = 72
+);
   // Packet buffer port of PCIE_2_1 (MIMTX*/MIMRX* pins) to its BRAM: a simple
   // dual-port RAM with fixed latency, no handshake. One instance per direction.
   logic              wen;
-  logic       [12:0] waddr;
+  logic [      12:0] waddr;
   logic [DATA_W-1:0] wdata;
   logic              ren;
-  logic       [12:0] raddr;
+  logic [      12:0] raddr;
   logic [DATA_W-1:0] rdata;
 
-  modport hm  (output wen, waddr, wdata, ren, raddr, input  rdata);
-  modport ram (input  wen, waddr, wdata, ren, raddr, output rdata);
+  modport hm(output wen, waddr, wdata, ren, raddr, input rdata);
+  modport ram(input wen, waddr, wdata, ren, raddr, output rdata);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE

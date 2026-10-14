@@ -3,16 +3,28 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Formal equivalence check of pcie_top between two versions of the RTL, with
-# the openXC7 v1.0.0 Yosys (read_slang). Use it to prove that a cleanup does
-# not change behaviour.
+# Formal equivalence check of the whole opensource design (top RC_opensource:
+# PCIE stack, SOC, CPU, CSR) between two versions of the RTL, with the openXC7
+# v1.0.0 Yosys (read_slang). Use it to prove that a cleanup does not change
+# behaviour.
 #
-# usage:  bash equiv.sh <gold src> <gate src> [sed script]
+# usage:  bash run-leq.sh <gold src> <gate src> [sed script]
+#         LANES=1 bash run-leq.sh ...         compare the x1 build (default x4)
+#         LEQ_EXTRA=<file> bash run-leq.sh ... Yosys commands run after equiv_make,
+#                                              e.g. equiv_add for registers that
+#                                              were regrouped into a struct
+#                                              (gold: name_gold, gate: name_gate):
+#           cd eq
+#           equiv_add -try \u_x.ng_cur_state_gold \u_x.ng_q_gate[12]
+#           cd ..
 #   <gold src>, <gate src>  copies of 2.rtl/0.common.opensource/src, e.g.
 #                           mkdir -p /tmp/gold && git archive HEAD 2.rtl/0.common.opensource/src | tar -x -C /tmp/gold
 #   [sed script]            renames gold objects to their gate names, for a change
 #                           that moves logic between modules, e.g.
-#                           's|^u_pcie\.u_pcie_core\.u_x\.|u_pcie.u_pcie_core.|'
+#                           's|^u_pcie\.u_core\.u_x\.|u_pcie.u_core.|'
+#
+# Both versions use the same generated CSR (4.build/csr_build/generated-files)
+# and the same firmware.hex (4.build/sw_build) for the RAM contents.
 #
 # The Xilinx hard macros and the BRAM macro are black boxes turned into ports
 # (expose -evert): their inputs are compared, their outputs are shared free
@@ -23,7 +35,11 @@
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd)
 GOLD=$(cd "$1" && pwd); GATE=$(cd "$2" && pwd); MAP=${3:-}
+CSR=$HERE/../csr_build/generated-files
+TOP=RC_opensource
+LANES=${LANES:-4}
 W=$(mktemp -d); cd "$W"
+cp "$HERE/../sw_build/firmware.hex" .
 
 python3 "$HERE/gen_xilinx_bb.py" "$(yosys-config --datdir)/xilinx" bb.sv \
   PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 BUFG BUFGCTRL RAMB36E1 >/dev/null
@@ -47,83 +63,56 @@ module BRAM_TDP_MACRO #(
 endmodule
 EOF
 
-# flat-port wrapper, so both versions have the same top-level ports
-cat > eq_wrap.sv <<'EOF'
-module eq_wrap (
-  output [0:0]  pci_exp_txp, pci_exp_txn,
-  input  [0:0]  pci_exp_rxp, pci_exp_rxn,
-  input         pipe_mmcm_rst_n, sys_clk, sys_rst_n,
-  output        user_clk_out, user_reset_out, user_lnk_up,
-  input  [63:0] tx_tdata,  input [7:0] tx_tkeep, input [3:0] tx_tuser,
-  input         tx_tlast,  input       tx_tvalid, output      tx_tready,
-  output [63:0] rx_tdata,  output [7:0] rx_tkeep, output [21:0] rx_tuser,
-  output        rx_tlast,  output       rx_tvalid, input        rx_tready,
-  output        msg_err_fatal,
-  output [5:0]  tx_buf_avail
-);
-  axis_if #(.DATA_W(64), .USER_W(4))  s_axis_tx ();
-  axis_if #(.DATA_W(64), .USER_W(22)) m_axis_rx ();
-  cfg_if                              cfg ();
-
-  assign s_axis_tx.tdata  = tx_tdata;
-  assign s_axis_tx.tkeep  = tx_tkeep;
-  assign s_axis_tx.tuser  = tx_tuser;
-  assign s_axis_tx.tlast  = tx_tlast;
-  assign s_axis_tx.tvalid = tx_tvalid;
-  assign tx_tready        = s_axis_tx.tready;
-  assign rx_tdata  = m_axis_rx.tdata;
-  assign rx_tkeep  = m_axis_rx.tkeep;
-  assign rx_tuser  = m_axis_rx.tuser;
-  assign rx_tlast  = m_axis_rx.tlast;
-  assign rx_tvalid = m_axis_rx.tvalid;
-  assign m_axis_rx.tready = rx_tready;
-  assign msg_err_fatal = cfg.msg_err_fatal;
-  assign tx_buf_avail  = cfg.tx_buf_avail;
-
-  pcie_top u_pcie (
-    .pci_exp_txp, .pci_exp_txn, .pci_exp_rxp, .pci_exp_rxn,
-    .pipe_mmcm_rst_n, .user_clk_out, .user_reset_out, .user_lnk_up,
-    .s_axis_tx (s_axis_tx), .m_axis_rx (m_axis_rx), .cfg (cfg),
-    .sys_clk, .sys_rst_n
-  );
+# FDCE is a plain flop, not a black box: model it so that LEQ compares it like
+# any other register (the design's reset source in clk_rst_gen)
+cat > fdce.sv <<'EOF'
+module FDCE #(parameter logic INIT = 1'b0) (output logic Q, input logic C, CE, CLR, D);
+  always_ff @(posedge C or posedge CLR)
+    if (CLR)     Q <= 1'b0;
+    else if (CE) Q <= D;
 endmodule
 EOF
 
-files() {  # $1 = src dir
+files() {  # $1 = src dir; same order as SV_ORDERED in the Makefile
   local P=$1/pcie
-  echo bb.sv bram_bb.sv $P/link_pkg.sv $(ls $P/*_if.sv) \
-       $(ls $P/*.sv | grep -v -e '_if.sv$' -e 'link_pkg.sv$') eq_wrap.sv "$HERE/xpm_shim.v"
+  echo bb.sv bram_bb.sv fdce.sv $P/link_pkg.sv $P/pcie_pkg.sv "$CSR/csr_pkg.sv" $(ls $P/*_if.sv) \
+       $(ls $P/*.sv | grep -v -e '_if.sv$' -e '_pkg.sv$') \
+       "$CSR/csr.sv" $1/soc_csr.sv $1/picorv32.CHILI.sv $1/riscv_pcie_soc.sv $1/$TOP.sv
 }
 BB="t:PCIE_2_1 t:GTPE2_CHANNEL t:GTPE2_COMMON t:MMCME2_ADV t:BUFG t:BUFGCTRL t:IBUFDS_GTE2 t:RAMB36E1 t:BRAM_TDP_MACRO"
-PREP="hierarchy -top eq_wrap; proc; flatten; memory; async2sync"
+PREP="hierarchy -top $TOP; proc; flatten; memory; async2sync"
 
 REN=""
 if [ -n "$MAP" ]; then   # rename gold objects to their gate names (skip names the gold already has)
   cat > names.ys <<EOF
-read_slang -D SYN_YOSYS_BUG --top eq_wrap -I $GOLD/pcie $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
-tee -q -o names.txt select -list eq_wrap/w:* eq_wrap/c:*
+tee -q -o names.txt select -list $TOP/w:* $TOP/c:*
 EOF
   yosys -q names.ys >/dev/null
-  sed 's|^eq_wrap/||' names.txt | sed -n "h; $MAP; G; s/\n/ /; p" |
+  sed "s|^$TOP/||" names.txt | sed -n "h; $MAP; G; s/\n/ /; p" |
     awk 'NR==FNR {have[$1]=1; next} $1!=$2 && substr($2,1,1)!="$" && !($1 in have) {print "rename \\" $2 " \\" $1}' \
-        <(sed 's|^eq_wrap/||' names.txt) - > ren.ys
+        <(sed "s|^$TOP/||" names.txt) - > ren.ys
   echo "renamed: $(wc -l < ren.ys)"
-  REN="cd eq_wrap; script ren.ys; cd .."
+  REN="cd $TOP; script ren.ys; cd .."
 fi
 
+EXTRA=""
+[ -n "${LEQ_EXTRA:-}" ] && EXTRA="script $(cd "$(dirname "$LEQ_EXTRA")" && pwd)/$(basename "$LEQ_EXTRA")"
+
 cat > eq.ys <<EOF
-read_slang -D SYN_YOSYS_BUG --top eq_wrap -I $GOLD/pcie $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
 $REN
-expose -evert $BB; opt_clean; rename eq_wrap gold; design -stash gold
-read_slang -D SYN_YOSYS_BUG --top eq_wrap -I $GATE/pcie $(files $GATE)
+expose -evert $BB; opt_clean; rename $TOP gold; design -stash gold
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GATE/pcie -I $GATE $(files $GATE)
 $PREP
-expose -evert $BB; opt_clean; rename eq_wrap gate; design -stash gate
+expose -evert $BB; opt_clean; rename $TOP gate; design -stash gate
 design -copy-from gold -as gold gold
 design -copy-from gate -as gate gate
 equiv_make gold gate eq
 hierarchy -top eq
+$EXTRA
 equiv_simple -seq 3
 equiv_induct -seq 3
 equiv_status

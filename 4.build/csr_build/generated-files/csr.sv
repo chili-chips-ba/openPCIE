@@ -7,7 +7,7 @@
 
 module csr (
         input wire clk,
-        input wire rst,
+        input wire arst_n,
 
         input wire s_cpuif_req,
         input wire s_cpuif_req_is_wr,
@@ -241,8 +241,8 @@ module csr (
         field_combo.tx.header0.hdr.next = next_c;
         field_combo.tx.header0.hdr.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.tx.header0.hdr.value <= 32'h0;
         end else begin
             if(field_combo.tx.header0.hdr.load_next) begin
@@ -264,8 +264,8 @@ module csr (
         field_combo.tx.header1.hdr.next = next_c;
         field_combo.tx.header1.hdr.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.tx.header1.hdr.value <= 32'h0;
         end else begin
             if(field_combo.tx.header1.hdr.load_next) begin
@@ -287,8 +287,8 @@ module csr (
         field_combo.tx.header2.hdr.next = next_c;
         field_combo.tx.header2.hdr.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.tx.header2.hdr.value <= 32'h0;
         end else begin
             if(field_combo.tx.header2.hdr.load_next) begin
@@ -310,8 +310,8 @@ module csr (
         field_combo.tx.data.payload.next = next_c;
         field_combo.tx.data.payload.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.tx.data.payload.value <= 32'h0;
         end else begin
             if(field_combo.tx.data.payload.load_next) begin
@@ -334,8 +334,8 @@ module csr (
         field_combo.rx.status.cpl_status.next = next_c;
         field_combo.rx.status.cpl_status.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.rx.status.cpl_status.value <= 3'h0;
         end else begin
             if(field_combo.rx.status.cpl_status.load_next) begin
@@ -356,8 +356,8 @@ module csr (
         field_combo.rx.data.payload.next = next_c;
         field_combo.rx.data.payload.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.rx.data.payload.value <= 32'h0;
         end else begin
             if(field_combo.rx.data.payload.load_next) begin
@@ -378,8 +378,8 @@ module csr (
         field_combo.rx.header_info.lower_addr.next = next_c;
         field_combo.rx.header_info.lower_addr.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.rx.header_info.lower_addr.value <= 7'h0;
         end else begin
             if(field_combo.rx.header_info.lower_addr.load_next) begin
@@ -400,8 +400,8 @@ module csr (
         field_combo.rx.header_info.tag.next = next_c;
         field_combo.rx.header_info.tag.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.rx.header_info.tag.value <= 8'h0;
         end else begin
             if(field_combo.rx.header_info.tag.load_next) begin
@@ -422,8 +422,8 @@ module csr (
         field_combo.rx.header_info.requester_id.next = next_c;
         field_combo.rx.header_info.requester_id.load_next = load_next_c;
     end
-    always_ff @(posedge clk) begin
-        if(rst) begin
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
             field_storage.rx.header_info.requester_id.value <= 16'h0;
         end else begin
             if(field_combo.rx.header_info.requester_id.load_next) begin

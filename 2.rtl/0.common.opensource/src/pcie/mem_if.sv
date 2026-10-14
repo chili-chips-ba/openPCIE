@@ -43,13 +43,13 @@ interface mem_if;
   logic        valid;
   logic [31:0] addr;
   logic [31:0] wdata;
-  logic  [3:0] wstrb;    // 0 = read
+  logic [ 3:0] wstrb;  // 0 = read
   logic        ready;
   logic [31:0] rdata;
 
-  modport cpu    (output valid, addr, wdata, wstrb, input ready, rdata);
+  modport cpu(output valid, addr, wdata, wstrb, input ready, rdata);
   // A target sees the request only; the SOC muxes ready/rdata of all targets.
-  modport target (input  valid, addr, wdata, wstrb);
+  modport target(input valid, addr, wdata, wstrb);
 endinterface
 // -----------------------------------------------------------------------------
 // Project:     openPCIE

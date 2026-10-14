@@ -12,6 +12,8 @@ This directory contains the following bus functional models
   [here](../README.md#the-pipe-phy-model).
 * `bfm_uart.sv` : UART bus functional model.
 
+**First rule for the models: follow the RTL they stand in for as closely as possible** -- same ports, interfaces, structs, loops, names and widths -- so that a model differs from the RTL only where it has to (behaviour instead of hard macros), and a change in the RTL maps onto the model one to one.
+
 In addition, sub-directories contain the following models
 
 * [`cosim`](cosim/README.md) : Contains the _VProc_ and _mem_model_ co-simulation VIP.

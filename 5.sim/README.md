@@ -62,7 +62,7 @@ tb.sv
  +- RC_opensource                                   2.rtl/0.common.opensource/src/
       |
       +- pcie_top                                real RTL
-      |    +- clk_gen       MMCM                  real RTL
+      |    +- clk_rst_gen       MMCM                  real RTL
       |    +- pcie_core                            real RTL
       |    |    `- PCIE_2_1                     Xilinx hard macro (secureip)
       |    `- phy_top    <-- REPLACED -->      5.sim/models/phy_top.PIPE.sv
@@ -111,9 +111,9 @@ from a PHY:
   sends, standing in for a squelch detector
 
 It also generates the clocks. `TXOUTCLK` is a behavioural 100 MHz oscillator and
-everything downstream is the real `clk_gen` MMCM, so the design sees its normal
+everything downstream is the real `clk_rst_gen` MMCM, so the design sees its normal
 clock topology: PCLK at 125 MHz (Gen1) or 250 MHz (Gen2), USERCLK1/2 at 62.5 MHz.
-**The 100 MHz matters**: `clk_gen` is parameterised with `CLKIN1_PERIOD = 10 ns`
+**The 100 MHz matters**: `clk_rst_gen` is parameterised with `CLKIN1_PERIOD = 10 ns`
 and `CLKFBOUT_MULT_F = 10`, so any other input frequency scales every clock in
 the design, and the PIPE then over- or under-samples the link partner. Feeding it
 125 MHz, for instance, makes PCLK 156.25 MHz and duplicates one symbol in five.
@@ -126,7 +126,7 @@ make USRSIMOPTS="--define PIPE_RAW_DUMP"    # raw PIPE symbols
 ```
 
 The LTSSM state is printed on every transition without any define, and `tb.sv`
-reports `phy_lnk_up`, `trn_lnk_up`, `user_lnk_up` and `user_reset` as they change.
+reports `pl_phy_lnk_up`, `core_rst_n` and `trn_link_up` as they change.
 
 ### Endpoint feature limitations
 
@@ -219,32 +219,24 @@ write its temporaries into `C:\WINDOWS\`.
 ### What the simulation does
 
 A full run takes the design from power-up to a verified memory transaction, with
-no hardware involved (this run used `RUN_US=3000`; the default is 2000):
+no hardware involved (default `RUN_US=2000`):
 
 ```
-                   0  TB     run length 3000 us
-              353000  LTSSM  0xxx -> 0x00 DETECT_QUIET
+                   0  TB     run length 2000 us
              1000000  TB     PERST# released
-             3113000  LTSSM  0x00 -> 0x02 POLLING_ACTIVE
-             3353000  LTSSM  0x02 -> 0x04 POLLING_CONFIGURATION
-             4585000  LTSSM  0x04 -> 0x05 CONFIG_LINKWIDTH_START
-            70217000  LTSSM  0x05 -> 0x26      <- link number assigned
-            71161000  LTSSM  0x2a -> 0x2b      <- lane number assigned
-            72065000  LTSSM  0x2c -> 0x11      <- Configuration complete
-            73609001  TB     phy_lnk_up   = 1  <- physical layer up
-            73689000  TB     user_reset   = 0
-            74033000  LTSSM  0x15 -> 0x16 L0  (linkup)
-            74825001  TB     trn_lnk_up   = 1  <- data link layer up, flow control done
-            74841000  TB     ===> PCIe LINK UP -- SOC released from reset
-           653961000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
-
- openpcie2-rc co-simulation summary
-  PCIe link up ............ YES
-  LTSSM final state ....... 0x16
-  TLPs sent by firmware ... 22
-  Payload written to EP ... 0x00000006  (Memory Write TLP)
-  Payload read back ....... 0x00000006  (match)
-  FIRMWARE RESULT ......... PASS (0x0000face)
+             1257001  LTSSM  0xxx -> 0x00 DETECT_QUIET
+             3607000  LTSSM  0x00 -> 0x02 POLLING_ACTIVE
+             3847000  LTSSM  0x02 -> 0x04 POLLING_CONFIGURATION
+             5079000  LTSSM  0x04 -> 0x05 CONFIG_LINKWIDTH_START
+            70711000  LTSSM  0x05 -> 0x26      <- link number assigned
+            71655000  LTSSM  0x2a -> 0x2b      <- lane number assigned
+            72559000  LTSSM  0x2c -> 0x11      <- Configuration complete
+            74103001  TB     pl_phy_lnk_up = 1  <- physical layer up
+            74527000  LTSSM  0x15 -> 0x16 L0  (linkup)
+            75319001  TB     trn_link_up   = 1  <- data link layer up, flow control done
+            75319001  TB     ===> PCIe LINK UP -- SOC released from reset
+            75335000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
+           654455000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
 ```
 
 The last three lines are the actual result. `0x0000FACE` is only the verdict the
@@ -1092,7 +1084,7 @@ void PCIEMAIN (void)
 }
 ```
 
-The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `pcie_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to 16000, i.e. the 62.5MHz `user_clk` that the PCIE hard macro hands to `riscv_pcie_soc` on an x1 Gen2 link with a 64-bit datapath. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
+The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `pcie_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to 16000, i.e. the 62.5MHz `clk62m5` that the PCIE hard macro hands to `riscv_pcie_soc` on an x1 Gen2 link with a 64-bit datapath. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
 
 ## References:
 - [VProc](https://github.com/wyvernSemi/vproc)

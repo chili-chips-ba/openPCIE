@@ -39,74 +39,76 @@
 
 module RC_opensource
   import link_pkg::*;
+  import pcie_pkg::*;
 (
-    input  logic                    sys_clk_p,
-    input  logic                    sys_clk_n,
+    input logic refclk_p,
+    input logic refclk_n,
 
-    input  logic [PCIE_LANES-1:0]   RXN,
-    input  logic [PCIE_LANES-1:0]   RXP,
-    output logic [PCIE_LANES-1:0]   TXN,
-    output logic [PCIE_LANES-1:0]   TXP,
+    input  logic [PCIE_LANES-1:0] rxn,
+    input  logic [PCIE_LANES-1:0] rxp,
+    output logic [PCIE_LANES-1:0] txn,
+    output logic [PCIE_LANES-1:0] txp,
 
-    input  logic                    sys_rst_n,
+    input logic perst_n,  // PERST# from the connector (pin J1), active low
 
-    output logic  [3:0]             led_link_up,
+    output logic [3:0] led_link_up,
 
-    output logic                    clk_req
-  );
+    output logic clk_req
+);
 
-  localparam int C_DATA_WIDTH = 64;
 
-  logic  user_clk;
-  logic  user_reset;
-  logic  user_lnk_up;
+  logic clk62m5;
+  logic core_rst_n;
+  logic trn_link_up;
 
-  logic  sys_clk;
-  logic  rp_reset_n;
 
-  IBUFDS_GTE2 refclk_ibuf (.O(sys_clk), .ODIV2(), .I(sys_clk_p), .CEB(1'b0), .IB(sys_clk_n));
 
-  assign rp_reset_n = sys_rst_n;
 
   // TLP streams between the SOC and the PCIE stack
-  axis_if #(.DATA_W(C_DATA_WIDTH), .USER_W(4))  s_axis_tx ();
-  axis_if #(.DATA_W(C_DATA_WIDTH), .USER_W(22)) m_axis_rx ();
+  axis_if #(
+      .DATA_W(TRN_DATA_W),
+      .USER_W($bits(pcie_tx_tuser_t))
+  ) s_axis_tx ();
+  axis_if #(
+      .DATA_W(TRN_DATA_W),
+      .USER_W($bits(pcie_rx_tuser_t))
+  ) m_axis_rx ();
 
-  cfg_if                                          cfg    ();
+  cfg_if cfg ();
 
   pcie_top u_pcie (
-    .pci_exp_txp                    ( TXP ),
-    .pci_exp_txn                    ( TXN ),
-    .pci_exp_rxp                    ( RXP ),
-    .pci_exp_rxn                    ( RXN ),
+      .pci_exp_txp(txp),
+      .pci_exp_txn(txn),
+      .pci_exp_rxp(rxp),
+      .pci_exp_rxn(rxn),
 
-    .sys_clk                        ( sys_clk ),
-    .sys_rst_n                      ( rp_reset_n ),
-    .pipe_mmcm_rst_n                ( 1'b1 ),
+      .refclk_p(refclk_p),
+      .refclk_n(refclk_n),
+      .perst_n (perst_n),
 
-    .user_clk_out                   ( user_clk ),
-    .user_reset_out                 ( user_reset ),
-    .user_lnk_up                    ( user_lnk_up ),
+      .clk62m5    (clk62m5),
+      .core_rst_n (core_rst_n),
+      .trn_link_up(trn_link_up),
 
-    .s_axis_tx                      ( s_axis_tx ),
-    .m_axis_rx                      ( m_axis_rx ),
+      .s_axis_tx(s_axis_tx),
+      .m_axis_rx(m_axis_rx),
 
-    .cfg                         ( cfg )
+      .cfg(cfg)
   );
 
   riscv_pcie_soc u_soc (
-    .clk                        ( user_clk ),
-    .resetn                     ( ~user_reset && user_lnk_up ),
+      .clk   (clk62m5),
+      .resetn(core_rst_n),
 
-    .s_axis_tx                  ( s_axis_tx ),
-    .m_axis_rx                  ( m_axis_rx ),
+      .s_axis_tx(s_axis_tx),
+      .m_axis_rx(m_axis_rx),
 
-    .cfg                     ( cfg )
+      .cfg(cfg)
   );
 
-  assign led_link_up = {1'b1, ~user_lnk_up, 2'b11};
+  assign led_link_up = {1'b1, ~trn_link_up, 2'b11};
 
-  assign clk_req = 1'b0;
+  assign clk_req     = 1'b0;
 
 endmodule
 // -----------------------------------------------------------------------------

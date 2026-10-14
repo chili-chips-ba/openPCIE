@@ -37,48 +37,41 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module rx_eios_filter (
-  output logic [1:0]   USER_RXCHARISK,
-  output logic [15:0]  USER_RXDATA,
-  output logic         USER_RXVALID,
-  output logic         USER_RXELECIDLE,
-  output logic [2:0]   USER_RX_STATUS,
-  output logic         USER_RX_PHY_STATUS,
-  input  logic [1:0]   GT_RXCHARISK,
-  input  logic [15:0]  GT_RXDATA,
-  input  logic         GT_RXVALID,
-  input  logic         GT_RXELECIDLE,
-  input  logic [2:0]   GT_RX_STATUS,
-  input  logic         GT_RX_PHY_STATUS,
+module rx_eios_filter
+  import link_pkg::*;
+(
+    output pipe_rx_lane_t user_rx,  // filtered lane, to the MAC
+    input  pipe_rx_lane_t gt_rx,    // lane from the GTP, 16 bits used
 
-  input  logic         PLM_IN_L0,
-  input  logic         PLM_IN_RS,
+    input logic plm_in_l0,
 
-  input  logic         USER_CLK,
-  input  logic         RESET
+    input logic pipe_clk,
+    input logic reset
 );
 
-  localparam logic [4:0] EIOS_DET_IDL     = 5'b00001;
-  localparam logic [4:0] EIOS_DET_NO_STR0 = 5'b00010;
-  localparam logic [4:0] EIOS_DET_STR0    = 5'b00100;
-  localparam logic [4:0] EIOS_DET_STR1    = 5'b01000;
-  localparam logic [4:0] EIOS_DET_DONE    = 5'b10000;
+  typedef enum logic [4:0] {
+    EIOS_DET_IDL     = 5'b00001,
+    EIOS_DET_NO_STR0 = 5'b00010,
+    EIOS_DET_STR0    = 5'b00100,
+    EIOS_DET_STR1    = 5'b01000,
+    EIOS_DET_DONE    = 5'b10000
+  } eios_det_e;
 
   localparam logic [7:0] EIOS_COM = 8'hBC;
   localparam logic [7:0] EIOS_IDL = 8'h7C;
 
-  logic [4:0] reg_state_eios_det;
-  logic       reg_symbol_after_eios;
+  eios_det_e        reg_state_eios_det;
+  logic             reg_symbol_after_eios;
 
-  logic [1:0]  gt_rxcharisk_q;
-  logic [15:0] gt_rxdata_q;
-  logic        gt_rxvalid_q;
-  logic        gt_rxelecidle_q;
-  logic [2:0]  gt_rx_status_q;
-  logic        gt_rx_phy_status_q;
+  logic      [ 1:0] gt_rxcharisk_q;
+  logic      [15:0] gt_rxdata_q;
+  logic             gt_rxvalid_q;
+  logic             gt_rxelecidle_q;
+  logic      [ 2:0] gt_rx_status_q;
+  logic             gt_rx_phy_status_q;
 
-  always_ff @(posedge USER_CLK) begin
-    if (RESET) begin
+  always_ff @(posedge pipe_clk) begin
+    if (reset) begin
       reg_state_eios_det    <= EIOS_DET_IDL;
       reg_symbol_after_eios <= 1'b0;
       gt_rxcharisk_q        <= 2'b00;
@@ -87,36 +80,47 @@ module rx_eios_filter (
       gt_rxelecidle_q       <= 1'b0;
       gt_rx_status_q        <= 3'b000;
       gt_rx_phy_status_q    <= 1'b0;
-    end else begin
+    end
+    else begin
       reg_symbol_after_eios <= 1'b0;
-      gt_rxcharisk_q        <= GT_RXCHARISK;
-      gt_rxelecidle_q       <= GT_RXELECIDLE;
-      gt_rxdata_q           <= GT_RXDATA;
-      gt_rx_phy_status_q    <= GT_RX_PHY_STATUS;
+      gt_rxcharisk_q        <= gt_rx.char_is_k;
+      gt_rxelecidle_q       <= gt_rx.elec_idle;
+      gt_rxdata_q           <= gt_rx.data;
+      gt_rx_phy_status_q    <= gt_rx.phy_status;
 
-      if ((reg_state_eios_det == EIOS_DET_DONE) && PLM_IN_L0)
+      if ((reg_state_eios_det == EIOS_DET_DONE) && plm_in_l0) begin
         gt_rxvalid_q <= 1'b0;
-      else if (GT_RXELECIDLE && !gt_rxvalid_q)
+      end
+      else if (gt_rx.elec_idle && !gt_rxvalid_q) begin
         gt_rxvalid_q <= 1'b0;
-      else
-        gt_rxvalid_q <= GT_RXVALID;
+      end
+      else begin
+        gt_rxvalid_q <= gt_rx.valid;
+      end
 
-      if (gt_rxvalid_q)
-        gt_rx_status_q <= GT_RX_STATUS;
-      else if (!gt_rxvalid_q && PLM_IN_L0)
+      if (gt_rxvalid_q) begin
+        gt_rx_status_q <= gt_rx.status;
+      end
+      else if (!gt_rxvalid_q && plm_in_l0) begin
         gt_rx_status_q <= 3'b0;
-      else
-        gt_rx_status_q <= GT_RX_STATUS;
+      end
+      else begin
+        gt_rx_status_q <= gt_rx.status;
+      end
 
-      case (reg_state_eios_det)
+      unique case (reg_state_eios_det)
         EIOS_DET_IDL: begin
           if (gt_rxcharisk_q[0] && (gt_rxdata_q[7:0]  == EIOS_COM) &&
               gt_rxcharisk_q[1] && (gt_rxdata_q[15:8] == EIOS_IDL))
+            begin
             reg_state_eios_det <= EIOS_DET_NO_STR0;
-          else if (gt_rxcharisk_q[1] && (gt_rxdata_q[15:8] == EIOS_COM))
+          end
+          else if (gt_rxcharisk_q[1] && (gt_rxdata_q[15:8] == EIOS_COM)) begin
             reg_state_eios_det <= EIOS_DET_STR0;
-          else
+          end
+          else begin
             reg_state_eios_det <= EIOS_DET_IDL;
+          end
         end
 
         EIOS_DET_NO_STR0: begin
@@ -124,11 +128,14 @@ module rx_eios_filter (
               (gt_rxcharisk_q[1] && (gt_rxdata_q[15:8] == EIOS_IDL))) begin
             reg_state_eios_det <= EIOS_DET_DONE;
             gt_rxvalid_q       <= 1'b0;
-          end else if (gt_rxcharisk_q[0] && (gt_rxdata_q[7:0] == EIOS_IDL)) begin
+          end
+          else if (gt_rxcharisk_q[0] && (gt_rxdata_q[7:0] == EIOS_IDL)) begin
             reg_state_eios_det <= EIOS_DET_DONE;
             gt_rxvalid_q       <= 1'b0;
-          end else
+          end
+          else begin
             reg_state_eios_det <= EIOS_DET_IDL;
+          end
         end
 
         EIOS_DET_STR0: begin
@@ -137,35 +144,36 @@ module rx_eios_filter (
             reg_state_eios_det    <= EIOS_DET_STR1;
             gt_rxvalid_q          <= 1'b0;
             reg_symbol_after_eios <= 1'b1;
-          end else
+          end
+          else begin
             reg_state_eios_det <= EIOS_DET_IDL;
+          end
         end
 
         EIOS_DET_STR1: begin
           if (gt_rxcharisk_q[0] && (gt_rxdata_q[7:0] == EIOS_IDL)) begin
             reg_state_eios_det <= EIOS_DET_DONE;
             gt_rxvalid_q       <= 1'b0;
-          end else
+          end
+          else begin
             reg_state_eios_det <= EIOS_DET_IDL;
+          end
         end
 
-        EIOS_DET_DONE:
-          reg_state_eios_det <= EIOS_DET_IDL;
+        EIOS_DET_DONE: reg_state_eios_det <= EIOS_DET_IDL;
 
-        default:
-          reg_state_eios_det <= EIOS_DET_IDL;
       endcase
     end
   end
 
-  assign USER_RXVALID       = gt_rxvalid_q;
-  assign USER_RXCHARISK[0]  = gt_rxvalid_q ? gt_rxcharisk_q[0] : 1'b0;
-  assign USER_RXCHARISK[1]  = (gt_rxvalid_q && !reg_symbol_after_eios) ? gt_rxcharisk_q[1] : 1'b0;
-  assign USER_RXDATA[7:0]   = gt_rxdata_q[7:0];
-  assign USER_RXDATA[15:8]  = gt_rxdata_q[15:8];
-  assign USER_RX_STATUS     = gt_rx_status_q;
-  assign USER_RX_PHY_STATUS = gt_rx_phy_status_q;
-  assign USER_RXELECIDLE    = gt_rxelecidle_q;
+  assign user_rx.valid = gt_rxvalid_q;
+  assign user_rx.char_is_k[0] = gt_rxvalid_q ? gt_rxcharisk_q[0] : 1'b0;
+  assign user_rx.char_is_k[1] = (gt_rxvalid_q && !reg_symbol_after_eios) ? gt_rxcharisk_q[1] : 1'b0;
+  assign user_rx.data = gt_rxdata_q;
+  assign user_rx.status = gt_rx_status_q;
+  assign user_rx.phy_status = gt_rx_phy_status_q;
+  assign user_rx.elec_idle = gt_rxelecidle_q;
+  assign user_rx.chanisaligned = gt_rx.chanisaligned;  // not filtered
 
 endmodule
 // -----------------------------------------------------------------------------

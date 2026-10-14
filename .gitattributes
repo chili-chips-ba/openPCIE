@@ -4,3 +4,19 @@
 
 0.doc/** linguist-documentation
 *.html  linguist-documentation
+
+# LF in the working copy too, whatever core.autocrlf says
+*.sv      text eol=lf
+*.svh     text eol=lf
+*.v       text eol=lf
+*.md      text eol=lf
+*.sh      text eol=lf
+*.py      text eol=lf
+*.tcl     text eol=lf
+*.xdc     text eol=lf
+*.rdl     text eol=lf
+*.yml     text eol=lf
+*.toml    text eol=lf
+*.drawio  text eol=lf
+Makefile* text eol=lf
+*.bat     text eol=crlf

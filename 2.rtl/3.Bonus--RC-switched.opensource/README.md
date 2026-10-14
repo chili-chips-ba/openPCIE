@@ -29,18 +29,11 @@ applications upon...
 |---|---|
 | Target device | `xc7a200tfbg484-3`, Acorn CLE-215P |
 | Switch | ASM1184e, 1 upstream + 4 downstream ports |
-| Link | PCIE Gen2 x1 |
+| Link | PCIE Gen2 x1 (x1 only: the switch ports are x1; x4 is RC-direct only) |
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
-Link width and speed come from a single place,
-[`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv) -- shared with
-[RC-direct](../2.RC-direct.opensource), so a change applies to both:
-
-```systemverilog
-localparam int PCIE_LANES = 1;   // 1, 2, 4 or 8
-localparam int PCIE_GEN   = 2;   // 1 = Gen1, 2 = Gen2
-```
+Link width comes from the `PCIE_LANES` define read by [`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv) (shared with [RC-direct](../2.RC-direct.opensource), where 4 is the default). The RC-switched builds always set it to 1: `make VARIANT=switched` and the Vivado wrapper refuse x4.
 
 The corresponding hardware setup is
 [here](../../1.pcb#usecase-2-switched-fpga_rc-to-fpga_ep-gen2-x1). Note that the
@@ -180,12 +173,12 @@ answered with CRS are re-issued up to 100 times.
     picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
     pcie/                         the opensource PCIE stack
   xdc/
-    RC.sv.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+    RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
   RC.opensource.tcl               the Vivado project script behind both wrappers
 
 2.rtl/3.Bonus--RC-switched.opensource/   this folder
   xdc/
-    RC-switched.sv.x1g2.AcornCLE-215P.xdc  GT lane: GTPE2_CHANNEL_X0Y6
+    RC-switched.x1g2.AcornCLE-215P.xdc  GT lane: GTPE2_CHANNEL_X0Y6
   RC-switched.opensource.tcl      regenerates the Vivado project from scratch
 ```
 
@@ -243,7 +236,7 @@ cd 4.build/hw_build.openXC7
 make VARIANT=switched
 ```
 
-Output goes to `build_artifacts.switched/top.bit`, kept separate from the direct
+Output goes to `build_artifacts.switched.slang/top.x1.switched.bit`, kept separate from the direct
 build. See [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) for the
 toolchain requirements - in particular, the nextpnr-xilinx version is critical.
 

@@ -3,7 +3,7 @@
 #                      open-source SystemVerilog root complexes
 #
 # Board : Acorn CLE-215P  ->  xc7a200tfbg484-3
-# Link  : PCIe x1 Gen2
+# Link  : PCIe Gen2, x4 (default, direct only) or x1
 # Top   : RC_opensource
 #
 # Not run directly. Each root complex has a short wrapper that names itself
@@ -20,6 +20,7 @@
 # Options via Tcl variables (set them BEFORE source):
 #   set ::origin_dir_loc    <path>   ;# variant folder (default: the wrapper's)
 #   set ::user_project_name <name>   ;# .xpr name (default: Vivado-v2024.2)
+#   set ::pcie_lanes        1|4      ;# link width (default: 4 direct, 1 switched)
 #
 # Afterwards open  xbuild.Vivado-v2024.2/Vivado-v2024.2.xpr  in the variant's
 # folder in the Vivado GUI:
@@ -41,15 +42,24 @@ if { ![info exists ::rc_variant] } {
  2.RC-direct.opensource/RC-direct.opensource.tcl or\
  3.Bonus--RC-switched.opensource/RC-switched.opensource.tcl"
 }
+# x4 runs only on the direct link; the switch ports are x1
 switch -- $::rc_variant {
   direct {
+    set pcie_lanes [expr { [info exists ::pcie_lanes] ? $::pcie_lanes : 4 }]
+    if { $pcie_lanes ni {1 4} } {
+      return -code error "pcie_lanes must be 1 or 4, got \"$pcie_lanes\""
+    }
     set origin_dir "$common_dir/../2.RC-direct.opensource"
-    set lane_xdc   "RC-direct.sv.x1g2.AcornCLE-215P.xdc"
+    set lane_xdc   "RC-direct.x${pcie_lanes}g2.AcornCLE-215P.xdc"
     set fw_make    "make"
   }
   switched {
+    set pcie_lanes [expr { [info exists ::pcie_lanes] ? $::pcie_lanes : 1 }]
+    if { $pcie_lanes != 1 } {
+      return -code error "RC-switched is x1 only, got pcie_lanes \"$pcie_lanes\""
+    }
     set origin_dir "$common_dir/../3.Bonus--RC-switched.opensource"
-    set lane_xdc   "RC-switched.sv.x1g2.AcornCLE-215P.xdc"
+    set lane_xdc   "RC-switched.x1g2.AcornCLE-215P.xdc"
     set fw_make    "make VARIANT=switched"
   }
   default {
@@ -72,7 +82,7 @@ set proj_dir "$origin_dir/xbuild.Vivado-v2024.2"
 # lane LOC is the variant's own.
 set src_dir   "$common_dir/src"
 set pcie_dir  "$common_dir/src/pcie"
-set xdc_files [list "$common_dir/xdc/RC.sv.x1g2.AcornCLE-215P.xdc" \
+set xdc_files [list "$common_dir/xdc/RC.x1g2.AcornCLE-215P.xdc" \
                     "$origin_dir/xdc/$lane_xdc"]
 
 set top_sv "$src_dir/RC_opensource.sv"
@@ -122,9 +132,6 @@ set_property -name "target_language"    -value "Verilog" -objects $obj
 set_property -name "simulator_language" -value "Mixed"   -objects $obj
 set_property -name "default_lib"        -value "xil_defaultlib" -objects $obj
 
-# pcie_top.sv instantiates xpm_cdc_single (2x). Vivado finds XPM by itself for
-# synthesis, but for simulation/elaboration the library must be included explicitly.
-set_property -name "xpm_libraries" -value "XPM_CDC" -objects $obj
 
 # ---- Source files -----------------------------------------------------------
 # The glob is DELIBERATELY non-recursive: src/pcie/_catB_backup/ holds the
@@ -140,6 +147,10 @@ if { ![llength $svfiles] } {
 }
 
 add_files -norecurse [concat $svfiles $vfiles $csr_files [list $cpu_v $soc_sv $top_sv]]
+
+# Link width for link_pkg.sv, for synthesis and simulation alike
+set_property verilog_define "PCIE_LANES=$pcie_lanes" [get_filesets sources_1]
+set_property verilog_define "PCIE_LANES=$pcie_lanes" [get_filesets sim_1]
 
 # Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
 # package (link_pkg.sv) and SV interfaces (axis_if, trn_if, pipe_if, cfg_if, mem_if) --
@@ -176,6 +187,7 @@ puts "--------------------------------------------------------------"
 puts "  xpr       : $proj_dir/$proj_name.xpr"
 puts "  part      : xc7a200tfbg484-3   (Acorn CLE-215P)"
 puts "  variant   : $::rc_variant"
+puts "  lanes     : x$pcie_lanes"
 puts "  top       : RC_opensource"
 puts "  src/pcie  : [llength $svfiles] .sv  +  [llength $vfiles] .v   (0.common.opensource)"
 puts "  src/      : picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_opensource.sv"

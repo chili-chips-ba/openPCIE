@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Accepted lint findings, read by run-lint.sh.
+#
+# One waiver per line:  <phase> <regex>
+#   <phase>  verilator | yosys | slang | verible | cdc
+#   <regex>  extended regex (grep -E), matched against one finding line as it
+#            appears in <phase>.all of a run-lint.sh work directory
+# A finding that matches is waived. Put the reason on a comment line above it.
+#
+# Guideline: resolve a finding at its root; waive only as the last resort.
+# Work down this list and stop at the first step that applies:
+#   1. Dead logic in our RTL: delete it (unused signals, registers, ports).
+#      Check first that nothing uses it in another configuration (x1/x4
+#      generate branches), and prove the change with run-leq.sh.
+#   2. Oversized buses in our RTL: size them to what is used (PCIE_LANES,
+#      data width) instead of carrying unused bits or lanes.
+#   3. Unused outputs of hard macros, primitives and third-party cores, which
+#      we cannot change:
+#        a single pin             .PIN (/*LINT:OK*/)
+#        part of a bus pin        .PIN ({NC_name, used})
+#        a pin of an unused lane  route it to an NC_ signal in the lane's
+#                                 generate branch
+#      NC_ means no-connect: driven by such an output and never read. Do not
+#      give an NC_ name to anything else.
+#      Descriptor signals -- a header DW or sideband of a pcie_pkg struct type,
+#      named *_dw0 ... *_dw3, *_hdr_* or *_tuser -- read only the fields the
+#      logic needs; their unread fields are waived by that name. A descriptor
+#      signal that is not read at all is still reported.
+#   4. Unused inputs: tie them off. Exception: GT refclk inputs stay open
+#      (nextpnr rejects a constant there), with a comment saying so.
+#   5. Only then a waiver in this file: for findings with no source line of
+#      ours (generated code, Vivado reports) or a proven tool false positive.
+#      Each one is reviewed, names the file and the signals (never a whole
+#      file or warning class), and has its reason on a comment line above.
+#
+# The inline forms are checked: the tags phase flags a /*LINT:OK*/ that is
+# not on an output.
+
+# No-connect signals (step 3): unused by design, so every NC_ name is waived
+verilator ^%Warning-UNUSEDSIGNAL: .*'NC_[A-Za-z0-9_]+'
+
+# PeakRDL passthrough cpuif: stall and error outputs are always generated; our
+# mem bus has no stall or error path (reviewed 2026-10-12)
+verilator ^%Warning-PINCONNECTEMPTY: src/soc_csr\.sv:[0-9]+:[0-9]+: .*'s_cpuif_(req_stall_wr|req_stall_rd|rd_err|wr_err)'$
+
+# GTPE2_COMMON refclk inputs left open on purpose: nextpnr rejects a constant
+# on a GT refclk input; only GTREFCLK0 is used (reviewed 2026-10-12)
+verilator ^%Warning-PINCONNECTEMPTY: src/pcie/gtp_wrapper\.sv:[0-9]+:[0-9]+: .*'(GTGREFCLK[01]|GTREFCLK1|GTEASTREFCLK[01]|GTWESTREFCLK[01])'$
+slang ^src/pcie/gtp_wrapper\.sv:[0-9]+:[0-9]+: warning: input port '(GTGREFCLK[01]|GTREFCLK1|GTEASTREFCLK[01]|GTWESTREFCLK[01])' is explicitly connected to nothing
+
+# PeakRDL regblock internals: error-response logic that is only read when
+# regblock runs with --err-if-bad-addr / --err-if-bad-rw, which we do not use
+# (reviewed 2026-10-12)
+verilator ^%Warning-UNUSEDSIGNAL: csr\.sv:[0-9]+:[0-9]+: Signal is not used: '(decoded_err|is_valid_addr|is_valid_rw)'
+
+# AXI-Stream fields kept to the standard: the SOC does not read the RX tkeep
+# and tuser (pcie_rx_tuser_t); on TX only tkeep[7] (upper DW valid) maps to TRN rem
+# (reviewed 2026-10-12)
+verilator ^%Warning-UNUSEDSIGNAL: src/pcie/axis_if\.sv:[0-9]+:[0-9]+: (Signal is not used: 'tkeep'|Bits of signal are not used: 'tkeep'\[6:0\]|Signal is not used: 'tuser')$
+
+# PIPE tx_ctrl.reset: not used by the RTL PHY, read by the co-sim PHY model
+# (5.sim/models/phy_top.PIPE.sv) (reviewed 2026-10-12)
+verilator ^%Warning-UNUSEDSIGNAL: src/pcie/pipe_if\.sv:[0-9]+:[0-9]+: Bits of signal are not used: 'tx_ctrl'\[5\]$
+
+# Descriptor signals (step 3): pcie_pkg header DWs and sideband, partial field
+# use by design; whole-signal "not used" is still reported
+verilator ^%Warning-UNUSEDSIGNAL: .*Bits of signal are not used: '([A-Za-z0-9_]*_hdr_[A-Za-z0-9_]*|[A-Za-z0-9_]*_dw[0-3]|[A-Za-z0-9_]*_tuser)'
+
+# PIPE clock mux select: pipe_clk_sel_q drives the BUFGCTRL S0/S1 that switch
+# pipe_clk between 125 and 250 MHz; the XDC false-paths S0/S1 and makes the
+# two muxed clocks physically exclusive, as in Xilinx's pipe_clock
+# (reviewed 2026-10-13)
+cdc CDC-13 +Critical .* u_pcie/u_clk_rst_gen/u_pipe_clk/S[01]$
+
+# PeakRDL regblock: field_combo / field_storage are unpacked structs whose
+# members are each written by their own always_comb / always_ff. Legal SV
+# (one longest static prefix per process); Verilator flags the whole variable:
+# https://github.com/verilator/verilator/issues/4226 (reviewed 2026-10-13)
+verilator ^%Warning-MULTIDRIVEN: csr\.sv:[0-9]+:[0-9]+: Variable written to in always_(comb|ff) also written by other process .*: '(field_combo|field_storage)'$
+

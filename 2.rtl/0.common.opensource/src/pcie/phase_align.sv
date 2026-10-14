@@ -37,44 +37,19 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module phase_align (
-  input               SYNC_CLK,
-  input               SYNC_RST_N,
-  input               SYNC_SLAVE,
-  input               SYNC_RATE_IDLE,
-  input               SYNC_MMCM_LOCK,
-  input               SYNC_RXELECIDLE,
-  input               SYNC_RXCDRLOCK,
-  input               SYNC_ACTIVE_LANE,
+module phase_align
+  import link_pkg::*;
+(
+    input logic clk,
+    input logic rst_n,
+    input logic slave,
+    input logic mmcm_lock,
+    input logic active_lane,
 
-  input               SYNC_TXSYNC_START,
-  input               SYNC_TXPHINITDONE,
-  input               SYNC_TXDLYSRESETDONE,
-  input               SYNC_TXPHALIGNDONE,
-  input               SYNC_TXSYNCDONE,
-
-  input               SYNC_RXDLYSRESETDONE,
-  input               SYNC_RXPHALIGNDONE_M,
-  input               SYNC_RXPHALIGNDONE_S,
-  input               SYNC_RXSYNC_DONEM_IN,
-  input               SYNC_RXSYNCDONE,
-
-  output              SYNC_TXPHDLYRESET,
-  output              SYNC_TXPHALIGN,
-  output              SYNC_TXPHALIGNEN,
-  output              SYNC_TXPHINIT,
-  output              SYNC_TXDLYBYPASS,
-  output              SYNC_TXDLYSRESET,
-  output              SYNC_TXDLYEN,
-  output              SYNC_TXSYNC_DONE,
-
-  output              SYNC_RXPHALIGN,
-  output              SYNC_RXPHALIGNEN,
-  output              SYNC_RXDLYBYPASS,
-  output              SYNC_RXDLYSRESET,
-  output              SYNC_RXDLYEN,
-  output              SYNC_RXDDIEN,
-  output              SYNC_RXSYNC_DONEM_OUT
+    input  logic             txsync_start,
+    input  gtp_txsync_stat_t tx_stat,
+    output gtp_txsync_ctrl_t tx_ctrl,
+    output logic             txsync_done
 );
 
   typedef enum logic [5:0] {
@@ -86,39 +61,60 @@ module phase_align (
     TX_DONE2     = 6'b100000
   } tx_state_e;
 
-  tx_state_e fsm_tx = TX_IDLE, fsm_tx_nx;
+  tx_state_e fsm_tx, fsm_tx_nx;
 
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic mmcm_r1, mmcm_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txstart_r1, txstart_r2;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txphinit_r1, txphinit_r2, txphinit_r3;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txdlyrst_r1, txdlyrst_r2, txdlyrst_r3;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txphalign_r1, txphalign_r2, txphalign_r3;
-  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic txsyncdone_r1, txsyncdone_r2, txsyncdone_r3;
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic mmcm_r1, mmcm_r2;  // MMCM LOCKED: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      txstart_r1, txstart_r2;  // txsync_start: pipe_clk, latency only
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      txphinit_r1, txphinit_r2, txphinit_r3;  // TXPHINITDONE: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      txdlyrst_r1, txdlyrst_r2, txdlyrst_r3;  // TXDLYSRESETDONE: async
+  (* ASYNC_REG = "TRUE", SHIFT_EXTRACT = "NO" *) logic
+      txphalign_r1, txphalign_r2, txphalign_r3;  // TXPHALIGNDONE: async
 
-  always_ff @(posedge SYNC_CLK) begin
-    if (!SYNC_RST_N) begin
-      mmcm_r1<=1'b0;      mmcm_r2<=1'b0;
-      txstart_r1<=1'b0;   txstart_r2<=1'b0;
-      txphinit_r1<=1'b0;  txphinit_r2<=1'b0;  txphinit_r3<=1'b0;
-      txdlyrst_r1<=1'b0;  txdlyrst_r2<=1'b0;  txdlyrst_r3<=1'b0;
-      txphalign_r1<=1'b0; txphalign_r2<=1'b0; txphalign_r3<=1'b0;
-      txsyncdone_r1<=1'b0;txsyncdone_r2<=1'b0;txsyncdone_r3<=1'b0;
-    end else begin
-      mmcm_r1<=SYNC_MMCM_LOCK;          mmcm_r2<=mmcm_r1;
-      txstart_r1<=SYNC_TXSYNC_START;    txstart_r2<=txstart_r1;
-      txphinit_r1<=SYNC_TXPHINITDONE;   txphinit_r2<=txphinit_r1;   txphinit_r3<=txphinit_r2;
-      txdlyrst_r1<=SYNC_TXDLYSRESETDONE;txdlyrst_r2<=txdlyrst_r1;   txdlyrst_r3<=txdlyrst_r2;
-      txphalign_r1<=SYNC_TXPHALIGNDONE; txphalign_r2<=txphalign_r1; txphalign_r3<=txphalign_r2;
-      txsyncdone_r1<=SYNC_TXSYNCDONE;   txsyncdone_r2<=txsyncdone_r1;txsyncdone_r3<=txsyncdone_r2;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      mmcm_r1      <= 1'b0;
+      mmcm_r2      <= 1'b0;
+      txstart_r1   <= 1'b0;
+      txstart_r2   <= 1'b0;
+      txphinit_r1  <= 1'b0;
+      txphinit_r2  <= 1'b0;
+      txphinit_r3  <= 1'b0;
+      txdlyrst_r1  <= 1'b0;
+      txdlyrst_r2  <= 1'b0;
+      txdlyrst_r3  <= 1'b0;
+      txphalign_r1 <= 1'b0;
+      txphalign_r2 <= 1'b0;
+      txphalign_r3 <= 1'b0;
+    end
+    else begin
+      mmcm_r1      <= mmcm_lock;
+      mmcm_r2      <= mmcm_r1;
+      txstart_r1   <= txsync_start;
+      txstart_r2   <= txstart_r1;
+      txphinit_r1  <= tx_stat.phinitdone;
+      txphinit_r2  <= txphinit_r1;
+      txphinit_r3  <= txphinit_r2;
+      txdlyrst_r1  <= tx_stat.dlysresetdone;
+      txdlyrst_r2  <= txdlyrst_r1;
+      txdlyrst_r3  <= txdlyrst_r2;
+      txphalign_r1 <= tx_stat.phaligndone;
+      txphalign_r2 <= txphalign_r1;
+      txphalign_r3 <= txphalign_r2;
     end
   end
 
-  wire dlyrst_done_edge  = (!txdlyrst_r3  && txdlyrst_r2);
-  wire phinit_done_edge  = (!txphinit_r3  && txphinit_r2);
-  wire phalign_done_edge = (!txphalign_r3 && txphalign_r2);
+  logic dlyrst_done_edge;
+  assign dlyrst_done_edge = (!txdlyrst_r3 && txdlyrst_r2);
+  logic phinit_done_edge;
+  assign phinit_done_edge = (!txphinit_r3 && txphinit_r2);
+  logic phalign_done_edge;
+  assign phalign_done_edge = (!txphalign_r3 && txphalign_r2);
 
-  logic txdlyen = 1'b0, txdlyen_nx;
-  logic txsync_done = 1'b0, txsync_done_nx;
+  logic txdlyen, txdlyen_nx;
+  logic txsync_done_nx;
 
   always_comb begin
     fsm_tx_nx      = fsm_tx;
@@ -126,61 +122,62 @@ module phase_align (
     txsync_done_nx = txsync_done;
     unique case (fsm_tx)
       TX_IDLE:
-        if (txstart_r2) begin
-          fsm_tx_nx = TX_MMCM_LOCK; txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
-        end
+      if (txstart_r2) begin
+        fsm_tx_nx      = TX_MMCM_LOCK;
+        txdlyen_nx     = 1'b0;
+        txsync_done_nx = 1'b0;
+      end
       TX_MMCM_LOCK: begin
-        fsm_tx_nx = mmcm_r2 ? TX_START : TX_MMCM_LOCK;
-        txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
+        fsm_tx_nx      = mmcm_r2 ? TX_START : TX_MMCM_LOCK;
+        txdlyen_nx     = 1'b0;
+        txsync_done_nx = 1'b0;
       end
       TX_START: begin
-        fsm_tx_nx = dlyrst_done_edge ? TX_PHINIT : TX_START;
-        txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
+        fsm_tx_nx      = dlyrst_done_edge ? TX_PHINIT : TX_START;
+        txdlyen_nx     = 1'b0;
+        txsync_done_nx = 1'b0;
       end
       TX_PHINIT: begin
-        fsm_tx_nx = (phinit_done_edge || (!SYNC_ACTIVE_LANE)) ? TX_DONE1 : TX_PHINIT;
-        txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
+        fsm_tx_nx      = (phinit_done_edge || (!active_lane)) ? TX_DONE1 : TX_PHINIT;
+        txdlyen_nx     = 1'b0;
+        txsync_done_nx = 1'b0;
       end
       TX_DONE1: begin
-        fsm_tx_nx = (phalign_done_edge || (!SYNC_ACTIVE_LANE)) ? TX_DONE2 : TX_DONE1;
-        txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
+        fsm_tx_nx      = (phalign_done_edge || (!active_lane)) ? TX_DONE2 : TX_DONE1;
+        txdlyen_nx     = 1'b0;
+        txsync_done_nx = 1'b0;
       end
       TX_DONE2:
-        if (phalign_done_edge || (!SYNC_ACTIVE_LANE) || SYNC_SLAVE) begin
-          fsm_tx_nx = TX_IDLE; txdlyen_nx = !SYNC_SLAVE; txsync_done_nx = 1'b1;
-        end else begin
-          fsm_tx_nx = TX_DONE2; txdlyen_nx = !SYNC_SLAVE; txsync_done_nx = 1'b0;
-        end
-      default: begin
-        fsm_tx_nx = TX_IDLE; txdlyen_nx = 1'b0; txsync_done_nx = 1'b0;
+      if (phalign_done_edge || (!active_lane) || slave) begin
+        fsm_tx_nx      = TX_IDLE;
+        txdlyen_nx     = !slave;
+        txsync_done_nx = 1'b1;
+      end
+      else begin
+        fsm_tx_nx      = TX_DONE2;
+        txdlyen_nx     = !slave;
+        txsync_done_nx = 1'b0;
       end
     endcase
   end
 
-  always_ff @(posedge SYNC_CLK) begin
-    if (!SYNC_RST_N) begin
-      fsm_tx <= TX_IDLE; txdlyen <= 1'b0; txsync_done <= 1'b0;
-    end else begin
-      fsm_tx <= fsm_tx_nx; txdlyen <= txdlyen_nx; txsync_done <= txsync_done_nx;
+  always_ff @(posedge clk) begin
+    if (!rst_n) begin
+      fsm_tx      <= TX_IDLE;
+      txdlyen     <= 1'b0;
+      txsync_done <= 1'b0;
+    end
+    else begin
+      fsm_tx      <= fsm_tx_nx;
+      txdlyen     <= txdlyen_nx;
+      txsync_done <= txsync_done_nx;
     end
   end
 
-  assign SYNC_TXPHALIGNEN  = 1'b1;
-  assign SYNC_TXDLYBYPASS  = 1'b0;
-  assign SYNC_TXDLYSRESET  = (fsm_tx == TX_START);
-  assign SYNC_TXPHDLYRESET = 1'b0;
-  assign SYNC_TXPHINIT     = (fsm_tx == TX_PHINIT);
-  assign SYNC_TXPHALIGN    = (fsm_tx == TX_DONE1);
-  assign SYNC_TXDLYEN      = txdlyen;
-  assign SYNC_TXSYNC_DONE  = txsync_done;
-
-  assign SYNC_RXPHALIGNEN      = 1'b0;
-  assign SYNC_RXDLYBYPASS      = 1'b1;
-  assign SYNC_RXDLYSRESET      = 1'b0;
-  assign SYNC_RXPHALIGN        = 1'b0;
-  assign SYNC_RXDLYEN          = 1'b0;
-  assign SYNC_RXDDIEN          = 1'b0;
-  assign SYNC_RXSYNC_DONEM_OUT = 1'b0;
+  assign tx_ctrl.dlysreset = (fsm_tx == TX_START);
+  assign tx_ctrl.phinit    = (fsm_tx == TX_PHINIT);
+  assign tx_ctrl.phalign   = (fsm_tx == TX_DONE1);
+  assign tx_ctrl.dlyen     = txdlyen;
 
 endmodule
 // -----------------------------------------------------------------------------

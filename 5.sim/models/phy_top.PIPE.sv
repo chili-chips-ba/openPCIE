@@ -33,10 +33,10 @@
 //
 //   Clocking
 //   --------
-//   In hardware the GT recovers TXOUTCLK (125 MHz) and clk_gen's MMCM makes
+//   In hardware the GT recovers TXOUTCLK (125 MHz) and clk_rst_gen's MMCM makes
 //   PCLK (125 MHz Gen1 / 250 MHz Gen2) and USERCLK1/2 (62.5 MHz) from it. Here
 //   TXOUTCLK is a behavioural oscillator and everything downstream is the real
-//   clk_gen, so the clock topology the design sees is unchanged.
+//   clk_rst_gen, so the clock topology the design sees is unchanged.
 //
 //   The pcievhost wrapper needs a symbol clock at twice the 16-bit PIPE rate;
 //   it is generated from the same behavioural source so the two stay edge
@@ -48,27 +48,27 @@
 module phy_top
   import link_pkg::*;
 (
-  input  wire [5:0]                             pl_ltssm_state,
+  input  logic [5:0]                             pl_ltssm_state,
 
   pipe_if.phy                              pipe_mac,
 
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txn,
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txp,
-  input  wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_rxn,
-  input  wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_rxp,
+  output logic [PCIE_LANES-1:0]     pci_exp_txn,
+  output logic [PCIE_LANES-1:0]     pci_exp_txp,
+  input  logic [PCIE_LANES-1:0]     pci_exp_rxn,
+  input  logic [PCIE_LANES-1:0]     pci_exp_rxp,
 
-  input  wire                                   sys_clk,
-  input  wire                                   sys_rst_n,
+  input  logic                                   refclk_p,
+  input  logic                                   refclk_n,
+  input  logic                                   rst125_n,  // released on clk125
+  input  logic                                   pipe_rst_n,    // released on pipe_clk
 
-  input  wire                                   PIPE_PCLK_IN,
-  input  wire                                   PIPE_RXUSRCLK_IN,
-  input  wire                                   PIPE_DCLK_IN,
-  input  wire                                   PIPE_OOBCLK_IN,
-  input  wire                                   PIPE_MMCM_LOCK_IN,
-  output wire                                   PIPE_TXOUTCLK_OUT,
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     PIPE_PCLK_SEL_OUT,
+  input  logic                                   pipe_clk_in,
+  input  logic                                   pipe_drp_clk_in,
+  input  logic                                   pipe_mmcm_lock_in,
+  output logic                                   pipe_txoutclk_out,
+  output logic                      pipe_clk_sel_out,
 
-  output wire                                   phy_rdy_n
+  output logic                                  phy_rdy_n
 );
 
   // The serial pads are unused -- the link is modelled at PIPE level
@@ -78,8 +78,8 @@ module phy_top
   //------------------------------------------------------------------
   // Behavioural clocks
   //------------------------------------------------------------------
-  // TXOUTCLK is what the GT recovers and feeds to clk_gen's MMCM. It has to
-  // be 100 MHz: clk_gen is parameterised with PCIE_REFCLK_FREQ = 0, i.e.
+  // TXOUTCLK is what the GT recovers and feeds to clk_rst_gen's MMCM. It has to
+  // be 100 MHz: clk_rst_gen is parameterised with PCIE_REFCLK_FREQ = 0, i.e.
   // CLKIN1_PERIOD = 10 ns and CLKFBOUT_MULT_F = 10, so the VCO lands on
   // 1000 MHz and the outputs come out as
   //     CLKOUT0 = 1000/8  = 125   MHz   PCLK, Gen1
@@ -113,14 +113,14 @@ module phy_top
     symclk = ~symclk;
   end
 
-  assign PIPE_TXOUTCLK_OUT = txoutclk;
+  assign pipe_txoutclk_out = txoutclk;
 
-  // PCLK, USERCLK1 and USERCLK2 come straight back from clk_gen, exactly as
+  // PCLK, USERCLK1 and USERCLK2 come straight back from clk_rst_gen, exactly as
   // gtp_wrapper passes them through in the synthesis build
-  wire   pipe_clk  = PIPE_PCLK_IN;
+  wire   pipe_clk  = pipe_clk_in;
 
-  // Tell clk_gen which PCLK to select. Gen3 does not exist on this device.
-  assign PIPE_PCLK_SEL_OUT = {LINK_CAP_MAX_LINK_WIDTH{pipe_mac.tx_ctrl.rate}};
+  // Tell clk_rst_gen which PCLK to select. Gen3 does not exist on this device.
+  assign pipe_clk_sel_out = pipe_mac.tx_ctrl.rate;
 
   //------------------------------------------------------------------
   // PHY ready
@@ -128,24 +128,21 @@ module phy_top
   // In hardware phy_rdy_n drops once the GT reset FSM has finished and the
   // MMCM has locked. Here it waits for the MMCM only.
   logic [7:0] rdy_cnt;
-  logic       phy_rdy_n_int;
 
-  always_ff @(posedge pipe_clk or negedge sys_rst_n) begin
-    if (!sys_rst_n) begin
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
       rdy_cnt       <= '0;
-      phy_rdy_n_int <= 1'b1;
+      phy_rdy_n <= 1'b1;
     end
-    else if (PIPE_MMCM_LOCK_IN) begin
+    else begin
       if (rdy_cnt != 8'hFF) begin
         rdy_cnt <= rdy_cnt + 8'd1;
       end
       else begin
-        phy_rdy_n_int <= 1'b0;
+        phy_rdy_n <= 1'b0;
       end
     end
   end
-
-  assign phy_rdy_n = phy_rdy_n_int;
 
   //------------------------------------------------------------------
   // pcievhost endpoint, connected over a 16-bit PIPE
@@ -157,8 +154,8 @@ module phy_top
   wire  [1:0]  ep_tx_datak;
 
   // Register the outgoing symbols on PCLK so the model sees a clean bus
-  always_ff @(posedge pipe_clk or negedge sys_rst_n) begin
-    if (!sys_rst_n) begin
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
       ep_rx_data  <= 16'h0000;
       ep_rx_datak <= 2'b00;
     end
@@ -175,7 +172,7 @@ module phy_top
   ) u_pcie_ep (
     .pcieclk   (symclk),
     .pclk      (pipe_clk),
-    .nreset    (sys_rst_n),
+    .nreset    (pipe_rst_n),
 
     .RxData    (ep_rx_data),
     .RxDataK   (ep_rx_datak),
@@ -220,8 +217,8 @@ module phy_top
   wire rate_chg        = (rate_q      != pipe_mac.tx_ctrl.rate);
   wire rcvr_det_rise   = ~rcvr_det_q  &  pipe_mac.tx_ctrl.rcvr_det;
 
-  always_ff @(posedge pipe_clk or negedge sys_rst_n) begin
-    if (!sys_rst_n) begin
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
       powerdown_q    <= 2'b10;          // P1 out of reset
       rate_q         <= 1'b0;
       pipe_reset_q   <= 1'b1;
@@ -270,8 +267,8 @@ module phy_top
   // and simple stand-in for a real squelch detector.
   logic rx_active;
 
-  always_ff @(posedge pipe_clk or negedge sys_rst_n) begin
-    if (!sys_rst_n) begin
+  always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
       rx_active <= 1'b0;
     end
     else if (|ep_tx_datak) begin
@@ -281,8 +278,7 @@ module phy_top
 
   genvar i;
   generate
-    for (i = 0; i < PIPE_MAX_LANES; i = i + 1) begin : lane_map
-      if (i < LINK_CAP_MAX_LINK_WIDTH) begin : active
+    for (i = 0; i < PCIE_LANES; i = i + 1) begin : lane_gen
         assign pipe_mac.rx[i].data          = ep_tx_data;
         assign pipe_mac.rx[i].char_is_k     = ep_tx_datak;
         assign pipe_mac.rx[i].valid         = rx_active;
@@ -290,10 +286,6 @@ module phy_top
         assign pipe_mac.rx[i].status        = rx_status_r;
         assign pipe_mac.rx[i].phy_status    = phy_status_r;
         assign pipe_mac.rx[i].elec_idle     = ~rx_active;
-      end
-      else begin : unused
-        assign pipe_mac.rx[i] = PIPE_RX_LANE_TIE;
-      end
     end
   endgenerate
 
@@ -384,7 +376,7 @@ module phy_top
   `define PIPE_DUMP_FROM 0
 `endif
   integer dump_n = 0;
-  always @(posedge pipe_clk) if (sys_rst_n && rx_active && dump_n < 40 && $time > `PIPE_DUMP_FROM) begin
+  always @(posedge pipe_clk) if (pipe_rst_n && rx_active && dump_n < 40 && $time > `PIPE_DUMP_FROM) begin
     $display("%t  RAW  tx=%02h%s %02h%s   rx=%02h%s %02h%s", $time,
              pipe_mac.tx[0].data[7:0],  pipe_mac.tx[0].char_is_k[0] ? "K" : "d",
              pipe_mac.tx[0].data[15:8], pipe_mac.tx[0].char_is_k[1] ? "K" : "d",
@@ -394,7 +386,7 @@ module phy_top
   end
 `endif
 
-  always @(posedge pipe_clk) if (sys_rst_n) begin
+  always @(posedge pipe_clk) if (pipe_rst_n) begin
     feed_tx(pipe_mac.tx[0].data[7:0],   pipe_mac.tx[0].char_is_k[0]);
     feed_tx(pipe_mac.tx[0].data[15:8],  pipe_mac.tx[0].char_is_k[1]);
     feed_rx(ep_tx_data[7:0],        ep_tx_datak[0]);

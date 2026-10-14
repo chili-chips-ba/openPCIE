@@ -20,8 +20,6 @@
 // Asymmetric widths and "18Kb" are NOT supported; extend this if they are needed.
 // -----------------------------------------------------------------------------
 
-`timescale 1ps/1ps
-
 module BRAM_TDP_MACRO #(
     parameter         DEVICE        = "7SERIES",
     parameter         BRAM_SIZE     = "36Kb",

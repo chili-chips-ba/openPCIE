@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# RTL lint gate: 4.build/hw_build.openXC7/run-lint.sh, x4 (the default build),
+# phases tags, verilator, yosys and slang. The cdc phase needs Vivado and the
+# verible style phase is not a gate yet. Tools come from the OSS CAD Suite
+# (Yosys with the yosys-slang plugin, Verilator); the project's own runs use
+# the versions in 4.build/README.md (Tool versions).
+
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OSS CAD Suite (Yosys + yosys-slang, Verilator)
+        uses: YosysHQ/setup-oss-cad-suite@v3
+
+      - name: Tool versions
+        run: |
+          yosys -V
+          verilator --version
+
+      - name: run-lint (x4)
+        env:
+          YOSYS_ARGS: -m slang
+          LINT_WORK: ${{ runner.temp }}/lint
+        run: bash 4.build/hw_build.openXC7/run-lint.sh tags verilator yosys slang
+
+      - name: Keep the lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports
+          path: ${{ runner.temp }}/lint

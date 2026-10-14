@@ -10,7 +10,7 @@
 //
 //        RC_opensource
 //          |- pcie_top
-//          |    |- clk_gen        MMCM, real RTL
+//          |    |- clk_rst_gen        MMCM, real RTL
 //          |    |- pcie_core       real RTL
 //          |    |    `- PCIE_2_1     Xilinx hard macro
 //          |    `- phy_top     <-- SWAPPED for models/phy_top.PIPE.sv
@@ -66,29 +66,29 @@ module tb;
 //--------------------------------------------------------------
 
   // The 100 MHz PCIe reference clock, as supplied by the backplane. The link
-  // clocks themselves are made inside the design (clk_gen's MMCM) from the
+  // clocks themselves are made inside the design (clk_rst_gen's MMCM) from the
   // TXOUTCLK that the PIPE PHY model provides.
   localparam HALF_REFCLK_PERIOD_PS = 5_000;   // 100 MHz
   localparam RST_CYCLES            = 200;
 
-  logic sys_clk_p;
-  wire  sys_clk_n;
-  logic sys_rst_n;
+  logic refclk_p;
+  wire  refclk_n;
+  logic perst_n;
 
   initial begin
-    sys_clk_p = 1'b0;
-    sys_rst_n = 1'b0;
+    refclk_p = 1'b0;
+    perst_n = 1'b0;
 
     fork
       begin : board_rst_n
         #(HALF_REFCLK_PERIOD_PS * RST_CYCLES * 1ps)
-          sys_rst_n = 1'b1;
+          perst_n = 1'b1;
         $display("%t  TB     PERST# released", $time);
       end
 
       forever begin : refclk_gen
         #(HALF_REFCLK_PERIOD_PS * 1ps)
-          sys_clk_p = ~sys_clk_p;
+          refclk_p = ~refclk_p;
       end
 
       begin : run_sim
@@ -100,29 +100,29 @@ module tb;
     join
   end
 
-  assign sys_clk_n = ~sys_clk_p;
+  assign refclk_n = ~refclk_p;
 
 //--------------------------------------------------------------
 // DUT -- the real opensource Root Complex
 //--------------------------------------------------------------
 
-  wire [0:0] RXP, RXN, TXP, TXN;
+  wire [0:0] rxp, rxn, txp, txn;
   wire [3:0] led_link_up;
   wire       clk_req;
 
-  assign RXP = 1'b0;
-  assign RXN = 1'b1;
+  assign rxp = 1'b0;
+  assign rxn = 1'b1;
 
   RC_opensource dut (
-    .sys_clk_p    (sys_clk_p),
-    .sys_clk_n    (sys_clk_n),
+    .refclk_p    (refclk_p),
+    .refclk_n    (refclk_n),
 
-    .RXN          (RXN),
-    .RXP          (RXP),
-    .TXN          (TXN),
-    .TXP          (TXP),
+    .rxn          (rxn),
+    .rxp          (rxp),
+    .txn          (txn),
+    .txp          (txp),
 
-    .sys_rst_n    (sys_rst_n),
+    .perst_n    (perst_n),
 
     .led_link_up  (led_link_up),
     .clk_req      (clk_req)
@@ -131,7 +131,7 @@ module tb;
 //--------------------------------------------------------------
 // Link-up watch
 //--------------------------------------------------------------
-// led_link_up[2] is driven with ~user_lnk_up by the design, so it falling is
+// led_link_up[2] is driven with ~trn_link_up by the design, so it falling is
 // the moment the PCIe link reaches L0 and the SOC comes out of reset.
 
   logic link_up_seen;
@@ -139,14 +139,12 @@ module tb;
   initial link_up_seen = 1'b0;
 
   // Individual link status bits, so a stall can be pinned to a layer
-  always @(dut.user_lnk_up)
-    $display("%t  TB     user_lnk_up  = %b", $time, dut.user_lnk_up);
-  always @(dut.user_reset)
-    $display("%t  TB     user_reset   = %b", $time, dut.user_reset);
-  always @(dut.u_pcie.trn_lnk_up)
-    $display("%t  TB     trn_lnk_up   = %b", $time, dut.u_pcie.trn_lnk_up);
-  always @(dut.u_pcie.pl_phy_lnk_up_wire)
-    $display("%t  TB     phy_lnk_up   = %b", $time, dut.u_pcie.pl_phy_lnk_up_wire);
+  always @(dut.u_pcie.u_core.u_pcie_block.PLPHYLNKUPN)
+    $display("%t  TB     pl_phy_lnk_up = %b", $time, !dut.u_pcie.u_core.u_pcie_block.PLPHYLNKUPN);
+  always @(dut.core_rst_n)
+    $display("%t  TB     core_rst_n   = %b", $time, dut.core_rst_n);
+  always @(dut.trn_link_up)
+    $display("%t  TB     trn_link_up   = %b", $time, dut.trn_link_up);
 
   always @(negedge led_link_up[2]) begin
     if (!link_up_seen) begin
@@ -163,7 +161,7 @@ module tb;
 // enumeration is making progress without opening a waveform.
 
 `ifndef NO_TLP_TRACE
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.s_axis_tx.tvalid && dut.s_axis_tx.tready && !dut.s_axis_tx.tlast) begin
       $display("%t  TX-TLP hdr0=%08h hdr1=%08h", $time,
                dut.s_axis_tx.tdata[31:0], dut.s_axis_tx.tdata[63:32]);
@@ -179,8 +177,8 @@ module tb;
 //   tlp_tx  RC -> EP, what the firmware sends
 //   tlp_rx  EP -> RC, the completions coming back
 
-  tlp_dw_if tx_dw (dut.user_clk);
-  tlp_dw_if rx_dw (dut.user_clk);
+  tlp_dw_if tx_dw (dut.clk62m5);
+  tlp_dw_if rx_dw (dut.clk62m5);
 
   tlp_dw_monitor tlp_tx (
     .axis_tdata  (dut.s_axis_tx.tdata),
@@ -255,7 +253,7 @@ module tb;
   integer csr_acc;
   initial csr_acc = 0;
 
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.u_soc.mem.valid && dut.u_soc.is_bridge && dut.u_soc.mem.ready) begin
       csr_acc = csr_acc + 1;
       if (csr_acc <= 300 || (csr_acc % 5000) == 0) begin
@@ -276,7 +274,7 @@ module tb;
   integer first_n;
   initial first_n = 0;
 
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready && first_n < `BUS_TRACE_N) begin
       first_n = first_n + 1;
       $display("%t  BUS  %2d  addr=%08h %s data=%08h", $time, first_n,
@@ -294,7 +292,7 @@ module tb;
     cpu_acc = 0; cpu_pc_min = 32'h7fffffff; cpu_pc_max = 0;
   end
 
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready) begin
       cpu_acc = cpu_acc + 1;
       if (dut.u_soc.is_ram) begin
@@ -350,7 +348,7 @@ module tb;
 
   // Every firmware read of rx.data. The last one before the marker is the
   // memory read-back, so it is frozen into mem_rd_payload when the marker lands.
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
         dut.u_soc.is_bridge && !(|dut.u_soc.mem.wstrb) &&
         dut.u_soc.mem.addr[7:0] == 8'h14) begin
@@ -358,7 +356,7 @@ module tb;
     end
   end
 
-  always @(posedge dut.user_clk) begin
+  always @(posedge dut.clk62m5) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
         dut.u_soc.is_bridge && (|dut.u_soc.mem.wstrb) &&
         dut.u_soc.mem.addr[7:0] == 8'h0c) begin
@@ -366,7 +364,7 @@ module tb;
       tlp_tx_count = tlp_tx_count + 1;
 
       // Fmt/Type 0x40 is a Memory Write; its payload is this very dword
-      if (dut.u_soc.tx_header0[31:24] == 8'h40) begin
+      if (dut.u_soc.tx_dw0[31:24] == 8'h40) begin
         mem_wr_payload = dut.u_soc.mem.wdata;
         mem_wr_seen    = 1'b1;
       end

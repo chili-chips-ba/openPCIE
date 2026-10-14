@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# RTL formatting check: every opensource RTL file is in the project style
+# (4.build/hw_build.openXC7/run-format.sh --check).
+
+name: format
+
+on:
+  push:
+  pull_request:
+
+env:
+  VERIBLE_VERSION: v0.0-4296-g0f262651
+
+jobs:
+  verible-format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Verible ${{ env.VERIBLE_VERSION }}
+        run: |
+          curl -sSfL "https://github.com/chipsalliance/verible/releases/download/${VERIBLE_VERSION}/verible-${VERIBLE_VERSION}-linux-static-x86_64.tar.gz" | tar -xz -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/verible-${VERIBLE_VERSION}/bin" >> "$GITHUB_PATH"
+
+      - name: run-format --check
+        run: bash 4.build/hw_build.openXC7/run-format.sh --check

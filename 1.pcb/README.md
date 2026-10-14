@@ -20,7 +20,7 @@ The board is designed for flexible PCIE system development and testing, featurin
 - Innovative RC Connector Design:
   - Allows natively EndPoint cards to function as a RootComplex without hardware modification.
 
-Designed with **KiCad 10.0.6**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
+Designed with **KiCad 10.0.7**, from schematic entry to layout. For the full schematic PDF, click [here](openpci2-backplane/openpci2-backplane.pdf).
 
 ### Production Files
 
@@ -118,7 +118,7 @@ Impedance-controlled traces:
 ---
 ## Usage scenarios
 
-### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen2 x1)
+### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen2 x4)
 
 <p align="center" width="100%">
     <img alt="Direct FPGA RC to FPGA EP setup, view 1" width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
@@ -139,9 +139,9 @@ Impedance-controlled traces:
   </tr>
 </table>
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. Our Artix-7 RootComplex has been tested in this setup and trains a **Gen2 x1** link to the EndPoint.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. Our Artix-7 RootComplex has been tested in this setup and trains a **Gen2 x4** link to the EndPoint, using all four lanes of the RC4 ⇔ EP4 island; x4 is the default build. A **Gen2 x1** link works too.
 
-> **Note:** As a bonus, the direct connection has also been tested in **Gen2 x4** mode, using all four lanes of the RC4 ⇔ EP4 island, with both the opensource and the AMD RC designs. The checked-in designs stay at **x1**, the committed deliverable.
+> **Note:** x4 can only be tested in this Direct topology. Behind the switch (Usecase 2) the link is x1. Both the opensource and the AMD RC designs have been tested at x4; the AMD design is checked in at x1.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 

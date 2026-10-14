@@ -37,110 +37,110 @@
 //              https://opensource.org/license/bsd-3-clause
 //--------------------------------------------------------------------------
 
-module trn_tx #(
-  localparam int C_DATA_WIDTH = 64,
-  localparam int KEEP_WIDTH   = 8,
-  localparam int REM_WIDTH    = 1
-) (
-  axis_if.slave               s_axis_tx,
+module trn_tx
+  import pcie_pkg::*;
+(
+    axis_if.slave s_axis_tx,
+    trn_if.user   trn,        // TX half: td ... tecrc_gen, tdst_rdy, link_up
 
-  output     [C_DATA_WIDTH-1:0] trn_td,
-  output                        trn_tsof,
-  output                        trn_teof,
-  output                        trn_tsrc_rdy,
-  input                         trn_tdst_rdy,
-  output                        trn_tsrc_dsc,
-  output        [REM_WIDTH-1:0] trn_trem,
-  output                        trn_terrfwd,
-  output                        trn_tstr,
-  output                        trn_tecrc_gen,
-  input                         trn_lnk_up,
-
-  input                         tready_thrtl,
-  input                         user_clk,
-  input                         user_rst
+    input logic tready_thrtl,
+    input logic clk62m5,
+    input logic core_rst_n
 );
 
-  logic  [C_DATA_WIDTH-1:0] reg_tdata;
-  logic                     reg_tvalid;
-  logic    [KEEP_WIDTH-1:0] reg_tkeep;
-  logic               [3:0] reg_tuser;
-  logic                     reg_tlast;
 
-  logic                     trn_in_packet;
-  logic                     axi_in_packet;
-  logic                     disable_trn;
-  logic                     reg_disable_trn;
-  logic                     reg_tsrc_rdy;
+  logic           [TRN_DATA_W-1:0] reg_tdata;
+  logic                            reg_tvalid;
+  logic                            reg_trem;  // tkeep[7]: upper TRN_DATA_W of the beat valid
+  pcie_tx_tuser_t                  reg_tuser;
+  logic                            reg_tlast;
 
-  wire axi_beat_live  = s_axis_tx.tvalid && s_axis_tx.tready;
-  wire axi_end_packet = axi_beat_live && s_axis_tx.tlast;
+  logic                            trn_in_packet;
+  logic                            axi_in_packet;
+  logic                            disable_trn;
+  logic                            reg_disable_trn;
+  logic                            reg_tsrc_rdy;
 
-  assign trn_td = {reg_tdata[31:0], reg_tdata[63:32]};
+  logic                            axi_beat_live;
+  assign axi_beat_live = s_axis_tx.tvalid && s_axis_tx.tready;
+  logic axi_end_packet;
+  assign axi_end_packet = axi_beat_live && s_axis_tx.tlast;
 
-  assign trn_tsof = reg_tvalid && !trn_in_packet;
+  assign trn.td         = {reg_tdata[31:0], reg_tdata[63:32]};
 
-  always_ff @(posedge user_clk) begin
-    if (user_rst) begin
+  assign trn.tsof       = reg_tvalid && !trn_in_packet;
+
+  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+    if (!core_rst_n) begin
       trn_in_packet <= 1'b0;
-    end else begin
-      if (trn_tsof && trn_tsrc_rdy && trn_tdst_rdy && !trn_teof)
+    end
+    else begin
+      if (trn.tsof && trn.tsrc_rdy && trn.tdst_rdy && !trn.teof) begin
         trn_in_packet <= 1'b1;
-      else if ((trn_in_packet && trn_teof && trn_tsrc_rdy) || !trn_lnk_up)
+      end
+      else if ((trn_in_packet && trn.teof && trn.tsrc_rdy) || !trn.link_up) begin
         trn_in_packet <= 1'b0;
+      end
     end
   end
 
-  always_ff @(posedge user_clk) begin
-    if (user_rst) begin
+  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+    if (!core_rst_n) begin
       axi_in_packet <= 1'b0;
-    end else begin
-      if (axi_beat_live && !s_axis_tx.tlast)
+    end
+    else begin
+      if (axi_beat_live && !s_axis_tx.tlast) begin
         axi_in_packet <= 1'b1;
-      else if (axi_beat_live)
+      end
+      else if (axi_beat_live) begin
         axi_in_packet <= 1'b0;
+      end
     end
   end
 
-  always_ff @(posedge user_clk) begin
-    if (user_rst) begin
+  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+    if (!core_rst_n) begin
       reg_disable_trn <= 1'b0;
-    end else begin
-      if (axi_in_packet && !trn_lnk_up && !axi_end_packet)
+    end
+    else begin
+      if (axi_in_packet && !trn.link_up && !axi_end_packet) begin
         reg_disable_trn <= 1'b1;
-      else if (axi_end_packet)
+      end
+      else if (axi_end_packet) begin
         reg_disable_trn <= 1'b0;
+      end
     end
   end
-  assign disable_trn = reg_disable_trn || !trn_lnk_up;
+  assign disable_trn   = reg_disable_trn || !trn.link_up;
 
-  assign trn_trem = reg_tkeep[7];
+  assign trn.trem      = reg_trem;
 
-  assign trn_teof      = reg_tlast;
-  assign trn_tecrc_gen = reg_tuser[0];
-  assign trn_terrfwd   = reg_tuser[1];
-  assign trn_tstr      = reg_tuser[2];
-  assign trn_tsrc_dsc  = reg_tuser[3];
+  assign trn.teof      = reg_tlast;
+  assign trn.tecrc_gen = reg_tuser.ecrc_gen;
+  assign trn.terrfwd   = reg_tuser.err_fwd;
+  assign trn.tstr      = reg_tuser.str;
+  assign trn.tsrc_dsc  = reg_tuser.src_dsc;
 
-  always_ff @(posedge user_clk) begin
-    if (user_rst) begin
-      reg_tdata    <= {C_DATA_WIDTH{1'b0}};
+  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+    if (!core_rst_n) begin
+      reg_tdata    <= {TRN_DATA_W{1'b0}};
       reg_tvalid   <= 1'b0;
-      reg_tkeep    <= {KEEP_WIDTH{1'b0}};
+      reg_trem     <= 1'b0;
       reg_tlast    <= 1'b0;
-      reg_tuser    <= 4'h0;
+      reg_tuser    <= '0;
       reg_tsrc_rdy <= 1'b0;
-    end else begin
+    end
+    else begin
       reg_tdata    <= s_axis_tx.tdata;
       reg_tvalid   <= s_axis_tx.tvalid;
-      reg_tkeep    <= s_axis_tx.tkeep;
+      reg_trem     <= s_axis_tx.tkeep[7];
       reg_tlast    <= s_axis_tx.tlast;
       reg_tuser    <= s_axis_tx.tuser;
       reg_tsrc_rdy <= axi_beat_live && !disable_trn;
     end
   end
 
-  assign trn_tsrc_rdy     = reg_tsrc_rdy;
+  assign trn.tsrc_rdy     = reg_tsrc_rdy;
   assign s_axis_tx.tready = tready_thrtl;
 
 endmodule

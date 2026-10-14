@@ -205,7 +205,12 @@ FIRMWARE         = $(BLD_DIR)/sw_build/firmware.hex
 # Flags for xsim
 # SIM_FAST_TRAIN turns on the hard macro's shortened LTSSM training timers.
 # It is a simulation-only parameter of PCIE_2_1 -- see pcie_core.sv.
-ANALYSEFLAGS       = -i $(PCIEDIR)/verilog/headers --define VPROC_SV --define VPROC_BYTE_ENABLE --define SIM_FAST_TRAIN --define SIM_GEN1_ONLY --define SIM_PIPE_CODING $(CPUDEFINE) $(USRSIMOPTS) --prj tb.prj
+# PCIE_LANES has a value, so it goes to xvlog through an options file that
+# xvlog reads itself (xvlog.defines): on Windows xvlog is a .bat, and cmd.exe
+# splits NAME=VALUE on the command line. SIM_LANES = 1 until the PIPE model and
+# the test program drive x4 too.
+SIM_LANES         ?= 1
+ANALYSEFLAGS       = -i $(PCIEDIR)/verilog/headers --define VPROC_SV --define VPROC_BYTE_ENABLE --define SIM_FAST_TRAIN --define SIM_GEN1_ONLY --define SIM_PIPE_CODING -f xvlog.defines $(CPUDEFINE) $(USRSIMOPTS) --prj tb.prj
 ELABFLAGS          = -sv_lib $(VPROC_PLI) --timescale 1ps/1ps --debug typical $(XILLIBS) $(TB_NAME) glbl
 # The snapshot xelab produces when two tops are elaborated is named
 # "<top>#glbl". The hash has to be escaped or make treats the rest as a comment.
@@ -264,8 +269,16 @@ $(VOBJDIR)/%.o: $(PCIECODEDIR)/%.cpp
 $(VOBJDIR)/%.o: $(PCIEDIR)/ltssm/%.c
 	@$(CC) -c -fPIC $(OPTFLAG) -Wno-write-strings $(DEFS) $(INCLPATHS) $< -o $@
 
+# The user code differs per CPU option (VUserMain0, the ISS and its defines):
+# a change of CPU= throws the objects and the library away, so that the next
+# build cannot mix them. obj/.cpu holds the CPU of the last build.
+CPU_STAMP = $(VOBJDIR)/.cpu
+$(CPU_STAMP): FORCE | $(VOBJDIR)
+	@if [ "$$(cat $@ 2>/dev/null)" != "$(CPU)" ]; then \
+	    rm -f $(VOBJDIR)/*.o $(USERLIB) $(VPROC_PLI); echo "$(CPU)" > $@; fi
+
 # Rule to build library of user code
-$(USERLIB): $(VOBJDIR) $(VOBJS)
+$(USERLIB): $(CPU_STAMP) $(VOBJS)
 	@ar cr $(USERLIB) $(VOBJS)
     
 # Rule to build VProc shared object
@@ -276,6 +289,7 @@ $(VPROC_PLI): $(USERLIB)
 # Compile simulation
 #
 sysverilog: $(VPROC_PLI) firmware.hex
+	@echo "--define PCIE_LANES=$(SIM_LANES)" > xvlog.defines
 	@$(XVLOG) $(ANALYSEFLAGS)
 	@$(XVLOG) $(GLBL)
 	@$(XELAB) $(ELABFLAGS)

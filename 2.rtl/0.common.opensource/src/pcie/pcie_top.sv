@@ -39,170 +39,123 @@
 
 module pcie_top
   import link_pkg::*;
-#(
-  localparam int C_DATA_WIDTH            = 64,
-  localparam int KEEP_WIDTH              = 8
-) (
-  output  [PCIE_LANES-1:0]  pci_exp_txp,
-  output  [PCIE_LANES-1:0]  pci_exp_txn,
-  input   [PCIE_LANES-1:0]  pci_exp_rxp,
-  input   [PCIE_LANES-1:0]  pci_exp_rxn,
+(
+    output logic [PCIE_LANES-1:0] pci_exp_txp,
+    output logic [PCIE_LANES-1:0] pci_exp_txn,
+    input  logic [PCIE_LANES-1:0] pci_exp_rxp,
+    input  logic [PCIE_LANES-1:0] pci_exp_rxn,
 
-  input             pipe_mmcm_rst_n,
 
-  output                        user_clk_out,
-  output logic                  user_reset_out,
-  output                        user_lnk_up,
+    output logic clk62m5,     // 62.5 MHz, from clk_rst_gen
+    output logic core_rst_n,  // clk62m5 reset: low on PERST# or no data link
+    output logic trn_link_up, // data link up (TRNLNKUP), clk62m5
 
-  axis_if.slave               s_axis_tx,   // TLPs from the SOC (USER_W 4)
-  axis_if.master              m_axis_rx,   // TLPs to the SOC   (USER_W 22)
+    axis_if.slave  s_axis_tx,  // TLPs from the SOC (tuser: pcie_tx_tuser_t)
+    axis_if.master m_axis_rx,  // TLPs to the SOC   (tuser: pcie_rx_tuser_t)
 
-  cfg_if.core                   cfg,      // status sideband to the SOC
+    cfg_if.core cfg,  // status sideband to the SOC
 
-  input                 sys_clk,
-  input                 sys_rst_n
+    input logic refclk_p,  // 100 MHz PCIE REFCLK+
+    input logic refclk_n,  // REFCLK-
+    input logic perst_n
 );
 
-  localparam [15:0] CFG_VEND_ID        = 16'h10EE;
-  localparam [15:0] CFG_DEV_ID         = 16'h7121;
-  localparam [7:0]  CFG_REV_ID         =  8'h00;
-  localparam [15:0] CFG_SUBSYS_VEND_ID = 16'h10EE;
-  localparam [15:0] CFG_SUBSYS_ID      = 16'h0007;
+  localparam logic [15:0] CFG_VEND_ID        = 16'h10EE;
+  localparam logic [15:0] CFG_DEV_ID         = 16'h7121;
+  localparam logic [ 7:0] CFG_REV_ID         = 8'h00;
+  localparam logic [15:0] CFG_SUBSYS_VEND_ID = 16'h10EE;
+  localparam logic [15:0] CFG_SUBSYS_ID      = 16'h0007;
 
-  wire phy_rdy_n;
-  wire user_rst_n;
-  wire trn_lnk_up;
+  logic       phy_rdy_n;
 
-  wire        clk_pclk;
-  wire        clk_rxusrclk;
-  wire        clk_dclk;
-  wire        clk_userclk1;
-  wire        clk_oobclk;
-  wire        clk_mmcm_lock;
+  logic       pipe_clk;
+  logic       clk125;
+  logic       clk_mmcm_lock;
 
-  wire                                 pipe_txoutclk;
-  wire [(LINK_CAP_MAX_LINK_WIDTH-1):0] pipe_pclk_sel;
+  logic       pipe_txoutclk;
+  logic       pipe_clk_sel;  // all lanes voted (gtp_wrapper)
 
-  wire [5:0] pl_ltssm_state_int;
-  wire       pl_phy_lnk_up_wire;
-  wire       pl_received_hot_rst_wire;
+  logic [5:0] pl_ltssm_state_int;
 
-  pipe_if                                 pipe_mac ();   // 16-bit PIPE at the MAC
+  pipe_if pipe_mac ();  // 16-bit PIPE at the MAC
 
-  clk_gen  u_clk_gen (
-    .CLK_CLK            (sys_clk),
-    .CLK_TXOUTCLK       (pipe_txoutclk),
-    .CLK_RST_N          (pipe_mmcm_rst_n),
-    .CLK_PCLK_SEL       (pipe_pclk_sel),
+  logic rst125_n;  // from clk_rst_gen: PERST# or FPGA configuration
+  logic rst62m5_n;  // the same, released on clk62m5
+  logic pipe_rst_n;  // the same, released on pipe_clk
 
-    .CLK_PCLK           (clk_pclk),
-    .CLK_RXUSRCLK       (clk_rxusrclk),
-    .CLK_DCLK           (clk_dclk),
-    .CLK_OOBCLK         (clk_oobclk),
-    .CLK_USERCLK1       (clk_userclk1),
-    .CLK_MMCM_LOCK      (clk_mmcm_lock)
+  clk_rst_gen u_clk_rst_gen (
+      .txoutclk    (pipe_txoutclk),
+      .perst_n     (perst_n),
+      .rst125_n    (rst125_n),
+      .rst62m5_n   (rst62m5_n),
+      .pipe_clk_sel(pipe_clk_sel),
+
+      .pipe_clk  (pipe_clk),
+      .pipe_rst_n(pipe_rst_n),
+      .clk125    (clk125),
+      .clk62m5   (clk62m5),
+      .mmcm_lock (clk_mmcm_lock)
   );
 
   phy_top u_phy_top (
-    .pl_ltssm_state   (pl_ltssm_state_int),
-    .pipe_mac         (pipe_mac),
+      .pl_ltssm_state(pl_ltssm_state_int),
+      .pipe_mac      (pipe_mac),
 
-    .pci_exp_txn      (pci_exp_txn),
-    .pci_exp_txp      (pci_exp_txp),
-    .pci_exp_rxn      (pci_exp_rxn),
-    .pci_exp_rxp      (pci_exp_rxp),
+      .pci_exp_txn(pci_exp_txn),
+      .pci_exp_txp(pci_exp_txp),
+      .pci_exp_rxn(pci_exp_rxn),
+      .pci_exp_rxp(pci_exp_rxp),
 
-    .sys_clk          (sys_clk),
-    .sys_rst_n        (sys_rst_n),
+      .refclk_p  (refclk_p),
+      .refclk_n  (refclk_n),
+      .rst125_n  (rst125_n),
+      .pipe_rst_n(pipe_rst_n),
 
-    .PIPE_PCLK_IN     (clk_pclk),
-    .PIPE_RXUSRCLK_IN (clk_rxusrclk),
-    .PIPE_DCLK_IN     (clk_dclk),
-    .PIPE_OOBCLK_IN   (clk_oobclk),
-    .PIPE_MMCM_LOCK_IN(clk_mmcm_lock),
-    .PIPE_TXOUTCLK_OUT(pipe_txoutclk),
-    .PIPE_PCLK_SEL_OUT(pipe_pclk_sel),
+      .pipe_clk_in      (pipe_clk),
+      .pipe_drp_clk_in  (clk125),
+      .pipe_mmcm_lock_in(clk_mmcm_lock),
+      .pipe_txoutclk_out(pipe_txoutclk),
+      .pipe_clk_sel_out (pipe_clk_sel),
 
-    .phy_rdy_n        (phy_rdy_n)
+      .phy_rdy_n(phy_rdy_n)
   );
 
-  pcie_core u_pcie_core (
-    .user_clk_out   (user_clk_out),
-    .user_reset     (user_reset_out),
-    .user_lnk_up    (user_lnk_up),
-    .trn_lnk_up     (trn_lnk_up),
-    .user_rst_n     (user_rst_n),
+  pcie_core u_core (
+      .core_rst_n (core_rst_n),
+      .trn_link_up(trn_link_up),
 
-    .s_axis_tx      (s_axis_tx),
-    .m_axis_rx      (m_axis_rx),
+      .s_axis_tx(s_axis_tx),
+      .m_axis_rx(m_axis_rx),
 
-    .tx_buf_avail      (cfg.tx_buf_avail),
+      .tx_buf_avail(cfg.tx_buf_avail),
 
-    .cfg_dev_id             (CFG_DEV_ID),
-    .cfg_vend_id            (CFG_VEND_ID),
-    .cfg_rev_id             (CFG_REV_ID),
-    .cfg_subsys_id          (CFG_SUBSYS_ID),
-    .cfg_subsys_vend_id     (CFG_SUBSYS_VEND_ID),
+      .cfg_dev_id        (CFG_DEV_ID),
+      .cfg_vend_id       (CFG_VEND_ID),
+      .cfg_rev_id        (CFG_REV_ID),
+      .cfg_subsys_id     (CFG_SUBSYS_ID),
+      .cfg_subsys_vend_id(CFG_SUBSYS_VEND_ID),
 
-    .cfg_msg_received_err_fatal      (cfg.msg_err_fatal),
+      .cfg_msg_received_err_fatal(cfg.msg_err_fatal),
 
-    .pl_ltssm_state              (pl_ltssm_state_int),
-    .pl_phy_lnk_up               (pl_phy_lnk_up_wire),
-    .pl_received_hot_rst         (pl_received_hot_rst_wire),
+      .pl_ltssm_state(pl_ltssm_state_int),
 
-    .pipe_mac       (pipe_mac),
-    .phy_rdy_n      (phy_rdy_n),
-    .pipe_clk       (clk_pclk),
-    .user_clk       (clk_userclk1)
+      .pipe_mac (pipe_mac),
+      .phy_rdy_n(phy_rdy_n),
+      .pipe_clk (pipe_clk),
+      .clk62m5  (clk62m5)
   );
 
-  (* KEEP = "TRUE", ASYNC_REG = "TRUE" *) logic user_lnk_up_int;
-  logic  user_reset_int;
-  logic  pl_received_hot_rst_q;
-  logic  pl_phy_lnk_up_q;
-  wire pl_received_hot_rst_sync;
-  wire pl_phy_lnk_up_sync;
-  wire sys_or_hot_rst;
-
-  assign user_lnk_up        = user_lnk_up_int;
-  assign sys_or_hot_rst     = !sys_rst_n || pl_received_hot_rst_q;
-
-  xpm_cdc_single #(.DEST_SYNC_FF(2), .SRC_INPUT_REG(0)) phy_lnk_up_cdc (
-    .src_clk  (clk_pclk),
-    .src_in   (pl_phy_lnk_up_wire),
-    .dest_clk (user_clk_out),
-    .dest_out (pl_phy_lnk_up_sync)
-  );
-  xpm_cdc_single #(.DEST_SYNC_FF(2), .SRC_INPUT_REG(0)) pl_received_hot_rst_cdc (
-    .src_clk  (clk_pclk),
-    .src_in   (pl_received_hot_rst_wire),
-    .dest_clk (user_clk_out),
-    .dest_out (pl_received_hot_rst_sync)
-  );
-
-  always_ff @(posedge user_clk_out) begin
-    if (!sys_rst_n) begin
-      pl_received_hot_rst_q <= 1'b0;
-      pl_phy_lnk_up_q       <= 1'b0;
-    end else begin
-      pl_received_hot_rst_q <= pl_received_hot_rst_sync;
-      pl_phy_lnk_up_q       <= pl_phy_lnk_up_sync;
+  // core_rst_n: the clk62m5 reset of the TRN modules and the SOC. PERST# (by
+  // rst62m5_n) asserts it; it is released once the PCIE data link is up
+  // (trn_link_up, from TRNLNKUP in this clock domain), and a link drop asserts
+  // it again. An RC is a Downstream Port and never receives a hot reset.
+  always_ff @(posedge clk62m5 or negedge rst62m5_n) begin
+    if (!rst62m5_n) begin
+      core_rst_n <= 1'b0;
     end
-  end
-
-  always_ff @(posedge user_clk_out) begin
-    if (!sys_rst_n) user_lnk_up_int <= 1'b0;
-    else            user_lnk_up_int <= trn_lnk_up;
-  end
-
-  always_ff @(posedge user_clk_out or posedge sys_or_hot_rst) begin
-    if (sys_or_hot_rst)                        user_reset_int <= 1'b1;
-    else if (user_rst_n && pl_phy_lnk_up_q)    user_reset_int <= 1'b0;
-  end
-
-  always_ff @(posedge user_clk_out or posedge sys_or_hot_rst) begin
-    if (sys_or_hot_rst) user_reset_out <= 1'b1;
-    else                user_reset_out <= user_reset_int;
+    else begin
+      core_rst_n <= trn_link_up;
+    end
   end
 
 endmodule

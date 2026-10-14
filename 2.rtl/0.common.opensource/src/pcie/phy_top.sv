@@ -40,82 +40,81 @@
 module phy_top
   import link_pkg::*;
 (
-  input  wire [5:0]                             pl_ltssm_state,
+    input logic [5:0] pl_ltssm_state,
 
-  pipe_if.phy                              pipe_mac,
+    pipe_if.phy pipe_mac,
 
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txn,
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_txp,
-  input  wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_rxn,
-  input  wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     pci_exp_rxp,
+    output logic [PCIE_LANES-1:0] pci_exp_txn,
+    output logic [PCIE_LANES-1:0] pci_exp_txp,
+    input  logic [PCIE_LANES-1:0] pci_exp_rxn,
+    input  logic [PCIE_LANES-1:0] pci_exp_rxp,
 
-  input  wire                                   sys_clk,
-  input  wire                                   sys_rst_n,
+    input logic refclk_p,   // 100 MHz PCIE REFCLK+
+    input logic refclk_n,   // REFCLK-
+    input logic rst125_n,   // released on clk125
+    input logic pipe_rst_n, // released on pipe_clk
 
-  input  wire                                   PIPE_PCLK_IN,
-  input  wire                                   PIPE_RXUSRCLK_IN,
-  input  wire                                   PIPE_DCLK_IN,
-  input  wire                                   PIPE_OOBCLK_IN,
-  input  wire                                   PIPE_MMCM_LOCK_IN,
-  output wire                                   PIPE_TXOUTCLK_OUT,
-  output wire [LINK_CAP_MAX_LINK_WIDTH-1:0]     PIPE_PCLK_SEL_OUT,
+    input  logic pipe_clk_in,
+    input  logic pipe_drp_clk_in,
+    input  logic pipe_mmcm_lock_in,
+    output logic pipe_txoutclk_out,
+    output logic pipe_clk_sel_out,
 
-  output wire                                   phy_rdy_n
+    output logic phy_rdy_n
 );
 
-  wire [LINK_CAP_MAX_LINK_WIDTH-1:0] phystatus_rst;
+  logic [PCIE_LANES-1:0] phystatus_rst;
 
   // PIPE towards gtp_wrapper (GTP side, 32-bit per lane)
-  pipe_if #(.LANES(LINK_CAP_MAX_LINK_WIDTH), .DATA_W(32)) pipe_phy ();
+  pipe_if #(
+      .LANES (PCIE_LANES),
+      .DATA_W(32)
+  ) pipe_phy ();
 
-  logic                                phy_rdy_n_int;
-  logic                                reg_clock_locked;
-  wire                               all_phystatus_rst;
+  logic all_phystatus_rst;
 
   mac2phy u_mac2phy (
-    .pipe_mac       (pipe_mac),
-    .pipe_phy       (pipe_phy),
-    .pl_ltssm_state (pl_ltssm_state),
-    .pipe_clk       (PIPE_PCLK_IN),
-    .clock_locked   (PIPE_MMCM_LOCK_IN),
-    .phy_rdy_n      (phy_rdy_n_int)
+      .pipe_mac      (pipe_mac),
+      .pipe_phy      (pipe_phy),
+      .pl_ltssm_state(pl_ltssm_state),
+      .pipe_clk      (pipe_clk_in),
+      .pipe_rst_n    (pipe_rst_n),
+      .phy_rdy_n     (phy_rdy_n)
   );
 
   gtp_wrapper u_gtp_wrapper (
-    .PIPE_CLK           (sys_clk),
-    .PIPE_RESET_N       (sys_rst_n),
+      .refclk_p  (refclk_p),
+      .refclk_n  (refclk_n),
+      .rst125_n  (rst125_n),
+      .pipe_rst_n(pipe_rst_n),
 
-    .pipe_phy           (pipe_phy),
-    .PIPE_TXP           (pci_exp_txp),
-    .PIPE_TXN           (pci_exp_txn),
+      .pipe(pipe_phy),
+      .txp (pci_exp_txp),
+      .txn (pci_exp_txn),
 
-    .PIPE_RXP           (pci_exp_rxp),
-    .PIPE_RXN           (pci_exp_rxn),
+      .rxp(pci_exp_rxp),
+      .rxn(pci_exp_rxn),
 
-    .PIPE_PHYSTATUS_RST (phystatus_rst),
+      .phystatus_rst(phystatus_rst),
 
-    .PIPE_PCLK_IN       (PIPE_PCLK_IN),
-    .PIPE_RXUSRCLK_IN   (PIPE_RXUSRCLK_IN),
-    .PIPE_DCLK_IN       (PIPE_DCLK_IN),
-    .PIPE_OOBCLK_IN     (PIPE_OOBCLK_IN),
-    .PIPE_MMCM_LOCK_IN  (PIPE_MMCM_LOCK_IN),
-    .PIPE_TXOUTCLK_OUT  (PIPE_TXOUTCLK_OUT),
-    .PIPE_PCLK_SEL_OUT  (PIPE_PCLK_SEL_OUT)
+      .pipe_clk    (pipe_clk_in),
+      .clk125      (pipe_drp_clk_in),
+      .mmcm_lock   (pipe_mmcm_lock_in),
+      .txoutclk    (pipe_txoutclk_out),
+      .pipe_clk_sel(pipe_clk_sel_out)
   );
-
-  always_ff @(posedge PIPE_PCLK_IN or negedge PIPE_MMCM_LOCK_IN) begin
-    if (!PIPE_MMCM_LOCK_IN) reg_clock_locked <= 1'b0;
-    else               reg_clock_locked <= 1'b1;
-  end
 
   assign all_phystatus_rst = &phystatus_rst;
 
-  always_ff @(posedge PIPE_PCLK_IN) begin
-    if (!reg_clock_locked) phy_rdy_n_int <= 1'b0;
-    else                   phy_rdy_n_int <= all_phystatus_rst;
+  always_ff @(posedge pipe_clk_in or negedge pipe_rst_n) begin
+    if (!pipe_rst_n) begin
+      phy_rdy_n <= 1'b1;  // not ready: holds SYSRSTN of PCIE_2_1 asserted
+    end
+    else begin
+      phy_rdy_n <= all_phystatus_rst;
+    end
   end
 
-  assign phy_rdy_n = phy_rdy_n_int;
 
 endmodule
 // -----------------------------------------------------------------------------
