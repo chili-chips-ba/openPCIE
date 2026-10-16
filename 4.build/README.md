@@ -51,8 +51,7 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | openXC7 v1.0.0 (1) | Yosys 0.69, nextpnr 3e5c2cdd | bitstream, default (`read_slang`) | builds, x4 and x1 |
 | openXC7 pre-v1.0.0 (2) | Yosys 0.38, nextpnr-xilinx 45a986b | bitstream, `TOOLCHAIN=old` | board, x1 |
 | sv2v | v0.0.13 | `FRONTEND=sv2v`, `TOOLCHAIN=old` | builds |
-| AMD Vivado | 2026.1 | co-sim (`xsim`) | runs |
-| AMD Vivado | 2025.1 | `run-lint.sh` CDC phase, project scripts | checks |
+| AMD Vivado | 2026.1 | co-sim (`xsim`), `run-lint.sh` CDC phase, implementation | runs, checks |
 | PeakRDL | 1.5.0 (3) | CSR RTL, headers, docs | generates |
 | xPack RISC-V GCC | 15.2.0-1 | firmware | board |
 | GCC, host | 10+ (4) | co-sim (VProc, pcievhost) | runs |

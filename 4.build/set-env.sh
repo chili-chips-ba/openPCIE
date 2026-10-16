@@ -188,7 +188,7 @@ _se_tool HOST_CC  gcc 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_CXX g++ 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_AR  ar  "" ''                    "$_se_hint_cc"
 
-_se_hint_viv="AMD Vivado 2025.1+ for Linux (latest: 2026.1), e.g. /tools/Xilinx/2026.1/Vivado (or set XILINX_VIVADO). Windows xsim cannot load the Linux-built co-sim models."
+_se_hint_viv="AMD Vivado 2026.1+ for Linux, e.g. /tools/Xilinx/2026.1/Vivado (or set XILINX_VIVADO). Windows xsim cannot load the Linux-built co-sim models."
 _se_vv=${XILINX_VIVADO:-}
 [ -z "$_se_vv" ] && command -v vivado >/dev/null 2>&1 && _se_vv=$(dirname "$(dirname "$(command -v vivado)")")
 [ -z "$_se_vv" ] && _se_vv=$(_se_newest /tools/Xilinx/20*/Vivado /tools/Xilinx/Vivado/20* \
@@ -196,10 +196,10 @@ _se_vv=${XILINX_VIVADO:-}
                                         "$HOME"/Xilinx/20*/Vivado "$HOME"/Xilinx/Vivado/20*)
 if [ -n "$_se_vv" ] && [ -x "$_se_vv/bin/vivado" ]; then
     _se_vver=$(echo "$_se_vv" | grep -oE '20[0-9]{2}\.[0-9]' | tail -1)
-    if _se_ge "${_se_vver:-0}" 2025.1; then
+    if _se_ge "${_se_vver:-0}" 2026.1; then
         printf '  %-18s %-12s %s\n' XILINX_VIVADO "${_se_vver:-?}" "$_se_vv" >&2
     else
-        printf '  %-18s %-12s %s -- TOO OLD, need 2025.1 or later\n' XILINX_VIVADO "${_se_vver:-?}" "$_se_vv" >&2
+        printf '  %-18s %-12s %s -- TOO OLD, need 2026.1 or later\n' XILINX_VIVADO "${_se_vver:-?}" "$_se_vv" >&2
         _se_need "$_se_hint_viv"
     fi
     _se_set XILINX_VIVADO "$_se_vv"

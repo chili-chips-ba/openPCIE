@@ -176,7 +176,7 @@ complementary rather than interchangeable.
 
 Linux or WSL, once:
 
-- **Vivado 2025.1 or later for Linux** (tested with 2026.1, which needs a license file even for `xsim`) -- `xvlog`, `xelab`, `xsim`. Windows `xsim` can be started from WSL, but it loads the C/C++ models (`-sv_lib`) only as a Windows DLL, not the Linux `.so` built here.
+- **Vivado 2026.1 for Linux** (needs a license file even for `xsim`) -- `xvlog`, `xelab`, `xsim`. Windows `xsim` can be started from WSL, but it loads the C/C++ models (`-sv_lib`) only as a Windows DLL, not the Linux `.so` built here.
 - **GCC 10+** (C++20) and `make`: `sudo apt install build-essential`
 - **RISC-V GCC** (xPack `riscv-none-elf-`) for the firmware, see [4.build](../4.build/README.md)
 
