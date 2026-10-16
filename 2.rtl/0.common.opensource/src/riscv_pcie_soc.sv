@@ -75,11 +75,13 @@ module riscv_pcie_soc
   assign is_bridge    = (addr_region == 8'h30);
 
   // -------------------------------------------------------------------------
-  // The CPU -- two interchangeable implementations
+  // The CPU -- three interchangeable implementations
   //
-  //   default             : the picorv32 RTL core, executing firmware.hex out
-  //                         of the instruction RAM below. This is what goes
-  //                         into the bitstream.
+  //   default             : the eduBOS5 RTL core (CPU.eduBOS5/), 2-stage
+  //                         pipeline, executing firmware.hex out of the RAM
+  //                         below; `define SOC_EDUBOS5_3STG for 3-stage.
+  //   `define SOC_CPU_PICORV32 : the picorv32 RTL core, same RAM and
+  //                         firmware.hex.
   //   `define SOC_CPU_VPROC : the VProc virtual processor, so that a native
   //                         C/C++ program or the rv32 ISS drives the very
   //                         same bus. Co-simulation only -- see
@@ -102,12 +104,12 @@ module riscv_pcie_soc
       .mem_wstrb(mem.wstrb),
       .mem_rdata(mem.rdata)
   );
-`else
+`elsif SOC_CPU_PICORV32
   picorv32 #(
       .PROGADDR_RESET (32'h0000_0000),
       .STACKADDR      (32'h0000_2000),
-      .BARREL_SHIFTER (1),
-      .ENABLE_COUNTERS(1)
+      .BARREL_SHIFTER (0),              // shifts by 4, then by 1, per cycle; the firmware has few
+      .ENABLE_COUNTERS(0)               // no rdcycle/rdinstret in the firmware
   ) cpu (
       .clk         (clk),
       .resetn      (resetn),
@@ -138,12 +140,64 @@ module riscv_pcie_soc
       .trace_valid (  /*LINT:OK*/),  // ENABLE_TRACE is 0
       .trace_data  (  /*LINT:OK*/)   // ENABLE_TRACE is 0
   );
+`else
+  // eduBOS5 is Harvard: it fetches through a second, read-only port of the RAM
+  // (below), which answers in one cycle as eduBOS5 expects; its data bus is the
+  // memory interface. Its stores are one-cycle requests that do not wait for
+  // ready, so the ready a store gets back, one cycle later, must not reach it:
+  // eduBOS5 would take it for the data of a load that follows. Only the ready
+  // of a load still waiting for its data goes through.
+  edubos5_pkg::cpu_pc_t        imem_addr;
+  logic                 [18:0] NC_imem_addr_hi;  // the RAM decodes [12:2]
+  logic                 [31:0] imem_rdat;
+  logic                        load_wait;
+  logic                        edubos5_rdy;
+
+  assign NC_imem_addr_hi = imem_addr[31:13];
+
+  always_ff @(posedge clk) begin
+    load_wait <= mem.valid && mem.wstrb == '0 && !mem.ready;
+  end
+  assign edubos5_rdy = mem.ready && load_wait;
+
+`ifdef SOC_EDUBOS5_3STG
+  localparam int EDUBOS5_WAIT4REGS = 1;  // 3-stage pipeline
+`else
+  localparam int EDUBOS5_WAIT4REGS = 0;  // 2-stage pipeline
 `endif
 
-  logic [31:0] ram[0:2047];
+  edubos5 #(
+      .EN_WAIT4REGS(EDUBOS5_WAIT4REGS)
+  ) cpu (
+      .clk        (clk),
+      .arst_n     (resetn),
+      .imem_addr  (imem_addr),
+      .imem_rdat  (imem_rdat),
+      .imem_rdy   (1'b1),
+      .imem_vld   (  /*LINT:OK*/),  // the RAM read port needs no request
+      .dmem_addr  (mem.addr),
+      .dmem_we    (mem.wstrb),
+      .dmem_strobe(  /*LINT:OK*/),  // dmem_vld is the request
+      .dmem_wdat  (mem.wdata),
+      .dmem_rdat  (mem.rdata),
+      .dmem_rdy   (edubos5_rdy),
+      .dmem_vld   (mem.valid)
+  );
+`endif
+
+  logic [31:0] ram[2048];
   initial begin
     $readmemh("firmware.hex", ram);
   end
+
+`ifndef SOC_CPU_VPROC
+`ifndef SOC_CPU_PICORV32
+  // eduBOS5's instruction port: read-only, one cycle
+  always_ff @(posedge clk) begin
+    imem_rdat <= ram[imem_addr[12:2]];
+  end
+`endif
+`endif
 
   always_ff @(posedge clk) begin
     ram_ready <= 1'b0;

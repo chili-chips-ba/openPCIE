@@ -85,6 +85,11 @@ kibot_*.kicad_pro
 4.build/hw_build.openXC7/build_artifacts*.new/
 4.build/hw_build.openXC7/build_artifacts*.slang/*
 !4.build/hw_build.openXC7/build_artifacts*.slang/top.x*.bit
+# Builds for a non-default CPU (make CPU=picorv32, edubos5_3stg) are not kept
+4.build/hw_build.openXC7/build_artifacts*.edubos5_3stg*/
+4.build/hw_build.openXC7/build_artifacts*.picorv32*/
+4.build/hw_build.openXC7/converted*.edubos5_3stg*/
+4.build/hw_build.openXC7/converted*.picorv32*/
 4.build/hw_build.openXC7/converted*.new/
 4.build/hw_build.openXC7/chipdb.new/
 

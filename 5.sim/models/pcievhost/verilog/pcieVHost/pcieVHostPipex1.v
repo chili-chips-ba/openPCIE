@@ -1,6 +1,6 @@
 //=============================================================
 //
-// Copyright (c) 2025 Simon Southwell. All rights reserved.
+// Copyright (c) 2025 - 2026 Simon Southwell. All rights reserved.
 //
 // Date: 25th July 2025
 //
@@ -27,15 +27,23 @@
 
 `WsTimeScale
 
+//-------------------------------------------------------------
+// pcieVhostPipex1 module
+//-------------------------------------------------------------
+
 module pcieVHostPipex1
 #(parameter NodeNum   = 8,
             EndPoint  = 1,
-            DataWidth = 8  // 8, 16, 32 or 64 only
+            DataWidth = 8, // 8, 16, 32 or 64 only
+            Gen2Clk   = 0  // When non-zero, clocks must be at GEN2 speeds
 )
 (
-  input                          pcieclk, // For GEN1 = 250MHz, for GEN2 = 500MHz
+  input                          pcieclk, // For GEN1 = 250MHz, for GEN2 = 500MHz (if Gen2Clk parameter = 1)
   input                          pclk,    // pcieclk /(DataWidth/8), synchronous
   input                          nreset,
+
+  output                         Gen2ClkSel,
+  output                         ClkOut,
 
 `ifdef VERILATOR
   output                         ElecIdleOut,
@@ -50,8 +58,15 @@ module pcieVHostPipex1
 
 );
 
+//-------------------------------------------------------------
+// Local parameter constant definitions
+//-------------------------------------------------------------
 
 localparam LINKWIDTH         = 1;
+
+//-------------------------------------------------------------
+// Signal declarations
+//-------------------------------------------------------------
 
 wire  [9:0]                  LinkOut;
 wire  [9:0]                  LinkIn;
@@ -61,6 +76,12 @@ wire  [DataWidth-1:0]        RxDataSampleShift;
 wire  [DataWidth/8-1:0]      RxDataKSampleShift;
 wire  [DataWidth-1:0]        TxDataPipeShift;
 wire  [DataWidth/8-1:0]      TxDataKPipeShift;
+
+wire                         pclk_main;
+wire                         pcieclk_main;
+
+reg                          pcieclk_div2;
+reg                          pclk_div2;
 
 reg   [DataWidth-1:0]        RxDataSample;
 reg   [DataWidth/8-1:0]      RxDataKSample;
@@ -74,12 +95,64 @@ wire [15:0] ElecIdleOutInt;
 assign ElecIdleOut            = ElecIdleOutInt[0];
 `endif
 
+//-------------------------------------------------------------
+// Select local clocks
+//-------------------------------------------------------------
+
+generate
+  if (Gen2Clk == 0)
+  begin
+    assign pcieclk_main = pcieclk;
+    assign pclk_main    = pclk;
+  end
+  else
+  begin
+
+    initial
+    begin
+      pclk_div2         <= 1'b0;
+      pcieclk_div2      <= 1'b0;
+    end
+
+    always @(posedge pclk)
+    begin
+      pclk_div2         <= ~pclk_div2;
+    end
+
+    always @(posedge pcieclk)
+    begin
+      pcieclk_div2      <= ~pcieclk_div2;
+    end
+
+    clkmux clkmux_pclk
+    (
+      .aresetn           (nreset),
+      .clka              (pclk),
+      .clkb              (pclk_div2),
+      .sel               (Gen2ClkSel),
+      .clkout            (pclk_main)
+    );
+
+    clkmux clkmux_pcieclk
+    (
+      .aresetn           (nreset),
+      .clka              (pcieclk),
+      .clkb              (pcieclk_div2),
+      .sel               (Gen2ClkSel),
+      .clkout            (pcieclk_main)
+    );
+  end
+endgenerate
+
+//-------------------------------------------------------------
 // If DataWidth is 8 use the pcieclk and make the pclk unused
 // (for backward compatibility)
+//-------------------------------------------------------------
+
 generate
   if (DataWidth == 8)
   begin
-    assign TxSampleClk        = pcieclk;
+    assign TxSampleClk        = pcieclk_main;
     assign RxDataSampleShift  = RxData;
     assign RxDataKSampleShift = RxDataK;
     assign TxDataPipeShift    = LinkOut[7:0];
@@ -87,7 +160,7 @@ generate
   end
   else
   begin
-    assign TxSampleClk        = pclk;
+    assign TxSampleClk        = pclk_main;
     assign RxDataSampleShift  = {8'h00, RxDataSample[DataWidth-1:8]};
     assign RxDataKSampleShift = {1'b0,  RxDataKSample[DataWidth/8-1: 1]};
     assign TxDataPipeShift    = {LinkOut[7:0], TxDataPipe[DataWidth-1:8]};
@@ -98,8 +171,11 @@ endgenerate
 // Link input is the lower bits of the sampled RX input
 assign LinkIn                = {1'b0, RxDataKSample[0], RxDataSample[7:0]};
 
+//-------------------------------------------------------------
 // Process PIPE interface signals
-always @(posedge pcieclk or negedge nreset)
+//-------------------------------------------------------------
+
+always @(posedge pcieclk_main or negedge nreset)
 begin
 
   if (nreset == 1'b0)
@@ -113,7 +189,7 @@ begin
     begin
       RxDataSample           <= RxData;
       RxDataKSample          <= RxDataK;
-      
+
       // After sampling, set count to PIPE bytes minus 1
       rxcount                <= (DataWidth/8)-1;
     end
@@ -122,11 +198,11 @@ begin
     begin
       RxDataSample           <= RxDataSampleShift;
       RxDataKSample          <= RxDataKSampleShift;
-      
+
       rxcount                <= rxcount - 1;
     end
   end
-  
+
   // At each cycle, shift right TX PIPE registers, adding link output to top
   TxDataPipe                 <= TxDataPipeShift;
   TxDataKPipe                <= TxDataKPipeShift;
@@ -140,13 +216,25 @@ begin
   TxDataK                    <= TxDataKPipe;
 end
 
-  // pcievhost configured with x1 link
-  PcieVhost #(LINKWIDTH, NodeNum, EndPoint) pcievh_i
-  (
-    .Clk                   (pcieclk),
-    .notReset              (nreset),
+//-------------------------------------------------------------
+// PcieVhost configured with x1 link
+//-------------------------------------------------------------
 
-    
+  PcieVhost #(
+    . LinkWidth         (LINKWIDTH),
+    . NodeNum           (NodeNum),
+    . EndPoint          (EndPoint),
+    . DisableScrambling (0),
+    . Disable8b10b      (1),
+    . Gen2Clk           (Gen2Clk)
+  ) pcievh_i
+  (
+    .Clk                   (pcieclk),  // Use input pcieclk clock as PcieVhost will divide inside
+    .notReset              (nreset),
+    .Gen2ClkSel            (Gen2ClkSel),
+
+    .ClkOut                (ClkOut),
+
 `ifdef VERILATOR
     .ElecIdleOut           (ElecIdleOutInt),
     .ElecIdleIn            ({15'h0000, ElecIdleIn}),

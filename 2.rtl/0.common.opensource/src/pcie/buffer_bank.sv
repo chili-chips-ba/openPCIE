@@ -69,14 +69,14 @@ module buffer_bank #(
                           (WIDTH == 36) ?  9 : 8;
 
   // PCIE_2_1 addresses up to 8K words; bits above the tile depth are no-connect
-  if (ADDR_MSB < 12) begin : addr_nc
+  if (ADDR_MSB < 12) begin : g_addr_nc
     logic [12:ADDR_MSB+1] NC_waddr;
     assign NC_waddr = mim.waddr[12:ADDR_MSB+1];
     logic [12:ADDR_MSB+1] NC_raddr;
     assign NC_raddr = mim.raddr[12:ADDR_MSB+1];
   end
 
-  for (genvar ii = 0; ii < NUM_BRAMS; ii = ii + 1) begin : tiles
+  for (genvar ii = 0; ii < NUM_BRAMS; ii = ii + 1) begin : g_tile
     BRAM_TDP_MACRO #(
         .DEVICE       ("7SERIES"),
         .BRAM_SIZE    ("36Kb"),

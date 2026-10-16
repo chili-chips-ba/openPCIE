@@ -27,22 +27,7 @@
 #
 # 3. The following remote source files that were added to the original project:-
 #
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/ip/pcie_7x_0.xci"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_controller.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_cpl_decoder.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_pkt_generator.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_tx_mux.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_wrapper.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pcie_7x_0_pipe_clock.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pcie_7x_0_support.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pio_master.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pio_master_checker.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pio_master_controller.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/pio_master_pkt_generator.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/RC_direct_amd.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/src/cgator_cfg_rom.data"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/2.RC-direct.amd/xdc/RC-direct.amd.x1g2.AcornCLE-215P.xdc"
+#    (see the file lists below)
 #
 #*****************************************************************************************
 

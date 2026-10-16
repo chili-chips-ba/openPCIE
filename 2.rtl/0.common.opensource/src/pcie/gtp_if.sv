@@ -74,11 +74,12 @@ interface gtp_if #(
   logic [LANES-1:0] pipe_clk_sel;
   logic [3:0] rxchbondo[LANES];
 
+  // init_ctrl drives only rst; the cross-lane values are gtp_wrapper's
   modport ctrl(
       output rst,
-           txsyncallin, rxsyncallin, txphinitdone_all, txdlysresetdone_all,
+      input  txsyncallin, rxsyncallin, txphinitdone_all, txdlysresetdone_all,
            txsyncin, rxsyncin, rxchbondi,
-      input  drp_done, rxpmaresetdone, resetdone, phystatus, phystatus_rst,
+           drp_done, rxpmaresetdone, resetdone, phystatus, phystatus_rst,
            txsync_done, active_lane, txphinitdone, txdlysresetdone, txphaligndone,
            rxphaligndone, txsyncout, rxsyncout, txoutclk, pipe_clk_sel, rxchbondo
   );

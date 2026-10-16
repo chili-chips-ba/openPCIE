@@ -117,7 +117,7 @@ module pcie_core
       };
 
   generate
-    for (genvar l = 0; l < PIPE_MAX_LANES; l++) begin : tx_pack
+    for (genvar l = 0; l < PIPE_MAX_LANES; l++) begin : g_tx_pack
       assign tx_blk[l] = '{
               char_is_k: tx_char_is_k_blk[l],
               data: tx_data_blk[l],
@@ -153,11 +153,11 @@ module pcie_core
   // The hard macro has 8 PIPE lanes: the active ones are registered, the RX
   // inputs of the others are tied off and their TX outputs are no-connect (NC_)
   generate
-    for (genvar l = 0; l < PIPE_MAX_LANES; l++) begin : pipe_lane_sel
-      if (l < PCIE_LANES) begin : active
+    for (genvar l = 0; l < PIPE_MAX_LANES; l++) begin : g_pipe_lane_sel
+      if (l < PCIE_LANES) begin : g_active
         assign rx_blk[l] = rx_q[l];
       end
-      else begin : unused
+      else begin : g_unused
         pipe_tx_lane_t NC_tx;
         logic          NC_rx_polarity;
         assign NC_tx          = tx_blk[l];

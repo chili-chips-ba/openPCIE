@@ -12,7 +12,8 @@ STARTADDR=0
 DATAADDR=1000
 TESTDIR=.
 
-PREFIX=riscv64-unknown-elf-
+# full prefix from 4.build/set-env.sh, else riscv-none-elf- on the PATH
+PREFIX=${RISCV_PREFIX:-riscv-none-elf-}
 
-${PREFIX}as.exe -fpic -march=rv32imafdc -aghlms=$TESTDIR/$ONAME.list -o $TESTDIR/$ONAME.o $TESTDIR/$FNAME
-${PREFIX}ld.exe $TESTDIR/$ONAME.o -Ttext $STARTADDR -Tdata $DATAADDR -melf32lriscv -o $ONAME.bin
+${PREFIX}as -fpic -march=rv32imafdc -aghlms=$TESTDIR/$ONAME.list -o $TESTDIR/$ONAME.o $TESTDIR/$FNAME
+${PREFIX}ld $TESTDIR/$ONAME.o -Ttext $STARTADDR -Tdata $DATAADDR -melf32lriscv -o $ONAME.bin

@@ -73,6 +73,10 @@ sv work models/phy_top.PIPE.sv
 # DUT: SOC and top level
 # ---------------------------------------------------------------------
 sv work ../2.rtl/0.common.opensource/src/picorv32.CHILI.sv
+sv work ../2.rtl/0.common.opensource/src/CPU.eduBOS5/edubos5_pkg.sv
+sv work ../2.rtl/0.common.opensource/src/CPU.eduBOS5/edubos5_rf.sv
+sv work ../2.rtl/0.common.opensource/src/CPU.eduBOS5/edubos5_alu.sv
+sv work ../2.rtl/0.common.opensource/src/CPU.eduBOS5/edubos5.sv
 sv work ../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv
 sv work ../2.rtl/0.common.opensource/src/RC_opensource.sv
 

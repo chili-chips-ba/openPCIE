@@ -6,7 +6,8 @@
 * [Test Bench Structure](#test-bench-structure)
   * [The PIPE PHY model](#the-pipe-phy-model)
   * [Endpoint feature limitations](#endpoint-feature-limitations)
-  * [Prerequisites on Windows](#prerequisites-on-windows)
+  * [Prerequisites](#prerequisites)
+  * [Model and viewer versions](#model-and-viewer-versions)
   * [What the simulation does](#what-the-simulation-does)
   * [Building and running](#building-and-running)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
@@ -32,6 +33,8 @@
 * [Co-simulation HAL](#co-simulation-hal)
   * [Using the HAL](#using-the-hal)
   * [Other Co-simulation considerations](#other-co-simulation-considerations)
+* [Our Local VIP Improvements](#our-local-vip-improvements)
+* [Simulation issues](#simulation-issues)
 * [References](#references)
 
 
@@ -169,57 +172,78 @@ endpoint, which the project points at in
 protocol logging and the controllability this model gives, so the two are
 complementary rather than interchangeable.
 
-### Prerequisites on Windows
+### Prerequisites
 
-Do this once, before anything below will work. The commands to actually build
-and run are further down, in [Building and running](#building-and-running).
+Linux or WSL, once:
 
-**1. Use the right shell.** The C/C++ side needs a MinGW toolchain and the HDL
-side needs Vivado's `xsim`. Both work, but **only from a properly launched MSYS2
-MinGW64 shell** -- `C:\msys64\mingw64.exe`, or `msys2_shell.cmd -mingw64`.
+- **Vivado 2025.1 or later for Linux** (tested with 2026.1, which needs a license file even for `xsim`) -- `xvlog`, `xelab`, `xsim`. Windows `xsim` can be started from WSL, but it loads the C/C++ models (`-sv_lib`) only as a Windows DLL, not the Linux `.so` built here.
+- **GCC 10+** (C++20) and `make`: `sudo apt install build-essential`
+- **RISC-V GCC** (xPack `riscv-none-elf-`) for the firmware, see [4.build](../4.build/README.md)
 
-> `cmd.exe` and PowerShell have no `make` and no `gcc`. Git Bash has neither
-> either. And Vivado's `xvlog`, `xelab` and `xsim` launchers go through
-> `/usr/bin/cmd`, which needs the environment that shell sets up -- started from
-> a foreign shell they fail **silently**, with a non-zero exit and no output at
-> all. If a build seems to do nothing, this is why.
+Then, from the repo root:
 
-Paths in that shell are POSIX: `C:\Users\you\openPCIE` is `/c/Users/you/openPCIE`.
-
-**2. Add one MSYS2 package:**
-
-```bash
-pacman -S mingw-w64-x86_64-dlfcn        # VProc.h includes <dlfcn.h>
+```sh
+source 4.build/set-env.sh     # tcsh: source 4.build/set-env.csh
 ```
 
-**3. Put the tools on PATH.** A stock MinGW64 shell has `gcc`, `make` and
-`python3`, but **not** Vivado, the RISC-V compiler or `peakrdl` -- those are
-installed outside MSYS2 and have to be added. Adjust the paths to your install:
+It finds Vivado (`/tools/Xilinx/<version>/Vivado`, `~/Xilinx/<version>/Vivado`, or set `XILINX_VIVADO`) and the
+compilers, and lists anything missing. (`peakrdl` is only needed if you edit
+`csr.rdl` -- see [4.build/README.md](../4.build/README.md#csr-hal-compilation).)
 
-```bash
-export PATH=$PATH:/c/Xilinx/Vivado/2025.1/bin
-export PATH=$PATH:/c/rv/xpack-riscv-none-elf-gcc-15.2.0-1/bin
-export PATH=$PATH:/c/Users/you/AppData/Local/Programs/Python/Python312/Scripts
-```
+### Model and viewer versions
 
-Append those three lines to `~/.bashrc` and they are set for every new shell.
-Check with:
+| Component | In use | Latest upstream (Oct 2026) | Source |
+|---|---|---|---|
+| VProc | 1.13.4 | 1.13.4 | [wyvernSemi/vproc](https://github.com/wyvernSemi/vproc) |
+| pcievhost **(modified, see below)** | 1.9.3 | 1.9.3 (without our changes) | [wyvernSemi/pcievhost](https://github.com/wyvernSemi/pcievhost) |
+| mem_model **(modified, see below)** | `main` c7b9c62 (1.0.1 + one fix) | same | [wyvernSemi/mem_model](https://github.com/wyvernSemi/mem_model) |
+| rv32 ISS **(modified, see below)** | 1.3.3 | 1.3.3 | [wyvernSemi/rv32](https://github.com/wyvernSemi/rv32) |
+| Vivado simulator (`xsim`) | 2026.1 | 2026.1 | [AMD Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) |
+| WaveCrux Pro | 1.0.1 | 1.0.1 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
+| TLP decoder plugin | ours | -- | [`tools/wavecrux-pcie-tlp`](tools/wavecrux-pcie-tlp) |
+| PIPE and DLL decoder plugin | `wcx-pcie` pcie-v0.1.0 | pcie-v0.1.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
+| RISC-V instruction-trace decoder | built into WaveCrux 1.0.1 | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 
-```bash
-command -v make gcc riscv-none-elf-gcc xvlog
-```
+#### Why xsim and not Verilator?
 
-All four must print a path. (`peakrdl` is only needed if you edit `csr.rdl` --
-see [4.build/README.md](../4.build/README.md#csr-hal-compilation).)
+Our RTL is 100% SystemVerilog, not mixed-language, and it and the rest of our ecosystem are Verilator-ready. Only the vendor hard macros stand in the way, and of those only `PCIE_2_1` matters: its simulation model is AMD's `secureip` library, encrypted (IEEE 1735), so only vendor simulators can run it, and no open model exists. The Xilinx primitives in the design:
 
-The make file separately puts `TMP`, `TEMP` and `TMPDIR` back, because GNU make
-on MSYS2 hands its recipes a shell with all three unset and gcc then tries to
-write its temporaries into `C:\WINDOWS\`.
+| Primitive | Simulation model | In Verilator |
+|---|---|---|
+| `PCIE_2_1` | encrypted `secureip` core | no -- the blocker |
+| `GTPE2_CHANNEL`, `GTPE2_COMMON` | encrypted `secureip` cores | not needed: co-sim replaces the GTP with [the PIPE PHY model](#the-pipe-phy-model) |
+| `MMCME2_ADV` | plain Verilog, `real` arithmetic and `#` delays | not tried |
+| `BUFG`, `BUFGCTRL`, `IBUFDS_GTE2`, `RAMB36E1`, `FDCE` | plain Verilog | expected to work |
+
+Verilator-ready means: our RTL passes Verilator lint (`run-lint.sh`), and the co-simulation models (VProc, pcievhost, mem_model, rv32) ship with Verilator flows upstream.
+
+A Verilator run would need `--timing` for the whole test bench, not only for the MMCM: `tb.sv` and the PIPE model make their clocks with `#` delays, and VProc waits a delta cycle for each `UpdateResponse`. VProc's `-GDISABLE_DELTA` drops that wait, but it would not save `--timing` here, and it changes the handshake that pcievhost runs its link on.
+
+#### Local changes
+
+| File | Change | Why |
+|---|---|---|
+| `models/cosim/mem_model.sv` | wraps upstream `mem_model.v` (kept as `f_mem_model.v`) in Verilator `lint_off` pragmas | keeps third-party code out of our lint |
+| `models/rv32/src/rv32csr_cpu.cpp` (in `rv32-openpcie.patch`) | the timer-compare check in `process_interrupts()` no longer charges cycles | it added 2 cycles to every instruction |
+| `models/rv32/src/rv32i_cpu.cpp` (in `rv32-openpcie.patch`) | `sw`, `sh` add the store extra cycles | upstream adds the load ones |
+| `models/rv32/usercode/rv32_timing_config.h` | PicoRV32, eduBOS5 2-/3-stage tables measured on the RTL in this SOC | see [Our Local VIP Improvements](#our-local-vip-improvements) |
+| `models/rv32/usercode/VUserMain0.cpp` | no fetch/load wait states; bus credit; waits for reset release, restarts on reset | see [Our Local VIP Improvements](#our-local-vip-improvements) |
+| `models/soc_cpu.VPROC.picorv32.sv` | 2-clock picorv32 handshake; `!resetn` on VProc interrupt bit 3 | see [Our Local VIP Improvements](#our-local-vip-improvements) |
+
+pcievhost:
+
+| File | Change | Why |
+|---|---|---|
+| `ltssm/ltssm.c` | As upstream port: send Link and Lane = PAD until the partner assigns them; stay in Configuration.Lanenum for at least 16 TS1 | real PCIE_2_1 downstream port deadlocked or timed out against the model's endpoint LTSSM ([Endpoint feature limitations](#endpoint-feature-limitations)) |
+| `verilog/pcieVHost/pcieVHost.v` | VProc `BE` and `Burst` ports, left open | we build VProc with `VPROC_BYTE_ENABLE` |
+| `verilog/headers/test_defs.v` | `` `fatal`` calls `tb.Fatal` | our test bench top is `tb` |
+
+The unmodified `ltssm.c` is kept beside it as `ltssm.c.orig`, and our fixes as `ltssm/ltssm-openpcie.patch`. [`tools/vip-upgrade.sh`](tools/vip-upgrade.sh) rebuilds all four models from upstream and re-applies these changes; it stops if the LTSSM or the rv32 patch no longer applies. rv32 is built here from its sources (`models/rv32/src`, upstream `774d84fa`).
 
 ### What the simulation does
 
 A full run takes the design from power-up to a verified memory transaction, with
-no hardware involved (default `RUN_US=2000`):
+no hardware involved. It ends 10 µs after the firmware reports its result; `RUN_US` (default 2000) is only the time limit:
 
 ```
                    0  TB     run length 2000 us
@@ -286,10 +310,7 @@ CSR WR [0x0c] = 0000face     the pass marker
 
 ### Building and running
 
-On Windows, work through [Prerequisites](#prerequisites-on-windows) first -- the
-right shell and the `PATH` settings. Everything below assumes an MSYS2 MinGW64
-shell with the tools on `PATH`; from `cmd.exe` the first line fails with
-`'make' is not recognized`.
+Set up the [Prerequisites](#prerequisites) first, including `set-env`.
 
 ```
 cd 4.build/sw_build && make SIM=1   # firmware with the short start-up delay
@@ -309,7 +330,7 @@ and a great deal of patience.
 Useful switches:
 
 ```
-make run RUN_US=10000                        # longer run; read at time 0 from run_us.cfg
+make run RUN_US=10000                        # higher time limit; read at time 0 from run_us.cfg
 make USRSIMOPTS="--define CPU_TRACE"         # CPU bus activity and every CSR access
 make USRSIMOPTS="--define PIPE_OS_TRACE"     # ordered sets both ways, with link/lane numbers
 make USRSIMOPTS="--define PIPE_RAW_DUMP"     # raw PIPE symbols
@@ -532,81 +553,59 @@ to keep in mind when comparing with real hardware:
 
 ## The three CPU options
 
-The SOC's CPU socket takes three different occupants, selected with `CPU=` on
-the make command line. The DUT is otherwise identical in all three -- the same
-CSR, the same PCIE stack, the same top level -- so the same test is being run
-each time, only the thing issuing the bus accesses changes.
+The SOC's CPU socket takes three different occupants, selected with `CPU=` on the make command line. The DUT is otherwise identical in all three -- the same CSR, the same PCIE stack, the same top level -- so the same test runs each time; only the thing issuing the bus accesses changes. `CORE=` picks the RISC-V core: [`edubos5`](../2.rtl/0.common.opensource/src/CPU.eduBOS5) (default, 2-stage), `edubos5_3stg` or `picorv32`.
 
 | `CPU=` | What sits on VProc node 0 | Executes |
 |---|---|---|
-| `rtl` (default) | nothing -- the real `picorv32` core | `firmware.hex`, the same image that goes into the bitstream |
+| `rtl` (default) | nothing -- the real RTL core: `CORE=edubos5` (default), `edubos5_3stg` or `picorv32` | `firmware.hex`, the same image that goes into the bitstream |
 | `vproc` | VProc | [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp), compiled for the host |
-| `iss` | VProc + the [rv32](models/rv32) instruction set simulator | `firmware.elf`, interpreted -- real RISC-V instructions, no RTL core |
+| `iss` | VProc + the [rv32](models/rv32) instruction set simulator, with `CORE`'s timing model | `firmware.elf`, interpreted -- real RISC-V instructions, no RTL core |
 
 ```sh
 cd ../4.build/sw_build && make SIM=1   # firmware.hex AND firmware.elf
 cd ../../5.sim
-make run                  # CPU=rtl, the default
+make run                               # CPU=rtl CORE=edubos5, the default
+make run CORE=picorv32
 make run CPU=vproc
-make run CPU=iss
+make run CPU=iss                       # -V PICORV32
+make run CPU=iss CORE=picorv32         # -V PICORV32
 ```
 
-The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv)
-behind `` `ifdef SOC_CPU_VPROC ``, which the makefile passes to `xvlog` for the
-two VProc builds. The replacement module is
-[`models/soc_cpu.VPROC.picorv32.sv`](models/soc_cpu.VPROC.picorv32.sv): VProc
-dressed up as a picorv32, driving the core's *native* memory interface.
+The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv): eduBOS5 is the default, `` `ifdef SOC_CPU_PICORV32 `` selects PicoRV32, `` `ifdef SOC_CPU_VPROC `` the replacement module for the two VProc builds, [`models/soc_cpu.VPROC.picorv32.sv`](models/soc_cpu.VPROC.picorv32.sv): VProc dressed up as a picorv32, driving the core's *native* memory interface.
 
-> Note the difference from the inherited `models/soc_cpu.VPROC.sv`, which is
-> kept for reference. That one speaks the `soc_if` bus interface of the sibling
-> Chili.CHIPS SOC infrastructure. This design has no `soc_if` -- it instantiates
-> picorv32 directly -- so it needed its own wrapper.
+> Note the difference from the inherited `models/soc_cpu.VPROC.sv`, which is kept for reference. That one speaks the `soc_if` bus interface of the sibling Chili.CHIPS SOC infrastructure. This design has no `soc_if` -- it instantiates the core directly -- so it needed its own wrapper.
 
-The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL
-generates from the same [`csr.rdl`](../4.build/csr_build/csr.rdl) that produces
-the register RTL and the firmware's `csr.h`. Hardware, firmware and the
-co-simulation CPU model therefore cannot drift apart. The ISS is configured in
-[`vusermain.cfg`](vusermain.cfg), where `-x`/`-X` place the CSR window on the
-simulated bus and leave code and data in the ISS's own memory, and `-V PICORV32`
-selects the matching instruction timing model.
+The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL generates from the same [`csr.rdl`](../4.build/csr_build/csr.rdl) that produces the register RTL and the firmware's `csr.h`. Hardware, firmware and the co-simulation CPU model therefore cannot drift apart. The ISS is configured in [`vusermain.cfg`](vusermain.cfg), where `-x`/`-X` place the CSR window on the simulated bus and leave code and data in the ISS's own memory. The make file copies it to `iss.cfg` with `-V` set from `CORE`.
 
 ### What they cost
 
-Measured on a Ryzen 7 5800H (8 cores / 16 threads) **on mains power**, Vivado
-xsim 2024.2, all three producing the identical result -- link up, LTSSM `0x16`,
-9 TLPs, `PASS (0x0000face)`. These figures were taken with the earlier firmware,
-before BAR sizing by readback; with the current one (22 TLPs, Vivado xsim
-2025.1) the result appears at 654.0 µs (`rtl`), 145.6 µs (`vproc`) and
-805.1 µs (`iss`):
+Vivado xsim 2026.1 in WSL2, AMD Ryzen 9 6900HX. Every run gives the same result: link up, LTSSM `0x16`, 22 TLPs, `PASS (0x0000face)`.
 
-| | `CPU=rtl` | `CPU=vproc` | `CPU=iss` |
-|---|---|---|---|
-| Build from clean | 51 s | 49 s | 55 s |
-| Result appears at | 302.4 µs | 99.0 µs | 311.7 µs |
-| Run to that result | 28 s | **13 s** | 28 s |
-| Run a fixed 400 µs | 33 s | 33 s | 33 s |
+| `CPU=` | Core | Result at (simulated) | Build | Run (wall clock) |
+|---|---|---|---|---|
+| `rtl` | PicoRV32 | 667.2 µs | ~30 s | ~70 s |
+| `rtl` | eduBOS5 2-stage | **389.5 µs** | ~30 s | ~55 s |
+| `rtl` | eduBOS5 3-stage | 470.9 µs | ~30 s | ~60 s |
+| `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | ~35 s | ~75 s |
+| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) | ~35 s | ~75 s |
+| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) | ~35 s | ~75 s |
+| `vproc` | native C++ | **138.3 µs** | ~30 s | ~40 s |
 
-Each figure is the median of three clean repetitions; the spread is under 2 s.
-Mains power is not a footnote: on battery, with the CPU clocked down from
-3.2 GHz to 1.9 GHz, the same 400 µs run takes 83 s instead of 33 s. Measure with
-the charger in, or the numbers are meaningless.
+Wall-clock times vary 2-10x with host load; the simulated times are exact.
 
-Two things fall out of that last row. The wall-clock cost of a given amount of
-*simulated* time is the same whichever CPU is used, because the CPU is not what
-the simulator spends its time on -- the `PCIE_2_1` hard macro model and the PCIE
-stack around it are. Swapping the core out buys nothing by itself.
+- **eduBOS5 vs PicoRV32:** eduBOS5 has 1.9x higher IPC on this firmware (0.35 vs 0.18 instructions per clock; 3-stage 0.26, 1.4x), so at the same clock its result comes 1.71x sooner (3-stage 1.42x). eduBOS5 takes 2 cycles per instruction and 5 per load; PicoRV32 4 to 8.
+- **`iss`** matches the RTL core it models to within 0.6% (see [Our Local VIP Improvements](#our-local-vip-improvements)). It runs the real firmware binary in a debuggable native process (`-g` in `vusermain.cfg` opens a gdb port).
+- **`vproc`** covers the least simulated time: the native program skips the firmware's start-up delay and polls the CSR without instructions in between.
 
-What `CPU=vproc` does buy is *less simulated time to cover*: 99 µs instead of
-302 µs, because the native program does not pay the firmware's start-up delay
-and polls the CSR without burning instructions between reads. That is where its
-2x comes from, and it is why it is the one to reach for when iterating on the
-PCIE logic rather than on the firmware.
+### Use the right mode for the job!
 
-`CPU=iss` lands within 3% of the RTL core's timing (311.7 µs against 302.4 µs),
-which is the `-V PICORV32` timing model doing its job. It is the useful middle
-ground: the real firmware binary, real RISC-V instructions, and a debuggable
-native process -- `-g` in `vusermain.cfg` opens a gdb port -- without the RTL
-core in the way.
+| `CPU=` | Speed | Use it for |
+|---|---|---|
+| `vproc` | fastest: least simulated time | iterating on the PCIE logic. Its timing is not the firmware's |
+| `iss` | as `rtl`, timing within 0.6% | debugging the real firmware binary: gdb, instruction trace, disassembly |
+| `rtl` | reference | the cycle-accurate core that goes into the bitstream |
+
+For additional detail, check [this table](#what-they-cost).
 
 ## Auto-selection of soc_cpu Component
 
@@ -722,7 +721,7 @@ This is exactly the `CPU=vproc` build. In _openPCIE_ the transactions leave the 
 
 #### RISC-V Compiled Application
 
-To execute RISC-V compiled application code, the <tt>rv32</tt> instruction set simulator is used as the code running on the virtual processor. The <tt>VUserMain0</tt> program now becomes software that creates an ISS object and integrate with _VProc_. This uses the ISS's external memory access callback function to direct loads and stores either towards the PCIE memory model, the _VProc_ API for simulation transactions, or back to the ISS itself to handle. This ISS integration <tt>VUserMain0</tt> program is located in <tt>5.sim/models/rv32/usercode</tt>. When built the code here is compiled and uses the pre-built library in <tt>5.sim/models/rv32/lib/librv32lnx.a</tt> containing the ISS, with the headers for it in <tt>5.sim/models/rv32/include</tt>. More details of the integration code and methods can be found [here](models/rv32/README.md).
+To execute RISC-V compiled application code, the <tt>rv32</tt> instruction set simulator is used as the code running on the virtual processor. The <tt>VUserMain0</tt> program now becomes software that creates an ISS object and integrate with _VProc_. This uses the ISS's external memory access callback function to direct loads and stores either towards the PCIE memory model, the _VProc_ API for simulation transactions, or back to the ISS itself to handle. This ISS integration <tt>VUserMain0</tt> program is located in <tt>5.sim/models/rv32/usercode</tt>. When built the code here is compiled and links the ISS library, which the make file builds from the rv32 sources in <tt>5.sim/models/rv32/src</tt>. More details of the integration code and methods can be found [here](models/rv32/README.md).
 
 The ISS supports interrupts, but these are not currently used on _openPCIE_. The integration software can read a configuration file, if present in the <tt>5.sim/</tt> directory, called <tt>vusermain.cfg</tt>. This allows the ISS and other features to be configured at run-time. The configuration file is in lieu of command line options and the entries in the file are formatted as if they were such, with a command matching the `VUserMain` program:
 
@@ -793,7 +792,7 @@ make USER_C="VUserMain0.cpp MyTest1Class.cpp"
 
 If many variants of software build are required then either scripts can be constructed with the various command line variable modification calls to `make` or other make files which set these variables and call the common make file. This is useful in managing source code for multiple tests located in different directories, compiling for ISS (perhaps also calling the RISC-V application build), or for compiling application code natively which will have a different set of source files.
 
-The user software is compiled into a local static library, <tt>libuser.a</tt>, which is linked into the <tt>VProc.so</tt> shared object that the simulator loads (<tt>xelab -sv_lib</tt>), along with the precompiled <tt>libcosimlnx.a</tt> (or <tt>libcosimwin.a</tt> for MSYS2/mingw64 on Windows) located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc*. The headers for the *VProc* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openPCIE_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
+The user software is compiled into a local static library, <tt>libuser.a</tt>, which is linked into the <tt>VProc.so</tt> shared object that the simulator loads (<tt>xelab -sv_lib</tt>), along with the precompiled <tt>libcosimlnx.a</tt> located in <tt>5.sim/models/cosim/lib</tt> and containing the precompiled code for *VProc*. The headers for the *VProc* API software are in <tt>5.sim/models/cosim/include</tt>. The HDL required for these models' use in the _openPCIE_ test bench can be found in <tt>5.sim/models/cosim</tt>, and the make file picks these up from there to compile with the rest of the test bench HDL.
 
 The <tt>Makefile</tt> make file has a target <tt>help</tt>, which produces the following output:
 
@@ -812,10 +811,10 @@ Command line configurable variables:
   USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
   BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
   CPU:          CPU model on VProc node 0 (default rtl)
-                  rtl    the real picorv32, executing firmware.hex
+                  rtl    the RTL core (CORE), executing firmware.hex
                   vproc  native C++ in usercode/VUserMain0.cpp
                   iss    the rv32 ISS, executing firmware.elf
-  RUN_US:       simulated run length in microseconds (default 2000)
+  RUN_US:       time limit in microseconds; a run ends 10 us after the firmware result (default 2000)
 ```
 
 By default, without a named target, the simulation executable will be built but not run. With a <tt>run</tt> target, the simulation executable is built and then executed in batch mode. To fire up waveforms after the run, a target of <tt>rungui</tt> or <tt>gui</tt> can be used. A target of <tt>clean</tt> removes all intermediate files of previous compilations.
@@ -832,7 +831,7 @@ make                                                       # Build but don't run
 make run CPU=vproc                                         # Native C++ CPU model, usercode/VUserMain0.cpp
 make run CPU=iss                                           # rv32 ISS on the real firmware.elf
 make CPU=iss gui                                           # Build and run ISS simulation and show waves
-make run RUN_US=3000                                       # Longer simulated run
+make run RUN_US=3000                                       # Higher time limit
 make USER_C="test1.cpp subfuncs.cpp" USRCODEDIR=test1 CPU=vproc run
 make clean                                                 # Clean all intermediate files
 ```
@@ -843,8 +842,8 @@ Configuration of the timing model can be done from the supplied integration code
 
 * <tt>rv32_timing_config::risc_v_core_e::DEFAULT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt> : Default timing values
 * <tt>rv32_timing_config::risc_v_core_e::PICORV32&nbsp;&nbsp;&nbsp;&nbsp;</tt> : picoRV32 timings
-* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG2&nbsp;</tt> : 2 stage eduBOS5
-* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG3&nbsp;</tt> : 3 stage eduBOS5
+* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG2&nbsp;</tt> : 2 stage [eduBOS5](../2.rtl/0.common.opensource/src/CPU.eduBOS5)
+* <tt>rv32_timing_config::risc_v_core_e::EDUBOS5STG3&nbsp;</tt> : 3 stage [eduBOS5](../2.rtl/0.common.opensource/src/CPU.eduBOS5)
 * <tt>rv32_timing_config::risc_v_core_e::IBEXMULSGL&nbsp;&nbsp;</tt> : IBEX single cycle multiplier
 * <tt>rv32_timing_config::risc_v_core_e::IBEXMULFAST&nbsp;</tt> : IBEX fast multi-cycle multiplier
 * <tt>rv32_timing_config::risc_v_core_e::IBEXMULSLOW&nbsp;</tt> : IBEX slow multi-cycle multiplier
@@ -856,8 +855,8 @@ As detailed in the _RISC-V Compiled Application_ section above, the ISS can be c
 When the test bench is built for the rv32 ISS, the actual 'user' application code is run on the RISC-V ISS model itself, and is compiled using the normal RISC-V GNU toolchain to produce a binary file that the ISS can load and run. As described above, the code that is run is selected with the <tt>vusermain.cfg</tt> file and the <tt>-t</tt> option. The various flags configure the ISS and determines when the ISS is halted (if at all). An example assembly file is provided in <tt>5.sim/models/rv32/riscvtest/main.s</tt> (as well as a recompiled <tt>main.bin</tt>). This assembly code reproduces the functionality of the example <tt>VUserMain0.cpp</tt> program discussed previously, writing to memory, reading back and comparing for a mismatch. The example assembly code is compiled with:
 
 ```
-$riscv64-unknown-elf-as.exe -fpic -march=rv32imafdc -aghlms=main.list -o main.o main.s
-$riscv64-unknown-elf-ld.exe main.o -Ttext 0 -Tdata 1000 -melf32lriscv -o main.bin
+riscv-none-elf-as -fpic -march=rv32imafdc -aghlms=main.list -o main.o main.s
+riscv-none-elf-ld main.o -Ttext 0 -Tdata 1000 -melf32lriscv -o main.bin
 ```
 In this instance, the code is set to compile to use the MAFDC extensions (maths, atomic, float, double and compressed). To run this code the <tt>vusermain.cfg</tt> is set to:
 
@@ -951,14 +950,14 @@ ISS on its own. What [`vusermain.cfg`](vusermain.cfg) actually selects is the
 real firmware:
 
 ```
-vusermain0 -V PICORV32 -H -x 0x30000000 -X 0x3FFFFFFF -t ../4.build/sw_build/firmware.elf
+vusermain0 -V EDUBOS5STG2 -H -x 0x30000000 -X 0x3FFFFFFF -t ../4.build/sw_build/firmware.elf
 ```
 
 `-x`/`-X` put **only** the CSR window on the simulated bus. Code and data at
 `0x0000_0000` are served from the ISS's own memory, which is why instruction
-fetch costs no simulation time at all. `-V PICORV32` makes the ISS reckon cycles
-the way the real core does -- and it works: the result lands at 311.7 µs against
-the RTL core's 302.4 µs, within 3%. Build the ELF first, with the short
+fetch costs no simulation time at all. `-V` (set from `CORE`) makes the ISS reckon
+cycles the way the RTL core does: the result lands within 0.6% of it
+([What they cost](#what-they-cost)). Build the ELF first, with the short
 co-simulation start-up delay:
 
 ```sh
@@ -1085,6 +1084,40 @@ void PCIEMAIN (void)
 ```
 
 The second consideration is the use of delay functions. This can be in the form of standard C functions, such as `usleep`, or application specific functions using instruction loops. In either case, these should be wrapped in a commonly named function&mdash;e.g., `pcie_usleep(int time)`. The wrapper delay library function will then need to have `VPROC` selected code to either call the application specific target delay function, or to convert the specified time to clock cycles and call the *VProc* API function `VTick` (or its C++ API equivalent) to advance simulation time the appropriate amount. The co-simulation auto-generated HAL header has `SOC_CPU_CLK_PERIOD_PS` defined that can be configured on the `4.build/sysrdl_cosim.py` command line with `-C` or `--clk_period`, but defaults to 16000, i.e. the 62.5MHz `clk62m5` that the PCIE hard macro hands to `riscv_pcie_soc` on an x1 Gen2 link with a 64-bit datapath. A `SOC_CPU_VPNODE` is also defined, defaulting to 0, for use when calling the *VProc* C API functions directly. The definition is affected by the `-v` or `--vp_node` command line options of `4.build/sysrdl_cosim.py`.
+
+## Our Local VIP Improvements
+
+How our co-simulation models differ from upstream, beyond [Local changes](#local-changes):
+
+- **rv32 ISS built from source.** `models/rv32/src` holds the ISS sources at upstream `774d84fa`; the make file builds the library. Two fixes in `rv32-openpcie.patch`: the timer-compare check no longer adds 2 cycles to every instruction, and `sw`/`sh` take store timing, not load.
+- **Timing measured on our RTL.** `rv32_timing_config.h` holds cycles per instruction class measured in this SOC (fetch included, no wait states):
+
+  | Core | linear | jump | load | store |
+  |---|---|---|---|---|
+  | PicoRV32 (`BARREL_SHIFTER=0`) | 4 | 4 | 8 | 7 |
+  | eduBOS5 2-stage | 2 | 2 | 5 | 2 |
+  | eduBOS5 3-stage | 3 | 3 | 6 | 3 |
+
+  eduBOS5 is exact; PicoRV32 is a fit, as it prefetches and its shifts take 1 cycle per 4 or 1 bit.
+- **Bus credit.** A load or store to the simulation takes real clocks on the VProc bus, but the timing table already counts them. The ISS takes those clocks (2 per access) off its next synchronisation, so an access costs only its table cycles.
+- **2-clock bus.** `soc_cpu.VPROC.picorv32.sv` runs picorv32's handshake: `mem_valid` with the request, `mem_ready` as the ack, one idle cycle after. Was 4 clocks.
+- **Reset input.** `!resetn` drives VProc interrupt bit 3. The ISS starts at reset release, as the RTL core does, and restarts at the reset vector on a new reset.
+
+Result: the ISS lands within 0.6% of the RTL core it models ([What they cost](#what-they-cost)).
+
+## Simulation issues
+
+Fixed in this repo only; [Local changes](#local-changes) lists how we differ from upstream.
+
+| # | Model | Issue | Status |
+|---|---|---|---|
+| 1 | pcievhost | LTSSM deadlocks against the real `PCIE_2_1` | fixed here: `ltssm-openpcie.patch` |
+| 2 | pcievhost | UpdateFC sent before InitFC1 | fixed upstream, 1.9.3 |
+| 3 | RV32-ISS | Charges 2 cycles more per instruction than its timing model | fixed here: `rv32-openpcie.patch`, [#32](https://github.com/chili-chips-ba/openPCIE/issues/32) |
+| 4 | RV32-ISS | `sw`/`sh` take load timing, not store | fixed here: `rv32-openpcie.patch`, [#33](https://github.com/chili-chips-ba/openPCIE/issues/33) |
+| 5 | RV32-ISS | No reset input; runs before the RTL core leaves reset | fixed here: reset on VProc interrupt bit 3, [#34](https://github.com/chili-chips-ba/openPCIE/issues/34) |
+| 6 | RV32-ISS | Ours was v1.3.3; upstream is 3 commits ahead | fixed here: sources at `774d84fa`, [#32](https://github.com/chili-chips-ba/openPCIE/issues/32) |
+| 7 | RV32-ISS | Timing tables not matched to the RTL cores | fixed here: within 0.6%, [#35](https://github.com/chili-chips-ba/openPCIE/issues/35) |
 
 ## References:
 - [VProc](https://github.com/wyvernSemi/vproc)

@@ -22,11 +22,13 @@
 //   interface is driven instead, which is what riscv_pcie_soc.sv decodes.
 //
 //   Protocol note. VProc holds WE/RD asserted until it samples WRAck/RDAck at
-//   a rising edge, then updates them on the following edge -- the same shape
-//   as picorv32's mem_valid/mem_ready. The one thing picorv32 gives for free
-//   and VProc does not is a guaranteed idle cycle between accesses, so the
-//   little state machine below inserts one. Without it a back-to-back pair of
-//   VProc accesses can catch the trailing edge of the previous ready.
+//   a rising edge, then updates them on the following edge. The bus follows
+//   picorv32's timing: mem_valid with WE/RD, the ack is mem_ready itself, and
+//   mem_valid is low for the one cycle after ready, while VProc still holds
+//   the finished access. An access takes 2 clocks, as on the RTL core.
+//
+//   Reset: !resetn is VProc interrupt bit 3, so the ISS can wait for reset
+//   release and restart on a new reset (5.sim/models/rv32/usercode).
 //==========================================================================
 
 `timescale 1ns / 1ps
@@ -59,60 +61,26 @@ module soc_cpu_vproc #(
     // ---------------------------------------------------------------------
     // Bus side
     // ---------------------------------------------------------------------
-    typedef enum logic [1:0] {
-        BUS_IDLE = 2'd0,   // waiting for VProc to raise WE or RD
-        BUS_REQ  = 2'd1,   // mem_valid asserted, waiting for mem_ready
-        BUS_ACK  = 2'd2    // acknowledging VProc; mem_valid low -> idle cycle
-    } bus_state_e;
+    logic done;  // the cycle after ready: VProc still holds the finished access
 
-    bus_state_e  bus_state;
-    logic [31:0] rdat_reg;
-    logic        ack_reg;
+    always_ff @(posedge clk) begin
+        done <= mem_valid & mem_ready;
+    end
 
-    assign mem_valid = (bus_state == BUS_REQ);
+    assign mem_valid = resetn & (vp_we | vp_rd) & ~done;
     assign mem_addr  = vp_addr;
     assign mem_wdata = vp_wdat;
     assign mem_wstrb = vp_we ? vp_be : 4'b0000;
 
-    always_ff @(posedge clk) begin
-        if (!resetn) begin
-            bus_state <= BUS_IDLE;
-            ack_reg   <= 1'b0;
-            rdat_reg  <= '0;
-        end else begin
-            ack_reg <= 1'b0;
-
-            case (bus_state)
-                BUS_IDLE:
-                    if (vp_we || vp_rd)
-                        bus_state <= BUS_REQ;
-
-                BUS_REQ:
-                    if (mem_ready) begin
-                        rdat_reg  <= mem_rdata;
-                        ack_reg   <= 1'b1;
-                        bus_state <= BUS_ACK;
-                    end
-
-                BUS_ACK:
-                    // ack_reg is high through this cycle; VProc samples it at
-                    // the edge that ends it and drops WE/RD at the next one.
-                    bus_state <= BUS_IDLE;
-
-                default:
-                    bus_state <= BUS_IDLE;
-            endcase
-        end
-    end
-
-    assign vp_wack = ack_reg & vp_we;
-    assign vp_rack = ack_reg & vp_rd;
-    assign vp_rdat = rdat_reg;
+    assign vp_wack   = mem_valid & mem_ready & vp_we;
+    assign vp_rack   = mem_valid & mem_ready & vp_rd;
+    assign vp_rdat   = mem_rdata;
 
     // ---------------------------------------------------------------------
     // The virtual processor itself
     // ---------------------------------------------------------------------
     VProc #(
+        .INT_WIDTH      (4),
         .DISABLE_DELTA  (1)
     ) u_vproc (
         .Clk            (clk),           // i
@@ -129,7 +97,7 @@ module soc_cpu_vproc #(
         .RD             (vp_rd),         // o
         .RDAck          (vp_rack),       // i
 
-        .Interrupt      ('0),            // i (unused)
+        .Interrupt      ({~resetn, 3'b000}),  // i: bit 3 reset, 2:0 unused
 
         .Update         (),              // o (unused)
         .UpdateResponse ('0),            // i (unused)
@@ -144,4 +112,5 @@ endmodule: soc_cpu_vproc
 Version History:
 -----------------------------------------------------------------------------
  2026/08/16 AV: initial creation -- VProc as a picorv32, for CPU=vproc / CPU=iss
+ 2026/10/15    : 2-clock picorv32-style handshake; reset as interrupt bit 3
 */

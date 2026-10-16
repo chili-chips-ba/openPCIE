@@ -12,6 +12,26 @@ directory and `README.md`. Run them in order - the software can pick up the
 generated HAL, and the hardware build embeds the firmware image into the
 bitstream.
 
+## Build environment
+
+We aim for Linux-native tools throughout, and accept WSL for convenience and inclusivity. Yet, as the GUI apps run worse on Linux and WSL (GPU drivers are not on par), we enjoy WaveCrux on Windows.
+
+First, in this folder:
+
+```sh
+source set-env.sh       # bash, zsh
+source set-env.csh      # tcsh, csh
+```
+
+[`set-env.sh`](./set-env.sh) finds each tool, checks it against the table below,
+and exports it in the variable the Makefiles use (`YOSYS`, `RISCV_PREFIX`,
+`PEAKRDL`, ...). It lists what is missing or too old and how to install it.
+Windows `.exe` files on `PATH` count as missing.
+
+- Report only: `bash set-env.sh`
+- Pin a tool: `export YOSYS=/path/to/yosys` before sourcing, or `make YOSYS=...`
+- Search roots: `OPENXC7_ROOT`, `XILINX_VIVADO`, `RISCV_ROOT`; else `~/opt`, `/opt`, `/tools/Xilinx`, `~/Xilinx`
+
 | Step | Makefile / Directory | Produces |
 |---|---|---|
 | 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h`, `csr_hw.h`, `csr_cosim.h` |
@@ -28,19 +48,28 @@ The versions the build was validated with. "Board" means the bitstream was teste
 
 | Tool | Version | Used for | Status |
 |---|---|---|---|
-| openXC7 v1.0.0: Yosys, nextpnr-himbaechel, fpga-as | Yosys 0.69 (9f75ca1f9), nextpnr 1.0.0-41-g3e5c2cdd | bitstream, default flow (`read_slang`) | builds, x4 and x1 |
-| openXC7 pre-v1.0.0: Yosys, nextpnr-xilinx, prjxray | Yosys 0.38, nextpnr-xilinx 45a986b | bitstream, `TOOLCHAIN=old` | board, x1 |
+| openXC7 v1.0.0 (1) | Yosys 0.69, nextpnr 3e5c2cdd | bitstream, default (`read_slang`) | builds, x4 and x1 |
+| openXC7 pre-v1.0.0 (2) | Yosys 0.38, nextpnr-xilinx 45a986b | bitstream, `TOOLCHAIN=old` | board, x1 |
 | sv2v | v0.0.13 | `FRONTEND=sv2v`, `TOOLCHAIN=old` | builds |
-| AMD Vivado | 2024.2 | Vivado projects, co-sim (`xsim`) | board, x1 |
+| AMD Vivado | 2026.1 | co-sim (`xsim`) | runs |
 | AMD Vivado | 2025.1 | `run-lint.sh` CDC phase, project scripts | checks |
-| PeakRDL | 1.5.0: regblock 1.3.1, html 2.12.2, markdown 1.0.3, c-header 1.1.0; systemrdl-compiler 1.33.0 | CSR RTL, headers, docs | generates |
+| PeakRDL | 1.5.0 (3) | CSR RTL, headers, docs | generates |
 | xPack RISC-V GCC | 15.2.0-1 | firmware | board |
-| MSYS2 MinGW64 GCC | 16.1.0 | co-sim (VProc, pcievhost) | runs |
+| GCC, host | 10+ (4) | co-sim (VProc, pcievhost) | runs |
 | Verilator | 5.052 | `run-lint.sh` | checks |
 | Verible | v0.0-4296-g0f262651 | `run-format.sh`, `run-lint.sh` | formats, checks |
-| WaveCrux Pro | 1.0.1 (our TLP plugin needs 1.0.1 or later) | waveform viewing, TLP decoding | runs |
-| Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE and DLL decoding in WaveCrux | runs |
+| WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP decoding | runs |
+| Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE, DLL decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |
+| openFPGALoader | 1.1.1 | loading the bitstream over JTAG | not yet used on the board |
+| usbipd-win | 5.3.0 | JTAG cable into WSL (Windows side) | not yet used on the board |
+| usbutils (`lsusb`) | 017 | checking the cable in WSL | runs |
+
+1. Yosys 0.69 (9f75ca1f9), nextpnr-himbaechel 1.0.0-41-g3e5c2cdd, fpga-as
+2. Yosys, nextpnr-xilinx, prjxray
+3. regblock 1.3.1, html 2.12.2, markdown 1.0.3, c-header 1.1.0; systemrdl-compiler 1.33.0
+4. C++20; validated with 15.2.0
+5. Our TLP plugin needs 1.0.1 or later
 
 ## CSR HAL Compilation
 
@@ -120,13 +149,13 @@ Those files are checked in, so an ordinary build never runs this step -- only an
 edit of `csr_build/csr.rdl` calls for it. Regeneration is idempotent, so it never
 shows up as a spurious diff.
 
-`peakrdl` and the interpreter running `sysrdl_cosim.py` must be the same install.
-On Windows they often are not, because MSYS2's own `python3` comes first on PATH
-and lacks `systemrdl-compiler`. `make -f MakefileCSR tools` shows what was picked
-up; override with:
+`peakrdl` and the interpreter running `sysrdl_cosim.py` must be the same install,
+or the script fails with `No module named 'systemrdl'`. `set-env.sh` takes `PYTHON`
+from the first line of the `peakrdl` script, so the two match. `make -f MakefileCSR tools`
+shows what was picked up; override with:
 
 ```sh
-make -f MakefileCSR PYTHON=/c/Users/you/AppData/Local/Programs/Python/Python312/python.exe
+make -f MakefileCSR PYTHON=/path/to/python3 PEAKRDL=/path/to/peakrdl
 ```
 
 The `csr_hw.h` and `csr_cosim.h` files present the same API to the application
@@ -175,7 +204,7 @@ is free -- it took a run on the real ISA to see it.
 
 ### The register map
 
-`csr.rdl` describes the TLP transmit/receive window that the picorv32 firmware
+`csr.rdl` describes the TLP transmit/receive window that the RISC-V firmware
 uses in place of the AMD-proprietary hardware FSM. It sits at `0x3000_0000` in
 the SOC address map:
 
@@ -215,7 +244,7 @@ initialises its instruction memory with `$readmemh("firmware.hex", ram)`, so the
 file is one 32-bit little-endian word per line, 8 hex digits, no `0x` prefix.
 
 The toolchain is xPack GNU RISC-V Embedded GCC (`riscv-none-elf-` prefix), built
-for `rv32i` only - picorv32 here is configured without the M and C extensions.
+for `rv32i` only: eduBOS5 is RV32I, and PicoRV32 here is configured without the M and C extensions.
 
 `make` builds the RC-direct firmware. For the switched topology:
 
@@ -228,9 +257,9 @@ firmware (about a second), so no `make clean` is needed to switch.
 
 The firmware takes its register map from the headers generated in step 1.
 
-> **Run this step on Windows** (`cmd` or PowerShell). The RISC-V toolchain and
-> Python are Windows programs, whereas the openXC7 step below runs in WSL because
-> yosys, nextpnr and prjxray are Linux tools.
+This step runs on Linux or WSL, like the others, with the Linux build of the
+xPack toolchain; `set-env.sh` finds it and passes its full prefix in
+`RISCV_PREFIX`.
 
 See [`sw_build/README.md`](./sw_build/README.md) for details.
 
@@ -276,6 +305,17 @@ Two things are worth knowing before the first build, both covered in detail in
   its own default - almost always `0`. `lane_xcvr.sv` therefore sets 20 of them
   explicitly. This was the root cause of the design not working on hardware, and
   it is silent: no warning, and the bitstream builds cleanly.
+
+## Loading the bitstream
+
+[openFPGALoader](https://github.com/trabucayre/openFPGALoader) (open source, v1.1.1+) loads a bitstream over JTAG:
+
+```sh
+openFPGALoader --detect                                    # cable and FPGA found?
+openFPGALoader hw_build.openXC7/build_artifacts.x4.slang/top.x4.direct.bit
+```
+
+Ubuntu's own package is older; build it from source. On WSL the JTAG cable first has to be attached with usbipd-win; `set-env.sh` checks both. Details: [Programming the board from WSL](./hw_build.openXC7/README.md#programming-the-board-from-wsl).
 
 -----------
 #### End-of-Document

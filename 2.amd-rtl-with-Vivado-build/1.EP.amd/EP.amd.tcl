@@ -23,23 +23,11 @@
 # 2. The following source(s) files that were local or imported into the original project.
 #    (Please see the '$orig_proj_dir' and '$origin_dir' variable setting below at the start of the script)
 #
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/temp/temp.srcs/utils_1/imports/synth_1/EP_amd.dcp"
+#    (see the file lists below)
 #
 # 3. The following remote source files that were added to the original project:-
 #
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/EP_MEM.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO_EP.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO_EP_MEM_ACCESS.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO_RX_ENGINE.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO_TO_CTRL.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/PIO_TX_ENGINE.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/pcie_7x_0_pipe_clock.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/pcie_7x_0_support.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/pcie_app_7x.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/src/EP_amd.v"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/ip/pcie_7x_0.xci"
-#    "C:/Users/PC/Documents/GitHub/openPCIE/2.rtl/1.EP.amd/xdc/EP.amd.x1g2.AcornCLE-215P.xdc"
+#    (see the file lists below)
 #
 #*****************************************************************************************
 

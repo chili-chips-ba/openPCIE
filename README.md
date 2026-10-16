@@ -1,10 +1,10 @@
-[![NLnet Foundation](https://img.shields.io/badge/funded%20by-NLnet%20Foundation-74AA00)](https://nlnet.nl/)
-[![GitHub stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=flat)](https://github.com/chili-chips-ba/openPCIE/stargazers)
-[![License](https://img.shields.io/badge/license-BSD--3--Clause%20%7C%20CC--BY--SA--4.0-blue)](LICENSES)
-[![lint](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml/badge.svg)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
-[![format](https://github.com/chili-chips-ba/openPCIE/actions/workflows/format.yml/badge.svg)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/format.yml)
-[![Sim](https://img.shields.io/badge/sim-pass-brightgreen)](5.sim)
-[![openXC7 v1.0.0+](https://img.shields.io/badge/openXC7%20v1.0.0%2B-pass-brightgreen)](4.build/hw_build.openXC7)
+[![NLnet:Funded](https://img.shields.io/badge/NLnet%3AFunded-74AA00)](https://nlnet.nl/)
+[![Stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=flat&label=Stars)](https://github.com/chili-chips-ba/openPCIE/stargazers)
+[![License:BSD-3/CC-BY-SA](https://img.shields.io/badge/License%3ABSD--3%2FCC--BY--SA-blue)](LICENSES)
+[![Lint](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/lint.yml?label=Lint)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
+[![Verible](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/verible.yml?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
+[![Sim:Pass](https://img.shields.io/badge/Sim%3APass-brightgreen)](5.sim)
+[![openXC7:Pass](https://img.shields.io/badge/openXC7%3APass-brightgreen)](4.build/hw_build.openXC7)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 
@@ -235,7 +235,7 @@ The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to s
 The test bench has the following features:
 
 * A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.picorv32`](5.sim/models/README.md#soc_cpuvprocpicorv32) component
-  * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL picorv32, with `make CPU=rtl|vproc|iss`
+  * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL core (eduBOS5 by default, or PicoRV32), with `make CPU=rtl|vproc|iss`
   * Can run natively compiled test code
   * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#csr-hal-compilation)
   * Can run RISC-V compiled code using the [rv32 RISC-V ISS model](5.sim/models/rv32/README.md)
@@ -582,6 +582,9 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://github.com/MikePopoloski/slang"><img alt="MikePopoloski slang logo" width="25%" src="0.doc/artwork/slang.logo.png"></a>
   <a href="https://www.chipsalliance.org/projects"><img alt="Chips Alliance SV Tools logo" width="15%" src="0.doc/artwork/ChipsAlliance-SV-Tools.logo.png"></a>
   <a href="https://github.com/chipsalliance/verible"><img alt="Verible logo" width="25%" src="0.doc/artwork/Verible.logo.png"></a>
+  <a href="https://github.com/trabucayre/openFPGALoader"><img alt="openFPGALoader logo" width="15%" src="0.doc/artwork/openFPGAloader.logo.png"></a>
+  <a href="https://github.com/tarik-ibrahimovic/eduBOS5"><img alt="eduBOS5 logo" width="10%" src="0.doc/artwork/eduBOS5.logo.png"></a>
+  <a href="https://github.com/YosysHQ/picorv32"><img alt="PicoRV32 logo" width="15%" src="0.doc/artwork/picoRV32.logo.png"></a>
 </p>
 
 

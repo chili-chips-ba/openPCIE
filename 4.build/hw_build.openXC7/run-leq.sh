@@ -10,6 +10,8 @@
 #
 # usage:  bash run-leq.sh <gold src> <gate src> [sed script]
 #         LANES=1 bash run-leq.sh ...         compare the x1 build (default x4)
+#         CPU=picorv32 bash run-leq.sh ...    compare the PicoRV32 build (default edubos5;
+#                                              edubos5_3stg: 3-stage pipeline)
 #         LEQ_EXTRA=<file> bash run-leq.sh ... Yosys commands run after equiv_make,
 #                                              e.g. equiv_add for registers that
 #                                              were regrouped into a struct
@@ -31,17 +33,28 @@
 # inputs. equiv_induct starts from any state, so logic that is only constant
 # after reset shows up as unproven and needs a look by hand.
 #
-# Needs yosys from openXC7 v1.0.0 on the PATH (source its export.sh).
+# Needs yosys from openXC7 v1.0.0: source ../set-env.sh first. The tool
+# commands can be overridden: YOSYS, YOSYS_CONFIG, OPENXC7_PYTHON.
 set -e
 HERE=$(cd "$(dirname "$0")" && pwd)
 GOLD=$(cd "$1" && pwd); GATE=$(cd "$2" && pwd); MAP=${3:-}
 CSR=$HERE/../csr_build/generated-files
 TOP=RC_opensource
 LANES=${LANES:-4}
+CPU=${CPU:-edubos5}
+case $CPU in
+  picorv32) CPU_DEF="-D SOC_CPU_PICORV32" ;;
+  edubos5)  CPU_DEF="" ;;
+  edubos5_3stg) CPU_DEF="-D SOC_EDUBOS5_3STG" ;;
+  *) echo "CPU must be picorv32, edubos5 or edubos5_3stg, got \"$CPU\""; exit 1 ;;
+esac
+YOSYS=${YOSYS:-yosys}
+YOSYS_CONFIG=${YOSYS_CONFIG:-yosys-config}
+OPENXC7_PYTHON=${OPENXC7_PYTHON:-python3}
 W=$(mktemp -d); cd "$W"
 cp "$HERE/../sw_build/firmware.hex" .
 
-python3 "$HERE/gen_xilinx_bb.py" "$(yosys-config --datdir)/xilinx" bb.sv \
+"$OPENXC7_PYTHON" "$HERE/gen_xilinx_bb.py" "$("$YOSYS_CONFIG" --datdir)/xilinx" bb.sv \
   PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 BUFG BUFGCTRL RAMB36E1 >/dev/null
 
 cat > bram_bb.sv <<'EOF'
@@ -73,11 +86,19 @@ module FDCE #(parameter logic INIT = 1'b0) (output logic Q, input logic C, CE, C
 endmodule
 EOF
 
+cpu_files() {  # $1 = src dir
+  if [ "$CPU" != picorv32 ]; then
+    local E=$1/CPU.eduBOS5
+    echo $E/edubos5_pkg.sv $E/edubos5_rf.sv $E/edubos5_alu.sv $E/edubos5.sv
+  else
+    echo $1/picorv32.CHILI.sv
+  fi
+}
 files() {  # $1 = src dir; same order as SV_ORDERED in the Makefile
   local P=$1/pcie
   echo bb.sv bram_bb.sv fdce.sv $P/link_pkg.sv $P/pcie_pkg.sv "$CSR/csr_pkg.sv" $(ls $P/*_if.sv) \
        $(ls $P/*.sv | grep -v -e '_if.sv$' -e '_pkg.sv$') \
-       "$CSR/csr.sv" $1/soc_csr.sv $1/picorv32.CHILI.sv $1/riscv_pcie_soc.sv $1/$TOP.sv
+       "$CSR/csr.sv" $1/soc_csr.sv $(cpu_files $1) $1/riscv_pcie_soc.sv $1/$TOP.sv
 }
 BB="t:PCIE_2_1 t:GTPE2_CHANNEL t:GTPE2_COMMON t:MMCME2_ADV t:BUFG t:BUFGCTRL t:IBUFDS_GTE2 t:RAMB36E1 t:BRAM_TDP_MACRO"
 PREP="hierarchy -top $TOP; proc; flatten; memory; async2sync"
@@ -85,11 +106,11 @@ PREP="hierarchy -top $TOP; proc; flatten; memory; async2sync"
 REN=""
 if [ -n "$MAP" ]; then   # rename gold objects to their gate names (skip names the gold already has)
   cat > names.ys <<EOF
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
 tee -q -o names.txt select -list $TOP/w:* $TOP/c:*
 EOF
-  yosys -q names.ys >/dev/null
+  "$YOSYS" -q names.ys >/dev/null
   sed "s|^$TOP/||" names.txt | sed -n "h; $MAP; G; s/\n/ /; p" |
     awk 'NR==FNR {have[$1]=1; next} $1!=$2 && substr($2,1,1)!="$" && !($1 in have) {print "rename \\" $2 " \\" $1}' \
         <(sed "s|^$TOP/||" names.txt) - > ren.ys
@@ -101,11 +122,11 @@ EXTRA=""
 [ -n "${LEQ_EXTRA:-}" ] && EXTRA="script $(cd "$(dirname "$LEQ_EXTRA")" && pwd)/$(basename "$LEQ_EXTRA")"
 
 cat > eq.ys <<EOF
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
 $REN
 expose -evert $BB; opt_clean; rename $TOP gold; design -stash gold
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $GATE/pcie -I $GATE $(files $GATE)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GATE/pcie -I $GATE $(files $GATE)
 $PREP
 expose -evert $BB; opt_clean; rename $TOP gate; design -stash gate
 design -copy-from gold -as gold gold
@@ -117,7 +138,7 @@ equiv_simple -seq 3
 equiv_induct -seq 3
 equiv_status
 EOF
-yosys -q -l eq.log eq.ys >/dev/null || true
+"$YOSYS" -q -l eq.log eq.ys >/dev/null || true
 grep -E "Found [0-9]+ .equiv|Of those cells|^ERROR" eq.log | tail -3
 grep "Unproven" eq.log | sed -E 's/.*: .([^ ]*)_gold.*/\1/; s/\[[0-9]+\]//g' | sort | uniq -c
 echo "log: $W/eq.log"

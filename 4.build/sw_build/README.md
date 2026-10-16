@@ -1,6 +1,6 @@
 # firmware build
 
-Builds the firmware for the picorv32 core inside the opensource RC, in either of
+Builds the firmware for the RISC-V core (eduBOS5 or PicoRV32) inside the opensource RC, in either of
 its two variants - `RC-direct.opensource` or `RC-switched.opensource`.
 
 | Stage | Tool | Input -> Output |
@@ -26,24 +26,22 @@ The register map comes from `../csr_build/generated-files/` (`csr.h`, `openpcie_
 ## Prerequisites
 
 **RISC-V toolchain.** [xPack GNU RISC-V Embedded GCC](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack),
-prefix `riscv-none-elf-`. Override with `make CROSS=riscv64-unknown-elf-` if yours
-differs.
+prefix `riscv-none-elf-`, the `linux-x64` build, unpacked e.g. into `~/opt`.
+[`../set-env.sh`](../set-env.sh) finds it and sets `RISCV_PREFIX` to its full
+prefix. Override with `make CROSS=riscv64-unknown-elf-` if yours differs.
 
 **Python 3.** Any version; only `struct` is used.
 
 ## Building
 
-**Run this on Windows** (`cmd` or PowerShell), not in WSL - the toolchain is a
-Windows program:
+Run this on Linux or in WSL, like the hardware build:
 
-```
-cd 4.build\sw_build
+```sh
+cd 4.build
+source set-env.sh        # tcsh: source set-env.csh
+cd sw_build
 make
 ```
-
-> The two builds live on different sides: `hw_build.openXC7` runs **in WSL**
-> because yosys/nextpnr/prjxray are Linux tools, while this one runs **on Windows**
-> because the RISC-V toolchain and Python are Windows programs.
 
 | Target | Purpose |
 |---|---|
@@ -107,8 +105,8 @@ dependency of both.
 
 ## Notes
 
-`-march=rv32i -mabi=ilp32` only: picorv32 here is configured without the M and C
-extensions. `-ffreestanding -nostdlib` because there is no libc and no crt0 -
+`-march=rv32i -mabi=ilp32` only: eduBOS5 is RV32I, and PicoRV32 here is configured
+without the M and C extensions. `-ffreestanding -nostdlib` because there is no libc and no crt0 -
 `start.S` provides the reset vector, so it must stay first on the command line.
 
 `firmware.elf` differs on every rebuild even when nothing changed. gcc embeds a

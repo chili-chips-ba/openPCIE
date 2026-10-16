@@ -72,19 +72,3 @@ Configuration payloads are shown as the register value the spec prints
 (little-endian); memory payloads as the DW itself. Framing errors (data without
 SOP, SOP before EOP, x/z), length mismatches and UR / CA completions are
 flagged as errors.
-
-## Build
-
-Windows (MSYS2 MinGW64):
-
-```
-gcc -O2 -Wall -Wextra -std=c11 -shared -static-libgcc -o pcie_tlp_decoder.dll pcie_tlp_decoder.c
-```
-
-Linux:
-
-```
-gcc -O2 -Wall -Wextra -std=c11 -shared -fPIC -o libpcie_tlp_decoder.so pcie_tlp_decoder.c
-```
-
-Rebuild and commit the `.dll` whenever `pcie_tlp_decoder.c` changes.

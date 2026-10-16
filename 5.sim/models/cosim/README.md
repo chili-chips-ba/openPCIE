@@ -43,7 +43,7 @@ sv work models/cosim/mem_model.sv
 sv work models/cosim/f_VProc.v
 ```
 
-The DPI software for both the models is pre-compiled into a static library as `lib/libcosimlnx.a` (with a `lib/libcosimwin.a` version for use with the MSYS2/mingw64 environment on Windows). The headers for the models are placed in the `include/` directory. To use the  models' APIs, the user code must include either the  `VProcClass.h` header for the *VProc* C++ API, or `VUser.h` for the *VProc* C API, and the `mem.h` header for the memory model C API. Note that the `VUser.h` and `mem.h` inclusions must be wrapped as C linkage if included in code that will be compiled as C++. E.g.:
+The DPI software for both the models is pre-compiled into a static library as `lib/libcosimlnx.a`. The headers for the models are placed in the `include/` directory. To use the  models' APIs, the user code must include either the  `VProcClass.h` header for the *VProc* C++ API, or `VUser.h` for the *VProc* C API, and the `mem.h` header for the memory model C API. Note that the `VUser.h` and `mem.h` inclusions must be wrapped as C linkage if included in code that will be compiled as C++. E.g.:
 
 ```
 extern "C" {

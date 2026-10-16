@@ -59,12 +59,23 @@ const  uint32_t        uart0_base_addr = 0x80000000;
 const  uint32_t        sw_irq_addr     = 0xafffffff;
 const  uint32_t        max_sync_diff   = 1000;
 
+// openPCIE: simulation clocks a load / store over the VProc bus takes
+// (soc_cpu.VPROC.picorv32.sv handshake), on top of the ISS's own cycle count.
+// They are taken off the following synchronisations, so that an access costs
+// only its timing-model cycles, as on the RTL core. Calibrated: 5.sim/README.md.
+const  uint32_t        sim_write_cycles = 2;
+const  uint32_t        sim_read_cycles  = 2;
+
 // ---------------------------------------------
 // LOCAL STATICS
 // ---------------------------------------------
 
 static uint32_t        extirq          = 0;
 static uint32_t        swirq           = 0;
+
+// openPCIE: the SOC reset, VProc interrupt bit 3 (soc_cpu.VPROC.picorv32.sv).
+// Assumed asserted until the first interrupt callback says otherwise.
+static volatile bool   in_reset        = true;
 
 static rv32*           pCpu;
 
@@ -195,14 +206,33 @@ static void post_run_actions(rv32i_cfg_s cfg)
 
 int ext_mem_access (const uint32_t addr, uint32_t& data, const int type, const rv32i_time_t time)
 {
+    // openPCIE: no wait states -- the timing model already counts the fetch
+    // and the load (upstream: 1 for a read)
     const int       write_wait_cycle      = 0;
-    const int       read_data_wait_cycle  = 1;
-    const int       read_instr_wait_cycle = 1;
+    const int       read_data_wait_cycle  = 0;
+    const int       read_instr_wait_cycle = 0;
     bool            access_sim            = false;
     int             processed             = RV32I_EXT_MEM_NOT_PROCESSED;
     uint64_t        curr_cycles;
-    uint32_t        cycle_diff;
+    uint64_t        cycle_diff;
     static uint64_t last_cycles           = 0;
+    static uint64_t sim_ahead             = 0;  // bus clocks not yet taken off
+
+    // openPCIE: reset asserted while running (seen at the latest sync, so up to
+    // max_sync_diff cycles late): hold until it is released, then restart at
+    // the reset vector, as the RTL core does
+    if ((type & MEM_NOT_DBG_MASK) == MEM_RD_ACCESS_INSTR && in_reset)
+    {
+        while (in_reset)
+        {
+            VTick(1, node);
+        }
+        pCpu->reset_cpu();
+        last_cycles = pCpu->clk_cycles();
+        sim_ahead   = 0;
+        data        = read_instr(pCpu->pc_val(), false);
+        return read_instr_wait_cycle;
+    }
 
     // Select whether making simulation or direct memory model access
     access_sim  = addr >= vcfg.ext_access_base_addr && addr < vcfg.ext_access_top_addr;
@@ -211,7 +241,23 @@ int ext_mem_access (const uint32_t addr, uint32_t& data, const int type, const r
     // Synchronise ISS time and simulation time
     // -------------------------------------------
     curr_cycles = pCpu->clk_cycles();
-    cycle_diff  = (uint32_t)(curr_cycles - last_cycles);
+    cycle_diff  = curr_cycles - last_cycles;
+
+    // Advance the simulation by the ISS cycles since the last synchronisation,
+    // less the bus clocks the simulation already spent (sim_ahead)
+    auto sync = [&]()
+    {
+        if (cycle_diff > sim_ahead)
+        {
+            VTick((uint32_t)(cycle_diff - sim_ahead), node);
+            sim_ahead = 0;
+        }
+        else
+        {
+            sim_ahead -= cycle_diff;
+        }
+        last_cycles = curr_cycles;
+    };
 
     // Force synchronisation of simulation when reading instructions and the
     // ISS/sim skew reaches a limit to minimise simulation interaction when
@@ -220,15 +266,14 @@ int ext_mem_access (const uint32_t addr, uint32_t& data, const int type, const r
     {
         if ((type & MEM_NOT_DBG_MASK) == MEM_RD_ACCESS_INSTR && cycle_diff >= max_sync_diff)
         {
-            VTick(cycle_diff, node);
-            last_cycles = curr_cycles;
+            sync();
         }
     }
     // Synchronise CPU time with simulation at simulation access load or store
     else
     {
-        VTick(cycle_diff, node);
-        last_cycles = curr_cycles;
+        sync();
+        sim_ahead += (type & MEM_NOT_DBG_MASK) <= MEM_WR_ACCESS_INSTR ? sim_write_cycles : sim_read_cycles;
     }
 
     // -------------------------------------------
@@ -311,7 +356,8 @@ int ext_mem_access (const uint32_t addr, uint32_t& data, const int type, const r
 // in the main program flow.
 int vproc_irq_callback(int val)
 {
-    extirq = val;
+    extirq   = val & 0x7;
+    in_reset = (val >> 3) & 1;
 
     return 0;
 }
@@ -471,6 +517,12 @@ extern "C" void VUserMain0()
 
             if (!error)
             {
+                // openPCIE: start at reset release, as the RTL core does
+                while (in_reset)
+                {
+                    VTick(1, node);
+                }
+
                 // Run the processor
                 pCpu->run(cfg);
 

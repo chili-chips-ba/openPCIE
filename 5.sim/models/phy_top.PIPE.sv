@@ -178,7 +178,9 @@ module phy_top
     .RxDataK   (ep_rx_datak),
 
     .TxData    (ep_tx_data),
-    .TxDataK   (ep_tx_datak)
+    .TxDataK   (ep_tx_datak),
+
+    .Gen2ClkSel(/*LINT:OK*/)  // the model's Gen1/Gen2 clock select; pipe_clk is ours
   );
 
   //------------------------------------------------------------------
@@ -278,7 +280,7 @@ module phy_top
 
   genvar i;
   generate
-    for (i = 0; i < PCIE_LANES; i = i + 1) begin : lane_gen
+    for (i = 0; i < PCIE_LANES; i = i + 1) begin : g_lane
         assign pipe_mac.rx[i].data          = ep_tx_data;
         assign pipe_mac.rx[i].char_is_k     = ep_tx_datak;
         assign pipe_mac.rx[i].valid         = rx_active;

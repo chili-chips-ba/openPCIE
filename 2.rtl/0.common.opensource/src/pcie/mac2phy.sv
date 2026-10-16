@@ -67,7 +67,7 @@ module mac2phy
 
   genvar i;
   generate
-    for (i = 0; i < PCIE_LANES; i = i + 1) begin : lane_gen
+    for (i = 0; i < PCIE_LANES; i = i + 1) begin : g_lane
 
       // RX: the 16 bits used of the 32-bit GTP lane, EIOS filter, MAC lane
       pipe_rx_lane_t gt_rx;

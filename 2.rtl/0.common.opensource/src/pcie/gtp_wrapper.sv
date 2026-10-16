@@ -213,11 +213,15 @@ module gtp_wrapper
   assign gtp.rxsyncin            = gtp.rxsyncout;
 
   // ---- one lane_xcvr per lane; channel bonding chain lane 0 -> 1 -> ...
-  for (genvar i = 0; i < PCIE_LANES; i++) begin : lane_gen
-    if (i == 0) begin : chbond_head
+  // The last lane's RXCHBONDO has no next lane to feed: no-connect (NC_)
+  logic [3:0] NC_rxchbondo;
+  assign NC_rxchbondo = gtp.rxchbondo[PCIE_LANES-1];
+
+  for (genvar i = 0; i < PCIE_LANES; i++) begin : g_lane
+    if (i == 0) begin : g_chbond_head
       assign gtp.rxchbondi[i] = 4'd0;
     end
-    else begin : chbond_chain
+    else begin : g_chbond_chain
       assign gtp.rxchbondi[i] = gtp.rxchbondo[i-1];
     end
 

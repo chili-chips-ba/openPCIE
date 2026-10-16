@@ -42,12 +42,6 @@ precedence = "closest"
 SPDX-FileCopyrightText = "2004-2025 Simon Southwell"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
-[[annotations]]
-path = ["5.sim/models/rv32/usercode/getopt.c"]
-precedence = "override"
-SPDX-FileCopyrightText = ["1987 Regents of the University of California", "Simon Southwell"]
-SPDX-License-Identifier = "GPL-3.0-or-later AND BSD-4.3TAHOE"
-
 # KiCad libraries vendored next to our own.
 [[annotations]]
 path = ["1.pcb/KiCad-library/EEZ-Kicad-libraries/**"]

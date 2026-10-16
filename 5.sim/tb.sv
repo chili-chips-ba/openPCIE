@@ -16,7 +16,7 @@
 //          |    `- phy_top     <-- SWAPPED for models/phy_top.PIPE.sv
 //          |                            (PIPE PHY model + pcievhost endpoint)
 //          `- riscv_pcie_soc
-//               |- picorv32         real RTL, runs the real firmware.hex
+//               |- picorv32 / edubos5  real RTL, runs the real firmware.hex
 //               `- soc_csr -> csr   PeakRDL-generated CSR
 //
 //   Only two files differ from the bitstream build:
@@ -35,13 +35,17 @@
 
 module tb;
 
-  // How long to run, in microseconds. Read at time 0 from run_us.cfg, which the
-  // make file writes from its RUN_US variable, so changing the run length needs
+  // The run ends RESULT_TAIL_US after the firmware reports its result, so the
+  // last completion still shows; RUN_SIM_US is only the time limit for a run
+  // that never reports. It is read, in microseconds, at time 0 from run_us.cfg,
+  // which the make file writes from its RUN_US variable, so changing it needs
   // no re-elaboration:
   //     make run RUN_US=40000
   // A file is used rather than a plusarg because xsim's -testplusarg does not
   // accept the name=value form -- it splits the argument at the '='.
   integer RUN_SIM_US;
+  localparam int RESULT_TAIL_US = 10;
+  event result_seen;  // the firmware has written its result marker
 
   initial begin : get_run_length
     integer fh;
@@ -92,8 +96,18 @@ module tb;
       end
 
       begin : run_sim
-        #(RUN_SIM_US * 1us);
-        $display("\n%t  TB     *** simulation time limit reached ***", $time);
+        fork
+          begin : time_limit
+            #(RUN_SIM_US * 1us);
+            $display("\n%t  TB     *** simulation time limit reached ***", $time);
+          end
+          begin : result_tail
+            @(result_seen);
+            #(RESULT_TAIL_US * 1us);
+            $display("\n%t  TB     *** run ends %0d us after the firmware result ***", $time,
+                     RESULT_TAIL_US);
+          end
+        join_any
         report_status();
         $finish(2);
       end
@@ -239,7 +253,7 @@ module tb;
 //--------------------------------------------------------------
 // CPU activity
 //--------------------------------------------------------------
-// Confirms the picorv32 is actually executing, and how fast. Without it there
+// Confirms the CPU is actually executing, and how fast. Without it there
 // is no way to tell a stalled CPU from one still inside a long delay loop.
 
 `ifdef CPU_TRACE
@@ -254,7 +268,8 @@ module tb;
   initial csr_acc = 0;
 
   always @(posedge dut.clk62m5) begin
-    if (dut.u_soc.mem.valid && dut.u_soc.is_bridge && dut.u_soc.mem.ready) begin
+    if ((dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb)) ||
+        (dut.u_soc.mem.valid && dut.u_soc.is_bridge && dut.u_soc.mem.ready && !(|dut.u_soc.mem.wstrb))) begin
       csr_acc = csr_acc + 1;
       if (csr_acc <= 300 || (csr_acc % 5000) == 0) begin
         $display("%t  CSR    %s [0x%02h] data=%08h  (#%0d)", $time,
@@ -356,9 +371,11 @@ module tb;
     end
   end
 
+  // A write is counted on the CSR request strobe, once per access: picorv32
+  // holds valid until ready, but eduBOS5 stores are one-cycle requests whose
+  // ready comes after valid has dropped
   always @(posedge dut.clk62m5) begin
-    if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
-        dut.u_soc.is_bridge && (|dut.u_soc.mem.wstrb) &&
+    if (dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb) &&
         dut.u_soc.mem.addr[7:0] == 8'h0c) begin
 
       tlp_tx_count = tlp_tx_count + 1;
@@ -380,6 +397,7 @@ module tb;
         $display("\n%t  TB     ===> FIRMWARE RESULT 0x%08h  (%s)\n", $time,
                  dut.u_soc.mem.wdata,
                  (dut.u_soc.mem.wdata == 32'h0000_face) ? "PASS" : "FAIL");
+        ->result_seen;
       end
     end
   end

@@ -81,12 +81,12 @@ module lane_xcvr
 
   // lane 0 is the sync master and the PIPE clock source; on the other lanes
   // these GT outputs are no-connect (NC_)
-  if (LANE == 0) begin : master
+  if (LANE == 0) begin : g_master
     assign gtp.txsyncout = gt_txsyncout;
     assign gtp.rxsyncout = gt_rxsyncout;
     assign gtp.txoutclk  = gt_txoutclk;
   end
-  else begin : slave
+  else begin : g_slave
     logic NC_txsyncout;
     assign NC_txsyncout = gt_txsyncout;
     logic NC_rxsyncout;

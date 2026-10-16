@@ -5,8 +5,8 @@
 # =============================================================================
 # openXC7 build flow for the opensource RC
 #
-# Run FROM THIS FOLDER:
-#   source /opt/openxc7/export.sh
+# Run FROM THIS FOLDER, on Linux or WSL:
+#   source ../set-env.sh      (tcsh: source ../set-env.csh) -- finds the tools
 #   make                      RC-direct, x4   (default)
 #   make LANES=1              RC-direct, x1
 #   make VARIANT=switched     RC-switched (x1 only)
@@ -54,8 +54,8 @@
 # TOOLCHAIN=new (default): openXC7 v1.0.0, as built by
 #   toolchain-sources-builder.sh (github.com/openXC7/toolchain-installer) --
 #   the himbaechel engine behind a nextpnr-xilinx shim, Yosys 0.67 or later,
-#   fpga-as. Builds both variants; NOT yet tested on hardware. Source its
-#   export.sh first.
+#   fpga-as. Builds both variants; NOT yet tested on hardware. Source
+#   ../set-env.sh first.
 # FRONTEND=slang (default with TOOLCHAIN=new): Yosys's own SystemVerilog front
 #   end (read_slang), no sv2v. Defines SYN_YOSYS_BUG for the RTL.
 # FRONTEND=sv2v: SystemVerilog through sv2v. The only choice with TOOLCHAIN=old
@@ -67,7 +67,8 @@ TOOLCHAIN ?= new
 FRONTEND  ?= $(if $(filter old,$(TOOLCHAIN)),sv2v,slang)
 
 ifeq ($(TOOLCHAIN),new)
-    # export.sh sets NEXTPNR_XILINX_DIR (and PRJXRAY_DB_DIR) to its prefix
+    # ../set-env.sh (or openXC7's export.sh) sets NEXTPNR_XILINX_DIR and
+    # PRJXRAY_DB_DIR from the openXC7 prefix
     OPENXC7_ROOT   ?= $(or $(NEXTPNR_XILINX_DIR),/opt/openxc7)
     PRJXRAY_DB_DIR ?= $(OPENXC7_ROOT)/share/nextpnr/prjxray-db
     XILINX_GEN      = $(OPENXC7_ROOT)/share/nextpnr/himbaechel/uarch/xilinx/gen/xilinx_gen.py
@@ -84,9 +85,9 @@ else ifeq ($(TOOLCHAIN),old)
     endif
     # prjxray-db, metadata and constids MUST come from the same tree as nextpnr
     # -- mixing versions yields wrong wire indices. So everything is taken from
-    # the submodules of the verified build, not from the snap. The new
-    # toolchain's export.sh exports PRJXRAY_DB_DIR as well; it must not leak in
-    # here, so only a command-line value overrides the search.
+    # the submodules of the verified build, not from the snap. set-env.sh
+    # exports the new toolchain's PRJXRAY_DB_DIR; it must not leak in here, so
+    # only a command-line value overrides the search.
     NEXTPNR_SRC ?= /opt/openxc7_extra/npnr_45a986b
     ifneq ($(origin PRJXRAY_DB_DIR),command line)
         override PRJXRAY_DB_DIR := $(firstword $(wildcard \
@@ -110,12 +111,34 @@ CONSTIDS ?= $(wildcard $(NEXTPNR_SRC)/xilinx/constids.inc)
 
 ifeq ($(PRJXRAY_DB_DIR),)
   ifeq ($(TOOLCHAIN),new)
-    $(error Cannot find prjxray-db. Source the new toolchain's export.sh, or pass OPENXC7_ROOT=<prefix>)
+    $(error Cannot find prjxray-db. Source ../set-env.sh, or pass OPENXC7_ROOT=<prefix>)
   else
     $(error Cannot find prjxray-db. Build nextpnr 45a986b (see above) or pass: \
             make NEXTPNR_SRC=/path/to/nextpnr-xilinx)
   endif
 endif
+
+# ---- Tool binaries ----------------------------------------------------------
+# Every tool is called through a variable. ../set-env.sh finds them and sets
+# the environment; anything left unset falls back to the bare name on PATH.
+# Single ones can be overridden on the command line as well, e.g.
+#   make YOSYS=/opt/oss-cad-suite/bin/yosys
+# OPENXC7_PYTHON runs the chipdb generators. It is the openXC7 venv's python3,
+# which carries their packages -- not the PYTHON that MakefileCSR uses.
+SV2V               ?= sv2v
+YOSYS              ?= yosys
+YOSYS_CONFIG       ?= yosys-config
+NEXTPNR_XILINX     ?= nextpnr-xilinx
+NEXTPNR_HIMBAECHEL ?= nextpnr-himbaechel
+BBASM              ?= bbasm
+FPGA_AS            ?= fpga-as
+FASM2FRAMES        ?= fasm2frames
+XC7FRAMES2BIT      ?= xc7frames2bit
+OPENXC7_PYTHON     ?= python3
+
+# With TOOLCHAIN=new, NEXTPNR_XILINX is the openXC7 shim that translates the
+# nextpnr-xilinx flags for the himbaechel engine; it runs the engine named here
+export NEXTPNR_HIMBAECHEL_BIN := $(NEXTPNR_HIMBAECHEL)
 
 DB_DIR = $(PRJXRAY_DB_DIR)
 # The two toolchains' chip databases are different formats
@@ -142,11 +165,21 @@ VARIANT ?= direct
 LANES ?= $(if $(filter switched,$(VARIANT)),1,4)
 
 # The bitstream's name says what it is for: top.x4.direct.bit, top.x1.direct.bit,
-# top.x1.switched.bit
+# top.x1.switched.bit. A non-default CPU (CPU=picorv32, edubos5_3stg) builds
+# into its own folder, named for it
 BITFILE = top.x$(LANES).$(VARIANT).bit
 ifeq ($(filter 1 4,$(LANES)),)
     $(error LANES must be 1 or 4, got "$(LANES)")
 endif
+
+# ---- CPU --------------------------------------------------------------------
+# edubos5 (default: src/CPU.eduBOS5, 2-stage), edubos5_3stg or picorv32;
+# see riscv_pcie_soc.sv
+CPU ?= edubos5
+ifeq ($(filter picorv32 edubos5 edubos5_3stg,$(CPU)),)
+    $(error CPU must be picorv32, edubos5 or edubos5_3stg, got "$(CPU)")
+endif
+CPU_SFX = $(if $(filter-out edubos5,$(CPU)),.$(CPU))
 
 TOP        = RC_opensource
 COMMON_DIR = ../../2.rtl/0.common.opensource
@@ -216,9 +249,9 @@ PCIE_DIR = $(SRC_DIR)/pcie
 # $readmemh with a bare name, so it must sit in Yosys' working directory.
 FIRMWARE = ../sw_build/firmware.hex
 
-CONV_DIR      = converted$(OUT_SFX)$(TC_SFX)
+CONV_DIR      = converted$(OUT_SFX)$(CPU_SFX)$(TC_SFX)
 EXTRACTED_DIR = $(CONV_DIR)/extracted
-BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)$(TC_SFX)
+BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)$(CPU_SFX)$(TC_SFX)
 
 CONV_TIMESTAMP    = $(CONV_DIR)/.conversion_timestamp
 EXTRACT_TIMESTAMP = $(EXTRACTED_DIR)/.extraction_timestamp
@@ -257,10 +290,17 @@ SV_IF = \
 # does not catch them, and they must not enter synthesis.
 SV_PCIE_REST = $(filter-out $(SV_PKG) $(SV_IF), $(sort $(wildcard $(PCIE_DIR)/*.sv)))
 
-# picorv32.CHILI.sv is SystemVerilog (always_ff, typedef enum, unique case),
-# so the CPU goes through sv2v together with the rest of the design.
+# The CPU is SystemVerilog (always_ff, typedef enum, unique case), so it goes
+# through sv2v together with the rest of the design.
+EDUBOS5_DIR = $(SRC_DIR)/CPU.eduBOS5
+SV_CPU_picorv32 = $(SRC_DIR)/picorv32.CHILI.sv
+SV_CPU_edubos5  = $(addprefix $(EDUBOS5_DIR)/,edubos5_pkg.sv edubos5_rf.sv edubos5_alu.sv edubos5.sv)
+SV_CPU_edubos5_3stg = $(SV_CPU_edubos5)
+CPU_DEFS = $(if $(filter picorv32,$(CPU)),-DSOC_CPU_PICORV32) \
+           $(if $(filter edubos5_3stg,$(CPU)),-DSOC_EDUBOS5_3STG)
+
 SV_TOP = \
-    $(SRC_DIR)/picorv32.CHILI.sv \
+    $(SV_CPU_$(CPU)) \
     $(SRC_DIR)/riscv_pcie_soc.sv \
     $(SRC_DIR)/$(TOP).sv
 
@@ -291,6 +331,8 @@ help:
 	@echo " make                 full build up to $(BITFILE)"
 	@echo " make LANES=1         RC-direct as x1 (default x4)"
 	@echo " make VARIANT=switched  build the RC-switched variant (x1)"
+	@echo " make CPU=picorv32   PicoRV32 instead of eduBOS5  -> build_artifacts.*picorv32*/"
+	@echo " make CPU=edubos5_3stg  eduBOS5, 3-stage pipeline -> build_artifacts.*edubos5_3stg*/"
 	@echo " make FRONTEND=sv2v   v1.0.0 through sv2v instead of read_slang"
 	@echo " make TOOLCHAIN=old   pre-v1.0.0 toolchain (hardware-validated), sv2v"
 	@echo " make convert         sv2v conversion + splitting only (FRONTEND=sv2v)"
@@ -304,6 +346,7 @@ help:
 info:
 	@echo "VARIANT        : $(VARIANT)"
 	@echo "LANES          : $(LANES)"
+	@echo "CPU            : $(CPU)"
 	@echo "TOOLCHAIN      : $(TOOLCHAIN)"
 	@echo "FRONTEND       : $(FRONTEND)"
 	@echo "BUILD_ARTIFACTS: $(BUILD_ARTIFACTS)"
@@ -316,6 +359,13 @@ info:
 	@echo "BBAEXPORT      : $(BBAEXPORT)"
 	@echo "XDC            : $(XDC_FILE)"
 	@echo "firmware.hex   : $(FIRMWARE)"
+	@echo "SV2V           : $(SV2V)"
+	@echo "YOSYS          : $(YOSYS)"
+	@echo "NEXTPNR_XILINX : $(NEXTPNR_XILINX)"
+	@echo "NEXTPNR_HIMB.. : $(NEXTPNR_HIMBAECHEL)"
+	@echo "BBASM          : $(BBASM)"
+	@echo "FPGA_AS        : $(FPGA_AS)"
+	@echo "OPENXC7_PYTHON : $(OPENXC7_PYTHON)"
 	@echo "SV files       : $(words $(SV_ORDERED))"
 	@echo "Pure .v        : $(words $(PURE_V_FILES))"
 
@@ -326,35 +376,35 @@ info:
 ifeq ($(TOOLCHAIN),new)
 check-env:
 	@echo "Checking tools (new openXC7 toolchain, FRONTEND=$(FRONTEND))..."
-	@$(if $(filter sv2v,$(FRONTEND)),which sv2v           > /dev/null || (echo "ERROR: sv2v not found (see: make check-sv2v)" && exit 1),true)
-	@which yosys          > /dev/null || (echo "ERROR: yosys not found"                       && exit 1)
-	@which yosys-config   > /dev/null || (echo "ERROR: yosys-config not found"                && exit 1)
-	@which nextpnr-xilinx > /dev/null || (echo "ERROR: nextpnr-xilinx (shim) not found"       && exit 1)
-	@which nextpnr-himbaechel > /dev/null || (echo "ERROR: nextpnr-himbaechel not found"      && exit 1)
-	@which bbasm          > /dev/null || (echo "ERROR: bbasm not found"                       && exit 1)
-	@which fpga-as        > /dev/null || (echo "ERROR: fpga-as not found"                     && exit 1)
-	@which python3        > /dev/null || (echo "ERROR: python3 not found"                     && exit 1)
+	@$(if $(filter sv2v,$(FRONTEND)),command -v $(SV2V) > /dev/null || (echo "ERROR: $(SV2V) not found (see: make check-sv2v)" && exit 1),true)
+	@command -v $(YOSYS)              > /dev/null || (echo "ERROR: $(YOSYS) not found"                 && exit 1)
+	@command -v $(YOSYS_CONFIG)       > /dev/null || (echo "ERROR: $(YOSYS_CONFIG) not found"          && exit 1)
+	@command -v $(NEXTPNR_XILINX)     > /dev/null || (echo "ERROR: $(NEXTPNR_XILINX) (shim) not found" && exit 1)
+	@command -v $(NEXTPNR_HIMBAECHEL) > /dev/null || (echo "ERROR: $(NEXTPNR_HIMBAECHEL) not found"    && exit 1)
+	@command -v $(BBASM)              > /dev/null || (echo "ERROR: $(BBASM) not found"                 && exit 1)
+	@command -v $(FPGA_AS)            > /dev/null || (echo "ERROR: $(FPGA_AS) not found"               && exit 1)
+	@command -v $(OPENXC7_PYTHON)     > /dev/null || (echo "ERROR: $(OPENXC7_PYTHON) not found"        && exit 1)
 	@test -d "$(DB_DIR)/artix7" || (echo "ERROR: no prjxray-db for artix7 in $(DB_DIR)"        && exit 1)
 	@test -f "$(XILINX_GEN)"    || (echo "ERROR: chipdb generator not found: $(XILINX_GEN)" && exit 1)
-	@$(if $(filter slang,$(FRONTEND)),yosys -p help 2>/dev/null | grep -q read_slang || (echo "ERROR: this yosys has no read_slang (needs 0.67+)" && exit 1),true)
+	@$(if $(filter slang,$(FRONTEND)),$(YOSYS) -p help 2>/dev/null | grep -q read_slang || (echo "ERROR: this yosys has no read_slang (needs 0.67+)" && exit 1),true)
 	@echo "OK -- all tools present"
 else
 check-env:
 	@echo "Checking tools..."
-	@which sv2v           > /dev/null || (echo "ERROR: sv2v not found (see: make check-sv2v)" && exit 1)
-	@which yosys          > /dev/null || (echo "ERROR: yosys not found"                       && exit 1)
-	@which nextpnr-xilinx > /dev/null || (echo "ERROR: nextpnr-xilinx not found"               && exit 1)
-	@which fasm2frames    > /dev/null || (echo "ERROR: fasm2frames not found"                  && exit 1)
-	@which xc7frames2bit  > /dev/null || (echo "ERROR: xc7frames2bit not found"                && exit 1)
-	@which python3        > /dev/null || (echo "ERROR: python3 not found"                      && exit 1)
+	@command -v $(SV2V)           > /dev/null || (echo "ERROR: $(SV2V) not found (see: make check-sv2v)" && exit 1)
+	@command -v $(YOSYS)          > /dev/null || (echo "ERROR: $(YOSYS) not found"                  && exit 1)
+	@command -v $(NEXTPNR_XILINX) > /dev/null || (echo "ERROR: $(NEXTPNR_XILINX) not found"         && exit 1)
+	@command -v $(FASM2FRAMES)    > /dev/null || (echo "ERROR: $(FASM2FRAMES) not found"            && exit 1)
+	@command -v $(XC7FRAMES2BIT)  > /dev/null || (echo "ERROR: $(XC7FRAMES2BIT) not found"          && exit 1)
+	@command -v $(OPENXC7_PYTHON) > /dev/null || (echo "ERROR: $(OPENXC7_PYTHON) not found"         && exit 1)
 	@test -d "$(DB_DIR)/artix7" || (echo "ERROR: no prjxray-db for artix7 in $(DB_DIR)"        && exit 1)
 	@test -f "$(METADATA)/site_type_PCIE_2_1.json" || ( \
 	   echo "ERROR: site_type_PCIE_2_1.json missing in $(METADATA)"; \
 	   echo "       Without it the PCIE_2_1 site gets 0 BELs and placement fails."; exit 1)
 	@# the nextpnr version is critical -- see the comment at the top
-	@nextpnr-xilinx --version 2>&1 | grep -q "45a986b" || ( \
+	@$(NEXTPNR_XILINX) --version 2>&1 | grep -q "45a986b" || ( \
 	   echo "WARNING: nextpnr is not version 45a986b but:"; \
-	   nextpnr-xilinx --version 2>&1 | head -1; \
+	   $(NEXTPNR_XILINX) --version 2>&1 | head -1; \
 	   echo "  master (bab26c2+) has a regression: infinite loop in route_xilinx_const"; \
 	   echo "  snap 0.8.2 is too old: no PCIE_2_1 model"; \
 	   echo "  See the instructions at the top of this Makefile.")
@@ -362,9 +412,9 @@ check-env:
 endif
 
 check-sv2v:
-	@which sv2v > /dev/null 2>&1 || ( \
+	@command -v $(SV2V) > /dev/null 2>&1 || ( \
 	  echo "================================================================"; \
-	  echo " sv2v not found."; \
+	  echo " $(SV2V) not found."; \
 	  echo "================================================================"; \
 	  echo " Yosys does not understand SystemVerilog packages/interfaces, so"; \
 	  echo " sv2v is a mandatory step. Quickest way is the prebuilt binary:"; \
@@ -405,7 +455,7 @@ $(CONV_TIMESTAMP): $(SV_ORDERED) FORCE | check-sv2v
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
 	@mkdir -p $(CONV_DIR)
-	@if sv2v -DPCIE_LANES=$(LANES) -I$(PCIE_DIR) -I$(SRC_DIR) \
+	@if $(SV2V) -DPCIE_LANES=$(LANES) $(CPU_DEFS) -I$(PCIE_DIR) -I$(SRC_DIR) \
 	        $(SV_ORDERED) > $(CONV_DIR)/all_converted.v 2> $(CONV_DIR)/sv2v.log; then \
 	    echo "  lines   : $$(wc -l < $(CONV_DIR)/all_converted.v)"; \
 	    echo "  modules : $$(grep -c '^module ' $(CONV_DIR)/all_converted.v)"; \
@@ -451,7 +501,7 @@ ifeq ($(FRONTEND),slang)
 # take yet (real-valued primitive parameters, povik/sv-elab#282).
 XILINX_PRIMS = PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 \
                BUFG BUFGCTRL FDCE RAMB36E1
-SLANG_DEFS   = -D SYN_YOSYS_BUG -D PCIE_LANES=$(LANES)
+SLANG_DEFS   = -D SYN_YOSYS_BUG -D PCIE_LANES=$(LANES) $(CPU_DEFS)
 
 $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilinx_bb.py FORCE
 	@echo "================================================================"
@@ -459,8 +509,8 @@ $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilin
 	@echo "================================================================"
 	@mkdir -p $(BUILD_ARTIFACTS)
 	@cp -f $(FIRMWARE) firmware.hex
-	python3 gen_xilinx_bb.py "$$(yosys-config --datdir)/xilinx" $(BUILD_ARTIFACTS)/xilinx_bb.sv $(XILINX_PRIMS)
-	yosys -l $(BUILD_ARTIFACTS)/yosys.log \
+	$(OPENXC7_PYTHON) gen_xilinx_bb.py "$$($(YOSYS_CONFIG) --datdir)/xilinx" $(BUILD_ARTIFACTS)/xilinx_bb.sv $(XILINX_PRIMS)
+	$(YOSYS) -l $(BUILD_ARTIFACTS)/yosys.log \
 	      -p "read_slang $(SLANG_DEFS) --top $(TOP) -I $(PCIE_DIR) -I $(SRC_DIR) \
 	                     $(BUILD_ARTIFACTS)/xilinx_bb.sv $(SV_ORDERED) $(PURE_V_FILES); \
 	          proc; opt; clean; \
@@ -494,7 +544,7 @@ $(BUILD_ARTIFACTS)/top.json: $(EXTRACT_TIMESTAMP) $(PURE_V_FILES) $(FIRMWARE)
 	@#
 	@# NOTE: -nocarry is NOT needed. It was only required with the broken master
 	@# nextpnr; with version 45a986b the carry chains route cleanly.
-	yosys -p "read_verilog $(wildcard $(EXTRACTED_DIR)/*.v) $(PURE_V_FILES); \
+	$(YOSYS) -p "read_verilog $(wildcard $(EXTRACTED_DIR)/*.v) $(PURE_V_FILES); \
 	          proc; opt; clean; \
 	          synth_xilinx -flatten -abc9 $(NOSRL) -arch xc7 -top $(TOP); \
 	          write_json $@"
@@ -514,8 +564,8 @@ $(CHIPDB)/$(PART).bin:
 	@test -f "$(XILINX_GEN)" || { echo "ERROR: cannot find $(XILINX_GEN)"; exit 1; }
 	@# The engine's database is per die; the file name keeps the part, which
 	@# the nextpnr-xilinx shim passes on as --device (accepted in part form)
-	python3 $(XILINX_GEN) --xray $(DB_DIR)/artix7 --device xc7a200t --bba $(PART).bba
-	bbasm -l $(PART).bba $(CHIPDB)/$(PART).bin
+	$(OPENXC7_PYTHON) $(XILINX_GEN) --xray $(DB_DIR)/artix7 --device xc7a200t --bba $(PART).bba
+	$(BBASM) -l $(PART).bba $(CHIPDB)/$(PART).bin
 	@rm -f $(PART).bba
 	@echo "OK -> $@"
 else
@@ -527,12 +577,12 @@ $(CHIPDB)/$(PART).bin:
 	@test -n "$(BBAEXPORT)" || { echo "ERROR: cannot find bbaexport.py"; exit 1; }
 	@# --metadata and --constids are passed explicitly so nothing gets mixed with
 	@# the snap's metadata (which lacks site_type_PCIE_2_1.json)
-	python3 $(BBAEXPORT) --device $(PART) \
+	$(OPENXC7_PYTHON) $(BBAEXPORT) --device $(PART) \
 	    --xray $(DB_DIR)/artix7 \
 	    $(if $(METADATA),--metadata $(METADATA)) \
 	    $(if $(CONSTIDS),--constids $(CONSTIDS)) \
 	    --bba $(PART).bba
-	bbasm -l $(PART).bba $(CHIPDB)/$(PART).bin
+	$(BBASM) -l $(PART).bba $(CHIPDB)/$(PART).bin
 	@rm -f $(PART).bba
 	@echo "OK -> $@"
 endif
@@ -554,7 +604,7 @@ $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $
 	@# on  set -o pipefail : make uses /bin/sh, which on Ubuntu is dash and does
 	@# NOT have that option -- it fails silently, so the exit status of tee
 	@# (always 0) is what gets seen and a real nextpnr crash passes as success.
-	@nextpnr-xilinx \
+	@$(NEXTPNR_XILINX) \
 	    --chipdb $(CHIPDB)/$(PART).bin \
 	    --xdc $(XDC_FILE) \
 	    --json $< \
@@ -590,7 +640,7 @@ $(BUILD_ARTIFACTS)/$(BITFILE): $(BUILD_ARTIFACTS)/top.fasm
 	@echo "================================================================"
 	@echo " FASM -> bitstream (fpga-as)"
 	@echo "================================================================"
-	fpga-as --prjxray_db_path=$(DB_DIR)/artix7 --part $(PART) < $< > $@
+	$(FPGA_AS) --prjxray_db_path=$(DB_DIR)/artix7 --part $(PART) < $< > $@
 	@test -s $@ || { echo "ERROR: $@ is empty"; exit 1; }
 	@echo "================================================================"
 	@echo " SUCCESS -- bitstream: $@"
@@ -601,14 +651,14 @@ $(BUILD_ARTIFACTS)/top.frames: $(BUILD_ARTIFACTS)/top.fasm
 	@echo "================================================================"
 	@echo " FASM -> frames"
 	@echo "================================================================"
-	fasm2frames --part $(PART) --db-root $(DB_DIR)/artix7 $< > $@
+	$(FASM2FRAMES) --part $(PART) --db-root $(DB_DIR)/artix7 $< > $@
 	@echo "OK -> $@"
 
 $(BUILD_ARTIFACTS)/$(BITFILE): $(BUILD_ARTIFACTS)/top.frames
 	@echo "================================================================"
 	@echo " frames -> bitstream"
 	@echo "================================================================"
-	xc7frames2bit \
+	$(XC7FRAMES2BIT) \
 	    --part_file $(DB_DIR)/artix7/$(PART)/part.yaml \
 	    --part_name $(PART) \
 	    --frm_file $< \

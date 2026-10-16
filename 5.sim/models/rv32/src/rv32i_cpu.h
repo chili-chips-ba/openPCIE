@@ -121,6 +121,7 @@ public:
 
     // Read executable
     LIBRISCV32_API int         read_elf                       (const char* const filename);
+    LIBRISCV32_API int         read_binary                    (const char *filename, const uint32_t load_addr = 0);
                                                               
     // External direct memory access
     LIBRISCV32_API uint32_t    read_mem                       (const uint32_t byte_addr, const int type, bool &fault);

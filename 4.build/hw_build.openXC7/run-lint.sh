@@ -20,11 +20,12 @@
 #
 # usage:  bash run-lint.sh [phase ...]      default: all phases
 #         LANES=1 bash run-lint.sh            lint the x1 link (default x4)
+#         CPU=picorv32 bash run-lint.sh       lint the PicoRV32 build (default edubos5;
+#                                             edubos5_3stg: 3-stage pipeline)
 #
-# A phase whose tool is not found is skipped. On Linux / WSL all phases but cdc
-# run together (source the openXC7 export.sh first); the cdc phase needs
-# Vivado, so on Windows it runs from Git Bash. The tool commands can be
-# overridden: VERILATOR, YOSYS (+ YOSYS_ARGS), VERIBLE, VIVADO. The tags and Verilator phases
+# A phase whose tool is not found is skipped. Source ../set-env.sh first; the
+# cdc phase needs Vivado. The tool commands can be overridden: VERILATOR, YOSYS
+# (+ YOSYS_ARGS), YOSYS_CONFIG, PYTHON, VERIBLE, VIVADO. The tags and Verilator phases
 # need the Xilinx primitive stubs that gen_xilinx_bb.py builds from the Yosys
 # library: from yosys-config, or pass XILINX_BB=<stubs.sv> from a run that had
 # Yosys.
@@ -53,10 +54,25 @@ PART=xc7a200tfbg484-3
 
 VERILATOR=${VERILATOR:-verilator}
 YOSYS=${YOSYS:-yosys}
+YOSYS_CONFIG=${YOSYS_CONFIG:-yosys-config}
+PYTHON=${PYTHON:-python3}
 YOSYS_ARGS=${YOSYS_ARGS:-}   # e.g. "-m slang" where read_slang is a plugin (OSS CAD Suite)
 VERIBLE=${VERIBLE:-verible-verilog-lint}
 VIVADO=${VIVADO:-vivado}
 LANES=${LANES:-4}
+CPU=${CPU:-edubos5}
+PICORV32_SV="src/picorv32.CHILI.sv"
+EDUBOS5_SV=$(for f in pkg rf alu; do echo src/CPU.eduBOS5/edubos5_$f.sv; done; echo src/CPU.eduBOS5/edubos5.sv)
+case $CPU in
+  picorv32) CPU_SV=$PICORV32_SV; OTHER_CPU_SV=$EDUBOS5_SV; CPU_DEF=SOC_CPU_PICORV32 ;;
+  edubos5)  CPU_SV=$EDUBOS5_SV; OTHER_CPU_SV=$PICORV32_SV; CPU_DEF="" ;;
+  edubos5_3stg) CPU_SV=$EDUBOS5_SV; OTHER_CPU_SV=$PICORV32_SV; CPU_DEF=SOC_EDUBOS5_3STG ;;
+  *) echo "CPU must be picorv32, edubos5 or edubos5_3stg, got \"$CPU\""; exit 1 ;;
+esac
+VL_DEFS=""; SL_DEFS=""; VIV_DEFS=""
+for d in $CPU_DEF; do
+  VL_DEFS="$VL_DEFS -D$d"; SL_DEFS="$SL_DEFS -D $d"; VIV_DEFS="$VIV_DEFS -verilog_define $d"
+done
 WAIVERS=${LINT_WAIVERS:-$HERE/run-lint-waivers.txt}
 
 PHASES=${*:-tags verilator yosys slang verible cdc}
@@ -74,7 +90,7 @@ P=src/pcie
 SV_IF=$(for i in axis_if trn_if cfg_if mem_if mim_if gtp_if pipe_if; do echo $P/$i.sv; done)
 SV_REST=$(ls $P/*.sv | grep -v -e '_if\.sv$' -e '_pkg\.sv$')
 SV=$(echo $P/link_pkg.sv $P/pcie_pkg.sv csr_pkg.sv $SV_IF $SV_REST csr.sv src/soc_csr.sv \
-          src/picorv32.CHILI.sv src/riscv_pcie_soc.sv src/$TOP.sv)
+          $CPU_SV src/riscv_pcie_soc.sv src/$TOP.sv)
 SHIMS="unimacro_shim.v"
 PRIMS="PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 BUFG BUFGCTRL FDCE RAMB36E1"
 
@@ -116,19 +132,21 @@ found() {  # $1 phase; one finding per line on stdin (not a pipe: RESULT must st
 bb() {
   [ -s bb.sv ] && return 0
   if [ -n "${XILINX_BB:-}" ]; then cp "$XILINX_BB" bb.sv
-  elif have yosys-config; then
-    python3 "$HERE/gen_xilinx_bb.py" "$(yosys-config --datdir)/xilinx" bb.sv $PRIMS >/dev/null
+  elif have "$YOSYS_CONFIG"; then
+    "$PYTHON" "$HERE/gen_xilinx_bb.py" "$("$YOSYS_CONFIG" --datdir)/xilinx" bb.sv $PRIMS >/dev/null
   else return 1; fi
 }
 
 # /*LINT:OK*/ on anything but an output port; the port directions come from the
-# module headers of the design, the shims and the primitive stubs
+# module headers of the design, the shims and the primitive stubs, plus the
+# other CPU core: riscv_pcie_soc.sv instantiates both, behind `ifdef
 run_tags() {
   bb || { skip tags "no Xilinx stubs (yosys-config or XILINX_BB)"; return; }
-  python3 - bb.sv $SHIMS $SV > tags.log <<'EOF'
+  "$PYTHON" - $OTHER_CPU_SV -- bb.sv $SHIMS $SV > tags.log <<'EOF'
 import re, sys
-files = sys.argv[1:]
-text = {f: open(f).read() for f in files}
+ports_only = sys.argv[1:sys.argv.index('--')]
+files = sys.argv[sys.argv.index('--') + 1:]
+text = {f: open(f).read() for f in ports_only + files}
 types = {'logic', 'wire', 'reg', 'signed', 'unsigned', 'var', 'bit', 'integer', 'tri'}
 dirs = {}
 for t in text.values():
@@ -166,7 +184,7 @@ run_verilator() {
 lint_off -file "*bb.sv"
 lint_off -file "*_shim.v"
 EOF
-  "$VERILATOR" --lint-only -Wall -Wno-fatal --top-module $TOP -DSYN_YOSYS_BUG -DPCIE_LANES=$LANES \
+  "$VERILATOR" --lint-only -Wall -Wno-fatal --top-module $TOP -DSYN_YOSYS_BUG -DPCIE_LANES=$LANES $VL_DEFS \
     -Isrc -I$P waive.vlt bb.sv $SV $SHIMS > verilator.log 2>&1
   found verilator < <(grep -E '^%(Warning|Error)' verilator.log)
 }
@@ -174,7 +192,7 @@ EOF
 run_yosys() {
   have "$YOSYS" || { skip yosys "$YOSYS not found"; return; }
   bb || { skip yosys "no Xilinx stubs"; return; }
-  "$YOSYS" $YOSYS_ARGS -q -l yosys.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $P -I src \
+  "$YOSYS" $YOSYS_ARGS -q -l yosys.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $SL_DEFS --top $TOP -I $P -I src \
       bb.sv $SV $SHIMS; hierarchy -check -top $TOP; proc; check -nolatches -initdrv" \
       >/dev/null 2>&1
   # read_slang's own warnings are the slang phase's business; take check's
@@ -184,7 +202,7 @@ run_yosys() {
 run_slang() {
   have "$YOSYS" || { skip slang "$YOSYS not found"; return; }
   bb || { skip slang "no Xilinx stubs"; return; }
-  "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES --top $TOP -I $P -I src \
+  "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $SL_DEFS --top $TOP -I $P -I src \
       -Wextra bb.sv $SV $SHIMS" >/dev/null 2>&1
   # Yosys' built-in read_slang prints "file:line:col: warning:", the yosys-slang
   # plugin (OSS CAD Suite, CI) prints "file:line: Warning:"; bring both to the
@@ -206,7 +224,7 @@ run_cdc() {
   cat > cdc.tcl <<EOF
 read_verilog -sv {$SV}
 read_xdc [glob xdc/*.xdc]
-synth_design -top $TOP -part $PART -flatten_hierarchy rebuilt -verilog_define PCIE_LANES=$LANES
+synth_design -top $TOP -part $PART -flatten_hierarchy rebuilt -verilog_define PCIE_LANES=$LANES$VIV_DEFS
 report_cdc -details -file cdc.rpt
 report_clock_interaction -file clock_interaction.rpt
 EOF

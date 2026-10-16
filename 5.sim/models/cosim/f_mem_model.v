@@ -35,8 +35,8 @@
 `ifdef MEM_MODEL_SV
 `include "mem_model_dpi.vh"
 
-`define MEMREAD               MemRead
-`define MEMWRITE              MemWrite
+`define MEMREAD               MemModelRead
+`define MEMWRITE              MemModelWrite
 
 `else
 

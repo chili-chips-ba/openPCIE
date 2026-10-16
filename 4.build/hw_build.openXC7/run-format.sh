@@ -127,7 +127,7 @@ sys.exit(1 if count_only and total else 0)
 PY
 }
 
-FILES=("$SRC"/*.sv "$SRC"/pcie/*.sv)
+FILES=("$SRC"/*.sv "$SRC"/pcie/*.sv "$SRC"/CPU.eduBOS5/*.sv)
 bad=0
 if [ $MODE = check ]; then
   explicit_begin --count "${FILES[@]}" || bad=$((bad + 1))

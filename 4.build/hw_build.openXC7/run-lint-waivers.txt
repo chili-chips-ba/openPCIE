@@ -81,3 +81,12 @@ cdc CDC-13 +Critical .* u_pcie/u_clk_rst_gen/u_pipe_clk/S[01]$
 # https://github.com/verilator/verilator/issues/4226 (reviewed 2026-10-13)
 verilator ^%Warning-MULTIDRIVEN: csr\.sv:[0-9]+:[0-9]+: Variable written to in always_(comb|ff) also written by other process .*: '(field_combo|field_storage)'$
 
+# PeakRDL regblock output (generated, rewritten by MakefileCSR): anonymous
+# structs and long generated lines. Verible names no signal in these messages,
+# so file + rule (reviewed 2026-10-14)
+verible ^csr\.sv:[0-9:-]+ .*\[(typedef-structs-unions|line-length)\]$
+verible ^csr_pkg\.sv:[0-9:-]+ .*\((CSR_DATA_WIDTH|CSR_MIN_ADDR_WIDTH|CSR_SIZE)\)\. .*\[explicit-parameter-storage-type\]$
+
+# PCIE_2_1 attribute names (vendor names, kept as is: 2.rtl/README.md coding
+# rules) (reviewed 2026-10-14)
+verible ^src/pcie/pcie_core\.sv:[0-9:-]+ .*\(got: DISABLE_(ASPM_L1_TIMER|BAR_FILTERING|ERR_MSG|ID_CHECK|LANE_REVERSAL|LOCKED_FILTER|PPM_FILTER|RX_POISONED_RESP|RX_TC_FILTER|SCRAMBLING)\) .*\[positive-meaning-parameter-name\]$

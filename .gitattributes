@@ -8,6 +8,12 @@
 # LF in the working copy too, whatever core.autocrlf says
 *.sv      text eol=lf
 *.svh     text eol=lf
+# scripts, Makefiles and run configs are read on Linux / WSL, where a CR
+# breaks bash and ends up in file names (e.g. the rv32 ISS's vusermain.cfg)
+*.sh      text eol=lf
+*.csh     text eol=lf
+*.cfg     text eol=lf
+Makefile* text eol=lf
 *.v       text eol=lf
 *.md      text eol=lf
 *.sh      text eol=lf

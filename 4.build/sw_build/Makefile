@@ -5,7 +5,8 @@
 # =============================================================================
 # Firmware build for the picorv32 core inside the opensource RC
 #
-# Run FROM THIS FOLDER:
+# Run FROM THIS FOLDER, on Linux or WSL:
+#   source ../set-env.sh      (tcsh: source ../set-env.csh) -- finds the tools
 #   make                      RC-direct   firmware (default)
 #   make VARIANT=switched     RC-switched firmware
 #
@@ -60,41 +61,17 @@ SW_DIR     = ../../3.sw/$(SW_SUBDIR)
 COMMON_DIR = ../../3.sw/common
 
 # ---- Toolchain --------------------------------------------------------------
-# xPack GNU RISC-V Embedded GCC. Override CROSS if the prefix differs, e.g.
+# xPack GNU RISC-V Embedded GCC. ../set-env.sh puts the full prefix, path
+# included, into RISCV_PREFIX; unset, the bare prefix is looked up on PATH.
+# Override CROSS if the prefix differs, e.g.
 #   make CROSS=riscv64-unknown-elf-
-CROSS   ?= riscv-none-elf-
+RISCV_PREFIX ?= riscv-none-elf-
+CROSS        ?= $(RISCV_PREFIX)
 CC       = $(CROSS)gcc
 OBJCOPY  = $(CROSS)objcopy
 
-# ---- MSYS2 / MinGW ----------------------------------------------------------
-# GNU make on MSYS2 hands its recipes a shell with TMP, TEMP and TMPDIR unset.
-# gcc then falls back to C:\WINDOWS\, where it may not write, and the compile
-# dies with "Cannot create temporary file". Put them back.
-OSTYPE_RAW := $(shell uname 2>/dev/null)
-
-ifneq (,$(findstring MINGW,$(OSTYPE_RAW)))
-    LOCALTMP      ?= $(HOME)/tmp
-    $(shell mkdir -p $(LOCALTMP))
-    export TMPDIR := $(LOCALTMP)
-    export TMP    := $(LOCALTMP)
-    export TEMP   := $(LOCALTMP)
-endif
-
-# ---- Host differences -------------------------------------------------------
-# On Windows make runs recipes through cmd.exe (SHELL defaults to sh.exe, but
-# when sh.exe is absent make falls back to cmd), so the delete command differs.
-# OS=Windows_NT is set under MSYS2 as well, but there the recipes run in a POSIX
-# shell that has no "del", so the test has to be on the shell, not on the OS.
-ifneq (,$(findstring MINGW,$(OSTYPE_RAW)))
-    PYTHON ?= python
-    RM_OUT  = rm -f firmware.elf firmware.bin firmware.hex .build-config
-else ifeq ($(OS),Windows_NT)
-    PYTHON ?= python
-    RM_OUT  = del /q firmware.elf firmware.bin firmware.hex .build-config 2>nul
-else
-    PYTHON ?= python3
-    RM_OUT  = rm -f firmware.elf firmware.bin firmware.hex .build-config
-endif
+PYTHON ?= python3
+RM_OUT  = rm -f firmware.elf firmware.bin firmware.hex .build-config
 
 # ---- Flags ------------------------------------------------------------------
 # rv32i only -- picorv32 is configured without M/C extensions.
