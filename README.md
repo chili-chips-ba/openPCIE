@@ -568,7 +568,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 <p align="center">
   <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
   <a href="https://www.yosyshq.com"><img alt="YosysHQ logo" width="25%" src="0.doc/artwork/YosysHQ.logo.png"></a>
-  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="12%" src="0.doc/artwork/PeakRDL.logo.png"></a>
+  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="14%" src="0.doc/artwork/PeakRDL.logo.png"></a>
   <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="35%" src="0.doc/artwork/WaveCrux.logo.png"></a>
 </p>
 
@@ -582,9 +582,9 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://github.com/MikePopoloski/slang"><img alt="MikePopoloski slang logo" width="25%" src="0.doc/artwork/slang.logo.png"></a>
   <a href="https://www.chipsalliance.org/projects"><img alt="Chips Alliance SV Tools logo" width="15%" src="0.doc/artwork/ChipsAlliance-SV-Tools.logo.png"></a>
   <a href="https://github.com/chipsalliance/verible"><img alt="Verible logo" width="25%" src="0.doc/artwork/Verible.logo.png"></a>
-  <a href="https://github.com/trabucayre/openFPGALoader"><img alt="openFPGALoader logo" width="15%" src="0.doc/artwork/openFPGAloader.logo.png"></a>
-  <a href="https://github.com/tarik-ibrahimovic/eduBOS5"><img alt="eduBOS5 logo" width="10%" src="0.doc/artwork/eduBOS5.logo.png"></a>
-  <a href="https://github.com/YosysHQ/picorv32"><img alt="PicoRV32 logo" width="15%" src="0.doc/artwork/picoRV32.logo.png"></a>
+  <a href="https://github.com/trabucayre/openFPGALoader"><img alt="openFPGALoader logo" width="20%" src="0.doc/artwork/openFPGAloader.logo.png"></a>
+  <a href="https://github.com/tarik-ibrahimovic/eduBOS5"><img alt="eduBOS5 logo" width="17%" src="0.doc/artwork/eduBOS5.logo.png"></a>
+  <a href="https://github.com/YosysHQ/picorv32"><img alt="PicoRV32 logo" width="20%" src="0.doc/artwork/picoRV32.logo.png"></a>
 </p>
 
 
