@@ -167,7 +167,11 @@ To set it up by hand, on another VCD:
 ```bash
 RISCV_FORMAL=<riscv-formal clone> bash formal/run-riscv-formal.sh 0          # 2-stage, any code
 RISCV_FORMAL=<riscv-formal clone> LEGAL=1 bash formal/run-riscv-formal.sh 1  # 3-stage, legal code
+RISCV_FORMAL=<riscv-formal clone> ALIGNED=1 bash formal/run-riscv-formal.sh 1  # 3-stage, aligned only
+RISCV_FORMAL=<riscv-formal clone> EXTRA=1 NO_SYSTEM=1 LEGAL=1 bash formal/run-riscv-formal.sh 0  # + liveness, hang, memory model
 ```
+
+`LEGAL=1` is two halves that can also be set alone: `ALIGNED=1` (natural alignment, word-aligned targets) and `LEGAL_STORES=1` (stores have a legal `funct3`). `EXTRA=1` adds `liveness`, `hang`, `causal_mem` and `causal_io`; `NO_SYSTEM=1` keeps SYSTEM and unknown opcodes out of IMEM, which those two need (see below).
 
 - [`formal/rvfi_wrapper.sv`](formal/rvfi_wrapper.sv): free instruction and data memory, connected as the SOC does: a synchronous IMEM, and `dmem_rdy` only answers a pending read.
 - [`formal/checks.cfg`](formal/checks.cfg): RV32I, bounded to 16 clocks (about 7 instructions), ABC `bmc3`. Z3 replays a failure into a VCD.
@@ -178,16 +182,23 @@ Results, 44 checks; each run takes 9 to 14 s with 12 checks in parallel:
 |---|---|---|
 | any | 31 pass, 13 fail | 29 pass, 15 fail |
 | legal and aligned (`LEGAL=1`) | 44 pass | 44 pass |
+| aligned only (`ALIGNED=1`) | 44 pass | 39 pass, 5 fail |
+| legal stores only (`LEGAL_STORES=1`) | 31 pass, 13 fail | 31 pass, 13 fail |
+| `EXTRA=1 NO_SYSTEM=1 LEGAL=1` | 48 pass | 48 pass |
 
 The failures are expected:
 - **Misaligned load, store or jump target.** The ISA requires a trap, and eduBOS5 has none: it uses the aligned word, or drops the low PC bits. This fails all 6 branches, `JAL`, `JALR`, `LH`, `LHU`, `LW`, `SH` and `SW`.
-- **3-stage only: `LB` and `LBU`.** A store with an illegal `funct3` retires as a no-op but makes a bus read. Its `dmem_rdy` reaches the next load's `EXECUTE`, which skips `LOAD_DATA` and loads a stale word. That is [Bonus goodies](#bonus-goodies-from-fv) item 1, found again by another method.
+- **3-stage only: all five loads.** A store with an illegal `funct3` retires as a no-op but makes a bus read. Its `dmem_rdy` reaches the next load's `EXECUTE`, which skips `LOAD_DATA` and loads a stale word. That is [Bonus goodies](#bonus-goodies-from-fv) item 1, found again by another method. With any code it shows on `LB` and `LBU` only, because `LH`, `LHU` and `LW` already fail for misalignment; `ALIGNED=1` separates the two causes and shows it on all five. The 2-stage core shows no such load failure, up to a 32-clock bound.
 
 `LEGAL=1` assumes the code GCC emits: legal store encodings, natural alignment. With it, every check passes on both pipelines, within the 16-clock bound.
 
 **A test of the test.** An injected XOR bug (bit 0 flips when bit 5 of `rs1` and bit 9 of the 2nd operand are both 1) fails `insn_xor` and `insn_xori` in seconds; `insn_add` still passes.
 
-Not checked yet: liveness and hang (a `SYSTEM` instruction halts eduBOS5 without `rvfi_halt`), and the memory-model checks.
+**Liveness, hang and the memory model** (`EXTRA=1`). `liveness` and `hang` fail with any code: a `SYSTEM` instruction, or an unknown opcode (an all-zero word included), halts eduBOS5 in `EXECUTE` without `rvfi_halt`. With `NO_SYSTEM=1` both pass on both pipelines; riscv-formal turns on `RISCV_FORMAL_FAIRNESS` for those two checks, and the wrapper then answers every read on the next clock. `causal_mem` and `causal_io` pass with any code, both pipelines.
+
+**`ill` passes, but it is not exercised.** The check needs an illegal instruction to retire, and eduBOS5 never retires one: it decodes an unknown opcode as `SYSTEM` and halts. Run in cover mode, its cover statement is unreachable within the bound. So its PASS says nothing either way.
+
+**Deeper bounds.** With legal code, all 44 checks also pass at bounds 24 and 32, and all but `reg` and `cover` at 48.
 
 ## 3-stage multicycle paths
 
