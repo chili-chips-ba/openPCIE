@@ -46,7 +46,9 @@ module riscv_pcie_soc
     axis_if.master s_axis_tx,  // TLPs to the PCIE stack
     axis_if.slave  m_axis_rx,  // TLPs from the PCIE stack
 
-    cfg_if.soc cfg  // status sideband from the PCIE core
+    cfg_if.soc cfg,  // status sideband from the PCIE core
+
+    output logic fw_pass  // the firmware has reported PASS, for an LED
 );
 
   mem_if mem ();  // CPU memory bus
@@ -411,12 +413,22 @@ module riscv_pcie_soc
   assign csr_in.status.phy.tx_state.next         = tx_state;
   assign csr_in.status.phy.tx_buf_avail.next     = cfg.tx_buf_avail;
 
-  assign m_axis_rx.tready                        = 1'b1;
+  // ---- Firmware result: the marker the firmware writes when it stops ------
+  // mark_debug keeps the whole marker for a Vivado ILA (2.rtl/README.md,
+  // "RTL Debug with ILA"); the PASS compare drives an LED.
+  localparam logic [31:0] FW_RESULT_PASS = 32'h0000_FACE;
+
+  (* mark_debug = "true" *) logic [31:0] fw_result;
+
+  assign fw_result        = csr_out.status.result.marker.value;
+  assign fw_pass          = (fw_result == FW_RESULT_PASS);
+
+  assign m_axis_rx.tready = 1'b1;
 
   // Per-packet transmit qualifiers of the hard macro (pcie_tx_tuser_t), none
   // of which this design uses. Left undriven they are X in simulation, and
   // the macro discards every TLP.
-  assign s_axis_tx.tuser                         = '0;
+  assign s_axis_tx.tuser  = '0;
 
   always_comb begin
     if (is_ram) begin

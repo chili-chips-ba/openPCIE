@@ -16,3 +16,10 @@
 
 set ::rc_variant switched
 source [file join [file dirname [file normalize [info script]]] .. 0.common.opensource RC.opensource.tcl]
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

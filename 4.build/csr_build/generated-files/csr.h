@@ -162,10 +162,23 @@ typedef union {
     uint32_t w;
 } csr__status__phy_t;
 
+// reg - csr::status::result
+#define CSR__STATUS__RESULT__MARKER_bm 0xffffffff
+#define CSR__STATUS__RESULT__MARKER_bp 0
+#define CSR__STATUS__RESULT__MARKER_bw 32
+#define CSR__STATUS__RESULT__MARKER_reset 0x0
+typedef union {
+    struct __attribute__ ((__packed__)) {
+        uint32_t marker :32;
+    } f;
+    uint32_t w;
+} csr__status__result_t;
+
 // regfile - csr::status
 typedef struct __attribute__ ((__packed__)) {
     csr__status__err_t err;
     csr__status__phy_t phy;
+    csr__status__result_t result;
 } csr__status_t;
 
 // addrmap - csr
@@ -183,7 +196,7 @@ typedef struct __attribute__ ((__packed__)) {
 } openpcie_t;
 
 
-static_assert(sizeof(openpcie_t) == 0x30000024, "Packing error");
+static_assert(sizeof(openpcie_t) == 0x30000028, "Packing error");
 
 #ifdef __cplusplus
 }

@@ -192,10 +192,13 @@ XILINX_VIVADO   ?= /tools/Xilinx/2026.1/Vivado
 GLBL             = $(XILINX_VIVADO)/data/verilog/src/glbl.v
 XILLIBS          = -L unisims_ver -L unimacro_ver -L secureip
 
-# firmware.hex is read by riscv_pcie_soc.sv with a bare name, so a copy has to
-# sit in the simulation working directory. It is a product of the sw_build
-# stage -- run that first.
-FIRMWARE         = $(BLD_DIR)/sw_build/firmware.hex
+# The firmware is built here, on every build, with the short co-simulation
+# start-up delay (SIM=1), into obj/fw -- not into 4.build/sw_build, whose
+# firmware.hex stays the board build. VARIANT=switched builds the RC-switched
+# firmware. riscv_pcie_soc.sv reads firmware.hex with a bare name, so a copy
+# sits in this folder; the ISS (CPU=iss) runs obj/fw/firmware.elf.
+VARIANT         ?= direct
+FW_DIR           = $(VOBJDIR)/fw
 
 # Flags for xsim
 # SIM_FAST_TRAIN turns on the hard macro's shortened LTSSM training timers.
@@ -223,7 +226,7 @@ SPC =
 # BUILD RULES
 #======================================================
 
-.PHONY: all, compile, run, rungui, gui, help, clean
+.PHONY: all, compile, run, rungui, gui, fst, help, clean
 
 all: sysverilog
 
@@ -287,18 +290,12 @@ sysverilog: $(VPROC_PLI) firmware.hex
 	@$(XVLOG) $(GLBL)
 	@$(XELAB) $(ELABFLAGS)
 
-# Local copy of the firmware image for $readmemh. Copied on every build, not by
-# date: a tree on a network share can carry timestamps from the future, and a
-# stale copy would then look newer than the image it came from.
-firmware.hex: $(FIRMWARE) FORCE
-	@cp -f $< $@
-
-$(FIRMWARE):
-	@echo "================================================================"
-	@echo " ERROR: $(FIRMWARE) is missing."
-	@echo " Build the firmware first:  cd ../4.build/sw_build && make"
-	@echo "================================================================"
-	@exit 1
+# Built and copied on every build, not by date: a tree on a network share can
+# carry timestamps from the future, and a stale image would then look newer
+# than its sources.
+firmware.hex: FORCE
+	@$(MAKE) --no-print-directory -C $(BLD_DIR)/sw_build SIM=1 VARIANT=$(VARIANT) OUT=$(FW_DIR)
+	@cp -f $(FW_DIR)/firmware.hex $@
 
 
 #======================================================
@@ -310,15 +307,21 @@ run_us.cfg: FORCE
 	@echo $(RUN_US) > $@
 
 iss.cfg: FORCE
-	@sed -E "s/-V [A-Z0-9]+/-V $(ISS_CORE)/" vusermain.cfg > $@
+	@sed -E -e "s/-V [A-Z0-9]+/-V $(ISS_CORE)/" -e "s|-t [^ ]*firmware\.elf|-t obj/fw/firmware.elf|" vusermain.cfg > $@
 
 FORCE:
 
 sim: sysverilog run_us.cfg $(RUN_CFG)
 	@$(SIMEXE) $(SIMFLAGS)
 
+# A run with DUMP_VCD also converts tb.vcd into the tracked tb.fst. The
+# conversion runs whatever xsim returns, and xsim's exit code is kept.
 run: sysverilog run_us.cfg $(RUN_CFG)
-	@$(SIMEXE) -R $(SIMFLAGS)
+	@$(SIMEXE) -R $(SIMFLAGS); rc=$$?; \
+	$(if $(findstring DUMP_VCD,$(USRSIMOPTS)),bash tools/vcd2fst.sh;) exit $$rc
+
+fst:
+	@bash tools/vcd2fst.sh
 
 rungui: sysverilog run_us.cfg $(RUN_CFG)
 	@$(SIMEXE) -g --autoloadwcfg $(SIMFLAGS)
@@ -330,6 +333,7 @@ help:
 	@$(info make               Build C/C++ and HDL code without running simulation)
 	@$(info make run           Build and run batch simulation)
 	@$(info make rungui/gui    Build and run GUI simulation)
+	@$(info make fst           Convert tb.vcd into tb.fst (run does it when USRSIMOPTS has DUMP_VCD))
 	@$(info make clean         clean previous build artefacts)
 	@$(info )
 	@$(info Command line configurable variables:)
@@ -344,6 +348,7 @@ help:
 	@$(info $(SPC) $(SPC) $(SPC)   vproc  native C++ in usercode/VUserMain0.cpp)
 	@$(info $(SPC) $(SPC) $(SPC)   iss    the rv32 ISS, executing firmware.elf)
 	@$(info $(SPC) $(SPC) CORE:         edubos5, edubos5_3stg or picorv32: the RTL core, or the ISS timing model (default edubos5))
+	@$(info $(SPC) $(SPC) VARIANT:      firmware variant, direct or switched, built with SIM=1 into obj/fw (default direct))
 	@$(info $(SPC) $(SPC) RUN_US:       time limit in microseconds; a run ends 10 us after the firmware result (default $(RUN_US)))
 	@$(info )
 
@@ -354,3 +359,10 @@ help:
 clean:
 	@rm -rf $(WORKDIR) $(VOBJDIR) $(USERLIB) $(VPROC_PLI) xelab.* xvlog.* xsim.* *.wdb .Xil
 	@rm -rf firmware.hex run_us.cfg iss.cfg *.jou *.log webtalk*
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

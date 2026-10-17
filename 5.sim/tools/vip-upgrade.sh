@@ -125,3 +125,10 @@ fi
 
 echo "Done. Next: build VProc.so for CPU=rtl/vproc/iss, make run, update the"
 echo "version table in 5.sim/README.md, review the diff."
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

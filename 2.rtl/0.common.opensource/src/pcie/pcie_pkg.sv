@@ -131,3 +131,10 @@ package pcie_pkg;
   } pcie_rx_tuser_t;
 
 endpackage
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

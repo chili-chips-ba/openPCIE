@@ -135,6 +135,7 @@ The following addresses map directly to the RTL bridge inputs/outputs. `common/p
 | `PCIE_RX_HEADER_INFO`| `0x30000018` | R | **Completion Info:** Requester ID, Tag and Lower Address, for matching. |
 | `PCIE_ERR_STATUS` | `0x3000001C` | R | **Error Status:** a flag for a received fatal-error Message (bit 16). The `PCIE_2_1` hard block does not export its PCI Status register, so bits [15:0] read 0. |
 | `PCIE_PHY_STATUS` | `0x30000020` | R | Tx FSM state and the number of free hard-macro Tx buffers - polled before every send. |
+| `PCIE_RESULT` | `0x30000024` | RW | **Result marker** the firmware writes when it stops (table below). Sends nothing; drives the PASS LED and an ILA probe. |
 
 </div>
 
@@ -156,7 +157,7 @@ The firmware performs a standard PCIE Bring-up sequence:
 Configuration payloads travel big-endian on this RC (byte 0 of the register in bits `[31:24]`), so all config data goes through `bswap32()` and the values in the source read the way the spec prints them.
 
 ### 3. Self-Test & Debug Codes
-The driver reports its execution status by writing specific "Magic Numbers" to the `PCIE_TX_DATA` register. These values serve as debug markers that can be monitored via the **Vivado ILA**.
+The driver reports its execution status by writing specific "Magic Numbers" to the `PCIE_RESULT` register. Unlike `PCIE_TX_DATA`, this write sends no TLP. On the board, PASS lights `led_link_up[3]`, and every marker can be watched with an ILA ([RTL Debug with ILA](../2.rtl/README.md#rtl-debug-with-ila)).
 
 <div align="center">
 

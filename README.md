@@ -1,11 +1,13 @@
 [![NLnet:Funded](https://badgen.net/badge/NLnet/Funded/08C)](https://nlnet.nl/)
 [![Stars](https://badgen.net/github/stars/chili-chips-ba/openPCIE?label=Stars)](https://github.com/chili-chips-ba/openPCIE/stargazers)
 [![License:BSD-3/CC-BY-SA](https://badgen.net/badge/License/BSD-3%2FCC-BY-SA/blue)](LICENSES)
+[![KiBot:Pass](https://badgen.net/badge/KiBot/Pass/green)](1.pcb/openpci2-backplane/openpci2-backplane.kibot.yaml)
+[![eduBOS5:Pass](https://badgen.net/badge/eduBOS5/Pass/green)](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#riscv-formal-every-instruction-against-the-isa)
 [![Lint](https://badgen.net/github/checks/chili-chips-ba/openPCIE/main/run-lint?label=Lint)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
 [![Verible](https://badgen.net/github/checks/chili-chips-ba/openPCIE/main/verible?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
 [![Sim:Pass](https://badgen.net/badge/Sim/Pass/green)](5.sim)
 [![openXC7:Pass](https://badgen.net/badge/openXC7/Pass/green)](4.build/hw_build.openXC7)
-[![eduBOS5:Pass](https://badgen.net/badge/eduBOS5/Pass/green)](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#riscv-formal-every-instruction-against-the-isa)
+[![PCIE:Pass](https://badgen.net/badge/PCIE/Pass/green)](https://github.com/chili-chips-ba/openPCIE#bench-validation-results)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 
@@ -14,17 +16,17 @@ Computing is about communicating. Some would also say about networking. Digital 
   <img alt="openPCIE Root Complex project logo" width="25%" src="0.doc/artwork/pcie2rootc.hex.png">
 </p>
 
-This project looks to open Artix7 PCIE Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it will surround them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`software Driver with Demo App`**. 
+This project opens Artix7 PCIE Gen2 RC IP blocks for use outside of proprietary tool flows. While still reliant on Xilinx Series7 Hard Macros (HMs), it surrounds them with open-source soft logic for PIO accesses — The **`RTL`** and, even more importantly, the layered **`software Driver with Demo App`**. 
 
-All that with **`full HW/SW opensource co-sim`**. Augmented with a rock-solid **`openBackplane`** in the basement of our hardware solution, the geek community will thus get all it takes for building their own, end-to-end _openCompute_ systems.
+All that with **`full HW/SW opensource co-sim`**. Augmented with a rock-solid **`openBackplane`** in the basement of our hardware solution, the geek community thus gets all it takes for building their own, end-to-end _openCompute_ systems.
 
-> The project‘s immediate goal is to empower the makers with ability to drive PCIE-based peripherals from their own soft RISC-V SOCs.
+> The project‘s immediate goal, now accomplished, was to empower the makers with ability to drive PCIE-based peripherals from their own soft RISC-V SOCs.
 
-Given that the PCIE End-Point (EP) with DMA is already available in opensource, the opensource PCIE peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project intends to change that status quo.
+Given that the PCIE End-Point (EP) with DMA is already available in opensource, the opensource PCIE peripherals do exist for Artix7. Except that they are always, without exception, controlled by the proprietary RC on the motherboard side, typically in the form of RaspberryPi ASIC, or x86 PC. This project changes that status quo.
 
 Our long-term goal is to set the stage for the development of full opensource PCIE stack, gradually phasing out Xilinx HMs from the solution. That’s a long, ambitious track, esp. when it comes to mixed-signal SerDes and high-quality PLLs. We therefore anticipate a series of follow on projects that would build on the foundations hereby set.
 
-This first phase is about implementing an open source PCIE Root Complex (RC) for Artix7 FPGA, utilizing Xilinx Series7 PCIE HM and GTP IP blocks, along with their low-jitter PLL.
+This first phase implemented an open source PCIE Root Complex (RC) for Artix7 FPGA, utilizing Xilinx Series7 PCIE HM and GTP IP blocks, along with their low-jitter PLL.
 
 #### References
 - [PCIE Primer](http://www.anita-simulators.org.uk/wyvernsemi/articles/pci_express.pdf) by Simon Southwell ✔

@@ -163,3 +163,10 @@ awk 'length > 100 { sub(".*/src/", "", FILENAME); print "over 100 columns: " FIL
 nc=$(awk 'length > 100' "${FILES[@]}" | wc -l)
 echo "-- line length: $nc line(s) over 100 columns"
 [ $bad -eq 0 ] && [ $nf -eq 0 ] && [ $nl -eq 0 ] && [ $nc -eq 0 ]
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

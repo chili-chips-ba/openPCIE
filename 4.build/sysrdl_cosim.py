@@ -667,3 +667,10 @@ if __name__ == "__main__":
     if cmdArgs.outFile != None :
       sys.stdout = save_stdout
       f.close()
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

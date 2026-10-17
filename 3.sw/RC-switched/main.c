@@ -70,7 +70,7 @@
 #define WINDOW_BASE       0x10000000
 #define WINDOW_SIZE       0x00100000
 
-// Result markers written to PCIE_TX_DATA
+// Result markers written to PCIE_RESULT
 #define RESULT_PASS        0x0000FACE // every endpoint that was found passed
 #define RESULT_FAIL        0x0000DEAD // an endpoint failed its memory readback
 #define RESULT_NO_SWITCH   0xBAD00000 // the switch upstream port did not answer
@@ -226,3 +226,10 @@ int main() {
 //  2026/10/06    - Completion Status checked on every request (CRS retry on
 //                  config writes too), real BAR sizing inside the port window
 //--------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

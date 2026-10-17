@@ -39,3 +39,10 @@ for d in checks/*/; do
   echo "$(basename "$d") $s"
 done | sort -k2 | awk '{print} {n[$2]++} END {for (s in n) printf "== %s: %d\n", s, n[s]}'
 echo "work folder: $W/cores/edubos5"
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

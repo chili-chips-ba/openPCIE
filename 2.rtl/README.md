@@ -118,7 +118,7 @@ The XDC maps the PCIE signals to the pins of the `Acorn CLE-215+` and the `openP
 
 > **Note:** The AMD XDC files in [`2.amd-rtl-with-Vivado-build`](../2.amd-rtl-with-Vivado-build) have a `LOC` block for all 4 positions, with only the active one **uncommented**. The opensource designs carry only their active `LOC`s, in the per-variant lane XDC; all other constraints are shared, in [`0.common.opensource/xdc`](0.common.opensource/xdc). Neither has GT pin constraints.
 
-4.  **Visual Debug (LEDs):** status signals such as `trn_link_up` drive the 4 **User LEDs** (pins **G3, H3, G4, H4**).
+4.  **Visual Debug (LEDs):** `led_link_up[3:0]` drives the 4 **User LEDs** (pins **G3, H3, G4, H4**), active low: `[2]` (G4) is `trn_link_up`, `[3]` (H4) lights when the firmware reports PASS ([RTL Debug with ILA](#rtl-debug-with-ila)); `[1:0]` stay off.
 
 
 ### Utilization and Timing Stats
@@ -181,12 +181,25 @@ IEEE 1800-2009 SystemVerilog. For the opensource RTL and the models that stand i
 - **Models follow the RTL:** a model keeps the ports, interfaces, structs, loops and names of the RTL it replaces.
 - **Formatting:** [`run-format.sh`](../4.build/hw_build.openXC7/run-format.sh) puts every `if`, `else`, `always`, `for` and `initial` body in `begin` ... `end`, even a single statement, then runs Verible (`verible-verilog-format`) at its defaults plus all alignment options set to `align`, `end` and `else` on separate lines, LF line endings (flags in the script). Lines are at most 100 columns; wrap longer ones by hand. Run it last, after lint, before a commit. `run-format.sh --check` only lists unformatted files; the `Verible` GitHub Action runs that check and the Verible lint.
 
+### RTL Debug with ILA
+
+On the board, an Integrated Logic Analyzer (ILA) does what a waveform does in simulation: it captures signals inside the FPGA at speed, and JTAG reads them out.
+
+The firmware ends by writing its result marker to `status.result` (`0x3000_0024`, values in [3.sw](../3.sw/README.md#3-self-test--debug-codes)). Writing it sends no TLP. In [`riscv_pcie_soc.sv`](0.common.opensource/src/riscv_pcie_soc.sv) the register drives `fw_result`, marked `mark_debug` so that Vivado keeps it for an ILA. PASS (`0x0000FACE`) also lights `led_link_up[3]`, so the verdict shows with no debug core at all.
+
+With Vivado's ILA (ChipScope):
+1. Synthesize, then **Set Up Debug**: `fw_result` is already listed. Add what else you want to see, e.g. the LTSSM state or the `s_axis_tx` / `m_axis_rx` streams, on `clk62m5`.
+2. Trigger on `fw_result` not equal to 0, program the board, and run.
+
+ChipScope is proprietary and part of Vivado; the openXC7 flow has no such core. For that, we have an eye on [fpgacapZero](https://github.com/lcapossio/fpgacapZero) (fcapz, Apache-2.0): vendor-agnostic logic-analyzer and I/O cores in Verilog and VHDL, with a 7-series JTAG wrapper, OpenOCD or Vivado's hw_server, and VCD export, which opens in WaveCrux like our simulation dumps.
+
 ### References
 
 - IEEE Std 1800-2009, *IEEE Standard for SystemVerilog -- Unified Hardware Design, Specification, and Verification Language*.
 - Clifford E. Cummings, [*SystemVerilog-2009 Enhancements: Priority/Unique/Unique0*](https://dvcon-proceedings.org/wp-content/uploads/systemverilog-2009-enhancements-priority-unique-unique.pdf), DVCon -- `unique`, `unique0` and `priority` versus the `full_case` / `parallel_case` directives.
 - Xilinx UG477, [*7 Series FPGAs Integrated Block for PCI Express*](../0.doc/xilinx/ug477_7Series_IntBlock_PCIe.pdf) -- the `PCIE_2_1` hard block and its TRN interface.
 - Xilinx UG482, [*7 Series FPGAs GTP Transceivers*](../0.doc/xilinx/ug482_7Series_GTP_Transceivers.pdf) -- `GTPE2_CHANNEL` / `GTPE2_COMMON`: PLL0, TXOUTCLK, DRP, the PIPE-side clocking and reset sequence.
+- [fpgacapZero](https://github.com/lcapossio/fpgacapZero) (fcapz) -- open-source, vendor-agnostic FPGA debug cores: embedded logic analyzer, embedded I/O, JTAG-to-AXI and JTAG-to-UART bridges.
 
 ----------
 #### End-of-Document

@@ -84,6 +84,7 @@ module csr (
         struct {
             logic err;
             logic phy;
+            logic result;
         } status;
     } decoded_reg_strb_t;
     decoded_reg_strb_t decoded_reg_strb;
@@ -108,6 +109,7 @@ module csr (
         decoded_reg_strb.rx.header_info = cpuif_req_masked & (cpuif_addr == 6'h18) & !cpuif_req_is_wr;
         decoded_reg_strb.status.err = cpuif_req_masked & (cpuif_addr == 6'h1c) & !cpuif_req_is_wr;
         decoded_reg_strb.status.phy = cpuif_req_masked & (cpuif_addr == 6'h20) & !cpuif_req_is_wr;
+        decoded_reg_strb.status.result = cpuif_req_masked & (cpuif_addr == 6'h24);
         decoded_err = '0;
     end
 
@@ -176,6 +178,14 @@ module csr (
                 } requester_id;
             } header_info;
         } rx;
+        struct {
+            struct {
+                struct {
+                    logic [31:0] next;
+                    logic load_next;
+                } marker;
+            } result;
+        } status;
     } field_combo_t;
     field_combo_t field_combo;
 
@@ -225,6 +235,13 @@ module csr (
                 } requester_id;
             } header_info;
         } rx;
+        struct {
+            struct {
+                struct {
+                    logic [31:0] value;
+                } marker;
+            } result;
+        } status;
     } field_storage_t;
     field_storage_t field_storage;
 
@@ -431,6 +448,29 @@ module csr (
             end
         end
     end
+    // Field: csr.status.result.marker
+    always_comb begin
+        automatic logic [31:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.status.result.marker.value;
+        load_next_c = '0;
+        if(decoded_reg_strb.status.result && decoded_req_is_wr) begin // SW write
+            next_c = (field_storage.status.result.marker.value & ~decoded_wr_biten[31:0]) | (decoded_wr_data[31:0] & decoded_wr_biten[31:0]);
+            load_next_c = '1;
+        end
+        field_combo.status.result.marker.next = next_c;
+        field_combo.status.result.marker.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.status.result.marker.value <= 32'h0;
+        end else begin
+            if(field_combo.status.result.marker.load_next) begin
+                field_storage.status.result.marker.value <= field_combo.status.result.marker.next;
+            end
+        end
+    end
+    assign hwif_out.status.result.marker.value = field_storage.status.result.marker.value;
 
     //--------------------------------------------------------------------------
     // Write response
@@ -481,6 +521,9 @@ module csr (
         if(rd_mux_addr == 6'h20) begin
             readback_data_var[5:0] = hwif_in.status.phy.tx_buf_avail.next;
             readback_data_var[7:6] = hwif_in.status.phy.tx_state.next;
+        end
+        if(rd_mux_addr == 6'h24) begin
+            readback_data_var[31:0] = field_storage.status.result.marker.value;
         end
         readback_data = readback_data_var;
         readback_done = decoded_req & ~decoded_req_is_wr;

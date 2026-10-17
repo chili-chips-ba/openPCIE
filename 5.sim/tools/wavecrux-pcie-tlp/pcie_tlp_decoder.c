@@ -754,3 +754,10 @@ const char* wavecrux_decoder_plugin_description(void) {
 // Revision history:
 //  2026/10/06 - initial creation
 //--------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

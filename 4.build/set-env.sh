@@ -187,6 +187,7 @@ _se_hint_cc="GCC 10+ (C++20) and binutils: sudo apt install build-essential"
 _se_tool HOST_CC  gcc 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_CXX g++ 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_AR  ar  "" ''                    "$_se_hint_cc"
+_se_tool VCD2FST  vcd2fst "" ''                "vcd2fst (tb.vcd -> tb.fst): sudo apt install gtkwave"
 
 _se_hint_viv="AMD Vivado 2026.1+ for Linux, e.g. /tools/Xilinx/2026.1/Vivado (or set XILINX_VIVADO). Windows xsim cannot load the Linux-built co-sim models."
 _se_vv=${XILINX_VIVADO:-}
@@ -227,3 +228,10 @@ fi
 unset _se_csh _se_src _se_path0 _se_bad _se_todo _se_x7 _se_hint_x7 _se_rv _se_hint_rv \
       _se_hint_rdl _se_py _se_vb _se_hint_cc _se_hint_viv _se_vv _se_vver _se_ui
 unset -f _se_msg _se_set _se_need _se_num _se_ge _se_newest _se_tool
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

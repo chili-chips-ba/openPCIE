@@ -65,6 +65,7 @@
 #define PCIE_RX_HEADER_INFO  CSR_REG32(rx.header_info)
 #define PCIE_ERR_STATUS      CSR_REG32(status.err)
 #define PCIE_PHY_STATUS      CSR_REG32(status.phy)
+#define PCIE_RESULT          CSR_REG32(status.result)
 
 // Field masks and positions come from the generated csr.h, via RDL_FIELD()
 #define TX_STATE_MASK        CSR__STATUS__PHY__TX_STATE_bm
@@ -130,3 +131,10 @@ uint32_t cfg_read32_checked(uint32_t bus, uint32_t dev, uint32_t reg);
 uint32_t assign_bars(uint32_t bus, uint32_t dev, uint32_t win_base, uint32_t win_size);
 
 #endif // OPENPCIE_PCIE_H
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

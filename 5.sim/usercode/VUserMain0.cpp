@@ -20,7 +20,7 @@
 //   away from the hardware either.
 //
 //   The result is reported the same way the firmware reports it, by writing a
-//   marker to tx.data, which tb.sv watches for:
+//   marker to status.result, which tb.sv watches for:
 //
 //     0x0000FACE  memory write/readback through PCIe succeeded
 //     0x0000DEAD  readback mismatch, or the read was not completed with SC
@@ -88,7 +88,7 @@ static uint8_t   tx_tag;
 [[noreturn]] static void halt(uint32_t marker)
 {
     VPrint("[CPU=vproc] result marker 0x%08x\n", marker);
-    csr->tx->data->full(marker);
+    csr->status->result->full(marker);
     while (true) VTick(10000, SOC_CPU_VPNODE);
 }
 
@@ -371,3 +371,10 @@ Version History:
  2026/10/06   : follows the firmware -- Completion Status checks, CRS retry on
                 config writes, BAR sizing by readback
 */
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

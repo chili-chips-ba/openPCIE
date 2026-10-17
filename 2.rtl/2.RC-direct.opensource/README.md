@@ -54,7 +54,7 @@ They differ only in the GT lanes the link uses and in the firmware they run.
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
     RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
-    riscv_pcie_soc.sv             picorv32 SOC, drives the AXI-Stream TLP interface
+    riscv_pcie_soc.sv             RISC-V SOC (eduBOS5 or picorv32), drives the AXI-Stream TLP interface
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
     picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
     pcie/                         the opensource PCIE stack

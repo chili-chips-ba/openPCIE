@@ -52,6 +52,7 @@
 //     0x3000_0018  rx.header_info  Completion header DW2     (R)
 //     0x3000_001C  status.err      fatal error received      (R)
 //     0x3000_0020  status.phy      Tx FSM state + buffers    (R)
+//     0x3000_0024  status.result   firmware result marker    (RW)
 //==========================================================================
 
 addrmap csr {
@@ -232,6 +233,21 @@ addrmap csr {
             hw = w;
          } tx_buf_avail[5:0] = 0;
       } phy;
+
+      reg {
+         name = "csr.status.result";
+         desc = "Firmware Result Register";
+
+         field {
+            name = "csr.status.result.marker[31:0]";
+            desc = "Result marker the firmware writes when it stops, e.g.
+                    0x0000FACE for PASS. Unlike tx.data, writing it launches
+                    no TLP: the value goes to logic only, to the PASS LED and
+                    to an ILA.";
+            sw = rw;
+            hw = r;
+         } marker[32] = 0;
+      } result;
    } status @ 0x1C;
 };
 

@@ -132,7 +132,7 @@ bus 3..6  dev 0 .... the endpoint cards, BAR0 at the window base
   other BAR that does not fit is parked out of the way (64-bit above 4 GB,
   32-bit at 0).
 * **Step 4 - self test.** Memory write and readback through the switch for each
-  populated slot, then `0x0000FACE` / `0x0000DEAD` to `PCIE_TX_DATA`, as in the
+  populated slot, then `0x0000FACE` / `0x0000DEAD` to `PCIE_RESULT`, as in the
   direct build.
 
 Two things worth knowing when comparing the C against the AMD ROM dump:
@@ -146,7 +146,7 @@ Two things worth knowing when comparing the C against the AMD ROM dump:
   land the same value in the switch.
 
 Unlike the ROM, the firmware **probes each slot** before configuring it and
-skips the empty ones, so a partially populated backplane is fine. It reports
+skips the empty ones, so a partially populated backplane is fine. It reports its result in `PCIE_RESULT` (`status.result`, `0x3000_0024`), a register that sends no TLP. PASS also lights `led_link_up[3]`, and every marker can be watched with an ILA ([RTL Debug with ILA](../README.md#rtl-debug-with-ila)):
 
 | Marker | Meaning |
 |---|---|
@@ -168,9 +168,10 @@ answered with CRS are re-issued up to 100 times.
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
     RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
-    riscv_pcie_soc.sv             picorv32 SOC + the Type 0/Type 1 routing above
+    riscv_pcie_soc.sv             RISC-V SOC (eduBOS5 or picorv32) + the Type 0/Type 1 routing above
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
-    picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
+    picorv32.CHILI.sv             the alternative RISC-V core (Chili.CHIPS-improved picorv32)
+    CPU.eduBOS5/                  the default RISC-V core
     pcie/                         the opensource PCIE stack
   xdc/
     RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)

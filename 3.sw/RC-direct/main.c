@@ -47,7 +47,7 @@
 #define WINDOW_BASE      0x80000000
 #define WINDOW_SIZE      0x80000000
 
-// Result markers written to PCIE_TX_DATA
+// Result markers written to PCIE_RESULT
 #define RESULT_PASS        0x0000FACE // data 0x6 was written and read back
 #define RESULT_FAIL        0x0000DEAD // the readback did not match, or failed
 #define RESULT_NO_DEVICE   0xBAD00000 // no endpoint answered the first config read
@@ -93,3 +93,10 @@ int main() {
 //  2026/10/06    - Completion Status checked on every request (CRS retry on
 //                  config writes too), real BAR sizing, explicit byte swap
 //--------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

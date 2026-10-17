@@ -41,3 +41,10 @@ yosys -q -p "read_slang $DEFS -G EN_WAIT4REGS=$EN --top $TOP \
 yosys-abc -c "read_aiger model.aig; fold; strash; $ENGINE" |
   grep -E "lat =|Property proved|was asserted|No output asserted|Reached"
 rm -rf "$W"
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

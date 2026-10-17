@@ -47,7 +47,8 @@ make
 |---|---|
 | `make` | build `firmware.elf`, `firmware.bin`, `firmware.hex` for RC-direct |
 | `make VARIANT=switched` | the same three files, but for RC-switched |
-| `make SIM=1` | short start-up delay, for co-simulation (see below) |
+| `make SIM=1` | short start-up delay, for co-simulation (see below; `5.sim` does this itself) |
+| `make OUT=<dir>` | write the three files to `<dir>` instead of this folder |
 | `make info` | print the resolved configuration |
 | `make clean` | remove the three generated files |
 
@@ -63,7 +64,7 @@ make a stale `firmware.hex` look up to date. Always rebuilding sidesteps both.
 ```sh
 make                     # direct
 make VARIANT=switched    # switched
-make SIM=1               # direct, for co-simulation
+make SIM=1               # direct, short start-up delay (5.sim builds this itself)
 ```
 
 ## Building for co-simulation
@@ -71,17 +72,15 @@ make SIM=1               # direct, for co-simulation
 `main()` opens with `wait_cycles(STARTUP_DELAY)` - 100000 by default, set in
 `3.sw/common/pcie.h` - which idles while the PCIE link
 trains. On hardware that costs nothing. In [co-simulation](../../5.sim) it is
-about 80 ms of simulated time before the firmware does anything at all -- the
-loop is compiled without optimisation, so each iteration is a dozen bus cycles.
+tens of milliseconds of simulated time before the firmware does anything at all
+(about 37 ms on eduBOS5) -- the loop is compiled without optimisation, so each
+iteration is seven instructions.
 
 `make SIM=1` defines `STARTUP_DELAY=200` instead, and the whole run then fits in
-3 ms of simulated time. Nothing else changes, and the hardware build is
+under 0.7 ms of simulated time (0.4 ms on eduBOS5, 0.68 ms on PicoRV32). Nothing else changes, and the hardware build is
 unaffected: without `SIM=1` the delay is the full 100000 as before.
 
-```
-make SIM=1          # firmware for the simulator
-make                # firmware for the board
-```
+You do not run it by hand: `make` in [`5.sim`](../../5.sim) builds its own copy, on every build, with `make SIM=1 OUT=5.sim/obj/fw`. The `firmware.hex` tracked in this folder is therefore always the board build.
 
 `SIM=1` matters for the two co-simulation builds that execute this firmware --
 `CPU=rtl` and `CPU=iss`. The `CPU=vproc` build does not use it at all: that one

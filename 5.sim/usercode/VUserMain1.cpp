@@ -307,3 +307,9 @@ extern "C" void VUserMain1(int node)
     }
 }
 
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

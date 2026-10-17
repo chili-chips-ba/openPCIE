@@ -14,9 +14,11 @@
 #                        --objcopy--> firmware.bin
 #                        --python--> firmware.hex
 #
-# All three outputs land in this folder. The hardware build consumes
-# firmware.hex -- riscv_pcie_soc.sv reads it with $readmemh("firmware.hex", ram),
-# one 32-bit word per line, hex, no prefix.
+# All three outputs land in this folder, or in OUT=<dir>: the co-simulation
+# builds its own SIM=1 copy that way (see 5.sim/Makefile), so the firmware.hex
+# here is always the board build. The hardware build consumes firmware.hex --
+# riscv_pcie_soc.sv reads it with $readmemh("firmware.hex", ram), one 32-bit
+# word per line, hex, no prefix.
 #
 # The two variants share the output names. Every make rebuilds from scratch
 # (see FORCE below), so switching variant needs no make clean.
@@ -71,7 +73,11 @@ CC       = $(CROSS)gcc
 OBJCOPY  = $(CROSS)objcopy
 
 PYTHON ?= python3
-RM_OUT  = rm -f firmware.elf firmware.bin firmware.hex .build-config
+
+# ---- Output folder ----------------------------------------------------------
+# Default: this folder, where the tracked firmware.hex (the board build) lives.
+OUT    ?= .
+RM_OUT  = rm -f $(OUT)/firmware.elf $(OUT)/firmware.bin $(OUT)/firmware.hex .build-config
 
 # ---- Flags ------------------------------------------------------------------
 # rv32i only -- picorv32 is configured without M/C extensions.
@@ -105,7 +111,7 @@ DEPS = $(SRCS) $(COMMON_DIR)/pcie.h $(COMMON_DIR)/sections.lds $(CSR_DEPS) FORCE
 .PHONY: all clean info help FORCE
 .DEFAULT_GOAL := all
 
-all: firmware.hex
+all: $(OUT)/firmware.hex
 
 help:
 	@echo ================================================================
@@ -121,6 +127,7 @@ help:
 info:
 	@echo VARIANT : $(VARIANT)
 	@echo SIM     : $(SIM)
+	@echo OUT     : $(OUT)
 	@echo SW_DIR  : $(SW_DIR)
 	@echo CC      : $(CC)
 	@echo OBJCOPY : $(OBJCOPY)
@@ -128,15 +135,16 @@ info:
 	@echo SOURCES : $(SRCS)
 
 # ---- 1) link ----------------------------------------------------------------
-firmware.elf: $(DEPS)
+$(OUT)/firmware.elf: $(DEPS)
 	@echo ================================================================
 	@echo  Compile and link into firmware.elf   [$(VARIANT), SIM=$(SIM)]
 	@echo ================================================================
+	@mkdir -p $(OUT)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRCS)
 	@echo OK: $@
 
 # ---- 2) raw binary ----------------------------------------------------------
-firmware.bin: firmware.elf
+$(OUT)/firmware.bin: $(OUT)/firmware.elf
 	@echo ================================================================
 	@echo  objcopy into firmware.bin
 	@echo ================================================================
@@ -146,14 +154,21 @@ firmware.bin: firmware.elf
 # ---- 3) hex for $readmemh ---------------------------------------------------
 # One 32-bit little-endian word per line, 8 hex digits, no 0x prefix -- exactly
 # what $readmemh expects.
-firmware.hex: firmware.bin
+$(OUT)/firmware.hex: $(OUT)/firmware.bin
 	@echo ================================================================
 	@echo  bin to hex into firmware.hex
 	@echo ================================================================
-	$(PYTHON) -c "import struct; f=open('firmware.bin','rb'); d=f.read(); f.close(); [print('{:08x}'.format(struct.unpack('<I', d[i:i+4])[0])) for i in range(0, len(d), 4)]" > $@
+	$(PYTHON) -c "import struct; f=open('$<','rb'); d=f.read(); f.close(); [print('{:08x}'.format(struct.unpack('<I', d[i:i+4])[0])) for i in range(0, len(d), 4)]" > $@
 	@echo ================================================================
 	@echo  SUCCESS -- firmware.elf, firmware.bin, firmware.hex
 	@echo ================================================================
 
 clean:
 	-$(RM_OUT)
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

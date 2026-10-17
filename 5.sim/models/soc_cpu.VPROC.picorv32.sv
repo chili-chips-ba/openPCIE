@@ -114,3 +114,10 @@ Version History:
  2026/08/16 AV: initial creation -- VProc as a picorv32, for CPU=vproc / CPU=iss
  2026/10/15    : 2-clock picorv32-style handshake; reset as interrupt bit 3
 */
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

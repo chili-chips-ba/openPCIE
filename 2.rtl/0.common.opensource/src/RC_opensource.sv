@@ -60,6 +60,7 @@ module RC_opensource
   logic clk62m5;
   logic core_rst_n;
   logic trn_link_up;
+  logic fw_pass;
 
 
 
@@ -103,10 +104,13 @@ module RC_opensource
       .s_axis_tx(s_axis_tx),
       .m_axis_rx(m_axis_rx),
 
-      .cfg(cfg)
+      .cfg(cfg),
+
+      .fw_pass(fw_pass)
   );
 
-  assign led_link_up = {1'b1, ~trn_link_up, 2'b11};
+  // LEDs are active low: [3] the firmware passed its self-test, [2] link up
+  assign led_link_up = {~fw_pass, ~trn_link_up, 2'b11};
 
   assign clk_req     = 1'b0;
 

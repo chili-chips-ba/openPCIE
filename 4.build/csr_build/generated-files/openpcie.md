@@ -15,7 +15,7 @@ Don't override. Generated from: openpcie
 
 - Absolute Address: 0x0
 - Base Offset: 0x0
-- Size: 0x30000024
+- Size: 0x30000028
 
 |  Offset  |Identifier|Name|
 |----------|----------|----|
@@ -37,7 +37,7 @@ No supported members.
 
 - Absolute Address: 0x30000000
 - Base Offset: 0x30000000
-- Size: 0x24
+- Size: 0x28
 
 <p>openPCIE Root Complex CSR</p>
 
@@ -209,14 +209,15 @@ compares it against its own ID to filter foreign traffic.</p>
 
 - Absolute Address: 0x3000001C
 - Base Offset: 0x1C
-- Size: 0x8
+- Size: 0xC
 
 <p>PCIe Link Status CSR</p>
 
-|Offset|Identifier|     Name     |
-|------|----------|--------------|
-|  0x0 |    err   |csr.status.err|
-|  0x4 |    phy   |csr.status.phy|
+|Offset|Identifier|       Name      |
+|------|----------|-----------------|
+|  0x0 |    err   |  csr.status.err |
+|  0x4 |    phy   |  csr.status.phy |
+|  0x8 |  result  |csr.status.result|
 
 ### err register
 
@@ -258,3 +259,22 @@ compares it against its own ID to filter foreign traffic.</p>
 <p>State of the Tx FSM: 0 = IDLE, 1 = SEND_CYCLE_1,
 2 = SEND_CYCLE_2. Software polls for 0 before it starts
 loading the next TLP.</p>
+
+### result register
+
+- Absolute Address: 0x30000024
+- Base Offset: 0x8
+- Size: 0x4
+
+<p>Firmware Result Register</p>
+
+|Bits|Identifier|Access|Reset|             Name             |
+|----|----------|------|-----|------------------------------|
+|31:0|  marker  |  rw  | 0x0 |csr.status.result.marker[31:0]|
+
+#### marker field
+
+<p>Result marker the firmware writes when it stops, e.g.
+0x0000FACE for PASS. Unlike tx.data, writing it launches
+no TLP: the value goes to logic only, to the PASS LED and
+to an ILA.</p>

@@ -19,3 +19,10 @@ else
     eval "`bash $_se_sh --csh`"
 endif
 unset _se_sh _se_d
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

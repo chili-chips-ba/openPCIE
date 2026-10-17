@@ -250,7 +250,7 @@ module tb;
 
 //--------------------------------------------------------------
 // VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
-//     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd
+//     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd, converted to tb.fst
 // Add --define DUMP_SOC_CPU for the CPU under RVFI names (CPU.eduBOS5/wavecrux).
 // Only the TLP monitors, the decoder view, the SOC level, the LTSSM
 // state and the 16-bit PIPE at the pcieVHost endpoint (pclk, TxData/K,
@@ -359,7 +359,7 @@ module tb;
 //--------------------------------------------------------------
 // Firmware result
 //--------------------------------------------------------------
-// main() ends by writing a marker into the Tx payload register:
+// main() ends by writing a marker into status.result:
 //   0x0000FACE  memory write/read back matched
 //   0x0000DEAD  it did not, or the read was not completed with SC
 //   0xBAD00000  no device answered the first config read (RC-switched:
@@ -406,24 +406,21 @@ module tb;
   // A write is counted on the CSR request strobe, once per access: picorv32
   // holds valid until ready, but eduBOS5 stores are one-cycle requests whose
   // ready comes after valid has dropped
+  // tx.data (0x0C) launches a TLP; status.result (0x24) carries the marker
   always @(posedge dut.clk62m5) begin
-    if (dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb) &&
-        dut.u_soc.mem.addr[7:0] == 8'h0c) begin
+    if (dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb)) begin
 
-      tlp_tx_count = tlp_tx_count + 1;
+      if (dut.u_soc.mem.addr[7:0] == 8'h0c) begin
+        tlp_tx_count = tlp_tx_count + 1;
 
-      // Fmt/Type 0x40 is a Memory Write; its payload is this very dword
-      if (dut.u_soc.tx_dw0[31:24] == 8'h40) begin
-        mem_wr_payload = dut.u_soc.mem.wdata;
-        mem_wr_seen    = 1'b1;
+        // Fmt/Type 0x40 is a Memory Write; its payload is this very dword
+        if (dut.u_soc.tx_dw0[31:24] == 8'h40) begin
+          mem_wr_payload = dut.u_soc.mem.wdata;
+          mem_wr_seen    = 1'b1;
+        end
       end
 
-      if (dut.u_soc.mem.wdata == 32'h0000_face ||
-          dut.u_soc.mem.wdata == 32'h0000_dead ||
-          dut.u_soc.mem.wdata == 32'hbad0_0000 ||
-          dut.u_soc.mem.wdata == 32'hbad0_0001 ||
-          dut.u_soc.mem.wdata == 32'hbad0_0002 ||
-          dut.u_soc.mem.wdata == 32'hbad0_0003) begin
+      if (dut.u_soc.mem.addr[7:0] == 8'h24) begin
         result_marker  = dut.u_soc.mem.wdata;
         mem_rd_payload = rx_data_last;
         $display("\n%t  TB     ===> FIRMWARE RESULT 0x%08h  (%s)\n", $time,
@@ -492,4 +489,12 @@ Version History:
                 shared by RC-direct and RC-switched; 0xBAD00001 decoded
  2026/10/08:    DUMP_VCD also dumps the 16-bit PIPE at the pcieVHost endpoint,
                 for Ferrite's PCIe PIPE / Data Link Layer WaveCrux decoders
+ 2026/10/17:    firmware result read from status.result, which sends no TLP
 */
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

@@ -50,7 +50,7 @@ void wait_cycles(int n) {
 }
 
 __attribute__((noreturn)) void halt(uint32_t marker) {
-    PCIE_TX_DATA = marker;
+    PCIE_RESULT = marker;
     while (1) {}
 }
 
@@ -256,3 +256,10 @@ uint32_t assign_bars(uint32_t bus, uint32_t dev,
     }
     return bar0;
 }
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

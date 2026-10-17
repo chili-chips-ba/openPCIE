@@ -63,7 +63,7 @@ The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.bui
 
 ## CPU options compared: the SOC only
 
-**Scope:** `riscv_pcie_soc` only, not the PCIE stack: the CPU, the 8 KB RAM and the CSR. The CSR has 9 registers, so a 9-input read mux, registered at its output (`soc_csr.sv`); only the RAM/CSR select after it is combinational. Built 2026-10-16, the same firmware, x4 build, CPU picked with `make`, `make CPU=edubos5_3stg`, `make CPU=picorv32` ([openXC7](../../../../4.build/hw_build.openXC7/README.md#cpu-options-compared)). The entire design, openXC7 against Vivado: [openXC7 README](../../../../4.build/hw_build.openXC7/README.md#openxc7-compared-with-vivado-the-entire-design).
+**Scope:** `riscv_pcie_soc` only, not the PCIE stack: the CPU, the 8 KB RAM and the CSR. The CSR had 9 registers in these builds (10 since `status.result`, 2026-10-17), so a 9-input read mux, registered at its output (`soc_csr.sv`); only the RAM/CSR select after it is combinational. Built 2026-10-16, the same firmware, x4 build, CPU picked with `make`, `make CPU=edubos5_3stg`, `make CPU=picorv32` ([openXC7](../../../../4.build/hw_build.openXC7/README.md#cpu-options-compared)). The entire design, openXC7 against Vivado: [openXC7 README](../../../../4.build/hw_build.openXC7/README.md#openxc7-compared-with-vivado-the-entire-design).
 
 | | PicoRV32 | eduBOS5 2-stage | eduBOS5 3-stage |
 |---|---|---|---|
@@ -111,7 +111,7 @@ eduBOS5 and PicoRV32 have RVFI outputs, built with `` `define RISCV_FORMAL `` (s
 
 ```sh
 cd 5.sim
-make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> tb.vcd, signals under tb.cpu_view
+make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> tb.vcd + tb.fst, signals under tb.cpu_view
 ```
 
 Then open [`5.sim/tb.RISCV-ISA.wavecrux`](../../../../5.sim/tb.RISCV-ISA.wavecrux) in WaveCrux 1.0.1: the rows, the decoder and the inspector come bound.

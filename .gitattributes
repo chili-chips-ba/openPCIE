@@ -5,6 +5,14 @@
 0.doc/** linguist-documentation
 *.html  linguist-documentation
 
+# GitHub's language bar counts our own code only: the frozen AMD example
+# design, the third-party co-sim models and the PeakRDL output stay out
+2.amd-rtl-with-Vivado-build/**       linguist-vendored
+5.sim/models/cosim/**                linguist-vendored
+5.sim/models/pcievhost/**            linguist-vendored
+5.sim/models/rv32/**                 linguist-vendored
+4.build/csr_build/generated-files/** linguist-generated
+
 # LF in the working copy too, whatever core.autocrlf says
 *.sv      text eol=lf
 *.svh     text eol=lf

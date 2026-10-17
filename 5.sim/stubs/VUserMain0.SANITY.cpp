@@ -90,3 +90,10 @@ extern "C" void VUserMain0(int node)
     while(true)
         vp0->tick(GO_TO_SLEEP);
 }
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 24, 2024
+// -----------------------------------------------------------------------------

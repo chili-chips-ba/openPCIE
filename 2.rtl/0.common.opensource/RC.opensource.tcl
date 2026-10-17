@@ -199,3 +199,10 @@ puts " Open the .xpr in the Vivado GUI, then:"
 puts "   Run Synthesis -> Run Implementation -> Generate Bitstream"
 puts "=============================================================="
 puts ""
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

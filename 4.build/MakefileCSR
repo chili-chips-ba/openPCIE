@@ -115,3 +115,10 @@ clean:
 	@rm -rf $(COSIMRDL) $(COSIMHDR) $(HWHDR) $(PKRDLHDR) $(GENDIR)/*.sv $(PKRDLHTML) $(PKRDLMD)
 
 .PHONY: all rtl tools clean
+
+# -----------------------------------------------------------------------------
+# Project:     openPCIE
+# Description: NLnet-sponsored open-source implementation
+# Version:     1.0
+# Date:        May 24, 2024
+# -----------------------------------------------------------------------------

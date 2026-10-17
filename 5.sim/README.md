@@ -34,6 +34,7 @@
   * [Using the HAL](#using-the-hal)
   * [Other Co-simulation considerations](#other-co-simulation-considerations)
 * [Our Local VIP Improvements](#our-local-vip-improvements)
+* [Open-source PCIE Validation Stacks](#open-source-pcie-validation-stacks)
 * [Simulation issues](#simulation-issues)
 * [References](#references)
 
@@ -201,7 +202,7 @@ compilers, and lists anything missing. (`peakrdl` is only needed if you edit
 | Vivado simulator (`xsim`) | 2026.1 | 2026.1 | [AMD Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) |
 | WaveCrux Pro | 1.0.1 | 1.0.1 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 | TLP decoder plugin | ours | -- | [`tools/wavecrux-pcie-tlp`](tools/wavecrux-pcie-tlp) |
-| PIPE and DLL decoder plugin | `wcx-pcie` pcie-v0.1.0 | pcie-v0.1.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
+| PIPE and DLL decoder plugin | `wcx-pcie` pcie-v0.1.0 | pcie-v0.2.0 (adds serial-line decoders) | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
 | RISC-V instruction-trace decoder | built into WaveCrux 1.0.1 | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 
 #### Why XSIM and not Verilator?
@@ -221,13 +222,9 @@ A Verilator run would need `--timing` for the whole test bench, not only for the
 
 #### Why VCD and not FST?
 
-XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it:
+XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does it alone. [`tb.fst`](tb.fst) is tracked (5.3 MB VCD -> 73 KB), `tb.vcd` is not.
 
-```
-vcd2fst tb.vcd tb.fst     # GTKWave; 4.2 MB -> 57 KB, in about 3 s
-```
-
-The ready-made `.wavecrux` sessions open `tb.vcd`: they bind signals by VCD id code, so they are not checked against an FST.
+The ready-made `.wavecrux` sessions open `tb.fst`, so they work from a fresh clone. They bind signals by their number in the file, which differs between the VCD and the FST.
 
 #### Local changes
 
@@ -266,14 +263,25 @@ no hardware involved. It ends 10 µs after the firmware reports its result; `RUN
             71655000  LTSSM  0x2a -> 0x2b      <- lane number assigned
             72559000  LTSSM  0x2c -> 0x11      <- Configuration complete
             74103001  TB     pl_phy_lnk_up = 1  <- physical layer up
-            74527000  LTSSM  0x15 -> 0x16 L0  (linkup)
-            75319001  TB     trn_link_up   = 1  <- data link layer up, flow control done
-            75319001  TB     ===> PCIe LINK UP -- SOC released from reset
-            75335000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
-           654455000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+            74479000  LTSSM  0x15 -> 0x16 L0  (linkup)
+            75255001  TB     trn_link_up   = 1  <- data link layer up, flow control done
+            75255001  TB     ===> PCIe LINK UP -- SOC released from reset
+            75271000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
+           389543000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+           399543000  TB     *** run ends 10 us after the firmware result ***
+--------------------------------------------------------
+ openpcie2-rc co-simulation summary
+--------------------------------------------------------
+  PCIe link up ............ YES
+  LTSSM final state ....... 0x16
+  TLPs sent by firmware ... 21
+  Payload written to EP ... 0x00000006  (Memory Write TLP)
+  Payload read back ....... 0x00000006  (match)
+  FIRMWARE RESULT ......... PASS (0x0000face)
+--------------------------------------------------------
 ```
 
-The last three lines are the actual result. `0x0000FACE` is only the verdict the
+The last three lines of the summary are the actual result. `0x0000FACE` is only the verdict the
 firmware reports; the two above it are the dword that really crossed the link --
 written to the endpoint at `0x8000_0000` by a Memory Write TLP, then fetched
 back by a Memory Read and its completion.
@@ -298,9 +306,7 @@ EP -> RC   Completion with data              0x00000006            TAG=14
 ```
 
 Every request goes through the same completion check: the firmware reads the
-Completion Status of each one and re-issues a request answered with CRS. 21 of
-the 22 TLPs are enumeration and test; the 22nd is the result marker itself --
-writing it to `tx.data` re-launches the last header, a second Memory Read.
+Completion Status of each one and re-issues a request answered with CRS. All 21 TLPs are enumeration and test: the result marker goes to `status.result`, which sends no TLP.
 
 The same traffic, decoded at TLP level in a waveform viewer, is in
 [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux).
@@ -315,7 +321,7 @@ CSR WR [0x08] = 01000000     tx.header2 -- bus 1, device 0, function 0, register
 CSR WR [0x0c] = 00000000     tx.data    -- the write strobe starts the transfer
 CSR RD [0x18] = ...          rx.header_info -- polled until the completion lands
 ...
-CSR WR [0x0c] = 0000face     the pass marker
+CSR WR [0x24] = 0000face     status.result -- the pass marker, sends no TLP
 ```
 
 ### Building and running
@@ -323,19 +329,13 @@ CSR WR [0x0c] = 0000face     the pass marker
 Set up the [Prerequisites](#prerequisites) first, including `set-env`.
 
 ```
-cd 4.build/sw_build && make SIM=1   # firmware with the short start-up delay
-cd ../../5.sim
-make                                # VProc.so + xvlog + xelab
+cd 5.sim
+make                                # firmware + VProc.so + xvlog + xelab
 make run                            # -> the summary above
 make gui                            # same, with waveforms
 ```
 
-`SIM=1` matters: `main()` opens with `wait_cycles(100000)`, which waits for the
-link to train. On hardware that costs nothing; in simulation, compiled without
-optimisation, it is about 80 ms of simulated time before the firmware does
-anything at all. `SIM=1` shortens it to 200 iterations and the whole run fits in
-3 ms. Without it the simulation still works, it just needs `make run RUN_US=100000`
-and a great deal of patience.
+`make` builds the firmware itself, on every build, into `obj/fw`, with `SIM=1`: `main()` opens with `wait_cycles(100000)`, which waits for the link to train. On hardware that costs nothing; in simulation it is tens of milliseconds of simulated time before the firmware does anything at all. `SIM=1` shortens it to 200 iterations, and the whole run fits in under 0.7 ms (0.4 ms on eduBOS5): it ends 10 µs after the firmware result. The tracked `4.build/sw_build/firmware.hex` stays the board build, untouched by any simulation. `VARIANT=switched` builds the RC-switched firmware instead.
 
 Useful switches:
 
@@ -351,27 +351,36 @@ always printed, with no define needed.
 
 ### Viewing the TLPs in WaveCrux
 
+All pictures in this section and the next two are from the **RC-direct** run: the Root Complex talks straight to one Endpoint, with no switch in between.
+
+> **Coming in v1.1.0: RC-switched.** The same views for the switched Root Complex: Type 1 Configuration requests through the switch, BARs assigned slot by slot, and a self-test per Endpoint.
+
 XSIM's own waveform database is the `.wdb` that `make gui` opens. For a view at
 *TLP level* -- every packet named, every completion paired with the request it
 answers -- the run can also write a VCD for [WaveCrux](https://wavecrux.app),
 together with a decoder plugin and a ready-made session:
 
 ```
-make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 3 MB, not tracked)
+make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> 5.sim/tb.vcd (not tracked) + tb.fst (tracked)
 ```
+
+The tracked `tb.fst` comes from this command. `DUMP_SOC_CPU` adds the CPU's RVFI trace for [`tb.RISCV-ISA.wavecrux`](tb.RISCV-ISA.wavecrux); leave it out and that session comes up empty.
 
 Then, once per machine, in WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder
 Plugins**, accept the safety notice, **Add directory...**
-`5.sim/tools/wavecrux-pcie-tlp` and **Reload plugins**. After that, open
-[`tb.TLP.wavecrux`](tb.TLP.wavecrux) (File -> Open, or `wavecrux_pro tb.TLP.wavecrux`): it
-loads `tb.vcd` from the same directory with both decoders bound. The plugin --
+`5.sim/tools/wavecrux-pcie-tlp` and **Reload plugins**. Add Ferrite's PIPE and Data Link Layer plugin the same way ([Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)). After that, open
+[`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (File -> Open, or `wavecrux_pro tb.TLP-DLL-PIPE.wavecrux`): it
+loads `tb.fst` from the same directory with all decoders bound. Our plugin --
 source, Windows binary, parameters -- is described in
 [tools/wavecrux-pcie-tlp](tools/wavecrux-pcie-tlp/README.md).
 
-In each picture the two decoder rows are the TLP stream in either direction:
+In each picture the TLP decoder rows are the TLP stream in either direction:
 **TLP Downstream** is Root Complex -> Endpoint (`tx_`), **TLP Upstream** is
-Endpoint -> Root Complex (`rx_`). Above them are the raw streams they decode,
-one DW per clock.
+Endpoint -> Root Complex (`rx_`). The raw streams they decode are the `tx_`/`rx_` signal rows, one DW per clock. The rows below them are described in [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux).
+
+At this zoom the Data Link Layer and PIPE rows show only thin ticks. Besides each TLP's own frame and Ack, they are:
+- SKP ordered sets: the Root Complex sends one every 5.9 µs, the Endpoint every 4.7 µs (1474 and 1180 symbol times), so that each receiver can compensate for the clock difference between the two ends.
+- UpdateFC DLLPs: each side re-sends its posted credits about every 30 µs, unchanged, even with no posted TLP in flight.
 
 **BAR0 sizing.** The firmware writes all ones to BAR0, reads it back --
 `0xFFFFF008`, a 4 KB, 32-bit, prefetchable BAR -- and places it at `0x80000000`:
@@ -392,11 +401,15 @@ in:
 
 **The self-test.** Memory Space and Bus Master enabled, then a posted Memory
 Write of `6` to `0x80000000` and a Memory Read whose completion brings the same
-`6` back -- the `PASS (0x0000face)` of the summary above:
+`6` back -- the `PASS (0x0000face)` of the summary above. Note what is missing: the Memory Write has no completion. It is *posted*: the Root Complex sends it and moves on, which is what makes writes cheap. Reads and Configuration requests are *non-posted*, and each waits for its completion:
 
 <p align="center">
 <img alt="WaveCrux TLP view: memory write and read-back self-test" src="images/wavecrux-tlp-mem-rw.png" width=1000>
 </p>
+
+The firmware then writes `PASS` to `status.result`. That register sends nothing, so this read is the last TLP of the run. Writing `tx.data` is what launches a TLP, which is why the result has a register of its own.
+
+**The firmware sets the pace.** A Configuration request and its Completion take about 1 µs ([How long a TLP spends in the hard macro](#how-long-a-tlp-spends-in-the-hard-macro)), yet the requests leave about 10 µs apart. The link is idle most of the time, waiting for the SOC's next request.
 
 What makes this possible in the test bench:
 
@@ -408,14 +421,14 @@ What makes this possible in the test bench:
   inputs, so WaveCrux's auto-bind finds them; its prefix drop-down picks `tx_`
   or `rx_`.
 
-The session stores the decoder bindings as positions in the VCD, which are the
+The session stores the decoder bindings as positions in the FST, which are the
 same for every run of this test bench. Should a different simulator version
 order the dump differently, the decoder rows come up empty: remove them and add
 them again with **Ctrl+Shift+D** -- auto-bind fills in all nine inputs.
 
 ### Viewing the PIPE in WaveCrux
 
-The same `tb.vcd` also carries the 16-bit PIPE between the Root Complex's
+The same dump also carries the 16-bit PIPE between the Root Complex's
 PCIE_2_1 hard macro and the pcieVHost endpoint, one level below the TLPs:
 the symbols as they go on the wire, before 8b/10b. All signals are under
 `tb.dut.u_pcie.u_phy_top.u_pcie_ep`:
@@ -432,10 +445,8 @@ These are the inputs of Ferrite's
 [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.1.0)
 (Windows: `wcx-pcie-0.1.0-windows-x64.zip`), unzip it to a folder of its own and add
 that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then open
-[`tb.PIPE-DLL.wavecrux`](tb.PIPE-DLL.wavecrux) (File -> Open, or
-`wavecrux_pro tb.PIPE-DLL.wavecrux`): it loads `tb.vcd` from the same directory,
-with the PIPE rows and all four decoders below bound, at the view of the third
-picture. It is separate from `tb.TLP.wavecrux`, which needs only our own TLP plugin.
+[`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (File -> Open, or
+`wavecrux_pro tb.TLP-DLL-PIPE.wavecrux`): it loads `tb.fst` from the same directory, with the TLP and PIPE rows and all six decoders bound, at the first TLP (a CfgRd0 at 155 µs).
 
 To set it up by hand instead, add
 **PCIe PIPE (16-bit)** and **PCIe Data Link Layer (16-bit)** with **Ctrl+Shift+D**,
@@ -446,10 +457,9 @@ link runs unscrambled, and the decoder locks to that by itself.
 `u_phy_top.rx_active` can be bound to `rxvalid` by hand on the `Tx`
 instances (it gates what the Root Complex receives).
 
-In the pictures, the four signal rows under the LTSSM state are the PIPE:
-`RxData`/`RxDataK` in blue (Root Complex -> Endpoint) and `TxData`/`TxDataK` in
-orange (Endpoint -> Root Complex). Below them are the four decoder rows, in
-this order: PIPE `Rx`, PIPE `Tx`, Data Link Layer `Rx`, Data Link Layer `Tx`.
+In the pictures, the rows follow the protocol stack from top to bottom. The signal rows: the LTSSM state, the TLP view (`tx_`/`rx_`), then the PIPE, `RxData`/`RxDataK` in blue (Root Complex -> Endpoint) and `TxData`/`TxDataK` in orange (Endpoint -> Root Complex). Below them, the decoder rows in the same order: TLP Downstream and Upstream, Data Link Layer `Rx` and `Tx`, PIPE `Rx` and `Tx`.
+
+The link comes up from the bottom of that stack. First only the PIPE carries anything: the training ordered sets. Then the PIPE and the Data Link Layer: the flow-control DLLPs. Only after that do TLPs flow. That is why the TLP rows stay empty in the first two pictures, and the Data Link Layer rows in the first one.
 
 **Link training.** Both sides have been sending TS2s with PAD for link and lane
 number (Polling). Now in Configuration, the Root Complex proposes link 0 in
@@ -458,7 +468,7 @@ proposed and echoed (`link=0 lane=0`). TS2s with both numbers close
 Configuration. Each side also advertises how many FTS ordered sets it needs to
 leave L0s: 255 for the Root Complex, 4 for the Endpoint. The Data Link Layer rows
 stay empty: no DLLP is sent before the link is up. The Root Complex's LTSSM
-reaches L0 at 74 µs, just after this view:
+reaches L0 at 74.5 µs, just after this view:
 
 <p align="center">
 <img alt="WaveCrux PIPE view: link training" src="images/wavecrux-pipe-training.png" width=1000>
@@ -467,12 +477,13 @@ reaches L0 at 74 µs, just after this view:
 **Flow-control initialisation.** As soon as the link is up, each side advertises its
 receive buffer credits, in header (`H`) and data (`D`) units, for Posted (`P`),
 Non-Posted (`NP`) and Completion (`Cpl`) traffic: first in InitFC1 DLLPs, then
-in InitFC2 to confirm. No TLP can be sent until this has finished. This 100 ns
-view catches the two sides one step apart:
-- The Endpoint is already sending InitFC2 (bottom row): 32 posted headers with
+in InitFC2 to confirm. No TLP can be sent until this has finished. Each side repeats its set of three InitFC1s until it has received the other side's: the Endpoint sends four rounds, because the Root Complex starts 0.2 µs later. This 115 ns view catches the two sides one step apart:
+- The Endpoint is already sending InitFC2 (Data Link Layer `Tx` row): 32 posted headers with
   1008 data credits, and 32 non-posted headers.
-- The Root Complex is still sending InitFC1 (row above it): 32 posted headers
+- The Root Complex is still sending InitFC1 (Data Link Layer `Rx` row): 32 posted headers
   with 437 data credits.
+
+A data credit is 16 bytes (4 DW): the Endpoint has room for 16 KB of posted data, the Root Complex for 7 KB. For non-posted requests, the Root Complex grants 12 headers (in its InitFC1-NP, outside this view), the Endpoint 32.
 
 `H=0 D=0` means infinite: both ends advertise infinite Completion credits. The
 spec requires that of an Endpoint, and of a Root Complex without peer-to-peer
@@ -483,18 +494,22 @@ on the PIPE, both K symbols:
 <img alt="WaveCrux PIPE view: flow-control initialisation" src="images/wavecrux-pipe-fc-init.png" width=1000>
 </p>
 
-**The first TLP on the wire.** At 225 µs the firmware's first Configuration
+**The first TLP on the wire.** At 155.1 µs the firmware's first Configuration
 Read leaves the Root Complex as `TLP seq=0 CfgRd0`, framed STP ... END. The
 Endpoint answers with its Completion, `TLP seq=0 CplD`: seq 0 again, because
 each direction numbers its own TLPs. It then sends `Ack seq=0` for the
 Configuration Read, so the Root Complex can drop it from its replay buffer. It
 also sends `UpdateFC-NP` to return the non-posted credit that the read used.
 The Root Complex acknowledges the Completion in turn, with its own `Ack seq=0`
-at 225.95 µs, just outside this view:
+at 155.73 µs, just outside this view. It takes 0.44 µs to do so, where the Endpoint model acknowledged the read after 0.13 µs. An Ack does not have to be immediate: `Ack seq=N` acknowledges every TLP up to N, so a receiver may wait and acknowledge several at once. In this run the TLPs are too far apart for that, and each one gets its own Ack.
 
 <p align="center">
 <img alt="WaveCrux PIPE view: first TLP and its Ack" src="images/wavecrux-pipe-tlp-ack.png" width=1000>
 </p>
+
+**Why `UpdateFC-NP` says `H=33`, not `H=1`.** An UpdateFC does not say "here is one more credit". It carries the running total of credits granted since flow-control initialisation: the 32 of InitFC, plus the 1 that the read just returned. Follow it through the run and it counts up by one header per non-posted TLP: 34, 35, 36, ... Its data credits go up only after a Configuration Write, which carries a DW of data; after a Configuration Read they stay put.
+
+Why a total and not a delta? DLLPs are never acknowledged or replayed, so one can be lost on the wire. With a delta, a lost credit would be gone for good, and the link would slowly run dry. With a total, the next UpdateFC repairs it. The same reason explains the UpdateFCs that repeat every 30 µs with unchanged values ([Viewing the TLPs](#viewing-the-tlps-in-wavecrux)): a regular refresh, so that a lost one never stalls the link.
 
 **The Data Link Layer: its traffic is shown, its internals are not.** On this
 Root Complex, the Data Link Layer lives inside the 7-series PCIE_2_1 hard macro.
@@ -523,6 +538,12 @@ decisions. For that, see an open-source Data Link Layer in RTL, where every
 internal signal can be dumped: the sibling project's
 [openCologne-PCIE `2.rtl/4.dll`](https://github.com/chili-chips-ba/openCologne-PCIE/tree/main/2.rtl/4.dll).
 Its wave snapshots are coming soon.
+
+**A clean bill of health.** Read across the whole run, the wire shows no sign of trouble, and each check below is something you can look for in any PCIE dump:
+- **No replay.** The Root Complex sent 21 TLPs, seq 0 to 20, and the Endpoint 20, seq 0 to 19: no gap and no repeat, so no TLP had to be sent twice.
+- **No error.** No Nak, and no TLP ended in EDB (a nullified TLP): every frame passed its CRC check.
+- **Nothing left unacknowledged.** Every TLP in both directions got its Ack.
+- **Every request answered.** 21 requests, one of them the posted Memory Write: 20 completions came back, exactly one per non-posted request.
 
 ### How long a TLP spends in the hard macro
 
@@ -572,8 +593,6 @@ The SOC's CPU socket takes three different occupants, selected with `CPU=` on th
 | `iss` | VProc + the [rv32](models/rv32) instruction set simulator, with `CORE`'s timing model | `firmware.elf`, interpreted -- real RISC-V instructions, no RTL core |
 
 ```sh
-cd ../4.build/sw_build && make SIM=1   # firmware.hex AND firmware.elf
-cd ../../5.sim
 make run                               # CPU=rtl CORE=edubos5, the default
 make run CORE=picorv32
 make run CPU=vproc
@@ -589,17 +608,19 @@ The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL genera
 
 ### What they cost
 
-Vivado XSIM 2026.1, simulated time, which is exact. Every run gives the same result: link up, LTSSM `0x16`, 22 TLPs, `PASS (0x0000face)`.
+Vivado XSIM 2026.1, simulated time, which is exact. Every run gives the same result: link up, LTSSM `0x16`, 21 TLPs, `PASS (0x0000face)`.
 
-| `CPU=` | Core | Result at (simulated) |
-|---|---|---|
-| `rtl` | PicoRV32 | 667.2 µs |
-| `rtl` | eduBOS5 2-stage | **389.5 µs** |
-| `rtl` | eduBOS5 3-stage | 470.9 µs |
-| `iss` | PicoRV32 timing | 663.1 µs (-0.6%) |
-| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) |
-| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) |
-| `vproc` | native C++ | **138.3 µs** |
+| `CPU=` | Core | Result at (simulated) | Run time, wall clock, relative |
+|---|---|---|---|
+| `rtl` | PicoRV32 | 667.2 µs | 1.3x |
+| `rtl` | eduBOS5 2-stage | **389.5 µs** | 1.0x |
+| `rtl` | eduBOS5 3-stage | 470.9 µs | 1.1x |
+| `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | 1.4x |
+| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) | 1.4x |
+| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) | 1.4x |
+| `vproc` | native C++ | **138.3 µs** | **0.7x** |
+
+The run times are for information only. They come from one batch of single runs (2026-10-16, Ryzen 9 6900HX, WSL2, `rtl` eduBOS5 = about 55 s), and wall-clock time varies with host load: two identical `rtl` eduBOS5 runs with `DUMP_VCD` took 54 s and 197 s on this machine, on the same day. The simulated times are exact.
 
 - **eduBOS5 vs PicoRV32:** IPC, Fmax and area compared in the [eduBOS5 README](../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 - **`iss`** matches the RTL core it models to within 0.6% (see [Our Local VIP Improvements](#our-local-vip-improvements)). It runs the real firmware binary in a debuggable native process (`-g` in `vusermain.cfg` opens a gdb port).
@@ -965,12 +986,7 @@ vusermain0 -V EDUBOS5STG2 -H -x 0x30000000 -X 0x3FFFFFFF -t ../4.build/sw_build/
 `0x0000_0000` are served from the ISS's own memory, which is why instruction
 fetch costs no simulation time at all. `-V` (set from `CORE`) makes the ISS reckon
 cycles the way the RTL core does: the result lands within 0.6% of it
-([What they cost](#what-they-cost)). Build the ELF first, with the short
-co-simulation start-up delay:
-
-```sh
-cd ../4.build/sw_build && make SIM=1
-```
+([What they cost](#what-they-cost)). It runs `obj/fw/firmware.elf`, which `make` builds with the short co-simulation start-up delay.
 
 ### PicoRV32 RTL-Only Simulation
 
@@ -1112,6 +1128,22 @@ How our co-simulation models differ from upstream, beyond [Local changes](#local
 - **Reset input.** `!resetn` drives VProc interrupt bit 3. The ISS starts at reset release, as the RTL core does, and restarts at the reset vector on a new reset.
 
 Result: the ISS lands within 0.6% of the RTL core it models ([What they cost](#what-they-cost)).
+
+## Open-source PCIE Validation Stacks
+
+What exists in the open (Oct 2026), dynamic and static:
+
+| Stack | Technique | Level | Checks the protocol? |
+|---|---|---|---|
+| [pcievhost](https://github.com/wyvernSemi/pcievhost) | co-simulation model, C | PIPE lanes up to TLP: LTSSM, DLL, TLP | not as a checker: a link partner, the Endpoint here |
+| [cocotbext-pcie](https://github.com/alexforencich/cocotbext-pcie) | cocotb model, Python | TLP: Root Complex, switches, Endpoints, config space, BARs, MSI, DMA | not as a checker: a link partner; Xilinx models are UltraScale(+) device only, no 7-series `PCIE_2_1` |
+| WaveCrux plugins: [our TLP decoder](tools/wavecrux-pcie-tlp), [Ferrite's PCIe decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) | post-simulation, on the waveform | TLP; PIPE, DLL and serial line | partly: CRC, sequence numbers, 8b/10b and disparity |
+| [ngscopeclient](https://www.ngscopeclient.org/) (scopehal, BSD-3) | post-capture, on scope or imported VCD waveforms | serial lane up: 8b/10b, 128b/130b, link training, 1-32 lane logical layer, DLL, TLP | partly: flags bad symbols and malformed packets; starts from the serial line, so it does not read our PIPE dump |
+| [SymbiYosys](https://github.com/YosysHQ/sby) | formal | any, with your own SVA | only what you write: no open PCIE property set found |
+
+**The gap:** no open checker of the PCIE rules themselves -- flow-control credits, Ack/Nak and replay timing, ordering, completion matching and timeout, TLP format. The models are link partners: they talk PCIE, they do not judge it. Commercial verification IP covers this.
+
+The WaveCrux decoders already parse every layer that these rules are about, from the serial line up to TLPs, and run on the dump of any simulator. We asked Ferrite to turn them into a protocol checker.
 
 ## Simulation issues
 

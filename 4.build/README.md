@@ -221,6 +221,7 @@ the SOC address map:
 | `0x18` | `rx.header_info` | R | `requester_id`, `tag`, `lower_addr` |
 | `0x1C` | `status.err` | R | fatal-error message flag |
 | `0x20` | `status.phy` | R | Tx FSM state + free hard-macro Tx buffers |
+| `0x24` | `status.result` | RW | firmware result marker (`0x0000FACE` = PASS); sends nothing, drives the PASS LED |
 
 The send trigger is the `swmod` strobe PeakRDL raises on `tx.data`: the
 firmware writes the payload last.
