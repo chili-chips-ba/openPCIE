@@ -8,23 +8,18 @@ Open an [Issue](https://github.com/chili-chips-ba/openPCIE/issues). For bugs, in
 
 ## Want to change something?
 
-1. Bigger change? Open an Issue first, so we agree on the approach.
-
-2. Fork, branch off `main`, make the change.
-
-3. Checks:
-   - [`run-lint`](4.build/hw_build.openXC7/run-lint.sh) shows no errors.
-
-     > Fix lint findings at the root. Waive only as the last resort, per the steps in [`run-lint-waivers.txt`](4.build/hw_build.openXC7/run-lint-waivers.txt).
-
-   - [`run-format --check`](4.build/hw_build.openXC7/run-format.sh) passes.
-   - [co-sim](5.sim) passes.
-   - [openXC7 build](4.build/hw_build.openXC7) completes.
-   - For a mere cleanup: [`run-leq`](4.build/hw_build.openXC7/run-leq.sh) proves nothing changed.
+1. Bigger change? Open an Issue first, so we agree on the approach
+2. Fork, branch off `main`, make the change
+3. QA process:
+   - **[run-lint](4.build/hw_build.openXC7/run-lint.sh)** shows no errors. Fix lint findings at the root. Waive only as the last resort, following steps in [run-lint-waivers.txt](4.build/hw_build.openXC7/run-lint-waivers.txt).
+   - **[run-format --check](4.build/hw_build.openXC7/run-format.sh)** passes.
+   - Ensure that **[co-sim](5.sim)** passes
+   - and that **[openXC7 build](4.build/hw_build.openXC7)** completes.
+   - For a mere cleanup: **[run-leq](4.build/hw_build.openXC7/run-leq.sh)** to prove that are no functional changes.
 
 4. Open a Pull Request against `main`.
 
-RTL changes go to our [opensource 2.rtl](2.rtl). Please don't change the AMD kickstarter design. Observe the [RTL coding rules](2.rtl/README.md#rtl-coding-rules).
+RTL changes go to our [opensource 2.rtl](2.rtl). Please don't change the AMD kickstarter design. Observe our [RTL coding rules](2.rtl/README.md#rtl-coding-rules).
 
 ## License
 
