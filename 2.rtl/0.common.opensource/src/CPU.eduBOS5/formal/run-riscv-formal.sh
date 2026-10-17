@@ -6,8 +6,13 @@
 # riscv-formal on eduBOS5: SymbiYosys with the Yosys (read_slang) and ABC of
 # openXC7 v1.0.0 (source 4.build/set-env.sh first).
 #
-# usage: RISCV_FORMAL=<riscv-formal clone> [LEGAL=1] bash run-riscv-formal.sh [EN_WAIT4REGS] [jobs] [checks]
-#   LEGAL=1       assume legal, aligned code (rvfi_wrapper.sv): eduBOS5 has no traps
+# usage: RISCV_FORMAL=<riscv-formal clone> [LEGAL=1] [ALIGNED=1] [LEGAL_STORES=1]
+#        [NO_SYSTEM=1] [EXTRA=1] bash run-riscv-formal.sh [EN_WAIT4REGS] [jobs] [checks]
+#   LEGAL=1         assume legal, aligned code (rvfi_wrapper.sv): eduBOS5 has no traps
+#   ALIGNED=1       only the alignment half of LEGAL (natural alignment, word-aligned targets)
+#   LEGAL_STORES=1  only the store half of LEGAL (stores have a legal funct3)
+#   NO_SYSTEM=1     IMEM holds no SYSTEM or unknown opcode (both halt eduBOS5 without rvfi_halt)
+#   EXTRA=1         also run liveness, hang, causal_mem and causal_io
 #   EN_WAIT4REGS  0 (default): the 2-stage core; 1: the 3-stage core
 #   jobs          parallel checks (default: all CPUs)
 #   checks        make targets, e.g. "insn_add_ch0 reg_ch0" (default: all)
@@ -25,8 +30,17 @@ mkdir -p "$W/cores/edubos5"
 cp "$C"/edubos5_pkg.sv "$C"/edubos5_rf.sv "$C"/edubos5_alu.sv "$C"/edubos5.sv \
    "$HERE/rvfi_wrapper.sv" "$W/cores/edubos5/"
 sed "s/@slang_defs@/-G EN_WAIT4REGS=$EN/" "$HERE/checks.cfg" > "$W/cores/edubos5/checks.cfg"
-if [ "${LEGAL:-0}" = 1 ]; then
-  sed -i '/^\[defines\]$/a `define EDUBOS5_LEGAL_CODE' "$W/cores/edubos5/checks.cfg"
+for opt in LEGAL:EDUBOS5_LEGAL_CODE ALIGNED:EDUBOS5_ALIGNED \
+           LEGAL_STORES:EDUBOS5_LEGAL_STORES NO_SYSTEM:EDUBOS5_NO_SYSTEM; do
+  var=${opt%%:*}
+  if [ "${!var:-0}" = 1 ]; then
+    sed -i "/^\[defines\]$/a \`define ${opt#*:}" "$W/cores/edubos5/checks.cfg"
+  fi
+done
+if [ "${EXTRA:-0}" = 1 ]; then
+  # liveness and hang get RISCV_FORMAL_FAIRNESS from riscv-formal (rvfi_wrapper.sv)
+  sed -i '/^cover /a liveness   1  8 24\nhang       1    16\ncausal_mem 6    16\ncausal_io  6    16' \
+      "$W/cores/edubos5/checks.cfg"
 fi
 cd "$W/cores/edubos5"
 python3 "$RVF/checks/genchecks.py" > /dev/null
