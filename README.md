@@ -1,11 +1,11 @@
-[![NLnet:Funded](https://img.shields.io/badge/NLnet%3AFunded-74AA00)](https://nlnet.nl/)
+[![NLnet:Funded](https://badgen.net/badge/NLnet/Funded/08C)](https://nlnet.nl/)
 [![Stars](https://badgen.net/github/stars/chili-chips-ba/openPCIE?label=Stars)](https://github.com/chili-chips-ba/openPCIE/stargazers)
-[![License:BSD-3/CC-BY-SA](https://img.shields.io/badge/License%3ABSD--3%2FCC--BY--SA-blue)](LICENSES)
-[![Lint](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/lint.yml?label=Lint)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
-[![Verible](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/verible.yml?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
-[![Sim:Pass](https://img.shields.io/badge/Sim%3APass-brightgreen)](5.sim)
-[![openXC7:Pass](https://img.shields.io/badge/openXC7%3APass-brightgreen)](4.build/hw_build.openXC7)
-[![eduBOS5:Pass](https://img.shields.io/badge/eduBOS5%3APass-brightgreen)](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#riscv-formal-every-instruction-against-the-isa)
+[![License:BSD-3/CC-BY-SA](https://badgen.net/badge/License/BSD-3%2FCC-BY-SA/blue)](LICENSES)
+[![Lint](https://badgen.net/github/checks/chili-chips-ba/openPCIE/main/run-lint?label=Lint)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
+[![Verible](https://badgen.net/github/checks/chili-chips-ba/openPCIE/main/verible?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
+[![Sim:Pass](https://badgen.net/badge/Sim/Pass/green)](5.sim)
+[![openXC7:Pass](https://badgen.net/badge/openXC7/Pass/green)](4.build/hw_build.openXC7)
+[![eduBOS5:Pass](https://badgen.net/badge/eduBOS5/Pass/green)](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#riscv-formal-every-instruction-against-the-isa)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 
@@ -623,7 +623,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 Feel like helping opensource PCIE community grow better and larger?! See [Contributions](CONTRIBUTING.md).
 
-Don't feel shy to reach out and ask for help ===> [![issues](https://img.shields.io/github/issues/chili-chips-ba/openPCIE)](https://github.com/chili-chips-ba/openPCIE/issues).
+Don't feel shy to reach out and ask for help ===> [![issues](https://badgen.net/github/open-issues/chili-chips-ba/openPCIE?label=issues)](https://github.com/chili-chips-ba/openPCIE/issues).
 
 --------------------
 
