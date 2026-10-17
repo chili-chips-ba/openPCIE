@@ -169,9 +169,11 @@ RISCV_FORMAL=<riscv-formal clone> bash formal/run-riscv-formal.sh 0          # 2
 RISCV_FORMAL=<riscv-formal clone> LEGAL=1 bash formal/run-riscv-formal.sh 1  # 3-stage, legal code
 RISCV_FORMAL=<riscv-formal clone> ALIGNED=1 bash formal/run-riscv-formal.sh 1  # 3-stage, aligned only
 RISCV_FORMAL=<riscv-formal clone> EXTRA=1 NO_SYSTEM=1 LEGAL=1 bash formal/run-riscv-formal.sh 0  # + liveness, hang, memory model
+RISCV_FORMAL=<riscv-formal clone> LEGAL=1 DEPTH=32 bash formal/run-riscv-formal.sh 0  # deeper bound (default 16)
+RISCV_FORMAL=<riscv-formal clone> MODE=cover bash formal/run-riscv-formal.sh 0 "" "ill_ch0 insn_add_ch0"  # is each check exercised?
 ```
 
-`LEGAL=1` is two halves that can also be set alone: `ALIGNED=1` (natural alignment, word-aligned targets) and `LEGAL_STORES=1` (stores have a legal `funct3`). `EXTRA=1` adds `liveness`, `hang`, `causal_mem` and `causal_io`; `NO_SYSTEM=1` keeps SYSTEM and unknown opcodes out of IMEM, which those two need (see below).
+`LEGAL=1` is two halves that can also be set alone: `ALIGNED=1` (natural alignment, word-aligned targets) and `LEGAL_STORES=1` (stores have a legal `funct3`). `EXTRA=1` adds `liveness`, `hang`, `causal_mem` and `causal_io`; `NO_SYSTEM=1` keeps SYSTEM and unknown opcodes out of IMEM, which those two need (see below). `DEPTH=<n>` sets the bound of the standard checks. `MODE=cover` asks the opposite question: can each check's cover statement be reached at all? A FAIL there means the check is never exercised, so its PASS in the normal run proves nothing.
 
 - [`formal/rvfi_wrapper.sv`](formal/rvfi_wrapper.sv): free instruction and data memory, connected as the SOC does: a synchronous IMEM, and `dmem_rdy` only answers a pending read.
 - [`formal/checks.cfg`](formal/checks.cfg): RV32I, bounded to 16 clocks (about 7 instructions), ABC `bmc3`. Z3 replays a failure into a VCD.
@@ -196,9 +198,9 @@ The failures are expected:
 
 **Liveness, hang and the memory model** (`EXTRA=1`). `liveness` and `hang` fail with any code: a `SYSTEM` instruction, or an unknown opcode (an all-zero word included), halts eduBOS5 in `EXECUTE` without `rvfi_halt`. With `NO_SYSTEM=1` both pass on both pipelines; riscv-formal turns on `RISCV_FORMAL_FAIRNESS` for those two checks, and the wrapper then answers every read on the next clock. `causal_mem` and `causal_io` pass with any code, both pipelines.
 
-**`ill` passes, but it is not exercised.** The check needs an illegal instruction to retire, and eduBOS5 never retires one: it decodes an unknown opcode as `SYSTEM` and halts. Run in cover mode, its cover statement is unreachable within the bound. So its PASS says nothing either way.
+**`ill` passes, but it is not exercised.** The check needs an illegal instruction to retire, and eduBOS5 never retires one: it decodes an unknown opcode as `SYSTEM` and halts. With `MODE=cover`, its cover statement is unreachable within the bound on both pipelines (`ill_ch0` FAIL), while that of an ordinary check such as `insn_add` is reached (PASS). So its PASS says nothing either way.
 
-**Deeper bounds.** With legal code, all 44 checks also pass at bounds 24 and 32, and all but `reg` and `cover` at 48.
+**Deeper bounds** (`DEPTH=`). With legal code, all 44 checks also pass at bounds 24 and 32 on both pipelines (bound 32: 78 s for the 2-stage, 415 s for the 3-stage). Ferrite reports all but `reg` and `cover` passing at 48.
 
 ## 3-stage multicycle paths
 

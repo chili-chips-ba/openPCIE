@@ -202,7 +202,7 @@ compilers, and lists anything missing. (`peakrdl` is only needed if you edit
 | Vivado simulator (`xsim`) | 2026.1 | 2026.1 | [AMD Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) |
 | WaveCrux Pro | 1.0.1 | 1.0.1 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 | TLP decoder plugin | ours | -- | [`tools/wavecrux-pcie-tlp`](tools/wavecrux-pcie-tlp) |
-| PIPE and DLL decoder plugin | `wcx-pcie` pcie-v0.1.0 | pcie-v0.2.0 (adds serial-line decoders) | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
+| PIPE, DLL and serial-line decoder plugin | `wcx-pcie` pcie-v0.2.0 | pcie-v0.2.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
 | RISC-V instruction-trace decoder | built into WaveCrux 1.0.1 | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 
 #### Why XSIM and not Verilator?
@@ -442,8 +442,8 @@ the symbols as they go on the wire, before 8b/10b. All signals are under
 These are the inputs of Ferrite's
 [PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders)
 (Apache-2.0). Get the plugin from their
-[release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.1.0)
-(Windows: `wcx-pcie-0.1.0-windows-x64.zip`), unzip it to a folder of its own and add
+[release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.2.0)
+(Windows: `wcx-pcie-0.2.0-windows-x64.zip`; check it against `SHA256SUMS`), unzip it to a folder of its own and add
 that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then open
 [`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (File -> Open, or
 `wavecrux_pro tb.TLP-DLL-PIPE.wavecrux`): it loads `tb.fst` from the same directory, with the TLP and PIPE rows and all six decoders bound, at the first TLP (a CfgRd0 at 155 µs).
@@ -1138,12 +1138,12 @@ What exists in the open (Oct 2026), dynamic and static:
 | [pcievhost](https://github.com/wyvernSemi/pcievhost) | co-simulation model, C | PIPE lanes up to TLP: LTSSM, DLL, TLP | not as a checker: a link partner, the Endpoint here |
 | [cocotbext-pcie](https://github.com/alexforencich/cocotbext-pcie) | cocotb model, Python | TLP: Root Complex, switches, Endpoints, config space, BARs, MSI, DMA | not as a checker: a link partner; Xilinx models are UltraScale(+) device only, no 7-series `PCIE_2_1` |
 | WaveCrux plugins: [our TLP decoder](tools/wavecrux-pcie-tlp), [Ferrite's PCIe decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) | post-simulation, on the waveform | TLP; PIPE, DLL and serial line | partly: CRC, sequence numbers, 8b/10b and disparity |
-| [ngscopeclient](https://www.ngscopeclient.org/) (scopehal, BSD-3) | post-capture, on scope or imported VCD waveforms | serial lane up: 8b/10b, 128b/130b, link training, 1-32 lane logical layer, DLL, TLP | partly: flags bad symbols and malformed packets; starts from the serial line, so it does not read our PIPE dump |
+| [ngscopeclient](https://www.ngscopeclient.org/) (scopehal, BSD-3) | post-capture, on scope or imported VCD waveforms | serial lane up: 8b/10b, 128b/130b, link training, 1-32 lane logical layer, DLL, TLP | partly: flags bad symbols and malformed packets; starts from the serial line, so it does not read our PIPE dump; no FST import yet: requested in [scopehal #1121](https://github.com/ngscopeclient/scopehal/issues/1121), details in [#38](https://github.com/chili-chips-ba/openPCIE/issues/38) |
 | [SymbiYosys](https://github.com/YosysHQ/sby) | formal | any, with your own SVA | only what you write: no open PCIE property set found |
 
 **The gap:** no open checker of the PCIE rules themselves -- flow-control credits, Ack/Nak and replay timing, ordering, completion matching and timeout, TLP format. The models are link partners: they talk PCIE, they do not judge it. Commercial verification IP covers this.
 
-The WaveCrux decoders already parse every layer that these rules are about, from the serial line up to TLPs, and run on the dump of any simulator. We asked Ferrite to turn them into a protocol checker.
+The WaveCrux decoders already parse every layer that these rules are about, from the serial line up to TLPs, and run on the dump of any simulator. We asked Ferrite to turn them into a protocol checker ([WaveCrux discussion #55](https://github.com/Ferrite-Engineering/wavecrux/discussions/55)).
 
 ## Simulation issues
 

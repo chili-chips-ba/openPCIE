@@ -61,7 +61,7 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5, with ABC `bmc3` | checks |
 | Z3 | 5.3.1 (pip `z3-solver`) | formal: replays a riscv-formal failure | runs |
 | WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP and RISC-V decoding | runs |
-| Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE, DLL decoding in WaveCrux | runs |
+| Ferrite wavecrux-decoders | pcie-v0.2.0 | PIPE, DLL decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |
 | openFPGALoader | 1.1.1 | loading the bitstream over JTAG | not yet used on the board |
 | usbipd-win | 5.3.0 | JTAG cable into WSL (Windows side) | not yet used on the board |
