@@ -58,7 +58,11 @@
 
 module soc_csr
   import csr_pkg::*;
-(
+#(
+    // 1 (default): read data and ready registered, 1 cycle after the request.
+    // 0 (experimental): straight from the read mux, in the request cycle.
+    parameter bit RD_FLOP = 1'b1
+) (
     input logic clk,
     input logic resetn,
 
@@ -91,11 +95,6 @@ module soc_csr
 
   assign cpuif_ack             = cpuif_rd_ack | cpuif_wr_ack;
 
-  // One request per CPU access: not while one is outstanding (csr_busy), and
-  // not in the cycle the CPU is being told "ready" -- mem_valid is still high
-  // there and would otherwise start a second, spurious transaction.
-  assign cpuif_req             = sel & mem.valid & ~csr_busy & ~rdy;
-
   // PeakRDL-regblock answers in the SAME cycle as the request when the block
   // has no external or buffered registers: decoded_req is combinational from
   // cpuif_req, and both the ack and the read data come straight back out of
@@ -107,12 +106,8 @@ module soc_csr
   always_ff @(posedge clk or negedge resetn) begin
     if (!resetn) begin
       csr_busy <= 1'b0;
-      rdy      <= 1'b0;
-      rdat     <= '0;
     end
     else begin
-      rdy <= 1'b0;
-
       // Outstanding only if the request was not answered straight away
       if (cpuif_req && !cpuif_ack) begin
         csr_busy <= 1'b1;
@@ -120,11 +115,40 @@ module soc_csr
 
       if (cpuif_done) begin
         csr_busy <= 1'b0;
-        rdy      <= 1'b1;
-        rdat     <= cpuif_rd_data;
       end
     end
   end
+
+  generate
+    if (RD_FLOP == 1'b1) begin : g_rd_flop
+      // One request per CPU access: not while one is outstanding (csr_busy),
+      // and not in the cycle the CPU is being told "ready" -- mem_valid is
+      // still high there and would otherwise start a second, spurious
+      // transaction.
+      assign cpuif_req = sel & mem.valid & ~csr_busy & ~rdy;
+
+      always_ff @(posedge clk or negedge resetn) begin
+        if (!resetn) begin
+          rdy  <= 1'b0;
+          rdat <= '0;
+        end
+        else begin
+          rdy <= 1'b0;
+          if (cpuif_done) begin
+            rdy  <= 1'b1;
+            rdat <= cpuif_rd_data;
+          end
+        end
+      end
+    end
+    else begin : g_rd_comb
+      // The CPU sees ready in the request cycle and drops mem_valid after it,
+      // so no cycle with a stale request follows.
+      assign cpuif_req = sel & mem.valid & ~csr_busy;
+      assign rdy       = cpuif_done;
+      assign rdat      = cpuif_rd_data;
+    end
+  endgenerate
 
 
   // the register map (csr.rdl) must fit in the address bits decoded here

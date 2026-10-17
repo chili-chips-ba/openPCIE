@@ -226,7 +226,7 @@ Details are in the [SW README](3.sw/README.md).
 
 ### Sim Test Bench
 
-The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the picorv32 RISC-V RTL core that goes into the bitstream, or to co-simulate software using the virtual processor, with a significant speed up in simulation times.
+The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the RISC-V RTL core that goes into the bitstream (eduBOS5 by default, or PicoRV32), or to co-simulate software using the virtual processor, with a significant speed up in simulation times.
 
 <p align="center">
 <img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.svg" width="75%">
@@ -585,6 +585,8 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://github.com/trabucayre/openFPGALoader"><img alt="openFPGALoader logo" width="20%" src="0.doc/artwork/openFPGAloader.logo.png"></a>
   <a href="https://github.com/tarik-ibrahimovic/eduBOS5"><img alt="eduBOS5 logo" width="17%" src="0.doc/artwork/eduBOS5.logo.png"></a>
   <a href="https://github.com/YosysHQ/picorv32"><img alt="PicoRV32 logo" width="20%" src="0.doc/artwork/picoRV32.logo.png"></a>
+  <a href="https://riscv.org"><img alt="RISC-V logo" width="12%" src="0.doc/artwork/RISC-V-logo.svg"></a>
+  <a href="https://www.cprover.org/ebmc/"><img alt="EBMC logo" width="20%" src="0.doc/artwork/EBMC.logo.png"></a>
 </p>
 
 
@@ -631,4 +633,4 @@ Our repo may contain elements of work facilitated by the modern GenAI tools <img
 In the end, it is us, the human devs, who are fully responsible for any shortfalls you may uncover while tapping into repo resources.
 
 --------------------
-#### End of Document
+#### End-of-Document

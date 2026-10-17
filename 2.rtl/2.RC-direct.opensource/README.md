@@ -118,7 +118,7 @@ is **generated**, not hand-written. The source of truth is a SystemRDL file,
 | Product | Where it lands | Who consumes it |
 |---|---|---|
 | `csr_pkg.sv`, `csr.sv` | `4.build/csr_build/generated-files/` | `soc_csr.sv` in this design |
-| `csr.h` | same | the picorv32 firmware in `3.sw/` |
+| `csr.h` | same | the firmware in `3.sw/` |
 | `csr_hw.h`, `csr_cosim.h` | same | C++ / co-simulation code in `5.sim/` |
 | `openpcie.md`, `html/` | same | the documentation of the map itself |
 
@@ -136,15 +136,17 @@ Full description of the map and of the generation flow: [`4.build/README.md`](..
 
 ### The CPU
 
-`riscv_pcie_soc.sv` has a second `ifdef` around the CPU instance, `SOC_CPU_VPROC`.
-It is **co-simulation only** -- nothing in either bitstream flow defines it, so
-the synthesised design always contains the real `picorv32`. Only
+`riscv_pcie_soc.sv` picks the CPU with `ifdef`s: eduBOS5 by default,
+`SOC_CPU_PICORV32` for PicoRV32 ([eduBOS5 README](../0.common.opensource/src/CPU.eduBOS5/README.md)),
+and `SOC_CPU_VPROC`. The last is **co-simulation only** -- nothing in either
+bitstream flow defines it, so the synthesised design always contains a real
+RTL core. Only
 [`5.sim`](../../5.sim) sets it, to swap the core for a VProc virtual processor and
 let a native C++ program or the rv32 ISS drive the identical bus:
 
 ```sh
 cd ../../5.sim
-make run              # the picorv32 RTL core -- the default, and the reference
+make run              # the eduBOS5 RTL core -- the default, and the reference
 make run CPU=vproc    # native C++
 make run CPU=iss      # rv32 ISS on the real firmware.elf
 ```

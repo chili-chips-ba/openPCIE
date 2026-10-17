@@ -149,12 +149,12 @@ module picorv32 #(
     output logic        rvfi_halt,
     output logic        rvfi_intr,
 
-    output logic [ 4:0] rvfi_rsrc1_addr,
-    output logic [31:0] rvfi_rsrc1_rdata,
-    output logic [ 4:0] rvfi_rsrc2_addr,
-    output logic [31:0] rvfi_rsrc2_rdata,
-    output logic [ 4:0] rvfi_rdst_addr,
-    output logic [31:0] rvfi_rdst_wdata,
+    output logic [ 4:0] rvfi_rs1_addr,
+    output logic [31:0] rvfi_rs1_rdata,
+    output logic [ 4:0] rvfi_rs2_addr,
+    output logic [31:0] rvfi_rs2_rdata,
+    output logic [ 4:0] rvfi_rd_addr,
+    output logic [31:0] rvfi_rd_wdata,
 
     output logic [31:0] rvfi_pc_rdata,
     output logic [31:0] rvfi_pc_wdata,
@@ -3002,18 +3002,18 @@ module picorv32 #(
   logic [31:0] dbg_irq_ret;
 
   always_ff @(posedge clk) begin
-    rvfi_valid       <= resetn && (launch_next_insn || trap) && dbg_valid_insn;
-    rvfi_order       <= resetn ? rvfi_order + rvfi_valid : '0;
+    rvfi_valid     <= resetn && (launch_next_insn || trap) && dbg_valid_insn;
+    rvfi_order     <= resetn ? rvfi_order + rvfi_valid : '0;
 
-    rvfi_insn        <= dbg_insn_opcode;
-    rvfi_rsrc1_addr  <= dbg_rsrc1val_valid ? dbg_insn_rsrc1 : '0;
-    rvfi_rsrc2_addr  <= dbg_rsrc2val_valid ? dbg_insn_rsrc2 : '0;
-    rvfi_pc_rdata    <= dbg_insn_addr;
-    rvfi_rsrc1_rdata <= dbg_rsrc1val_valid ? dbg_rsrc1val : '0;
-    rvfi_rsrc2_rdata <= dbg_rsrc2val_valid ? dbg_rsrc2val : '0;
-    rvfi_trap        <= trap;
-    rvfi_halt        <= trap;
-    rvfi_intr        <= dbg_irq_enter;
+    rvfi_insn      <= dbg_insn_opcode;
+    rvfi_rs1_addr  <= dbg_rsrc1val_valid ? dbg_insn_rsrc1 : '0;
+    rvfi_rs2_addr  <= dbg_rsrc2val_valid ? dbg_insn_rsrc2 : '0;
+    rvfi_pc_rdata  <= dbg_insn_addr;
+    rvfi_rs1_rdata <= dbg_rsrc1val_valid ? dbg_rsrc1val : '0;
+    rvfi_rs2_rdata <= dbg_rsrc2val_valid ? dbg_rsrc2val : '0;
+    rvfi_trap      <= trap;
+    rvfi_halt      <= trap;
+    rvfi_intr      <= dbg_irq_enter;
 
     if (!resetn) begin
       dbg_irq_call  <= '0;
@@ -3043,16 +3043,16 @@ module picorv32 #(
 
     unique0 casez (dbg_insn_opcode)
       32'b0000000_?????_000??_???_?????_0001011: begin  // getq
-        rvfi_rsrc1_addr  <= '0;
-        rvfi_rsrc1_rdata <= '0;
+        rvfi_rs1_addr  <= '0;
+        rvfi_rs1_rdata <= '0;
       end
       32'b0000001_?????_?????_???_000??_0001011: begin  // setq
         rvfi_rd_addr  <= '0;
         rvfi_rd_wdata <= '0;
       end
       32'b0000010_?????_00000_???_00000_0001011: begin  // retirq
-        rvfi_rsrc1_addr  <= 0;
-        rvfi_rsrc1_rdata <= 0;
+        rvfi_rs1_addr  <= 0;
+        rvfi_rs1_rdata <= 0;
       end
     endcase
 

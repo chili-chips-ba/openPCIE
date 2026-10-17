@@ -13,7 +13,8 @@ module edubos5_alu
     parameter bit GOWIN_FAST_OP = 1'b1
 ) (
     input logic clk,
-    input logic reset, // DSP reset, GOWIN_FAST_OP only
+    input logic reset,  // DSP reset, GOWIN_FAST_OP only
+    input logic ce,     // load enable for all ALU registers
 
     input cpu_data_t aluin_1,
     input cpu_data_t aluin_2,
@@ -55,16 +56,18 @@ module edubos5_alu
   funct3_alu_t funct3_alu_reg;
 
   always_ff @(posedge clk) begin : _alu_pipe
-    shifter_in_reg <= shifter_in;
-    shamt_reg      <= shamt;
-    aluin_1_31_reg <= aluin_1[31];
-    aluin_2_31_reg <= aluin_2[31];
+    if (ce) begin
+      shifter_in_reg <= shifter_in;
+      shamt_reg      <= shamt;
+      aluin_1_31_reg <= aluin_1[31];
+      aluin_2_31_reg <= aluin_2[31];
 
-    alu_and_reg    <= alu_and;
-    alu_xor_reg    <= alu_xor;
-    alu_or_reg     <= alu_or;
+      alu_and_reg    <= alu_and;
+      alu_xor_reg    <= alu_xor;
+      alu_or_reg     <= alu_or;
 
-    funct3_alu_reg <= funct3;
+      funct3_alu_reg <= funct3;
+    end
   end : _alu_pipe
 
   //----------------------------------------------------------------------
@@ -80,7 +83,7 @@ module edubos5_alu
 
     Gowin_ALU54plus u_alu54_plus_dsp (
         .clk  (clk),           //i
-        .ce   (1'b1),          //i
+        .ce   (ce),            //i
         .reset(reset),         //i
         .a    (aluin_1),       //i
         .b    (aluin_2),       //i
@@ -90,7 +93,7 @@ module edubos5_alu
 
     Gowin_ALU54minus u_alu54_minus_dsp (
         .clk  (clk),            //i
-        .ce   (1'b1),           //i
+        .ce   (ce),             //i
         .reset(reset),          //i
         .a    (aluin_1),        //i
         .b    (aluin_2),        //i
@@ -106,8 +109,10 @@ module edubos5_alu
     assign NC_reset = reset;
 
     always_ff @(posedge clk) begin : _alu_add_sub
-      alu_plus_reg  <= aluin_1 + aluin_2;
-      alu_minus_reg <= {1'b0, aluin_1} + {1'b1, ~aluin_2} + 33'd1;
+      if (ce) begin
+        alu_plus_reg  <= aluin_1 + aluin_2;
+        alu_minus_reg <= {1'b0, aluin_1} + {1'b1, ~aluin_2} + 33'd1;
+      end
     end : _alu_add_sub
   end : g_lut
 
@@ -152,9 +157,9 @@ module edubos5_alu
   end : _alu_output_mux
 endmodule : edubos5_alu
 
-/*
------------------------------------------------------------------------------
-Version History:
------------------------------------------------------------------------------
- 2024/05/07 TI: initial creation
-*/
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        May 7, 2024
+// -----------------------------------------------------------------------------

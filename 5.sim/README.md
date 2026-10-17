@@ -204,7 +204,7 @@ compilers, and lists anything missing. (`peakrdl` is only needed if you edit
 | PIPE and DLL decoder plugin | `wcx-pcie` pcie-v0.1.0 | pcie-v0.1.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
 | RISC-V instruction-trace decoder | built into WaveCrux 1.0.1 | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 
-#### Why xsim and not Verilator?
+#### Why XSIM and not Verilator?
 
 Our RTL is 100% SystemVerilog, not mixed-language, and it and the rest of our ecosystem are Verilator-ready. Only the vendor hard macros stand in the way, and of those only `PCIE_2_1` matters: its simulation model is AMD's `secureip` library, encrypted (IEEE 1735), so only vendor simulators can run it, and no open model exists. The Xilinx primitives in the design:
 
@@ -218,6 +218,16 @@ Our RTL is 100% SystemVerilog, not mixed-language, and it and the rest of our ec
 Verilator-ready means: our RTL passes Verilator lint (`run-lint.sh`), and the co-simulation models (VProc, pcievhost, mem_model, rv32) ship with Verilator flows upstream.
 
 A Verilator run would need `--timing` for the whole test bench, not only for the MMCM: `tb.sv` and the PIPE model make their clocks with `#` delays, and VProc waits a delta cycle for each `UpdateResponse`. VProc's `-GDISABLE_DELTA` drops that wait, but it would not save `--timing` here, and it changes the handshake that pcievhost runs its link on.
+
+#### Why VCD and not FST?
+
+XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it:
+
+```
+vcd2fst tb.vcd tb.fst     # GTKWave; 4.2 MB -> 57 KB, in about 3 s
+```
+
+The ready-made `.wavecrux` sessions open `tb.vcd`: they bind signals by VCD id code, so they are not checked against an FST.
 
 #### Local changes
 
@@ -341,13 +351,13 @@ always printed, with no define needed.
 
 ### Viewing the TLPs in WaveCrux
 
-xsim's own waveform database is the `.wdb` that `make gui` opens. For a view at
+XSIM's own waveform database is the `.wdb` that `make gui` opens. For a view at
 *TLP level* -- every packet named, every completion paired with the request it
 answers -- the run can also write a VCD for [WaveCrux](https://wavecrux.app),
 together with a decoder plugin and a ready-made session:
 
 ```
-make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 15 MB, not tracked)
+make run USRSIMOPTS="--define DUMP_VCD"     # -> 5.sim/tb.vcd (about 3 MB, not tracked)
 ```
 
 Then, once per machine, in WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder
@@ -579,21 +589,19 @@ The native C++ model reaches the CSR through `csr_cosim.h`, which PeakRDL genera
 
 ### What they cost
 
-Vivado xsim 2026.1 in WSL2, AMD Ryzen 9 6900HX. Every run gives the same result: link up, LTSSM `0x16`, 22 TLPs, `PASS (0x0000face)`.
+Vivado XSIM 2026.1, simulated time, which is exact. Every run gives the same result: link up, LTSSM `0x16`, 22 TLPs, `PASS (0x0000face)`.
 
-| `CPU=` | Core | Result at (simulated) | Build | Run (wall clock) |
-|---|---|---|---|---|
-| `rtl` | PicoRV32 | 667.2 µs | ~30 s | ~70 s |
-| `rtl` | eduBOS5 2-stage | **389.5 µs** | ~30 s | ~55 s |
-| `rtl` | eduBOS5 3-stage | 470.9 µs | ~30 s | ~60 s |
-| `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | ~35 s | ~75 s |
-| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) | ~35 s | ~75 s |
-| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) | ~35 s | ~75 s |
-| `vproc` | native C++ | **138.3 µs** | ~30 s | ~40 s |
+| `CPU=` | Core | Result at (simulated) |
+|---|---|---|
+| `rtl` | PicoRV32 | 667.2 µs |
+| `rtl` | eduBOS5 2-stage | **389.5 µs** |
+| `rtl` | eduBOS5 3-stage | 470.9 µs |
+| `iss` | PicoRV32 timing | 663.1 µs (-0.6%) |
+| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) |
+| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) |
+| `vproc` | native C++ | **138.3 µs** |
 
-Wall-clock times vary 2-10x with host load; the simulated times are exact.
-
-- **eduBOS5 vs PicoRV32:** eduBOS5 has 1.9x higher IPC on this firmware (0.35 vs 0.18 instructions per clock; 3-stage 0.26, 1.4x), so at the same clock its result comes 1.71x sooner (3-stage 1.42x). eduBOS5 takes 2 cycles per instruction and 5 per load; PicoRV32 4 to 8.
+- **eduBOS5 vs PicoRV32:** IPC, Fmax and area compared in the [eduBOS5 README](../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 - **`iss`** matches the RTL core it models to within 0.6% (see [Our Local VIP Improvements](#our-local-vip-improvements)). It runs the real firmware binary in a debuggable native process (`-g` in `vusermain.cfg` opens a gdb port).
 - **`vproc`** covers the least simulated time: the native program skips the firmware's start-up delay and polls the CSR without instructions in between.
 
@@ -826,7 +834,7 @@ The variable to reach for is <tt>CPU</tt>, which picks what occupies node 0 and 
 The <tt>USER_C</tt> and <tt>USRCODEDIR</tt> make file variables allow different (and multiple) user source file names to override the defaults, and to change the location of where the user code is located (if not the ISS build). This allows different programs to be run by simply changing these variable, and to organise the different source code in different directories etc. By default, the _VProc_ code is compiled for debugging (<tt>-g</tt>), but this can be overridden by changing <tt>OPTFLAG</tt>. The trace and timing options can also be overridden to allow a faster executable. If any additional options for the simulator are required, then these can be added to <tt>USRSIMOPTS</tt>.
 
 ```
-make run                                                   # Build and run with the RTL picorv32 (the default)
+make run                                                   # Build and run with the RTL eduBOS5 (the default)
 make                                                       # Build but don't run
 make run CPU=vproc                                         # Native C++ CPU model, usercode/VUserMain0.cpp
 make run CPU=iss                                           # rv32 ISS on the real firmware.elf
@@ -863,7 +871,7 @@ In this instance, the code is set to compile to use the MAFDC extensions (maths,
 ```
 vusermain0 -x 0x10000000 -X 0x20000000 -rEHRca -t ./models/rv32/riscvtest/main.bin
 ```
-This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed; this transcript is from an earlier xsim 2023.2 run):
+This sets the address region that will be sent to the HDL <tt>soc_cpu</tt> bus to be between byte addresses 0x10000000 and 0x1FFFFFFF. All other accesses will use the direct memory model's API, with no simulation transactions. The next set of options turn on run-time disassembly (<tt>-r</tt>), exit on <tt>ebreak</tt> (<tt>-E</tt>) or unimplemented instruction (<tt>-H</tt>), dump registers (<tt>-R</tt>) and CSR register (<tt>-c</tt>) and display the registers in ABI format (<tt>-a</tt>). The pre-compiled example program binary is then selected with the <tt>-t</tt> option. Of course, many of these options are not necessary and, for example, the output flags (<tt>-rRca</tt>) can be removed and the program will still run correctly. In the <tt>5.sim/</tt> directory, using <tt>make</tt> to build and run the code gives something like the following output (with other output removed; this transcript is from an earlier XSIM 2023.2 run):
 
 ```
 $make CPU=iss run
@@ -966,15 +974,15 @@ cd ../4.build/sw_build && make SIM=1
 
 ### PicoRV32 RTL-Only Simulation
 
-This is now simply the default build -- `make run`, with no variables set --
-and it uses the same `xsim` flow as everything else, driving the PCIE BFM on
+This is `make run CORE=picorv32` (eduBOS5 is the default core), and it
+uses the same XSIM flow as everything else, driving the PCIE BFM on
 node 1 from [`usercode/VUserMain1.cpp`](usercode/VUserMain1.cpp). See
 [The three CPU options](#the-three-cpu-options).
 
 > Historical note. There was once a separate Verilator-based makefile here for
 > this case, producing `output/Vtb` and an FST trace for GTKWave. It is gone:
 > the DUT instantiates `PCIE_2_1`, a Xilinx `secureip` model that only the
-> Vivado simulator can elaborate, so the RTL core case had to move to `xsim`
+> Vivado simulator can elaborate, so the RTL core case had to move to XSIM
 > along with the rest.
 
 ## Debugging Code
@@ -983,7 +991,7 @@ In each of the three usage cases of software, each can be debugged using <tt>gdb
 
 ### Natively Compiled code
 
-For natively compiled code, whether test code or natively compiled application code, so long as each was compiled with the `-g` flag set ([see above](#building-and-running-code) for make file options) then the code can be debugged as part of the running simulation process. If `xsim` is run for the simulation, but halted at time 0, then the simulation kernel process, xsim, will be running and its process ID is required. Under Linux this can be found by running:
+For natively compiled code, whether test code or natively compiled application code, so long as each was compiled with the `-g` flag set ([see above](#building-and-running-code) for make file options) then the code can be debugged as part of the running simulation process. If XSIM is run for the simulation, but halted at time 0, then the simulation kernel process, xsim, will be running and its process ID is required. Under Linux this can be found by running:
 ```
     ps -e | grep xsim
 ```
@@ -1090,7 +1098,7 @@ The second consideration is the use of delay functions. This can be in the form 
 How our co-simulation models differ from upstream, beyond [Local changes](#local-changes):
 
 - **rv32 ISS built from source.** `models/rv32/src` holds the ISS sources at upstream `774d84fa`; the make file builds the library. Two fixes in `rv32-openpcie.patch`: the timer-compare check no longer adds 2 cycles to every instruction, and `sw`/`sh` take store timing, not load.
-- **Timing measured on our RTL.** `rv32_timing_config.h` holds cycles per instruction class measured in this SOC (fetch included, no wait states):
+- **Timing measured on our RTL.** `rv32_timing_config.h` holds cycles per instruction class measured in this SOC, so they include its memory latency (fetch included, no wait states):
 
   | Core | linear | jump | load | store |
   |---|---|---|---|---|

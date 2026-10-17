@@ -221,9 +221,37 @@ module tb;
     .rx (rx_dw)
   );
 
+// The SOC CPU under RVFI names, for WaveCrux's RISC-V views
+// (2.rtl/0.common.opensource/src/CPU.eduBOS5/wavecrux/soc_cpu_view.sv)
+`ifdef DUMP_SOC_CPU
+  soc_cpu_view cpu_view (
+    .clk      (dut.u_soc.clk),
+    .valid    (dut.u_soc.cpu.rvfi_valid),
+    .order    (dut.u_soc.cpu.rvfi_order),
+    .insn     (dut.u_soc.cpu.rvfi_insn),
+    .trap     (dut.u_soc.cpu.rvfi_trap),
+    .halt     (dut.u_soc.cpu.rvfi_halt),
+    .intr     (dut.u_soc.cpu.rvfi_intr),
+    .rs1_addr (dut.u_soc.cpu.rvfi_rs1_addr),
+    .rs2_addr (dut.u_soc.cpu.rvfi_rs2_addr),
+    .rs1_rdata(dut.u_soc.cpu.rvfi_rs1_rdata),
+    .rs2_rdata(dut.u_soc.cpu.rvfi_rs2_rdata),
+    .rd_addr  (dut.u_soc.cpu.rvfi_rd_addr),
+    .rd_wdata (dut.u_soc.cpu.rvfi_rd_wdata),
+    .pc_rdata (dut.u_soc.cpu.rvfi_pc_rdata),
+    .pc_wdata (dut.u_soc.cpu.rvfi_pc_wdata),
+    .mem_addr (dut.u_soc.cpu.rvfi_mem_addr),
+    .mem_rmask(dut.u_soc.cpu.rvfi_mem_rmask),
+    .mem_wmask(dut.u_soc.cpu.rvfi_mem_wmask),
+    .mem_rdata(dut.u_soc.cpu.rvfi_mem_rdata),
+    .mem_wdata(dut.u_soc.cpu.rvfi_mem_wdata)
+  );
+`endif
+
 //--------------------------------------------------------------
 // VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
 //     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd
+// Add --define DUMP_SOC_CPU for the CPU under RVFI names (CPU.eduBOS5/wavecrux).
 // Only the TLP monitors, the decoder view, the SOC level, the LTSSM
 // state and the 16-bit PIPE at the pcieVHost endpoint (pclk, TxData/K,
 // RxData/K, plus rx_active for rxvalid) for Ferrite's PCIe PIPE and
@@ -247,6 +275,10 @@ module tb;
     $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxData);
     $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxDataK);
     $dumpvars(0, dut.u_pcie.u_phy_top.rx_active);
+`ifdef DUMP_SOC_CPU
+    // the SOC CPU under RVFI names; last, so the ids of the signals above stay put
+    $dumpvars(1, cpu_view);
+`endif
   end
 `endif
 

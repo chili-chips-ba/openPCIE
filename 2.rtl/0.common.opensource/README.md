@@ -35,3 +35,6 @@ the switch handling in the
 [RC-switched README](../3.Bonus--RC-switched.opensource/README.md#what-differs-from-rc-direct).
 The same sources also feed the [openXC7 build](../../4.build/hw_build.openXC7)
 and the [co-simulation](../../5.sim).
+
+-----------
+#### End-of-Document

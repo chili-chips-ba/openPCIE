@@ -66,6 +66,11 @@ else
   $(error CPU must be one of: rtl, vproc, iss  (got "$(CPU)"))
 endif
 
+# DUMP_SOC_CPU (the CPU in WaveCrux, tb.sv) needs the core's RVFI outputs
+ifneq ($(findstring DUMP_SOC_CPU,$(USRSIMOPTS)),)
+  CPUDEFINE     += --define RISCV_FORMAL
+endif
+
 # --------------------------------------------
 # Global exported environment variables
 # --------------------------------------------

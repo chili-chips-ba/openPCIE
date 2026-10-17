@@ -79,6 +79,7 @@ Since then `nextpnr-xilinx` is archived and the snap and one-line installer are 
 | nextpnr | [`openXC7/nextpnr`](https://github.com/openXC7/nextpnr), the *himbaechel* Xilinx engine |
 | Yosys | v0.69 |
 | Bitstream | `fpga-as`, replacing `fasm2frames` + `xc7frames2bit` |
+| Formal, optional | Yosys `sat`; [EBMC](https://www.cprover.org/ebmc/) 6.1 |
 
 The Makefile supports both: `TOOLCHAIN=new` (default) and `TOOLCHAIN=old`. **Only pre-v1.0.0 is validated on hardware**; v1.0.0 builds both variants and their configuration checks out, but none of its bitstreams has been on the board yet. To reproduce the validated result, use pre-v1.0.0 (`45a986b` is still in the archived repo, see [Building the right version](#building-the-right-version)). Below, pre-v1.0.0 is meant unless stated.
 
@@ -377,38 +378,31 @@ Vivado supplies these from libraries openXC7 lacks. Open replacements here, unus
 |---|---|---|
 | `unimacro_shim.v` | `BRAM_TDP_MACRO` (UNIMACRO) | yields **10 RAMB36E1**, same as Vivado |
 
-## Synthesis compared with Vivado
+## openXC7 compared with Vivado: the entire design
 
-| | Vivado | Yosys |
+**Scope:** the entire RC-direct design (`RC_opensource`): PCIE stack, GTPs, SOC with the default CPU (eduBOS5 2-stage), x4 build, 2026-10-16. The SOC alone, with each of the three CPUs: [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+
+| | openXC7 v1.0.0 | Vivado 2026.1 |
 |---|---|---|
-| RAMB36E1 | 10 | 10 |
-| PCIE_2_1 / GTPE2_CHANNEL / GTPE2_COMMON | 1 / 1 / 1 | 1 / 1 / 1 |
-| Registers | 1663 | 1491 |
-| LUTs | 1675 | ~1586 |
+| LUT (incl. LUT-RAM) | 1604 | 1360 |
+| LUT-RAM (in the LUT count) | 48 | 44 |
+| FF | 2238 | 2183 |
+| CARRY4 | 71 | 52 |
+| RAMB36E1 / DSP48 | 10 / 0 | 10 / 0 |
+| PCIE_2_1 / GTPE2_CHANNEL / GTPE2_COMMON / MMCME2 | 1 / 4 / 1 / 1 | 1 / 4 / 1 / 1 |
+| Fmax `clk62m5` (CPU, SOC), needs 62.5 MHz | 138.6 MHz | 142.0 MHz |
+| Fmax `clk125`, needs 125 MHz | 357.9 MHz | 181.6 MHz |
+| Fmax pipe clock, needs 250 MHz | 311.0 MHz | 301.6 MHz |
+| Bitstream | 9 730 756 B | 9 730 769 B |
 
-July 2026, on the RTL of that time; later counts are in [Building with the new toolchain](#building-with-the-new-toolchain).
-
-Bitstream size: Vivado 9 730 769 B, openXC7 9 730 777 B; the difference is header metadata.
+- openXC7: area is Yosys `synth_xilinx` (`stat`), Fmax nextpnr's report. Vivado: area after implementation (`report_utilization`).
+- Vivado reports no Fmax. Its figure here is 1 / (period - WNS); Vivado optimises only until each target is met, so it understates what the design could reach. Compare with care.
+- nextpnr's Fmax varies between builds: the same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
+- The bitstream is uncompressed, so its size does not depend on the design; the difference is header metadata.
 
 ## CPU options compared
 
-The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). x4 build, openXC7 v1.0.0 and Vivado 2026.1:
-
-| | PicoRV32 | eduBOS5 2-stage | eduBOS5 3-stage |
-|---|---|---|---|
-| Fmax `clk62m5` (needs 62.5 MHz), openXC7 / Vivado estimate | 151.9 / 158.9 MHz | 158.4 / 138.0 MHz | 151.6 / 130.3 MHz |
-| Fmax `clk62m5`, Vivado estimate with multicycle paths | - | - | **136.8 MHz** |
-| Vivado critical path | CPU `mem_addr` -> CSR | CPU -> RAM instruction address | CPU branch -> RAM instruction address; with multicycle paths `rs1` -> RAM instruction address |
-| CPU LUT (incl. LUT-RAM) / FF, Yosys / Vivado | 961 / 913, 431 / 416 | 818 / 900, 468 / 452 | 800 / 900, 469 / 453 |
-| SOC LUT (incl. LUT-RAM) / FF, Yosys / Vivado | 1323 / 1035, 731 / 714 | 1214 / 968, 802 / 751 | 1196 / 969, 803 / 752 |
-| BRAM / DSP48 | 2 / 0 | 2 / 0 | 2 / 0 |
-| IPC on this firmware (result reached at the same clock) | 0.18 (1x) | **0.35 (1.9x higher)** (1.71x sooner) | 0.26 (1.4x higher) (1.42x sooner) |
-
-- PicoRV32 with `BARREL_SHIFTER=0`, `ENABLE_COUNTERS=0`, as in `riscv_pcie_soc.sv`.
-- openXC7 Fmax is nextpnr's report. Vivado reports no Fmax: its figure here is a loose estimate, 1 / (16 ns - WNS). Vivado optimises only until the 62.5 MHz target is met, not beyond, so this understates what each core could reach; compare cores with care. Multicycle paths: [`edubos5.3STG-ONLY.mcp.xdc`](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.xdc), derived from the RTL (2 cycles from the instruction port and the register file); nextpnr cannot apply them (finding 26).
-- Area: Yosys `synth_xilinx` of `riscv_pcie_soc` in context, CPU kept as its own hierarchy; Vivado `report_utilization -hierarchical`.
-- Run time: co-simulation of the same firmware, see [5.sim](../../5.sim/README.md#what-they-cost).
-- The data bus is lightly loaded: RAM and CSR only, no interconnect mux; a larger SOC lengthens the CPU's external paths. The RAM is dual-ported: eduBOS5 fetches on port B and loads/stores on port A, with no I/D mux; PicoRV32 uses port A for both. The RAM is comparatively large (8 KB, 2 RAMB36), and eduBOS5's critical path ends at its port B address.
+The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). The three CPUs compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 ## Lint and formal equivalence of RTL changes
 
@@ -472,30 +466,18 @@ Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). 
 | # | Finding | Status | openPCIE | Upstream |
 |---|---|---|---|---|
 | 1 | GT attribute defaults differ from Xilinx's | open | [#17](https://github.com/chili-chips-ba/openPCIE/issues/17) | [nextpnr#21](https://github.com/openXC7/nextpnr/issues/21) |
-| 2 | `IBUFDS_GTE2.O` -> `BUFG` dead clock | fixed upstream, board check pending | [#22](https://github.com/chili-chips-ba/openPCIE/issues/22) | [nextpnr-xilinx#100](https://github.com/openXC7/nextpnr-xilinx/issues/100) |
-| 3 | `PLL0_CFG`/`PLL1_CFG` hardcoded | open | [#18](https://github.com/chili-chips-ba/openPCIE/issues/18) | [nextpnr#84](https://github.com/openXC7/nextpnr/issues/84) |
-| 6 | Unconstrained clock silently timed at 12 MHz | fixed upstream (main `5ef14a40`, after v1.0.0), re-test pending (a) | [#23](https://github.com/chili-chips-ba/openPCIE/issues/23) | [nextpnr#90](https://github.com/openXC7/nextpnr/issues/90) |
-| 8 | `BEL` attribute on non-IO cells | still broken, reproduced upstream (b) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
-| 10 | `--placer sa` placement invalid | open; our netlist repro posted (c) | [#25](https://github.com/chili-chips-ba/openPCIE/issues/25) | [nextpnr#92](https://github.com/openXC7/nextpnr/issues/92) |
-| 11 | `TXPI_SYNFREQ_PPM` = 0 rejected | reproduced upstream; our Vivado golden posted (d) | [#27](https://github.com/chili-chips-ba/openPCIE/issues/27) | [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88) |
+| 8 | `BEL` attribute on non-IO cells | still broken, reproduced upstream (a) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
 | 14 | `IBUFDS_GTE2.ODIV2` unusable | open, root cause found upstream | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24) | [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
 | 18 | Derived-constraint warning swaps its values | new in v1.0.0 | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) | [nextpnr#85](https://github.com/openXC7/nextpnr/issues/85) |
 | 19 | Yosys: wrong `CLKSWING_CFG` default | new, Slang | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) | [yosys#6322](https://github.com/YosysHQ/yosys/issues/6322) |
 | 20 | sv-elab: no `real` primitive parameters | new, Slang | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) | [sv-elab#282](https://github.com/povik/sv-elab/issues/282) |
-| 21 | Truncated FASM on error still assembles | fixed upstream (main `f9e07df8`, after v1.0.0), re-test pending (e) | [#26](https://github.com/chili-chips-ba/openPCIE/issues/26) | [nextpnr#93](https://github.com/openXC7/nextpnr/issues/93) |
-| 22 | `read_slang` fails on `xilinx/cells_sim.v` | new, Slang (f) | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29) | [yosys#6323](https://github.com/YosysHQ/yosys/issues/6323), [sv-elab#72](https://github.com/povik/sv-elab/issues/72) |
-| 23 | Contradicting GT `LOC` accepted silently | fixed upstream (main `d3acad91`, after v1.0.0), re-test pending (g) | [#30](https://github.com/chili-chips-ba/openPCIE/issues/30) | [nextpnr#94](https://github.com/openXC7/nextpnr/issues/94) |
+| 22 | `read_slang` fails on `xilinx/cells_sim.v` | new, Slang (b) | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29) | [yosys#6323](https://github.com/YosysHQ/yosys/issues/6323), [sv-elab#72](https://github.com/povik/sv-elab/issues/72) |
 | 24 | No XPM / UNIMACRO libraries | open; [shims](#shims) stand in | - | - |
-| 26 | `set_multicycle_path` cannot reach registers | new (h) | to be filed | to be filed |
+| 26 | `set_multicycle_path` cannot reach registers | new (c) | [#36](https://github.com/chili-chips-ba/openPCIE/issues/36) | [nextpnr#110](https://github.com/openXC7/nextpnr/issues/110) |
 
-- (a) Also no constraint is derived through `IBUFDS_GTE2`.
-- (b) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored, and a malformed one aborts nextpnr. Not used by openPCIE.
-- (c) "post-placement validity check failed" on our design; the default placer is fine.
-- (d) 0 is Xilinx's default, and what Xilinx's PCIE IP uses.
-- (e) `fpga-as` assembles nextpnr's truncated FASM; the Makefile checks nextpnr's exit status.
-- (f) 106 errors in `specify` blocks; the reason for `gen_xilinx_bb.py`.
-- (g) `LOC GTPE2_CHANNEL_X0Y6` with channel-1 pins builds with channel 2.
-- (h) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read, and it matches cell names, which flip-flops lose in synthesis; `-from` drops the whole constraint. eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) therefore shows no Fmax gain over 2-stage.
+- (a) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored, and a malformed one aborts nextpnr. Not used by openPCIE.
+- (b) 106 errors in `specify` blocks; the reason for `gen_xilinx_bb.py`.
+- (c) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read, and it matches cell names, which flip-flops lose in synthesis; `-from` drops the whole constraint. eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) therefore shows no Fmax gain over 2-stage. Test case, proven safe by formal: [eduBOS5 3-stage multicycle paths](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#3-stage-multicycle-paths).
 
 #### Temp RTL Workarounds / FIXMEs
 
@@ -519,6 +501,18 @@ These affect only the pre-v1.0.0 toolchain.
 | 5 | Snap lacks `PCIE_2_1` metadata | the snap is gone | not needed |
 | 9 | Yosys 0.38 `iopadmap -ignore` hangs | Yosys 0.38 only | not needed |
 | 17 | `fasm2frames` KeyError on `IBUFDS_GTE2` | v1.0.0 uses `fpga-as` | [#14](https://github.com/chili-chips-ba/openPCIE/issues/14) (closed) |
+
+#### Fixed upstream, after v1.0.0
+
+| # | Finding | Note | Tracked |
+|---|---|---|---|
+| 2 | `IBUFDS_GTE2.O` -> `BUFG` dead clock | board check pending | [#22](https://github.com/chili-chips-ba/openPCIE/issues/22), [nextpnr-xilinx#100](https://github.com/openXC7/nextpnr-xilinx/issues/100) |
+| 3 | `PLL0_CFG`/`PLL1_CFG` hardcoded | now read from the design | [#18](https://github.com/chili-chips-ba/openPCIE/issues/18), [nextpnr#84](https://github.com/openXC7/nextpnr/issues/84) |
+| 6 | Unconstrained clock silently timed at 12 MHz | main `5ef14a40`; confirmed on main `46c25a91`: it warns, and `IBUFDS_GTE2` -> `BUFG` derives 100 MHz | [#23](https://github.com/chili-chips-ba/openPCIE/issues/23), [nextpnr#90](https://github.com/openXC7/nextpnr/issues/90) |
+| 10 | `--placer sa` placement invalid | confirmed on the fix branch (`fddfed5`), seeds 1 and 3; the default placer still times much better | [#25](https://github.com/chili-chips-ba/openPCIE/issues/25), [nextpnr#92](https://github.com/openXC7/nextpnr/issues/92) |
+| 11 | `TXPI_SYNFREQ_PPM` = 0 rejected | upstream: the GT and PCIe tiles now match our Vivado golden; board check pending, `3'd1` workaround stays until then | [#27](https://github.com/chili-chips-ba/openPCIE/issues/27), [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88) |
+| 21 | Truncated FASM on error still assembles | main `f9e07df8`; the Makefile also checks nextpnr's exit status | [#26](https://github.com/chili-chips-ba/openPCIE/issues/26), [nextpnr#93](https://github.com/openXC7/nextpnr/issues/93) |
+| 23 | Contradicting GT `LOC` accepted silently | main `d3acad91` | [#30](https://github.com/chili-chips-ba/openPCIE/issues/30), [nextpnr#94](https://github.com/openXC7/nextpnr/issues/94) |
 
 #### Fixed in v1.0.0
 

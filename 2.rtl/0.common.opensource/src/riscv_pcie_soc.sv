@@ -90,7 +90,16 @@ module riscv_pcie_soc
   //
   // Nothing else in the SOC changes: the address decode, the CSR and the PCIe
   // stack see an identical memory interface either way.
+  //
+  // `define SOC_CSR_RD_COMB (experimental): the CSR answers in the request
+  // cycle, without its output register.
   // -------------------------------------------------------------------------
+
+`ifdef SOC_CSR_RD_COMB
+  localparam bit CSR_RD_FLOP = 1'b0;
+`else
+  localparam bit CSR_RD_FLOP = 1'b1;
+`endif
 `ifdef SOC_CPU_VPROC
   soc_cpu_vproc #(
       .NODE(4'd0)
@@ -158,7 +167,16 @@ module riscv_pcie_soc
   always_ff @(posedge clk) begin
     load_wait <= mem.valid && mem.wstrb == '0 && !mem.ready;
   end
-  assign edubos5_rdy = mem.ready && load_wait;
+
+  generate
+    if (CSR_RD_FLOP == 1'b1) begin : g_rdy_flop
+      assign edubos5_rdy = mem.ready && load_wait;
+    end
+    else begin : g_rdy_comb
+      // the CSR answers in the load's request cycle, the RAM one cycle later
+      assign edubos5_rdy = mem.ready && (load_wait || mem.valid && mem.wstrb == '0);
+    end
+  endgenerate
 
 `ifdef SOC_EDUBOS5_3STG
   localparam int EDUBOS5_WAIT4REGS = 1;  // 3-stage pipeline
@@ -280,7 +298,9 @@ module riscv_pcie_soc
   // drive and that drives them back: the Tx FSM and the Rx capture.
   //=========================================================================
 
-  soc_csr u_soc_csr (
+  soc_csr #(
+      .RD_FLOP(CSR_RD_FLOP)
+  ) u_soc_csr (
       .clk   (clk),
       .resetn(resetn),
 

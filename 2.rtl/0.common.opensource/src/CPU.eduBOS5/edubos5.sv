@@ -16,6 +16,31 @@ module edubos5
     input logic clk,
     input logic arst_n, // reset button
 
+`ifdef RISCV_FORMAL
+    // RVFI (riscv-formal): one retired instruction per rvfi_valid
+    output logic        rvfi_valid,
+    output logic [63:0] rvfi_order,
+    output logic [31:0] rvfi_insn,
+    output logic        rvfi_trap,
+    output logic        rvfi_halt,
+    output logic        rvfi_intr,
+    output logic [ 1:0] rvfi_mode,
+    output logic [ 1:0] rvfi_ixl,
+    output logic [ 4:0] rvfi_rs1_addr,
+    output logic [ 4:0] rvfi_rs2_addr,
+    output logic [31:0] rvfi_rs1_rdata,
+    output logic [31:0] rvfi_rs2_rdata,
+    output logic [ 4:0] rvfi_rd_addr,
+    output logic [31:0] rvfi_rd_wdata,
+    output logic [31:0] rvfi_pc_rdata,
+    output logic [31:0] rvfi_pc_wdata,
+    output logic [31:0] rvfi_mem_addr,
+    output logic [ 3:0] rvfi_mem_rmask,
+    output logic [ 3:0] rvfi_mem_wmask,
+    output logic [31:0] rvfi_mem_rdata,
+    output logic [31:0] rvfi_mem_wdata,
+`endif
+
     //Intruction Memory access
     output cpu_pc_t   imem_addr,
     input  cpu_data_t imem_rdat,
@@ -52,6 +77,8 @@ module edubos5
   } state_t;
 
   state_t       state;
+
+  logic         go2exec;  // pipeline register load enable
 
   // ALU input and outputs
   logic   [4:0] shamt;  // SHift AMounT from immediate or rs2
@@ -98,7 +125,9 @@ module edubos5
   assign NC_imem_rdy   = imem_rdy;
   assign NC_decode_reg = {instr_decode_reg.FENCE, instr_decode_reg.SYSTEM};
   always_ff @(posedge clk) begin : _instr_decode_flop
-    instr_decode_reg <= instr_decode;
+    if (go2exec) begin
+      instr_decode_reg <= instr_decode;
+    end
   end : _instr_decode_flop
   //-------------------------------------------------
   // assembly of immediates
@@ -153,12 +182,14 @@ module edubos5
   assign NC_imm_low = {imm_brnch[1:0], imm_jump[1:0], imm_uload_reg[1:0]};
 
   always_ff @(posedge clk) begin
-    funct3_brnch  <= instr.grp.brnch.func3;
-    funct7_alu    <= instr.grp.reg2reg.func7[5];
-    funct3_imm    <= instr.grp.imm.func3;
+    if (go2exec) begin
+      funct3_brnch  <= instr.grp.brnch.func3;
+      funct7_alu    <= instr.grp.reg2reg.func7[5];
+      funct3_imm    <= instr.grp.imm.func3;
 
-    pc_imm_reg    <= pc_imm;
-    imm_uload_reg <= imm_uload;
+      pc_imm_reg    <= pc_imm;
+      imm_uload_reg <= imm_uload;
+    end
   end
 
   //-----------------------------------------------------------------
@@ -204,9 +235,11 @@ module edubos5
   cpu_data_t ls_offset_reg;
 
   always_ff @(posedge clk) begin
-    rs1_reg       <= rs1;
-    rs2_reg       <= rs2;
-    ls_offset_reg <= ls_offset;
+    if (go2exec) begin
+      rs1_reg       <= rs1;
+      rs2_reg       <= rs2;
+      ls_offset_reg <= ls_offset;
+    end
   end
 
   always_comb begin : _load_store
@@ -429,6 +462,30 @@ module edubos5
 
 
   //-------------------------------------------------
+  // Pipeline register load enable
+  //-------------------------------------------------
+  generate
+    if (EN_WAIT4REGS == 1) begin : g_ce_3stg
+      // A flop, high in the 1st EXECUTE cycle: the pipeline registers load at
+      // the edge that ends it, the 2nd after the instruction arrives
+      // (edubos5.3STG-ONLY.mcp.xdc relies on it). EXECUTE is entered from
+      // WAIT4REGS or reset. A SYSTEM instruction stays in EXECUTE (a halt)
+      // with go2exec low: its sources are frozen, so nothing needs to reload.
+      always_ff @(negedge arst_n or posedge clk) begin
+        if (arst_n == LO) begin
+          go2exec <= 1'b1;
+        end
+        else begin
+          go2exec <= (state == WAIT4REGS);
+        end
+      end
+    end
+    else begin : g_ce_2stg
+      assign go2exec = 1'b1;  // no flop: load every clock
+    end
+  endgenerate
+
+  //-------------------------------------------------
   // The ALU
   //-------------------------------------------------
 
@@ -452,6 +509,7 @@ module edubos5
   ) u_alu (
       .clk       (clk),                      //i
       .reset     (1'b0),                     //i
+      .ce        (go2exec),                  //i
       .aluin_1   (aluin_1),                  //i
       .aluin_2   (aluin_2),                  //i
       .shamt     (shamt),                    //i
@@ -492,10 +550,157 @@ module edubos5
 
   end : _dmem_connection
 
+  // MCP capture side: the registers the sources feed (pc and the FSM load
+  // nothing from them at the 1st edge either)
+  `define EDUBOS5_MCP_CAPTURE {instr_decode_reg, funct3_brnch, funct7_alu, funct3_imm, \
+      pc_imm_reg, imm_uload_reg, rs1_reg, rs2_reg, ls_offset_reg, pc, \
+      u_alu.shifter_in_reg, u_alu.shamt_reg, u_alu.aluin_1_31_reg, u_alu.aluin_2_31_reg, \
+      u_alu.alu_and_reg, u_alu.alu_xor_reg, u_alu.alu_or_reg, u_alu.funct3_alu_reg, \
+      u_alu.alu_plus_reg, u_alu.alu_minus_reg}
+
+`ifdef EDUBOS5_MCP_CHECK
+  // Proof of edubos5.3STG-ONLY.mcp.xdc (simulation; 5.sim, CORE=edubos5_3stg):
+  // the instruction port and the register file reads change only into
+  // WAIT4REGS, and their paths get 2 cycles.
+  logic mcp_started;  // checked from the first FETCH_INSTR on
+  always_ff @(negedge arst_n or posedge clk) begin
+    if (arst_n == LO) begin
+      mcp_started <= 1'b0;
+    end
+    else if (state == FETCH_INSTR) begin
+      mcp_started <= 1'b1;
+    end
+  end
+
+  // A source changes only on the launch edge, the one that ends FETCH_INSTR,
+  // and holds until the capture 2 clocks later
+  // verilog_format: off
+  a_mcp_launch_only_at_fetch :
+  assert property (@(posedge clk) disable iff (!arst_n || !mcp_started)
+      $changed({imem_rdat, rs1, rs2}) |-> $past(state) == FETCH_INSTR)
+  else begin
+    $error("EDUBOS5_MCP_CHECK: source changed outside the launch edge, pc %h", {pc, 2'b00});
+  end
+
+  a_mcp_held_2_clocks :
+  assert property (@(posedge clk) disable iff (!arst_n || !mcp_started)
+      state == FETCH_INSTR |-> ##2 $stable({imem_rdat, rs1, rs2}))
+  else begin
+    $error("EDUBOS5_MCP_CHECK: source not held 2 clocks after launch, pc %h", {pc, 2'b00});
+  end
+
+  // Nothing the sources feed loads at the 1st edge after launch
+  a_mcp_capture_at_2nd_edge :
+  assert property (@(posedge clk) disable iff (!arst_n || !mcp_started)
+      state == FETCH_INSTR |-> ##2 $stable(`EDUBOS5_MCP_CAPTURE))
+  else begin
+    $error("EDUBOS5_MCP_CHECK: a register loaded at the 1st edge after launch, pc %h", {pc, 2'b00});
+  end
+  // verilog_format: on
+
+`endif
+
+`ifdef EDUBOS5_MCP_FORMAL
+  // The same properties for a static proof (formal/run-mcp-formal.sh):
+  // open-source formal front ends take only immediate assertions, and Yosys
+  // read_slang only $past, not $changed / $stable.
+  logic fv_on;  // checked from the clock after reset on
+  always_ff @(negedge arst_n or posedge clk) begin
+    if (arst_n == LO) begin
+      fv_on <= 1'b0;
+    end
+    else begin
+      fv_on <= 1'b1;
+    end
+  end
+
+  always_ff @(posedge clk) begin
+    if ($past(fv_on)) begin
+      assert ({imem_rdat, rs1, rs2} == $past({imem_rdat, rs1, rs2}) || $past(state) == FETCH_INSTR);
+    end
+    // the load enable: 2-stage always; 3-stage only in EXECUTE, and always
+    // on entering it from WAIT4REGS
+    if (fv_on) begin
+      assert (EN_WAIT4REGS == 1 || go2exec);
+      assert (EN_WAIT4REGS == 0 || !go2exec || state == EXECUTE);
+    end
+    if ($past(fv_on) && $past(state) == WAIT4REGS) begin
+      assert (go2exec);
+    end
+    if ($past(fv_on, 2) && $past(state, 2) == FETCH_INSTR) begin
+      assert ({imem_rdat, rs1, rs2} == $past({imem_rdat, rs1, rs2}));
+      assert (`EDUBOS5_MCP_CAPTURE == $past(`EDUBOS5_MCP_CAPTURE));
+    end
+  end
+`endif
+  `undef EDUBOS5_MCP_CAPTURE
+
+`ifdef RISCV_FORMAL
+  // An instruction retires in FETCH_INSTR: the register file is written there,
+  // while imem_rdat still holds the instruction, pc its address, rs1_reg and
+  // rs2_reg its operands, and the load/store logic its memory access. A
+  // SYSTEM instruction halts the core in EXECUTE and never retires. No traps,
+  // no interrupts; machine mode, 32-bit. Memory: word-aligned address, masks.
+  logic rvfi_rs1_used, rvfi_rs2_used;
+
+  always_comb begin : _rvfi
+    rvfi_valid = (state == FETCH_INSTR);
+    rvfi_insn = imem_rdat;
+    rvfi_trap = 1'b0;
+    rvfi_halt = 1'b0;
+    rvfi_intr = 1'b0;
+    rvfi_mode = 2'd3;
+    rvfi_ixl = 2'd1;
+
+    rvfi_rs1_used  = |{instr_decode_reg.ALUREG, instr_decode_reg.ALUIMM, instr_decode_reg.BRNCH,
+                       instr_decode_reg.JALR, instr_decode_reg.LOAD, instr_decode_reg.STORE};
+    rvfi_rs2_used = |{instr_decode_reg.ALUREG, instr_decode_reg.BRNCH, instr_decode_reg.STORE};
+    rvfi_rs1_addr = rvfi_rs1_used ? instr.grp.reg2reg.rs1 : 5'd0;  // 0: not read
+    rvfi_rs2_addr = rvfi_rs2_used ? instr.grp.reg2reg.rs2 : 5'd0;
+    rvfi_rs1_rdata = rvfi_rs1_used ? rs1_reg : '0;
+    rvfi_rs2_rdata = rvfi_rs2_used ? rs2_reg : '0;
+    rvfi_rd_addr = rf_we ? instr.grp.reg2reg.rd : 5'd0;  // 0: no register written
+    rvfi_rd_wdata = rf_we ? rf_wdat : '0;
+    rvfi_pc_rdata = {pc, 2'b00};
+    rvfi_pc_wdata = {next_pc, 2'b00};
+
+    rvfi_mem_addr = '0;
+    rvfi_mem_rmask = '0;
+    rvfi_mem_wmask = '0;
+    rvfi_mem_rdata = '0;
+    rvfi_mem_wdata = '0;
+    if (instr_decode_reg.LOAD) begin
+      rvfi_mem_addr  = {dmem_addr[31:2], 2'b00};
+      rvfi_mem_rdata = dmem_rdat_reg;
+      unique case (funct3_imm)
+        LB, LBU: rvfi_mem_rmask = 4'b0001 << dmem_addr[1:0];
+        LH, LHU: rvfi_mem_rmask = 4'b0011 << {dmem_addr[1], 1'b0};
+        default: rvfi_mem_rmask = 4'b1111;
+      endcase
+    end
+    if (instr_decode_reg.STORE) begin
+      rvfi_mem_addr  = {dmem_addr_next[31:2], 2'b00};
+      rvfi_mem_wmask = dmem_we_next;
+      rvfi_mem_wdata = dmem_wdat_next;
+    end
+  end : _rvfi
+
+  // order: the number of instructions retired before this one
+  always_ff @(negedge arst_n or posedge clk) begin : _rvfi_order
+    if (arst_n == LO) begin
+      rvfi_order <= '0;
+    end
+    else if (rvfi_valid) begin
+      rvfi_order <= rvfi_order + 64'd1;
+    end
+  end : _rvfi_order
+`endif
+
 endmodule : edubos5
-/*
------------------------------------------------------------------------------
-Version History:
------------------------------------------------------------------------------
- 2023/08/09 TI: initial creation
-*/
+
+// -----------------------------------------------------------------------------
+// Project:     openPCIE
+// Description: NLnet-sponsored open-source implementation
+// Version:     1.0
+// Date:        Aug 9, 2023
+// -----------------------------------------------------------------------------

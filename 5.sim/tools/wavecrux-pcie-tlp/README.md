@@ -72,3 +72,6 @@ Configuration payloads are shown as the register value the spec prints
 (little-endian); memory payloads as the DW itself. Framing errors (data without
 SOP, SOP before EOP, x/z), length mismatches and UR / CA completions are
 flagged as errors.
+
+-----------
+#### End-of-Document

@@ -57,7 +57,9 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | GCC, host | 10+ (4) | co-sim (VProc, pcievhost) | runs |
 | Verilator | 5.052 | `run-lint.sh` | checks |
 | Verible | v0.0-4296-g0f262651 | `run-format.sh`, `run-lint.sh` | formats, checks |
-| WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP decoding | runs |
+| ABC (`yosys-abc`) | 1.01, in openXC7's Yosys 0.69 | formal: eduBOS5 multicycle proof (`pdr`), bounded runs (`bmc3`) | proves |
+| SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5 | next |
+| WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP and RISC-V decoding | runs |
 | Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE, DLL decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |
 | openFPGALoader | 1.1.1 | loading the bitstream over JTAG | not yet used on the board |
