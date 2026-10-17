@@ -1,5 +1,5 @@
 [![NLnet:Funded](https://img.shields.io/badge/NLnet%3AFunded-74AA00)](https://nlnet.nl/)
-[![Stars](https://img.shields.io/github/stars/chili-chips-ba/openPCIE?style=flat&label=Stars)](https://github.com/chili-chips-ba/openPCIE/stargazers)
+[![Stars](https://badgen.net/github/stars/chili-chips-ba/openPCIE?label=Stars)](https://github.com/chili-chips-ba/openPCIE/stargazers)
 [![License:BSD-3/CC-BY-SA](https://img.shields.io/badge/License%3ABSD--3%2FCC--BY--SA-blue)](LICENSES)
 [![Lint](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/lint.yml?label=Lint)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/lint.yml)
 [![Verible](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/verible.yml?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
