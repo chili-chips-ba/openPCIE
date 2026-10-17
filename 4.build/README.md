@@ -58,7 +58,8 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | Verilator | 5.052 | `run-lint.sh` | checks |
 | Verible | v0.0-4296-g0f262651 | `run-format.sh`, `run-lint.sh` | formats, checks |
 | ABC (`yosys-abc`) | 1.01, in openXC7's Yosys 0.69 | formal: eduBOS5 multicycle proof (`pdr`), bounded runs (`bmc3`) | proves |
-| SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5 | next |
+| SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5, with ABC `bmc3` | checks |
+| Z3 | 5.3.1 (pip `z3-solver`) | formal: replays a riscv-formal failure | runs |
 | WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP and RISC-V decoding | runs |
 | Ferrite wavecrux-decoders | pcie-v0.1.0 | PIPE, DLL decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |

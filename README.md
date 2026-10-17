@@ -5,6 +5,7 @@
 [![Verible](https://img.shields.io/github/actions/workflow/status/chili-chips-ba/openPCIE/verible.yml?label=Verible)](https://github.com/chili-chips-ba/openPCIE/actions/workflows/verible.yml)
 [![Sim:Pass](https://img.shields.io/badge/Sim%3APass-brightgreen)](5.sim)
 [![openXC7:Pass](https://img.shields.io/badge/openXC7%3APass-brightgreen)](4.build/hw_build.openXC7)
+[![eduBOS5:Pass](https://img.shields.io/badge/eduBOS5%3APass-brightgreen)](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#riscv-formal-every-instruction-against-the-isa)
 
 Computing is about communicating. Some would also say about networking. Digital independence tags along on the wave of _"Recommendations and Roadmap for European Sovereignty in open source HW, SW and RISC-V Technologies (2021)"_, calling for the development of critical open source IP blocks, such as **`PCIE Root Complex (RC)`**. This is the first step in that direction. And, if you are looking for an opensource, soft PCIE EndPoint (EP) core, please check our [other](https://github.com/chili-chips-ba/openCologne-PCIE) repo.
 

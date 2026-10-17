@@ -12,6 +12,7 @@
 | co-simulation | `make run` | `make CORE=picorv32 run` |
 | ISS timing model | `make CPU=iss run` | `make CPU=iss CORE=picorv32 run` |
 | lint, LEQ | `bash run-lint.sh` | `CPU=picorv32 bash run-lint.sh` |
+| riscv-formal | `bash formal/run-riscv-formal.sh` ([below](#riscv-formal-every-instruction-against-the-isa)) | in riscv-formal itself: `cores/picorv32` |
 | x0 = 0, FPGA (default) | `TARGET_IS_ASIC=0`: register file RAM starts at 0 | `TARGET_IS_ASIC=0`: register file RAM starts at 0 |
 | x0 = 0, ASIC | `TARGET_IS_ASIC=1`: read mux | `TARGET_IS_ASIC=1`: read mux |
 
@@ -25,7 +26,7 @@ x0 is never written, so it must read 0 from the start. An FPGA RAM has a power-u
 | `edubos5_alu.sv` | ALU, registered output |
 | `edubos5_rf.sv` | register file: 2 asynchronous read ports, 1 synchronous write port |
 | `edubos5_pkg.sv` | common types and opcodes |
-| [`formal/`](formal) | the multicycle proof: harnesses and script ([formal proving](#getting-started-with-formal-proving-a-worked-example)) |
+| [`formal/`](formal) | the multicycle proof ([formal proving](#getting-started-with-formal-proving-a-worked-example)) and [riscv-formal](#riscv-formal-every-instruction-against-the-isa): harnesses and scripts |
 | [`wavecrux/`](wavecrux) | the CPU's RVFI view and its pictures ([WaveCrux](#watching-the-cpu-in-wavecrux)) |
 
 Cycles per instruction (`EN_WAIT4REGS` selects the pipeline):
@@ -55,7 +56,8 @@ The rv32 ISS models both (`-V EDUBOS5STG2`, `-V EDUBOS5STG3`, see [5.sim](../../
 | openXC7 (nextpnr) | v1.0.0 | Fmax, area | [4.build/hw_build.openXC7](../../../../4.build/hw_build.openXC7/README.md) |
 | WaveCrux | 1.0.1 | retired instructions, decoded and cross-checked (RVFI) | [Watching the CPU in WaveCrux](#watching-the-cpu-in-wavecrux) |
 | EBMC | 6.1 | declarative SVA; cannot read eduBOS5 yet: a typed parameter bug ([diffblue/hw-cbmc#2274](https://github.com/diffblue/hw-cbmc/issues/2274), gotcha 6) | tried |
-| SymbiYosys (`sby`) | v0.69 | riscv-formal | next |
+| SymbiYosys (`sby`) + ABC `bmc3` | v0.69 | riscv-formal: RV32I against the ISA, bounded | [`formal/run-riscv-formal.sh`](formal/run-riscv-formal.sh) |
+| Z3 | 5.3.1, pip `z3-solver` | replays a riscv-formal failure into a VCD | [`formal/run-riscv-formal.sh`](formal/run-riscv-formal.sh) |
 
 The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.build/hw_build.openXC7). Board tests are still to come.
 
@@ -144,7 +146,7 @@ Its Checks tab checks all 7,096 instructions of the run for consistency, memory 
 <img alt="WaveCrux RVFI checks: 7096 retirements, no inconsistency" src="wavecrux/wavecrux-rvfi-checks.png" width=500>
 </p>
 
-This is a dynamic riscv-formal, and an appetizer for it: the same RVFI record, checked on the one run the firmware made. riscv-formal checks it against the ISA for every possible instruction sequence; a riscv-formal section will follow this one.
+This is a dynamic riscv-formal, and an appetizer for it: the same RVFI record, checked on the one run the firmware made. riscv-formal checks it against the ISA for every instruction sequence within its bound: the [next section](#riscv-formal-every-instruction-against-the-isa).
 
 With these views, the [rv32 ISS](../../../../5.sim/README.md#the-three-cpu-options) loses most of its value-add for debugging: the instruction trace, register writes and memory accesses now come from the RTL core itself, cycle-true. What the ISS still adds is source-level stepping in gdb.
 
@@ -157,6 +159,35 @@ To set it up by hand, on another VCD:
 1. Display format: right-click a value in the Value column -> Display Format -> Hexadecimal.
 2. Decoder: Ctrl+Shift+D -> RISC-V Instruction Trace; bind `clk`, `instruction`, `valid`, `pc` to `rvfi_clk`, `rvfi_insn`, `rvfi_valid`, `rvfi_pc_rdata`; XLEN 32, no extensions.
 3. Inspector: View -> Toggle Stage Panel -> Add Widget -> Instrument -> RVFI Commit Inspector. Click the widget, then bind the `rvfi_*` signals one by one in Signal Bindings; Auto-Bind does not find them yet. Bind `rvfi_order` too, or the Commits list stops after two rows.
+
+## riscv-formal: every instruction against the ISA
+
+[riscv-formal](https://github.com/YosysHQ/riscv-formal) checks a core through its RVFI outputs. For each RV32I instruction, with any operands and any history, the retired record must match the ISA. Other checks span instructions: register values (`reg`), the PC chain (`pc_fwd`, `pc_bwd`), unique order, causality, illegal instructions (`ill`), and a cover that two instructions retire.
+
+```bash
+RISCV_FORMAL=<riscv-formal clone> bash formal/run-riscv-formal.sh 0          # 2-stage, any code
+RISCV_FORMAL=<riscv-formal clone> LEGAL=1 bash formal/run-riscv-formal.sh 1  # 3-stage, legal code
+```
+
+- [`formal/rvfi_wrapper.sv`](formal/rvfi_wrapper.sv): free instruction and data memory, connected as the SOC does: a synchronous IMEM, and `dmem_rdy` only answers a pending read.
+- [`formal/checks.cfg`](formal/checks.cfg): RV32I, bounded to 16 clocks (about 7 instructions), ABC `bmc3`. Z3 replays a failure into a VCD.
+
+Results, 44 checks; each run takes 9 to 14 s with 12 checks in parallel:
+
+| Code | 2-stage | 3-stage |
+|---|---|---|
+| any | 31 pass, 13 fail | 29 pass, 15 fail |
+| legal and aligned (`LEGAL=1`) | 44 pass | 44 pass |
+
+The failures are expected:
+- **Misaligned load, store or jump target.** The ISA requires a trap, and eduBOS5 has none: it uses the aligned word, or drops the low PC bits. This fails all 6 branches, `JAL`, `JALR`, `LH`, `LHU`, `LW`, `SH` and `SW`.
+- **3-stage only: `LB` and `LBU`.** A store with an illegal `funct3` retires as a no-op but makes a bus read. Its `dmem_rdy` reaches the next load's `EXECUTE`, which skips `LOAD_DATA` and loads a stale word. That is [Bonus goodies](#bonus-goodies-from-fv) item 1, found again by another method.
+
+`LEGAL=1` assumes the code GCC emits: legal store encodings, natural alignment. With it, every check passes on both pipelines, within the 16-clock bound.
+
+**A test of the test.** An injected XOR bug (bit 0 flips when bit 5 of `rs1` and bit 9 of the 2nd operand are both 1) fails `insn_xor` and `insn_xori` in seconds; `insn_add` still passes.
+
+Not checked yet: liveness and hang (a `SYSTEM` instruction halts eduBOS5 without `rvfi_halt`), and the memory-model checks.
 
 ## 3-stage multicycle paths
 
@@ -305,7 +336,7 @@ Both directions follow one habit: when a property is hard to prove, ask whether 
 
 Formal found two things in eduBOS5 itself, beyond the multicycle constraint, and pointed to a third improvement:
 
-1. **An illegal store goes unnoticed.** A store with `funct3` 3 to 7 issues a bus cycle without write strobes. The SOC takes it for a read: a CSR or FIFO with read side effects loses data, and the `dmem_rdy` it returns makes the next load write a stale value. GCC never emits such a store, but a jump into data or corrupted code does. **Proposal:** an illegal-instruction trap: reject unknown opcodes and `funct3` values instead of executing them.
+1. **An illegal store goes unnoticed.** A store with `funct3` 3 to 7 issues a bus cycle without write strobes. The SOC takes it for a read: a CSR or FIFO with read side effects loses data, and the `dmem_rdy` it returns makes the next load write a stale value. GCC never emits such a store, but a jump into data or corrupted code does. [riscv-formal](#riscv-formal-every-instruction-against-the-isa) finds it too. **Proposal:** an illegal-instruction trap: reject unknown opcodes and `funct3` values instead of executing them.
 2. **A hidden bus assumption.** In `EXECUTE`, the 3-stage core takes any `dmem_rdy` as the answer to the current load and skips `LOAD_DATA` (the FSM's `EXECUTE` branch in `edubos5.sv`). That is only right if `dmem_rdy` is a one-cycle pulse that answers a pending read, and is never high before it or held after it. The openPCIE SOC guarantees this (`load_wait` in `riscv_pcie_soc.sv`). An always-ready memory does not, and then loads return stale data and the multicycle constraint is unsafe. **Proposal:** document this rule at the `dmem_rdy` port and in this README.
 3. **A capture side that is hard to prove.** The 3-stage pipeline registers loaded junk at the 1st edge and relied on the 2nd to overwrite it. **Done:** a clock enable, `go2exec`, a flop in the 3-stage build only, loads them only at the edge that ends `EXECUTE` ([section 7](#7-the-lesson-rtl-and-formal-help-each-other)). It makes the RTL more robust:
    - The constraint is safe by construction: nothing loads an unsettled value. Before, it was safe only because every 1st-edge value happened to be overwritten before use, so any new logic that read these registers in `EXECUTE` could break it unnoticed.
@@ -319,7 +350,7 @@ Formal found two things in eduBOS5 itself, beyond the multicycle constraint, and
 | Yosys `sat` | built-in SAT solver: BMC and k-induction | no, front end as below |
 | Yosys `read_slang` / `read_verilog -formal` | front ends for the tools below | no: immediate asserts, `$past`. The `$changed`/`$stable` rejection is already fixed on sv-elab `main` ([sv-elab#382](https://github.com/povik/sv-elab/pull/382)) |
 | ABC (`pdr`, `bmc3`) | model checker on the gate-level netlist; used here | no, takes the netlist |
-| SymbiYosys (SBY) + Yices, Z3, Bitwuzla, Boolector | driver around Yosys with SMT solvers | only with the commercial Verific front end |
+| SymbiYosys (SBY) + Yices, Z3, Bitwuzla, Boolector | driver around Yosys with SMT solvers or ABC; used here for riscv-formal | only with the commercial Verific front end |
 | EQY | equivalence checking with Yosys | no |
 | rIC3, AVY, Pono | model checkers on AIGER / BTOR2 netlists | no, take a netlist |
 | [EBMC](https://www.cprover.org/ebmc/) | model checker with its own SystemVerilog front end | **yes** |
@@ -339,6 +370,7 @@ EBMC's sister tools are CBMC (C/C++) and JBMC (Java), for software.
 
 - **A 3-stage pipeline that pays off.** With its multicycle constraint the 3-stage core reaches about 1.09x the 2-stage clock (Vivado, 220 MHz target), but it needs about 1.35x just to break even on IPC (0.26 vs 0.35). Its critical path has already moved to a 1-cycle path, `shamt_reg` -> RAM instruction address, so the next gain has to come from there. An opportunity for future work.
 - **An illegal-instruction trap**, and a documented `dmem_rdy` rule: see [Bonus goodies from FV](#bonus-goodies-from-fv), items 1 and 2.
+- **A misaligned trap**, so that riscv-formal passes without `LEGAL=1`.
 
 ## References
 
