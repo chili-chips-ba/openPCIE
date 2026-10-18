@@ -1,10 +1,10 @@
 <mxfile host="Electron">
   <diagram id="sw" name="SW structure">
-    <mxGraphModel dx="1167" dy="1589" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="960" pageHeight="700" math="0" shadow="0">
+    <mxGraphModel dx="1710" dy="2003" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="960" pageHeight="700" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="fw" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;verticalAlign=top;align=center;spacingLeft=10;" value="&lt;div&gt;&lt;font style=&quot;background-color: transparent; color: rgb(51, 51, 51); font-size: 24px;&quot;&gt;picorv32 firmware&lt;/font&gt;&lt;font style=&quot;background-color: transparent; font-size: 20px; color: rgb(51, 51, 51);&quot;&gt; &lt;span style=&quot;font-weight: normal;&quot;&gt;(firmware.hex)&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+        <mxCell id="fw" parent="1" style="rounded=1;arcSize=4;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;verticalAlign=top;align=center;spacingLeft=10;" value="&lt;div&gt;&lt;font style=&quot;background-color: transparent; color: rgb(51, 51, 51); font-size: 30px;&quot;&gt;eduBOS5&lt;/font&gt;&lt;font style=&quot;background-color: transparent; color: rgb(51, 51, 51); font-size: 24px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;font style=&quot;background-color: transparent; font-size: 20px; color: rgb(51, 51, 51);&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;(firmware.hex)&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="689" width="413" x="10" y="-699" as="geometry" />
         </mxCell>
         <mxCell id="app" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=top;spacingTop=4;" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;Application&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;font style=&quot;font-size: 15px; color: rgb(102, 102, 102);&quot;&gt;&amp;nbsp;RC-direct/main.c, RC-switched/main.c&lt;/font&gt;&lt;/b&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- &lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;Enumeration:&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;- EP discovery&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;- BAR sizing and placement&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;- Command register&lt;br&gt;- &lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;RC-switched:&lt;/font&gt;&lt;/b&gt; switch bus numbers and memory windows, up to 4 EPs&lt;br&gt;- &lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Self-test:&lt;/font&gt;&lt;/b&gt; Memory Write + Read, result marker 0xFACE&lt;/div&gt;&lt;/div&gt;" vertex="1">
@@ -47,7 +47,7 @@
           <mxGeometry height="110" width="113" x="866" y="-232" as="geometry" />
         </mxCell>
         <mxCell id="e_mmio" edge="1" parent="1" source="reg" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#1f77b4;fontColor=#1f77b4;labelBackgroundColor=none;fontStyle=1;fontSize=13;startArrow=classic;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="csr" value="&lt;div style=&quot;line-height: 90%;&quot;&gt;Memory&lt;div&gt;Mapped I/O&lt;div&gt;&lt;font style=&quot;font-size: 7px; line-height: 90%;&quot;&gt;&amp;nbsp; &amp;nbsp;&lt;/font&gt;&lt;br&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;(mem_if)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;">
-          <mxGeometry relative="1" x="0.4631" y="3" as="geometry">
+          <mxGeometry relative="1" x="0.2575" y="3" as="geometry">
             <mxPoint as="offset" />
             <mxPoint x="362" y="-166.41056910569137" as="sourcePoint" />
             <mxPoint x="559" y="-166" as="targetPoint" />
