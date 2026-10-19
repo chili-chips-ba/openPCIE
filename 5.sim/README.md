@@ -46,7 +46,7 @@ The *openPCIE* top level test bench is based around the [*pcievhost*](https://gi
 The diagram below is a block diagram of the top level test bench showing the main features.
 
 <p align=center>
-<img alt="openPCIE Root Complex test bench structure" width=1000 src="../0.doc/5.sim/tb-structure.drawio.svg">
+<img alt="openPCIE Root Complex test bench structure" width=1000 src="../0.doc/5.sim/tb-structure.drawio.png">
 </p>
 
 The DUT PCIE link is connected to the _pcievhost_, instantiated in a wrapper x1 PIPE link (`pcieVHostPipex1.v`) configured as an endpoint, and running some user code  to generate PCIE traffic as required, though it will automatically respond to transactions requiring a completion. The model is capable of displaying link traffic on both the up- and downstream links to the console, configurable via a `ContDisps.hex` file. To drive the DUT's memory mapped slave bus, a _VProc_ component is used with a BFM wrapper for the specific bus protocol used for the device&mdash;in this case PCIE. A program can then be run on the virtual processor to access the device's memory mapped registers etc. and update the TX link signals and read from the RX link signals.
@@ -737,7 +737,7 @@ Note that, as C functions, there are no default parameters and the <tt>little_en
 Compiling co-designed application code, either compiled for the native host machine, or to run on the <tt>rv32</tt> RISC-V ISS will need further layers on top of these APIs, which will be virtualised away by that point ([see the sections below](#co-simulation-hal)). The diagram below summarises the software layers that make up a program running on the _VProc_ HDL component. The "native test code" use case, shown at the top left, is for the case just described above  that use the APIs directly, though they can optionally use the HAL.
 
 <p align="center">
-<img alt="Software layers on the VProc soc_cpu" src="../0.doc/5.sim/soc-cpu-vproc-stack.drawio.svg" width=800>
+<img alt="Software layers on the VProc soc_cpu" src="../0.doc/5.sim/soc-cpu-vproc-stack.drawio.png" width=800>
 </p>
 
 ### Other Software Use Cases

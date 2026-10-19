@@ -2,7 +2,7 @@
 
 This directory contains the C source code, startup assembly, and linker scripts required to build the **open-source driver** for the RISC-V Root Complex. This driver performs enumeration and memory transactions to act as the PCIE Host for the system.
 
-<p align="center"><img src="../0.doc/3.sw/sw-structure.drawio.svg" width="100%" alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints"></p>
+<p align="center"><img src="../0.doc/3.sw/sw-structure.drawio.png" width="100%" alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints"></p>
 
 The diagram source is [`0.doc/3.sw/sw-structure.drawio`](../0.doc/3.sw/sw-structure.drawio).
 

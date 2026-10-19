@@ -4,11 +4,11 @@ This is an opensource variant of what was first tested with the
 [AMD-proprietary RC-switched IP stack](../../2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd).
 It is an extra / bonus deliverable, above and beyond our original plans.
 
-- [x] ✔️ Hardware FSM replaced with an opensource RISC-V based SOC
-- [x] ✔️ PCIE IP core replaced with opensource RTL
-- [x] ✔️ Builds with a **fully opensource toolchain**
-- [x] ✔️ Enumerates an ASM1184e switch and the endpoints behind it
-- [x] ✔️ SOC uses PeakRDL for CSR generation, from the same `csr.rdl` as RC-direct
+- ✅ Hardware FSM replaced with an opensource RISC-V based SOC
+- ✅ PCIE IP core replaced with opensource RTL
+- ✅ Builds with a **fully opensource toolchain**
+- ✅ Enumerates an ASM1184e switch and the endpoints behind it
+- ✅ SOC uses PeakRDL for CSR generation, from the same `csr.rdl` as RC-direct
 
 The objectives of this dev track were to:
  - first design an opensource _RC-switched_ core, based on the already tested

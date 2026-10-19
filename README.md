@@ -45,7 +45,7 @@ The project relies on a modular hardware ecosystem that combines our custom-desi
 ### openBackplane PCB
 
 <p align="center" width="100%">
-    <img alt="openPCIE backplane" width="50%" src="1.pcb/0.doc/openPCIE-backplane.png">
+    <a href="https://www.canva.com/design/DAHXSTcjxEc/odZj_VbgU20EEeZ1zuJlJA/watch?utm_content=DAHXSTcjxEc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h8306e0024f" target="_blank" rel="noopener"><img alt="openPCIE backplane intro video (click to watch)" width="50%" src="0.doc/artwork/openPCIE-backplane.png"></a>
     <img alt="openPCIE backplane block diagram" width="50%" src="1.pcb/0.doc/openPCIE-BlockDiagram.jpg">
 </p>
 
@@ -182,7 +182,7 @@ The key specifications are summarized below:
 The opensource Root Complex RTL is a chain of blocks joined by SystemVerilog interfaces: the RISC-V SoC hands TLPs over AXI-Stream to the PCIE stack, which converts them for the `PCIE_2_1` hard block and drives the GTP transceiver over PIPE.
 
 <p align="center">
- <img alt="RTL blocks of the opensource Root Complex and the SystemVerilog interfaces between them" src="0.doc/2.rtl/block-diagram.drawio.svg" width="100%">
+ <img alt="RTL blocks of the opensource Root Complex and the SystemVerilog interfaces between them" src="0.doc/2.rtl/block-diagram.drawio.png" width="100%">
 </p>
 
 Details are in the [RTL README](2.rtl/README.md#systemverilog-interfaces). Per design: [common RTL](2.rtl/0.common.opensource/README.md), [EP](2.rtl/1.EP.opensource/README.md), [RC-direct](2.rtl/2.RC-direct.opensource/README.md), [RC-switched](2.rtl/3.Bonus--RC-switched.opensource/README.md). The AMD/Vivado-IP reference designs are in [2.amd-rtl-with-Vivado-build](2.amd-rtl-with-Vivado-build/README.md) ([EP](2.amd-rtl-with-Vivado-build/1.EP.amd/README.md), [RC-direct](2.amd-rtl-with-Vivado-build/2.RC-direct.amd/README.md), [RC-switched](2.amd-rtl-with-Vivado-build/3.Bonus--RC-switched.amd/README.md)).
@@ -203,7 +203,7 @@ Details are in the [RTL README](2.rtl/README.md#systemverilog-interfaces). Per d
 The software stack is designed to run **bare-metal** on the soft RISC-V SoC embedded within the FPGA. In a standard PC, the Operating System (Linux/Windows) manages PCIE enumeration automatically in the background, hiding the complexity from the developer. In this project, our **baremetal open-source driver** takes full control, manually performing every step of the enumeration process to act as the PCIE Host.
 
 <p align="center">
- <img alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints" src="0.doc/3.sw/sw-structure.drawio.svg" width="100%">
+ <img alt="Firmware layers: application, PCIE driver, HAL, register map and startup, talking to the CSR block over the CPU memory bus, then through pcie_top to a direct endpoint or a switch with up to 4 endpoints" src="0.doc/3.sw/sw-structure.drawio.png" width="100%">
 </p>
 
 The architecture adopts a clean, well-defined, layered approach:
@@ -232,7 +232,7 @@ Details are in the [SW README](3.sw/README.md).
 The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the RISC-V RTL core that goes into the bitstream (eduBOS5 by default, or PicoRV32), or to co-simulate software using the virtual processor, with a significant speed up in simulation times.
 
 <p align="center">
-<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.svg" width="75%">
+<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.png" width="75%">
 </p>
 
 The test bench has the following features:
@@ -276,7 +276,7 @@ More details of the test bench, the _pcievhost_ component and its usage can be f
 The openPCIE implementation workflow is organized into several stages, covering the complete process from setting up the development environment to verifying the design on physical hardware.
 
 <p align="center">
- <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation, lint and formal equivalence" src="0.doc/4.build/build-flow.drawio.svg" width="100%">
+ <img alt="Build flow: CSR generation, firmware, bitstream through Vivado or openXC7, co-simulation, lint and formal equivalence" src="0.doc/4.build/build-flow.drawio.png" width="100%">
 </p>
 
 ## Prerequisites
@@ -488,20 +488,20 @@ This dev activity is about creating the minimal PCIE infrastructure necessary fo
 
 Such approach is less work and less risk than to design our own PCIE motherboard, with a large FPGA on it. But, it is also a task that we did not appreciate from the get-go. In a bit of a surprise, half-way through planning, we've realized that a suitable, ready-made backplane was not available on the market. This initial disappointment then turned into excitement knowing that this new outcome would make the project even more attractive / more valuable for the community... esp. when **[Envox.eu](https://www.envox.eu)** has agreed to step in and help. They will take on the PCIE backplane PCB development activity.
 
- - [x] ✔ Create requirements document.
- - [x] ✔ Select components. Schematic and PCB layout design.
- - [x] ✔ Review and iterate design to ensure robust operation at 5 GT/s (PCIE Gen2), using openEMS for simulation of high-speed traces.
- - [x] ✔ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
- - [x] ✔ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
+ - ✅ Create requirements document.
+ - ✅ Select components. Schematic and PCB layout design.
+ - ✅ Review and iterate design to ensure robust operation at 5 GT/s (PCIE Gen2), using openEMS for simulation of high-speed traces.
+ - ✅ Manufacture prototype. Debug and bringup, using AMD-proprietary on-chip IBERT IP core to assess Signal Integrity.
+ - ✅ Produce second batch that includes all improvements. Distribute it, and release design files with full documentation.
 
 #### `PART 2. Project setup and preparatory activities`
- - [x] ✔ Procure FPGA development boards and PCIE accessories.
- - [x] ✔ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
+ - ✅ Procure FPGA development boards and PCIE accessories.
+ - ✅ Put together a prototype system. Bring it up using proprietary RTL IP, proprietary SW Driver, TestApp and Vivado toolchain.
  
 #### `PART 3. Initial HW/SW implementation`
- - [x] ✔ HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
- - [x] ✔ SW development of opensource driver for the PCIE RC HW function. It runs bare-metal on the RISC-V SOC, without Linux - see [SW Architecture](#sw-architecture).
- - [x] ✔ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
+ - ✅ HW development of opensource RTL that mimics the functionality of PCIE RC proprietary solution.
+ - ✅ SW development of opensource driver for the PCIE RC HW function. It runs bare-metal on the RISC-V SOC, without Linux - see [SW Architecture](#sw-architecture).
+ - ✅ Design SOC based on RISC-V CPU with PCIE RC as its main peripheral.
 
 #### `PART 4. HW/SW co-simulation using full PCIE EP model`
 
@@ -511,17 +511,17 @@ Their VProc can be used not only to faithfully model the RISC-V CPU and SW inter
 
 With the full end-to-end simulation thus in place, we hope that the need for hardware debugging, using ChipScope, expensive test equipment and PCIE protocol analyzers would be alleviated.
 
- - [x] ✔ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
- - [x] ✔ Testbench development and build up. Execution and debug of sim testcases.
- - [x] ✔ Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
+ - ✅ Extension of the existing PCIE RC model for some additional configurability of the EP capabilities.
+ - ✅ Testbench development and build up. Execution and debug of sim testcases.
+ - ✅ Documentation of EP model, TB and sim environment, with objectives to make it all simple enough to pickup, adapt and deploy in other projects.
  
 #### `PART 5. Integration, testing and iterative design refinements`
- - [x] ✔ One-by-one replace proprietary design elements of the PART 2 prototype system with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
+ - ✅ One-by-one replace proprietary design elements of the PART 2 prototype system with our opensource versions (except for Vivado and TestApp). Test it along the way, fixing problems as they occur.
  
 #### `PART 6. Prepare Demo and port it to openXC7`
 
- - [x] ✔ Develop our opensource PIO TestApp software and representative Demo.
- - [x] ✔ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
+ - ✅ Develop our opensource PIO TestApp software and representative Demo.
+ - ✅ Build design with _openXC7_, reporting issues and working with developers to fix them, possibly also trying _ScalePNR_ flow.
 
 Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
 

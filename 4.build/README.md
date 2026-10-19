@@ -38,7 +38,7 @@ Windows `.exe` files on `PATH` count as missing.
 | 2. SW | [`sw_build`](./sw_build) | `firmware.elf`, `firmware.bin`, `firmware.hex` |
 | 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.x4.slang/top.x4.direct.bit` |
 
-<p align="center"><img src="../0.doc/4.build/build-flow.drawio.svg" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
+<p align="center"><img src="../0.doc/4.build/build-flow.drawio.png" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
 
 The diagram source is [`0.doc/4.build/build-flow.drawio`](../0.doc/4.build/build-flow.drawio).
 

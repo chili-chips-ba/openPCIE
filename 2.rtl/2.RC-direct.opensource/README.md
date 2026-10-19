@@ -3,10 +3,10 @@
 This is an opensource variant of what was first tested with the
 [AMD-proprietary RC-direct IP stack](../../2.amd-rtl-with-Vivado-build/2.RC-direct.amd).
 
-- [x] ✔️ Hardware FSM replaced with an opensource RISC-V based SOC
-- [x] ✔️ PCIE IP core replaced with opensource RTL
-- [x] ✔️ Builds and runs with a **fully opensource toolchain** - link up at Gen2
-- [x] ✔️ Upgrade the current simple SOC to a version that uses PeakRDL for CSR generation
+- ✅ Hardware FSM replaced with an opensource RISC-V based SOC
+- ✅ PCIE IP core replaced with opensource RTL
+- ✅ Builds and runs with a **fully opensource toolchain** - link up at Gen2
+- ✅ Upgrade the current simple SOC to a version that uses PeakRDL for CSR generation
 
 Together with our [openPCIE backplane](../../1.pcb) and Simon's unique
 [end-to-end PCIE sim](../../5.sim) setup, this is **`one of the three pillars`**,

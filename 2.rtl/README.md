@@ -55,7 +55,7 @@ picorv32 memory bus. Regenerate with `make -f MakefileCSR` in
 
 Buses are SystemVerilog interfaces, all in [`0.common.opensource/src/pcie/`](0.common.opensource/src/pcie), each with one modport per side.
 
-<p align="center"><img src="../0.doc/2.rtl/block-diagram.drawio.svg" width="100%" alt="SV interfaces between the RC blocks: axis_if from the SOC to trn_bridge, trn_if to the PCIE_2_1 hard block, mim_if to its packet buffers, pipe_if (pipe_mac, pipe_phy) down to the GTP, gtp_if per lane, cfg_if back to the SOC"></p>
+<p align="center"><img src="../0.doc/2.rtl/block-diagram.drawio.png" width="100%" alt="SV interfaces between the RC blocks: axis_if from the SOC to trn_bridge, trn_if to the PCIE_2_1 hard block, mim_if to its packet buffers, pipe_if (pipe_mac, pipe_phy) down to the GTP, gtp_if per lane, cfg_if back to the SOC"></p>
 
 | Interface | Between | Carries |
 |---|---|---|
@@ -76,7 +76,7 @@ The `PCIE_2_1` and `GTPE2` hard macros keep their flat pins; unused ones are tie
 
 [`clk_rst_gen.sv`](0.common.opensource/src/pcie/clk_rst_gen.sv) makes every clock, each with a reset asserted asynchronously and released on that clock:
 
-<p align="center"><img src="../0.doc/2.rtl/clk-rst.drawio.svg" width="100%" alt="clk_rst_gen: refclk passes through GTPE2 lane 0 TXOUTCLK into the MMCM, which makes clk125, pipe_clk (125 or 250 MHz through a BUFGCTRL) and clk62m5; PERST# and MMCM lock clear two FDCE with INIT 0 that make rst125_n, re-synchronised to pipe_rst_n and rst62m5_n"></p>
+<p align="center"><img src="../0.doc/2.rtl/clk-rst.drawio.png" width="100%" alt="clk_rst_gen: refclk passes through GTPE2 lane 0 TXOUTCLK into the MMCM, which makes clk125, pipe_clk (125 or 250 MHz through a BUFGCTRL) and clk62m5; PERST# and MMCM lock clear two FDCE with INIT 0 that make rst125_n, re-synchronised to pipe_rst_n and rst62m5_n"></p>
 
 | Clock / reset | Frequency | Used by |
 |---|---|---|
