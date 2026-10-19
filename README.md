@@ -232,7 +232,7 @@ Details are in the [SW README](3.sw/README.md).
 The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to simulation which allows a common test environment to be used whilst selecting between alternative CPU components, one of which uses the [_VProc_ virtual processor](https://github.com/wyvernSemi/vproc) co-simulation element. This allows simulations to be fully HDL, with the RISC-V RTL core that goes into the bitstream (eduBOS5 by default, or PicoRV32), or to co-simulate software using the virtual processor, with a significant speed up in simulation times.
 
 <p align="center">
-<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.png" width="75%">
+<img alt="openPCIE Root Complex test bench structure" src="0.doc/5.sim/tb-structure.drawio.png" width="100%">
 </p>
 
 The test bench has the following features:
@@ -561,6 +561,10 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://www.envox.eu"><img alt="EEZ / Envox logo" width="25%" src="0.doc/artwork/EEZ-web-logo.png"></a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/chili-chips-ba/openCologne-PCIE"><img alt="openCologne-PCIE logo" width="15%" src="0.doc/artwork/openCologne-PCIE.hex.png"></a>
+</p>
+
 **KiCad** turns electrical idea into a manufacturable board. **openXC7**, with **Yosys** at its core, turns RTL into a loadable FPGA bitfile. **PeakRDL** turns our SystemRDL file into CSR RTL+headers+RegMap docs. **WaveCrux** greatly facilitates waveform decoding and viewing. But, that's not everything that made this project possible -- Thank you all for these wonderful opensource tools :sparkles:.
 
 <p align="center">
@@ -626,6 +630,14 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 Feel like helping opensource PCIE community grow better and larger?! See [Contributions](CONTRIBUTING.md).
 
 Don't feel shy to reach out and ask for help ===> [![issues](https://badgen.net/github/open-issues/chili-chips-ba/openPCIE?label=issues)](https://github.com/chili-chips-ba/openPCIE/issues).
+
+--------------------
+
+### Future outlook
+
+Our next step is **openPCIE3**, a 24-lane Gen3 backplane with Optical Copper Link (OCuLink). It is built around the Diodes PI7C9X3G1224GP switch (PCIE 3.1, 24 lanes, 12 ports), and links one or two PCs, each over an x4 OCuLink cable, to four x4 EP connectors (two slots, two M.2).
+
+Its main use is as a PC I/O extender, adding compute, storage or I/O cards, e.g. for opensource AI servers. The PC drives REFCLK and reset over the cable, so the board needs no local clock or reset generator. Design input is welcome in [#9](https://github.com/chili-chips-ba/openPCIE/issues/9) and [#13](https://github.com/chili-chips-ba/openPCIE/issues/13).
 
 --------------------
 
