@@ -412,6 +412,7 @@ EBMC's sister tools are CBMC (C/C++) and JBMC (Java), for software.
 
 - RISC-V International, [*The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA*](https://riscv.org/specifications/ratified/) -- RV32I, the base integer ISA that eduBOS5 implements.
 - [tarik-ibrahimovic/eduBOS5](https://github.com/tarik-ibrahimovic/eduBOS5) -- the original core.
+- T. Ibrahimović, N. Osmić, [*eduBOS5: A Case Study in Structured SystemVerilog and PPA Optimization for Resource-Constrained RISC-V FPGA Cores*](https://ieeexplore.ieee.org/document/11183711), Austrochip 2025, pp. 57-60 -- the paper on the core.
 - [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) -- WaveCrux, the waveform viewer, with its built-in RISC-V instruction-trace decoder.
 
 -----------
