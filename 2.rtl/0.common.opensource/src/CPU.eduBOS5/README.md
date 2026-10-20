@@ -28,6 +28,7 @@ x0 is never written, so it must read 0 from the start. An FPGA RAM has a power-u
 | `edubos5_pkg.sv` | common types and opcodes |
 | [`formal/`](formal) | the multicycle proof ([formal proving](#getting-started-with-formal-proving-a-worked-example)) and [riscv-formal](#riscv-formal-every-instruction-against-the-isa): harnesses and scripts |
 | [`wavecrux/`](wavecrux) | the CPU's RVFI view and its pictures ([WaveCrux](#watching-the-cpu-in-wavecrux)) |
+| [`sim/`](sim) | the core before reset acts, in Icarus and Verilator ([below](#a-retirement-before-reset-seen-only-in-simulation)) |
 
 Cycles per instruction (`EN_WAIT4REGS` selects the pipeline):
 
@@ -47,7 +48,8 @@ The rv32 ISS models both (`-V EDUBOS5STG2`, `-V EDUBOS5STG3`, see [5.sim](../../
 |---|---|---|---|
 | Vivado simulator (`xsim`) | 2026.1 | co-simulation with the firmware; the SVA multicycle check (dynamic) | [5.sim](../../../../5.sim/README.md), `` `define EDUBOS5_MCP_CHECK `` |
 | rv32 ISS | 1.3.3, modified | instruction-level model, cycle-exact against the RTL | [5.sim](../../../../5.sim/README.md), `make CPU=iss` |
-| Verilator | 5.052 | lint; accepts the SVA too (`--assert`) | `run-lint.sh` |
+| Verilator | 5.052 | lint; accepts the SVA too (`--assert`); 2-state power-up | `run-lint.sh`, [`sim/run-power-up.sh`](sim/run-power-up.sh) |
+| Icarus Verilog + sv2v | 13.0, v0.0.13 | 4-state power-up | [`sim/run-power-up.sh`](sim/run-power-up.sh) |
 | Verible | v0.0-4296-g0f262651 | style lint, format | `run-lint.sh`, `run-format.sh` |
 | Yosys + slang (`read_slang`), openXC7 v1.0.0 | 0.69 | lint; equivalence (LEQ): an RTL change keeps behaviour | `run-lint.sh`, `run-leq.sh` |
 | ABC `pdr` (`yosys-abc`) | 1.01, in Yosys 0.69 | the static multicycle proof, unbounded | [`formal/run-mcp-formal.sh`](formal/run-mcp-formal.sh) |
@@ -159,6 +161,27 @@ To set it up by hand, on another VCD:
 1. Display format: right-click a value in the Value column -> Display Format -> Hexadecimal.
 2. Decoder: Ctrl+Shift+D -> RISC-V Instruction Trace; bind `clk`, `instruction`, `valid`, `pc` to `rvfi_clk`, `rvfi_insn`, `rvfi_valid`, `rvfi_pc_rdata`; XLEN 32, no extensions.
 3. Inspector: View -> Toggle Stage Panel -> Add Widget -> Instrument -> RVFI Commit Inspector. Click the widget, then bind the `rvfi_*` signals one by one in Signal Bindings; Auto-Bind does not find them yet. Bind `rvfi_order` too, or the Commits list stops after two rows.
+
+### A retirement before reset, seen only in simulation
+
+Martin Fink (Ferrite Engineering) found this one with WaveCrux's checks on a Verilator capture: the trace opens with a retirement at time 0, `rvfi_order` 0, and the first real instruction has `rvfi_order` 0 again. The order and control-flow checks flag it.
+
+It is not the core. Reset puts the FSM in `EXECUTE`, which does not retire. But before the first clock, reset has not acted yet:
+- The asynchronous reset acts on a falling edge of `arst_n`. A reset that is already low at time 0 has no edge, so it acts at the first clock.
+- Until then, every flip-flop holds its power-up value. Verilator is 2-state and starts them at 0, and 0 encodes `FETCH_INSTR`, the state that raises `rvfi_valid`. Icarus is 4-state and starts them at X.
+
+| | Icarus 13.0 (4-state) | Verilator 5.052 (2-state) |
+|---|---|---|
+| time 0 to 5 ns, before the first clock | `state` X, `rvfi_valid` X, `rvfi_order` X | `state` `FETCH_INSTR`, `rvfi_valid` 1, `rvfi_order` 0 |
+| after the first clock, reset acts | `state` `EXECUTE`, `rvfi_valid` 0 | the same |
+
+Both pipelines behave the same. Hardware does not: there, an asynchronous reset acts as soon as it is low. To see it yourself (Icarus after sv2v, which converts the `unique if` Icarus cannot read):
+
+```
+bash sim/run-power-up.sh
+```
+
+**Lesson:** a trace check sees the simulator as well as the core. Before blaming the core, check the finding against the RTL; here the first explanation, "the core retires during reset", was wrong. And read an RVFI trace from the end of reset. Power-up values differ between tools in formal too: [gotcha 2](#gotchas).
 
 ## riscv-formal: every instruction against the ISA
 
