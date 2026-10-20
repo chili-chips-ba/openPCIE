@@ -615,6 +615,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 
 ### Community Outreach:
+- [2026-10-20, Hacker News](https://news.ycombinator.com/item?id=50162122)
 - [2026-10-20, Mastodon](https://mastodon.social/@chili_chips/117472074410775767)
 - [2026-10-19, daily.dev](https://daily.dev/posts/openpcie-fpga-root-complex-openbackplane-edubos5-risc-v-co-sim-cxzgaujjr)
 - [2026-10-10](https://www.linkedin.com/feed/update/urn:li:activity:7509048253993242624?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7509048253993242624%2C7514858764861104128%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287514858764861104128%2Curn%3Ali%3Aactivity%3A7509048253993242624%29)
