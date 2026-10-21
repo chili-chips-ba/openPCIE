@@ -467,7 +467,7 @@ Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). 
 |---|---|---|---|---|
 | 1 | GT attribute defaults differ from Xilinx's | open | [#17](https://github.com/chili-chips-ba/openPCIE/issues/17) | [nextpnr#21](https://github.com/openXC7/nextpnr/issues/21) |
 | 8 | `BEL` attribute on non-IO cells | still broken, reproduced upstream (a) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
-| 14 | `IBUFDS_GTE2.ODIV2` unusable | open, root cause found upstream | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24) | [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
+| 14 | `IBUFDS_GTE2.ODIV2` unusable | open: the chipdb site type lacks `ODIV2`; fix planned upstream (site type, `pack_io`, Vivado compare), then a board check here. Vivado also refuses `O` and `ODIV2` both on a `BUFG` (one shared wire) | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24) | [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
 | 18 | Derived-constraint warning swaps its values | new in v1.0.0 | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) | [nextpnr#85](https://github.com/openXC7/nextpnr/issues/85) |
 | 19 | Yosys: wrong `CLKSWING_CFG` default | new, Slang | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) | [yosys#6322](https://github.com/YosysHQ/yosys/issues/6322) |
 | 20 | sv-elab: no `real` primitive parameters | new, Slang | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) | [sv-elab#282](https://github.com/povik/sv-elab/issues/282) |
