@@ -7,7 +7,8 @@
 // memories, as the SOC (riscv_pcie_soc.sv) connects it.
 //  - IMEM: synchronous read; the word changes only if the address changed.
 //  - DMEM: free read data; dmem_rdy only answers a pending read (load_wait),
-//    the SOC's bus rule.
+//    the SOC's bus rule. EDUBOS5_STORE_WAIT (STORE_WAITS_RDY=1): it also
+//    answers a store, after any number of clocks.
 // Plain Verilog with the riscv-formal macros; the core is read by read_slang.
 //==========================================================================
 module rvfi_wrapper (
@@ -43,7 +44,12 @@ module rvfi_wrapper (
   always @(posedge clock) begin
     load_wait <= !reset && dmem_vld && dmem_we == 4'b0000 && !dmem_ready;
   end
+`ifdef EDUBOS5_STORE_WAIT
+  wire store_req = dmem_vld && dmem_we != 4'b0000;
+  assign dmem_rdy = dmem_ready && (load_wait || store_req);
+`else
   assign dmem_rdy = dmem_ready && load_wait;
+`endif
 
 // Legal, aligned code: eduBOS5 has no illegal-instruction and no misaligned
 // trap. EDUBOS5_LEGAL_CODE (LEGAL=1) is both halves below; each half can also
@@ -88,7 +94,11 @@ module rvfi_wrapper (
 // answered.
 `ifdef RISCV_FORMAL_FAIRNESS
   always @* begin
+`ifdef EDUBOS5_STORE_WAIT
+    if (!reset) assume (dmem_ready == (load_wait || store_req));
+`else
     if (!reset) assume (dmem_ready == load_wait);
+`endif
   end
 `endif
 

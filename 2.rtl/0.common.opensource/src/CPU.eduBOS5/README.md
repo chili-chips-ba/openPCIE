@@ -15,6 +15,7 @@
 | riscv-formal | `bash formal/run-riscv-formal.sh` ([below](#riscv-formal-every-instruction-against-the-isa)) | in riscv-formal itself: `cores/picorv32` |
 | x0 = 0, FPGA (default) | `TARGET_IS_ASIC=0`: register file RAM starts at 0 | `TARGET_IS_ASIC=0`: register file RAM starts at 0 |
 | x0 = 0, ASIC | `TARGET_IS_ASIC=1`: read mux | `TARGET_IS_ASIC=1`: read mux |
+| store on a bus that can make it wait | `STORE_WAITS_RDY=1`: the store holds its request until `dmem_rdy`, stalling the core; 0 cycles more when `dmem_rdy` comes in the request cycle | waits on `mem_ready` always |
 
 x0 is never written, so it must read 0 from the start. An FPGA RAM has a power-up value (its INIT); an ASIC does not, hence the mux.
 
@@ -38,7 +39,7 @@ Cycles per instruction (`EN_WAIT4REGS` selects the pipeline):
 | load, eduBOS5 own: memory `ready` with `valid` | 4 | 5 |
 | load in the openPCIE SOC: RAM/CSR `ready` 1 cycle after `valid` | 5 | 6 |
 
-eduBOS5 registers `dmem_vld`, so a load requests in `WAIT_DATA`; the SOC adds one `WAIT_DATA` cycle. The SOC figures are measured on the RTL. Stores never wait.
+eduBOS5 registers `dmem_vld`, so a load requests in `WAIT_DATA`; the SOC adds one `WAIT_DATA` cycle. The SOC figures are measured on the RTL. Stores do not wait (`STORE_WAITS_RDY=0`, the default and the openPCIE SOC); with `STORE_WAITS_RDY=1`, each clock without `dmem_rdy` adds one ([#40](https://github.com/chili-chips-ba/openPCIE/issues/40)).
 
 The rv32 ISS models both (`-V EDUBOS5STG2`, `-V EDUBOS5STG3`, see [5.sim](../../../../5.sim/README.md)).
 
@@ -198,7 +199,7 @@ RISCV_FORMAL=<riscv-formal clone> MODE=cover bash formal/run-riscv-formal.sh 0 "
 
 `LEGAL=1` is two halves that can also be set alone: `ALIGNED=1` (natural alignment, word-aligned targets) and `LEGAL_STORES=1` (stores have a legal `funct3`). `EXTRA=1` adds `liveness`, `hang`, `causal_mem` and `causal_io`; `NO_SYSTEM=1` keeps SYSTEM and unknown opcodes out of IMEM, which those two need (see below). `DEPTH=<n>` sets the bound of the standard checks. `MODE=cover` asks the opposite question: can each check's cover statement be reached at all? A FAIL there means the check is never exercised, so its PASS in the normal run proves nothing.
 
-- [`formal/rvfi_wrapper.sv`](formal/rvfi_wrapper.sv): free instruction and data memory, connected as the SOC does: a synchronous IMEM, and `dmem_rdy` only answers a pending read.
+- [`formal/rvfi_wrapper.sv`](formal/rvfi_wrapper.sv): free instruction and data memory, connected as the SOC does: a synchronous IMEM, and `dmem_rdy` only answers a pending read. `STORE_WAIT=1` sets `STORE_WAITS_RDY=1` and lets `dmem_rdy` hold a store for any number of clocks.
 - [`formal/checks.cfg`](formal/checks.cfg): RV32I, bounded to 16 clocks (about 7 instructions), ABC `bmc3`. Z3 replays a failure into a VCD.
 
 Results, 44 checks; each run takes 9 to 14 s with 12 checks in parallel:
