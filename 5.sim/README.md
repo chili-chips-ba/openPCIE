@@ -10,6 +10,7 @@
   * [Model and viewer versions](#model-and-viewer-versions)
   * [What the simulation does](#what-the-simulation-does)
   * [Building and running](#building-and-running)
+  * [WaveCrux decoders](#wavecrux-decoders)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
   * [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)
   * [How long a TLP spends in the hard macro](#how-long-a-tlp-spends-in-the-hard-macro)
@@ -348,6 +349,18 @@ make USRSIMOPTS="--define PIPE_RAW_DUMP"     # raw PIPE symbols
 
 The LTSSM state, the link status bits and the firmware's result marker are
 always printed, with no define needed.
+
+### WaveCrux decoders
+
+Three sets of decoders, one per layer, that complement each other:
+
+| Decoders | Show | Where |
+|---|---|---|
+| Ferrite's PIPE, Data Link Layer and serial-line decoders (free) | ordered sets, DLLPs, Ack/Nak, flow control, LCRC, TLP framing | [wavecrux-decoders `decoders/pcie`](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie) |
+| Our TLP decoder (free) | every TLP named, each completion paired with its request | [`tools/wavecrux-pcie-tlp`](tools/wavecrux-pcie-tlp), moving to wavecrux-decoders ([PR #13](https://github.com/Ferrite-Engineering/wavecrux-decoders/pull/13)) |
+| WaveCrux Pro PCIe TLP analysis | latency, timeouts, Base Spec rule checks, bus statistics | [WaveCrux docs](https://github.com/Ferrite-Engineering/wavecrux/blob/main/docs-site/docs/protocol-decoders.md#pcie-tlp-analysis) |
+
+Setting them up on this test bench: [TLPs](#viewing-the-tlps-in-wavecrux) and [PIPE](#viewing-the-pipe-in-wavecrux) below.
 
 ### Viewing the TLPs in WaveCrux
 

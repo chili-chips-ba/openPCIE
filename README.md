@@ -594,6 +594,8 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
   <a href="https://github.com/YosysHQ/picorv32"><img alt="PicoRV32 logo" width="20%" src="0.doc/artwork/picoRV32.logo.png"></a>
   <a href="https://riscv.org"><img alt="RISC-V logo" width="12%" src="0.doc/artwork/RISC-V-logo.svg"></a>
   <a href="https://www.cprover.org/ebmc/"><img alt="EBMC logo" width="20%" src="0.doc/artwork/EBMC.logo.png"></a>
+  <a href="https://www.ngscopeclient.org"><img alt="ngscopeclient logo" width="20%" src="0.doc/artwork/ngscopeclient.logo.png"></a>
+  <a href="https://github.com/enjoy-digital/litex"><img alt="LiteX logo" width="10%" src="0.doc/artwork/LiteX.logo.png"></a>
 </p>
 
 
@@ -615,6 +617,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 
 ### Community Outreach:
+- [2026-10-20, LinkedIn (Ferrite)](https://lnkd.in/p/g-yGBEU8)
 - [2026-10-20, Hacker News](https://news.ycombinator.com/item?id=50162122)
 - [2026-10-20, Mastodon](https://mastodon.social/@chili_chips/117472074410775767)
 - [2026-10-19, daily.dev](https://daily.dev/posts/openpcie-fpga-root-complex-openbackplane-edubos5-risc-v-co-sim-cxzgaujjr)
