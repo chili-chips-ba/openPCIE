@@ -121,7 +121,8 @@ module gtp_wrapper
       .SIM_RESET_SPEEDUP ("FALSE"),
       .SIM_VERSION       ("1.0"),
 
-      // FIXME: openXC7 ignores these and writes 0x1F03DC (openPCIE #18); the
+      // FIXME: openXC7 v1.0.0 ignores these and writes 0x1F03DC (openPCIE #18;
+      // fixed on nextpnr main, nextpnr#84, not yet released); the
       // board-proven openXC7 bitstream runs on that value, not on this one.
       // Test on hardware before relying on a fixed nextpnr.
       .PLL0_CFG       (27'h01F024C),

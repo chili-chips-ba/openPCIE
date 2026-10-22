@@ -132,9 +132,17 @@ NEXTPNR_XILINX     ?= nextpnr-xilinx
 NEXTPNR_HIMBAECHEL ?= nextpnr-himbaechel
 BBASM              ?= bbasm
 FPGA_AS            ?= fpga-as
-FASM2FRAMES        ?= fasm2frames
+FASM2FRAMES        ?= $(firstword $(wildcard $(OPENXC7_ROOT)/venv/bin/fasm2frames) fasm2frames)
 XC7FRAMES2BIT      ?= xc7frames2bit
 OPENXC7_PYTHON     ?= python3
+
+# FASM -> bitstream. ASSEMBLER=prjxray: fasm2frames + xc7frames2bit (default
+# for both toolchains). ASSEMBLER=fpga-as: the v1.0.0 one-step assembler.
+# FIXME: fpga-as v1.0.0 writes the 83-bit GTPE2_CHANNEL RXCDR_CFG wrong (keeps
+# bits 0-23 only), on every lane. Fixed in lromor/fpga-assembler 282ef7c2, not
+# in the v1.0.0 pin (hansfbaier/fpga-assembler cf0e3f08). Make fpga-as the
+# default again once the toolchain ships the fix.
+ASSEMBLER          ?= prjxray
 
 # With TOOLCHAIN=new, NEXTPNR_XILINX is the openXC7 shim that translates the
 # nextpnr-xilinx flags for the himbaechel engine; it runs the engine named here
@@ -382,7 +390,9 @@ check-env:
 	@command -v $(NEXTPNR_XILINX)     > /dev/null || (echo "ERROR: $(NEXTPNR_XILINX) (shim) not found" && exit 1)
 	@command -v $(NEXTPNR_HIMBAECHEL) > /dev/null || (echo "ERROR: $(NEXTPNR_HIMBAECHEL) not found"    && exit 1)
 	@command -v $(BBASM)              > /dev/null || (echo "ERROR: $(BBASM) not found"                 && exit 1)
-	@command -v $(FPGA_AS)            > /dev/null || (echo "ERROR: $(FPGA_AS) not found"               && exit 1)
+	@$(if $(filter fpga-as,$(ASSEMBLER)),command -v $(FPGA_AS) > /dev/null || (echo "ERROR: $(FPGA_AS) not found" && exit 1),true)
+	@$(if $(filter prjxray,$(ASSEMBLER)),command -v $(FASM2FRAMES) > /dev/null || (echo "ERROR: $(FASM2FRAMES) not found" && exit 1),true)
+	@$(if $(filter prjxray,$(ASSEMBLER)),command -v $(XC7FRAMES2BIT) > /dev/null || (echo "ERROR: $(XC7FRAMES2BIT) not found" && exit 1),true)
 	@command -v $(OPENXC7_PYTHON)     > /dev/null || (echo "ERROR: $(OPENXC7_PYTHON) not found"        && exit 1)
 	@test -d "$(DB_DIR)/artix7" || (echo "ERROR: no prjxray-db for artix7 in $(DB_DIR)"        && exit 1)
 	@test -f "$(XILINX_GEN)"    || (echo "ERROR: chipdb generator not found: $(XILINX_GEN)" && exit 1)
@@ -633,7 +643,7 @@ $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $
 # 6) BITSTREAM
 # =============================================================================
 
-ifeq ($(TOOLCHAIN),new)
+ifeq ($(ASSEMBLER),fpga-as)
 # fpga-as replaces fasm2frames + xc7frames2bit. It writes through a
 # redirection; .DELETE_ON_ERROR removes a partial .bit if it fails.
 $(BUILD_ARTIFACTS)/$(BITFILE): $(BUILD_ARTIFACTS)/top.fasm
