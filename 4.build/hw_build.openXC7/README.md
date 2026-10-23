@@ -468,14 +468,13 @@ Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). 
 |---|---|---|---|---|
 | 1 | GT attribute defaults differ from Xilinx's | open | [#17](https://github.com/chili-chips-ba/openPCIE/issues/17) | [nextpnr#21](https://github.com/openXC7/nextpnr/issues/21) |
 | 8 | `BEL` attribute on non-IO cells | still broken, reproduced upstream (a) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
-| 14 | `IBUFDS_GTE2.ODIV2` unusable | open: fix in three parts upstream, bits checked against Vivado: the pin ([nextpnr-xilinx-meta#7](https://github.com/openXC7/nextpnr-xilinx-meta/pull/7), open), the packer ([nextpnr#131](https://github.com/openXC7/nextpnr/pull/131), draft), the `ODIV2` select bit ([prjxray-db#41](https://github.com/openXC7/prjxray-db/pull/41), merged). Our x4 bitstream is unchanged by #41. Vivado also refuses `O` and `ODIV2` both on a `BUFG` (one shared wire) | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24) | [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
 | 18 | Derived-constraint warning swaps its values | new in v1.0.0 | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) | [nextpnr#85](https://github.com/openXC7/nextpnr/issues/85) |
 | 19 | Yosys: wrong `CLKSWING_CFG` default | new, Slang | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) | [yosys#6322](https://github.com/YosysHQ/yosys/issues/6322) |
 | 20 | sv-elab: no `real` primitive parameters | new, Slang | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) | [sv-elab#282](https://github.com/povik/sv-elab/issues/282) |
 | 22 | `read_slang` fails on `xilinx/cells_sim.v` | new, Slang (b) | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29) | [yosys#6323](https://github.com/YosysHQ/yosys/issues/6323), [sv-elab#72](https://github.com/povik/sv-elab/issues/72) |
 | 24 | No XPM / UNIMACRO libraries | open; [shims](#shims) stand in | - | - |
 | 26 | `set_multicycle_path` cannot reach registers | new (c) | [#36](https://github.com/chili-chips-ba/openPCIE/issues/36) | [nextpnr#110](https://github.com/openXC7/nextpnr/issues/110) |
-| 27 | `fpga-as` writes `RXCDR_CFG` wrong on every GTP lane | new (d); the Makefile assembles with `fasm2frames` + `xc7frames2bit` until the toolchain ships the fix | - | [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88), fixed in [fpga-assembler `282ef7c2`](https://github.com/lromor/fpga-assembler/commit/282ef7c2) |
+| 27 | `fpga-as` writes `RXCDR_CFG` wrong on every GTP lane | new (d); the Makefile assembles with `fasm2frames` + `xc7frames2bit` until the toolchain ships the fix; upstream moves toolchain-nix and toolchain-installer to lromor/fpga-assembler `main` | [#41](https://github.com/chili-chips-ba/openPCIE/issues/41) | [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88), fixed in [fpga-assembler `282ef7c2`](https://github.com/lromor/fpga-assembler/commit/282ef7c2) |
 
 - (a) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored, and a malformed one aborts nextpnr. Not used by openPCIE.
 - (b) 106 errors in `specify` blocks; the reason for `gen_xilinx_bb.py`.
@@ -517,6 +516,7 @@ These affect only the pre-v1.0.0 toolchain.
 | 11 | `TXPI_SYNFREQ_PPM` = 0 rejected | upstream: the GT and PCIe tiles now match our Vivado golden; board check in the final run; the `3'd1` workaround stays until then | [#27](https://github.com/chili-chips-ba/openPCIE/issues/27), [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88) |
 | 21 | Truncated FASM on error still assembles | main `f9e07df8`; the Makefile also checks nextpnr's exit status | [#26](https://github.com/chili-chips-ba/openPCIE/issues/26), [nextpnr#93](https://github.com/openXC7/nextpnr/issues/93) |
 | 23 | Contradicting GT `LOC` accepted silently | main `d3acad91` | [#30](https://github.com/chili-chips-ba/openPCIE/issues/30), [nextpnr#94](https://github.com/openXC7/nextpnr/issues/94) |
+| 14 | `IBUFDS_GTE2.ODIV2` unusable | main: the pin ([nextpnr-xilinx-meta#7](https://github.com/openXC7/nextpnr-xilinx-meta/pull/7)), the packer ([nextpnr#131](https://github.com/openXC7/nextpnr/pull/131)), the `ODIV2` select bit ([prjxray-db#41](https://github.com/openXC7/prjxray-db/pull/41)); bits match Vivado; artix7 chipdb must be regenerated; board check in the final run | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24), [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
 
 #### Fixed in v1.0.0
 
