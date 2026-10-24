@@ -14,7 +14,7 @@ bitstream.
 
 ## Build environment
 
-We aim for Linux-native tools throughout, and accept WSL for convenience and inclusivity. Yet, as the GUI apps run worse on Linux and WSL (GPU drivers are not on par), we enjoy WaveCrux on Windows.
+Linux-native tools throughout; WSL works too. The one exception is WaveCrux, which we run on Windows: GUI apps are smoother there, thanks to better GPU drivers.
 
 First, in this folder:
 
@@ -60,8 +60,8 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | ABC (`yosys-abc`) | 1.01, in openXC7's Yosys 0.69 | formal: eduBOS5 multicycle proof (`pdr`), bounded runs (`bmc3`) | proves |
 | SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5, with ABC `bmc3` | checks |
 | Z3 | 5.3.1 (pip `z3-solver`) | formal: replays a riscv-formal failure | runs |
-| WaveCrux Pro | 1.0.1+ (5) | waveforms, TLP and RISC-V decoding | runs |
-| Ferrite wavecrux-decoders | pcie-v0.2.0 | PIPE, DLL decoding in WaveCrux | runs |
+| WaveCrux Pro | 1.1.0 | waveforms, RISC-V decoding (built in) | runs |
+| Ferrite wavecrux-decoders | pcie-v0.2.0, pcie-tlp-v0.1.0 (5) | PIPE, DLL and TLP decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |
 | openFPGALoader | 1.1.1 | loading the bitstream over JTAG | not yet used on the board |
 | usbipd-win | 5.3.0 | JTAG cable into WSL (Windows side) | not yet used on the board |
@@ -71,7 +71,7 @@ The versions the build was validated with. "Board" means the bitstream was teste
 2. Yosys, nextpnr-xilinx, prjxray
 3. regblock 1.3.1, html 2.12.2, markdown 1.0.3, c-header 1.1.0; systemrdl-compiler 1.33.0
 4. C++20; validated with 15.2.0
-5. Our TLP plugin needs 1.0.1 or later
+5. `pcie-tlp` is our TLP plugin, contributed to Ferrite's wavecrux-decoders
 
 ## CSR HAL Compilation
 
@@ -115,23 +115,17 @@ options:
                         Specify the VProc soc_cpu clock period in ps (cosim only)
 ```
 
-The main options used are to specify the RDL file (`-r` or `--rdl_file`) and to
-specify the output file (`-o` or `--output_file`). To select generation of the
-co-simulation header the `-c` or `--cosim` option is used, otherwise the hardware
-header is generated. By default the co-simulation header assumes it is running on
-a *VProc* node numbered 0, matching the current openPCIE test bench. However,
-this can be changed by using the `-v` or `--vp_node` option, should the need
-arise. Code running on a *VProc* virtual processor runs infinitely fast with
-respect to simulation time when not doing a read or write transaction to the
-logic. In order to emulate processing time, after each read or write access, a
-random delay is inserted to advance the simulation a number of ticks. The maximum
-number of ticks can be specified using the `-d` or `--delay_range` option meaning
-the delay can range from 0 to `DELAY` clock cycles. The default for this is 32
-clock cycles. The `-v` and `-d` options have no affect if the `-c` option is not
-used. Finally the *VProc* test bench `soc_cpu` module's clock period in
-picoseconds can be specified for use in co-simulation abstraction of delay and
-timing functions. It defaults to 16000, i.e. the 62.5 MHz `clk62m5` (MMCM in `clk_rst_gen`) that
-clocks `riscv_pcie_soc` and the 64-bit TRN side of the PCIE hard macro.
+Usually you need just `-r` (the RDL in) and `-o` (the header out). `-c` makes the
+co-simulation header; without it you get the hardware one. The rest apply to `-c`
+only:
+
+- `-v`: the *VProc* node, default 0, as in the current test bench.
+- `-d`: code on a *VProc* node is infinitely fast between bus accesses. Lucky
+  code. To fake processing time, each access adds a random delay of 0 to `DELAY`
+  clocks, default 32.
+- `-C`: the `soc_cpu` clock period in ps, for delay and timing functions. Default
+  16000: the 62.5 MHz `clk62m5` (MMCM in `clk_rst_gen`) that clocks
+  `riscv_pcie_soc` and the 64-bit TRN side of the PCIE hard macro.
 
 To generate all the required HAL headers and RTL a make file is provided as
 `4.build/MakefileCSR` to wrap up the script calls. Running this make file
@@ -147,9 +141,9 @@ To generate all the required HAL headers and RTL a make file is provided as
   * `openpcie.md`   : The register map as markdown
   * `html/`         : The register map as a browsable HTML document
 
-Those files are checked in, so an ordinary build never runs this step -- only an
-edit of `csr_build/csr.rdl` calls for it. Regeneration is idempotent, so it never
-shows up as a spurious diff.
+These files are checked in. An ordinary build never runs this step; only an edit
+of `csr_build/csr.rdl` calls for it. Regeneration is idempotent, so it never shows
+up as a spurious diff.
 
 `peakrdl` and the interpreter running `sysrdl_cosim.py` must be the same install,
 or the script fails with `No module named 'systemrdl'`. `set-env.sh` takes `PYTHON`
@@ -197,12 +191,12 @@ single register access then compiles into four byte accesses:
     lbu a4,12(a5)   /   sb a4,12(a5)   /   lbu a4,13(a5)   ...
 ```
 
-That is wrong for a CSR. It writes a register in four steps, and on this design
-the write strobe of `tx.data` starts a TLP transfer, so the packet goes out
-after the first byte with the other three not yet written. The compiler only
-folds the byte accesses back into a word at `-O2` and above, and the firmware is
-built without optimisation. It is also invisible on x86, where unaligned access
-is free -- it took a run on the real ISA to see it.
+That is wrong for a CSR: it writes a register in four bites. Here the write
+strobe of `tx.data` starts a TLP transfer. So the packet leaves after the first
+byte, with the other three not yet written. The compiler folds the bytes back
+into a word only at `-O2` and above, and the firmware is built without
+optimisation. On x86, where unaligned access is free, you never see it. It took
+a run on the real ISA.
 
 ### The register map
 
@@ -255,8 +249,8 @@ for `rv32i` only: eduBOS5 is RV32I, and PicoRV32 here is configured without the 
 make VARIANT=switched
 ```
 
-Both variants write the same three output names, but every `make` rebuilds the
-firmware (about a second), so no `make clean` is needed to switch.
+Both variants write the same three file names. But every `make` rebuilds the
+firmware (about a second), so switching needs no `make clean`.
 
 The firmware takes its register map from the headers generated in step 1.
 
@@ -290,24 +284,26 @@ Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and 
 
 | Build | Chain | Output |
 |---|---|---|
-| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.x4.slang/top.x4.direct.bit` |
+| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.slang/top.x4.direct.bit` |
 | `make LANES=1` | same, x1 link | `build_artifacts.slang/top.x1.direct.bit` |
-| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fpga-as` | `build_artifacts.x4.new/top.x4.direct.bit` |
+| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.new/top.x4.direct.bit` |
 | `make TOOLCHAIN=old LANES=1` | `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `fasm2frames` -> `xc7frames2bit` | `build_artifacts/top.x1.direct.bit` |
 
-Add `VARIANT=switched` for RC-switched; its folders carry `.switched` (e.g. `build_artifacts.switched.slang/`), so the variants never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` verifies the tools first.
+1. `ASSEMBLER=fpga-as` for the one-step assembler. Not the default yet: it writes `RXCDR_CFG` wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)).
 
-**Verified on hardware:** the pre-v1.0.0 bitstream (`TOOLCHAIN=old`) brings the PCIE link up at **Gen2** against a second Artix-7 board acting as endpoint - the same state the Vivado bitstream reaches from identical RTL. The v1.0.0 bitstreams build and meet timing but are not yet tested on hardware.
+Add `VARIANT=switched` for RC-switched. Its folders carry `.switched` (e.g. `build_artifacts.switched.slang/`), so the variants never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` checks the tools.
 
-Two things are worth knowing before the first build, both covered in detail in
+**Verified on hardware:** the pre-v1.0.0 bitstream (`TOOLCHAIN=old`) brings the PCIE link up at **Gen2**, against a second Artix-7 board as endpoint. The Vivado bitstream from the same RTL gets the same. The v1.0.0 bitstreams build and meet timing, but have not met the board yet.
+
+Two things to know before the first build. Details in
 [`hw_build.openXC7/README.md`](./hw_build.openXC7/README.md):
 
-- **With `TOOLCHAIN=old`, the nextpnr-xilinx version is critical.** Only commit `45a986b` works; the version from the official installer was too old and the later master had a router regression. See [Pre-v1.0.0 and new openXC7 toolchain](./hw_build.openXC7/README.md#pre-v100-and-new-openxc7-toolchain) and [Native SV within Yosys, through Slang](./hw_build.openXC7/README.md#native-sv-within-yosys-through-slang).
+- **With `TOOLCHAIN=old`, the nextpnr-xilinx version is critical.** Only commit `45a986b` works. The installer's version was too old, and the later master had a router regression. See [Pre-v1.0.0 and new openXC7 toolchain](./hw_build.openXC7/README.md#pre-v100-and-new-openxc7-toolchain).
 - **nextpnr's GT attribute defaults do not match the Xilinx library.** Where the
-  RTL omits an attribute, Vivado fills it from `unisim` while nextpnr substitutes
-  its own default - almost always `0`. `lane_xcvr.sv` therefore sets 20 of them
-  explicitly. This was the root cause of the design not working on hardware, and
-  it is silent: no warning, and the bitstream builds cleanly.
+  RTL leaves an attribute out, Vivado fills it from `unisim`. nextpnr puts in its
+  own default, almost always `0`. So `lane_xcvr.sv` sets 20 of them explicitly.
+  This is why the design first failed on hardware. And it is silent: no warning,
+  and the bitstream builds cleanly.
 
 ## Loading the bitstream
 
@@ -318,7 +314,7 @@ openFPGALoader --detect                                    # cable and FPGA foun
 openFPGALoader hw_build.openXC7/build_artifacts.x4.slang/top.x4.direct.bit
 ```
 
-Ubuntu's own package is older; build it from source. On WSL the JTAG cable first has to be attached with usbipd-win; `set-env.sh` checks both. Details: [Programming the board from WSL](./hw_build.openXC7/README.md#programming-the-board-from-wsl).
+Ubuntu's own package is older, so build it from source. On WSL, attach the JTAG cable with usbipd-win first. `set-env.sh` checks both. Details: [Programming the board from WSL](./hw_build.openXC7/README.md#programming-the-board-from-wsl).
 
 -----------
 #### End-of-Document

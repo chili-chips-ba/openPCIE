@@ -1,22 +1,22 @@
 # opensource openXC7 build flow
 
-Builds the opensource RC into a bitstream with **open-source tools only**, no Vivado. Part `xc7a200tfbg484-3` (Acorn CLE-215P), as in the Vivado build.
+From RTL to bitstream with **open-source tools only**. No Vivado, no license server, no tears. Part `xc7a200tfbg484-3` (Acorn CLE-215P), same as the Vivado build.
 
-- `make`: [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource), **x4** (default) -> `top.x4.direct.bit`; `make LANES=1` for x1
-- `make VARIANT=switched`: [`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource), x1
+- `make`: [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource), **x4** (default). `make LANES=1` for x1.
+- `make VARIANT=switched`: [`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource), x1.
 
-Both come from the same RTL, [`2.rtl/0.common.opensource`](../../2.rtl/0.common.opensource) (top `RC_opensource`), and differ only in firmware and GT pins (see [GT channel](#gt-channel)).
+Both share one RTL, [`2.rtl/0.common.opensource`](../../2.rtl/0.common.opensource) (top `RC_opensource`). Only the firmware and the GT pins differ ([GT channel](#gt-channel)). All commands and output folders: [Building](#building).
 
 | Stage | v1.0.0 (default) | pre-v1.0.0 (`TOOLCHAIN=old`) |
 |---|---|---|
 | SV front end | `yosys read_slang` (or `sv2v`) | `sv2v` -> `.v` |
 | Synthesis | `yosys` -> `top.json` | `yosys` -> `top.json` |
 | Place & route | `nextpnr-himbaechel` (via the `nextpnr-xilinx` shim) -> `top.fasm` | `nextpnr-xilinx` -> `top.fasm` |
-| Bitstream | `fasm2frames` + `xc7frames2bit` -> `top.bit` (`ASSEMBLER=fpga-as` for the one-step assembler, see row 27) | `fasm2frames` + `xc7frames2bit` (prjxray) -> `top.bit` |
+| Bitstream | `fasm2frames` + `xc7frames2bit` -> `top.bit` (`ASSEMBLER=fpga-as` for the one-step assembler, row 27) | `fasm2frames` + `xc7frames2bit` (prjxray) -> `top.bit` |
 
 ## Status: working on hardware
 
-`make TOOLCHAIN=old LANES=1` (pre-v1.0.0) produces `build_artifacts/top.x1.direct.bit`. On the board it brings the link **up at Gen2** against a second Artix-7 board as endpoint, the same readings as the Vivado bitstream from the same RTL:
+The pre-v1.0.0 bitstream (`make TOOLCHAIN=old LANES=1`) brings the link **up at Gen2**, against a second Artix-7 board as endpoint. Same readings as the Vivado bitstream from the same RTL:
 
 ```
 user_lnk_up = 1
@@ -25,7 +25,9 @@ phy_lnk_up  = 1
 rate        = Gen2
 ```
 
-It took six fixes: one latent RTL bug and five workarounds for openXC7 defects, all described below.
+It took six fixes: one latent RTL bug and five workarounds for openXC7 defects. All below.
+
+v1.0.0 builds both variants, and their configuration checks out. None of its bitstreams has met the board yet. Below, pre-v1.0.0 is meant unless stated.
 
 ---
 
@@ -39,7 +41,7 @@ The pre-v1.0.0 toolchain builds this design **only** with nextpnr-xilinx `45a986
 | master `bab26c2` (Jul 2026) | **regression**: `router2` loops in `route_xilinx_const` (gdb) |
 | **`45a986b` (Apr 2026)** | **works** |
 
-Yosys 0.38 from the snap is fine.
+Yosys 0.38 from the snap is fine. Goldilocks would approve.
 
 ### Building the right version
 
@@ -57,7 +59,7 @@ install -Dm755 nextpnr-xilinx bbasm /usr/local/bin/
 
 Default tree: `/opt/openxc7_extra/npnr_45a986b`; elsewhere, pass `NEXTPNR_SRC=`.
 
-**Do not mix versions.** `prjxray-db`, the site metadata and `constids.inc` must come from the same tree as the nextpnr binary, or wire indices go wrong and the failures look like router bugs. The Makefile takes all of them from `$(NEXTPNR_SRC)`.
+**Do not mix versions.** `prjxray-db`, the site metadata and `constids.inc` must come from the same tree as the nextpnr binary. Otherwise wire indices go wrong, and the failures pose as router bugs. The Makefile takes all of them from `$(NEXTPNR_SRC)`.
 
 ---
 
@@ -72,7 +74,7 @@ Default tree: `/opt/openxc7_extra/npnr_45a986b`; elsewhere, pass `NEXTPNR_SRC=`.
 | Bitstream | prjxray `fasm2frames` + `xc7frames2bit`, openXC7 snap |
 | SV conversion | `sv2v` |
 
-Since then `nextpnr-xilinx` is archived and the snap and one-line installer are gone. The **new** toolchain is built with [`toolchain-sources-builder.sh`](https://github.com/openXC7/toolchain-installer), or installed through Nix or Apio:
+Since then, `nextpnr-xilinx` is archived, and the snap and the one-line installer are gone. Build the **new** toolchain with [`toolchain-sources-builder.sh`](https://github.com/openXC7/toolchain-installer), or install it through Nix or Apio:
 
 | Tool | New toolchain (openXC7 v1.0.0, as of Sept 2026) |
 |---|---|
@@ -81,7 +83,7 @@ Since then `nextpnr-xilinx` is archived and the snap and one-line installer are 
 | Bitstream | `fpga-as`, replacing `fasm2frames` + `xc7frames2bit`; we keep the prjxray pair until `fpga-as` is fixed (row 27) |
 | Formal, optional | Yosys `sat`; [EBMC](https://www.cprover.org/ebmc/) 6.1 |
 
-The Makefile supports both: `TOOLCHAIN=new` (default) and `TOOLCHAIN=old`. **Only pre-v1.0.0 is validated on hardware**; v1.0.0 builds both variants and their configuration checks out, but none of its bitstreams has been on the board yet. To reproduce the validated result, use pre-v1.0.0 (`45a986b` is still in the archived repo, see [Building the right version](#building-the-right-version)). Below, pre-v1.0.0 is meant unless stated.
+The Makefile takes both: `TOOLCHAIN=new` (default) and `TOOLCHAIN=old`. To reproduce the board result, use pre-v1.0.0. `45a986b` is still in the archived repo ([Building the right version](#building-the-right-version)).
 
 ### Building with the new toolchain
 
@@ -92,26 +94,15 @@ git clone https://github.com/openXC7/toolchain-installer && cd toolchain-install
 INSTALL_PREFIX=$HOME/opt/openxc7 ./toolchain-sources-builder.sh all
 ```
 
-It installs missing Ubuntu packages, then builds Yosys, nextpnr, prjxray and `fpga-as`: about 14 minutes (Ubuntu 24.04 in WSL2, 16 threads).
+It installs missing Ubuntu packages, then builds Yosys, nextpnr, prjxray and `fpga-as`. About 14 minutes (Ubuntu 24.04 in WSL2, 16 threads): one coffee.
 
-**2. sv2v**, optional with v1.0.0 - see [Prerequisites](#2-sv2v). We used v0.0.13.
+**2. sv2v**, optional with v1.0.0 ([Prerequisites](#2-sv2v)). We used v0.0.13.
 
-**3. Build:**
+**3. Build:** `source ../set-env.sh`, then the commands in [Building](#building). `set-env.sh` finds openXC7 in `~/opt/openxc7` or `/opt/openxc7`.
 
-```bash
-cd 4.build
-source set-env.sh                       # finds openXC7 in ~/opt/openxc7 or /opt/openxc7
-cd hw_build.openXC7
-make check-env
-make                                    # read_slang, x4 -> build_artifacts.x4.slang/top.x4.direct.bit
-make LANES=1                            # read_slang, x1 -> build_artifacts.slang/top.x1.direct.bit
-make VARIANT=switched                   # read_slang, x1 -> build_artifacts.switched.slang/top.x1.switched.bit
-make FRONTEND=sv2v                      # sv2v,       x4 -> build_artifacts.x4.new/top.x4.direct.bit
-```
+v1.0.0 has its own `chipdb.new/` (different format) and output folders. It never overwrites the validated `build_artifacts*/top.x1.*.bit`. Its `read_slang` bitstreams are in git, prebuilt from the current RTL, not yet on the board. The `sv2v` ones are not in git.
 
-v1.0.0 has its own `chipdb.new/` (different format) and output folders, so it never overwrites the validated `build_artifacts*/top.x1.*.bit`. Its `read_slang` bitstreams are kept in git as prebuilt files of the current RTL (not yet tested on the board); the `sv2v` ones are not.
-
-**What changed:** the chipdb comes from `xilinx_gen.py` instead of `bbaexport.py`, and `fpga-as` replaces `fasm2frames` + `xc7frames2bit` (our Makefile still uses the prjxray pair by default, row 27). Synthesis and P&R are called as before; the new `nextpnr-xilinx` is a small shim that passes the same options to `nextpnr-himbaechel`.
+The chipdb now comes from `xilinx_gen.py` instead of `bbaexport.py`. Synthesis and P&R are called as before: the new `nextpnr-xilinx` is a small shim that hands the same options to `nextpnr-himbaechel`.
 
 **Measured** (RC-direct unless noted):
 
@@ -120,33 +111,25 @@ v1.0.0 has its own `chipdb.new/` (different format) and output folders, so it ne
 | Build time, chipdb cached | about 2 min | 2 min 13 s (1) |
 | First build, incl. chipdb | several minutes | 6 min |
 | GT channel, link speed | channel 1, Gen2 | channel 1 (2), Gen2 |
-| Flip-flops after synthesis (3) | 1770 | 1486 + 9 SRLs |
-| Pipe clock `clk_oobclk`, 250 MHz | misses it (4) | 280 MHz (5), passes |
+| Pipe clock `clk_oobclk`, 250 MHz | misses it (3) | 280 MHz (4), passes |
 | On hardware | **link up at Gen2** | not tested yet |
 
 1. RC-switched 2 min 21 s; 16 threads.
 2. RC-switched: channel 2.
-3. Different RTL, not comparable: Yosys 0.38 on the RTL of 2026-08-19, Yosys 0.69 without `-nosrl` on that of 2026-10-08.
-4. Expected and verified harmless, see [Clocks](#clocks).
-5. RC-switched 274 MHz.
+3. Expected and verified harmless, see [Clocks](#clocks).
+4. RC-switched 274 MHz.
 
-nextpnr's warning "Overriding derived constraint of 250.0 MHz on net u_pcie.clk_oobclk with user-specified constraint of 125.0 MHz" is harmless: it prints the two values swapped, and the 250 MHz from `openxc7.xdc` applies ([#21](https://github.com/chili-chips-ba/openPCIE/issues/21)).
+nextpnr warns "Overriding derived constraint of 250.0 MHz on net u_pcie.clk_oobclk with user-specified constraint of 125.0 MHz". Ignore it. v1.0.0 prints the two values swapped, and the 250 MHz from `openxc7.xdc` applies. Fixed on nextpnr main `e313e46f` ([#21](https://github.com/chili-chips-ba/openPCIE/issues/21)).
 
-[openXC7 findings](#openxc7-findings) lists which defects still apply to v1.0.0. The design-side fixes are in the RTL, so v1.0.0 builds get them too.
+[openXC7 findings](#openxc7-findings) lists which defects still bite on v1.0.0. The design-side fixes live in the RTL, so v1.0.0 builds get them too.
 
 ## Native SV within Yosys, through Slang
 
-Open-source Yosys long read only a subset of SystemVerilog, without the packages, interfaces with modports and packed structs this design uses; hence sv2v. Full SystemVerilog came only with the commercial Verific front end (YosysHQ Tabby CAD Suite).
+For years, open-source Yosys read only a subset of SystemVerilog. No packages, no interfaces with modports, no packed structs: all things this design uses. Hence sv2v. Full SystemVerilog took the commercial Verific front end (YosysHQ Tabby CAD Suite).
 
-Since **Yosys 0.67**, every Yosys build has its own SystemVerilog front end, `read_slang`, built on the [slang](https://github.com/MikePopoloski/slang) compiler through [sv-elab](https://github.com/povik/sv-elab). With v1.0.0 it is the default here, no sv2v:
+Since **Yosys 0.67**, every Yosys has its own SystemVerilog front end, `read_slang`. It is the [slang](https://github.com/MikePopoloski/slang) compiler, through [sv-elab](https://github.com/povik/sv-elab). With v1.0.0 it is our default: plain `make`, no sv2v.
 
-```bash
-source ../set-env.sh
-make                                    # -> build_artifacts.x4.slang/top.x4.direct.bit
-make VARIANT=switched                   # -> build_artifacts.switched.slang/top.x1.switched.bit
-```
-
-**Our SystemVerilog goes in unchanged:** all 34 files (packages, interfaces, structs, the SystemVerilog picorv32), no language errors. Synthesis about 10 s, the whole build 2 min 26 s (2 min 13 s with sv2v).
+**Our SystemVerilog goes in unchanged:** all 34 files (packages, interfaces, structs, the SystemVerilog picorv32), no language errors. Synthesis takes about 10 s, the whole build 2 min 26 s (2 min 13 s with sv2v).
 
 **The Xilinx primitives need three workarounds** for upstream gaps:
 
@@ -156,10 +139,10 @@ make VARIANT=switched                   # -> build_artifacts.switched.slang/top.
 | No `real` parameters on primitives ([sv-elab#282](https://github.com/povik/sv-elab/issues/282)) | MMCM real settings behind `` `ifndef SYN_YOSYS_BUG `` (b) |
 | `IBUFDS_GTE2.CLKSWING_CFG` default is `"TRUE"`, not `2'b11` ([yosys#6322](https://github.com/YosysHQ/yosys/issues/6322)) | `gen_xilinx_bb.py` writes `2'b11` |
 
-- (a) Yosys's blackboxes have no parameters ([sv-elab#367](https://github.com/povik/sv-elab/pull/367)), and its `cells_sim.v` fails slang's checks ([yosys#6323](https://github.com/YosysHQ/yosys/issues/6323)). The script takes them from Yosys's own library; the Makefile runs it.
-- (b) In `clk_rst_gen.sv`; the settings are all defaults, and this flow defines `SYN_YOSYS_BUG`.
+- (a) Yosys's blackboxes have no parameters, and its `cells_sim.v` fails slang's checks ([yosys#6323](https://github.com/YosysHQ/yosys/issues/6323)). So the script takes the declarations from Yosys's own library; the Makefile runs it. Yosys main (after 0.70) adds `read_slang --target xilinx`, which loads that library itself ([yosys#6262](https://github.com/YosysHQ/yosys/pull/6262), [sv-elab#396](https://github.com/povik/sv-elab/pull/396)). On our design it still trips twice: `FDCE`'s `specify` block (6 errors, yosys#6323) and `MMCME2_ADV`'s `real` defaults (sv-elab#282). Patch both out, and it builds the same hard blocks, but `CLKSWING_CFG` comes out `"TRUE"` (yosys#6322).
+- (b) In `clk_rst_gen.sv`. The settings are all defaults, and this flow defines `SYN_YOSYS_BUG`.
 
-**Versus the sv2v build**, the FASM differs only in 9 `GTPE2_CHANNEL` fields our RTL leaves unset: `read_slang` passes Xilinx's defaults, sv2v leaves them to nextpnr. So the slang build is closer to Vivado. Not tested on hardware yet.
+**Versus the sv2v build**, the FASM differs in only 9 `GTPE2_CHANNEL` fields our RTL leaves unset. `read_slang` passes Xilinx's defaults; sv2v leaves them to nextpnr. So the slang build is the closer one to Vivado. Not on the board yet.
 
 ---
 
@@ -167,9 +150,9 @@ make VARIANT=switched                   # -> build_artifacts.switched.slang/top.
 
 **This is why the design did not work on hardware, and the most generally useful finding here.**
 
-For an omitted RTL parameter, Vivado takes the `unisim` default. In openXC7 the parameter is missing from the netlist, so nextpnr uses **its own** default, nearly always `0`, without a warning.
+For an RTL parameter you leave out, Vivado takes the `unisim` default. In openXC7 the parameter is missing from the netlist, so nextpnr uses **its own** default. That is nearly always `0`, and it comes without a warning. Silence is not consent.
 
-Comparing every `GTPE2_CHANNEL` attribute the RTL leaves unset against the `cells_xtra.v` default and the `*_or_default(...)` call in `xilinx/fasm.cc` gives the mismatches. The **20** that matter here:
+We compared every `GTPE2_CHANNEL` attribute the RTL leaves unset: the `cells_xtra.v` default against the `*_or_default(...)` call in `xilinx/fasm.cc`. The **20** mismatches that matter here:
 
 | Attribute | Xilinx library | nextpnr | Consequence |
 |---|---|---|---|
@@ -188,9 +171,9 @@ Comparing every `GTPE2_CHANNEL` attribute the RTL leaves unset against the `cell
 
 `RX*RESET_TIME`: `RXBUFRESET_TIME`, `RXCDRFREQRESET_TIME`, `RXCDRPHRESET_TIME`, `RXISCANRESET_TIME`, `RXLPMRESET_TIME`. `SATA_*`: `SATA_BURST_SEQ_LEN`, `SATA_BURST_VAL`, `SATA_EIDLE_VAL`.
 
-Symptom: the GT came up (PLL0 locked, every `resetdone` asserted), but TX phase alignment never started. `TXDLYSRESETDONE` never toggled, the sync FSM sat in `TX_START`, and the LTSSM never left `DETECT_QUIET`.
+Symptom: the GT came up. PLL0 locked, every `resetdone` asserted. But TX phase alignment never started: `TXDLYSRESETDONE` never toggled, the sync FSM sat in `TX_START`, and the LTSSM never left `DETECT_QUIET`. Everything looked fine, and nothing worked.
 
-`lane_xcvr.sv` now sets all 20 to the **library** values, which Vivado was already using. That is also why [regymm/pcie_7x](https://github.com/regymm/pcie_7x) works on openXC7 with the same GTP and TX-buffer-bypass mode: it sets every attribute, so nextpnr has nothing to guess.
+`lane_xcvr.sv` now sets all 20 to the **library** values, the ones Vivado was using all along. It also explains why [regymm/pcie_7x](https://github.com/regymm/pcie_7x) works on openXC7, with the same GTP and TX-buffer-bypass mode. It sets every attribute, so nextpnr has nothing to guess.
 
 **Rule of thumb:** with this toolchain, set every hard-block attribute explicitly.
 
@@ -200,7 +183,7 @@ Symptom: the GT came up (PLL0 locked, every `resetdone` asserted), but TX phase 
 
 ### `-nosrl` at synthesis
 
-Required with pre-v1.0.0. Otherwise the 96- and 128-bit shift registers of the PLL0 power-up delay (`gtp_wrapper.sv`) become `SRLC32E` chains and nextpnr fails on the cascade output:
+Required with pre-v1.0.0. Without it, the 96- and 128-bit shift registers of the PLL0 power-up delay (`gtp_wrapper.sv`) become `SRLC32E` chains, and nextpnr fails on the cascade output:
 
 ```
 ERROR: No wire found for port Q31 on source cell ... fpga_srl_0
@@ -225,13 +208,13 @@ v1.0.0 handles the cascade, so the Makefile passes `-nosrl` only with `TOOLCHAIN
 fasm.cc:3146  if (txpi_synfreq_ppm == 0) log_error("TXPI_SYNFREQ_PPM must not be zero!")
 ```
 
-Yet 0 is Xilinx's default, and Xilinx's own PCIE IP uses it. We set 1 only to pass this check.
+Yet 0 is Xilinx's default, and Xilinx's own PCIE IP uses it. We set 1 only to get past this check.
 
-> ⚠ **This is a hack, and hacks like it are dangerous.** The value satisfies the tool, not the silicon, so our RTL departs from Xilinx's default here, in the Vivado build too. It works on our board, but what `TXPI_SYNFREQ_PPM = 1` does to the TX phase interpolator is unverified. Never change a hard-block attribute just to silence a tool: fix the tool, or check the value against Xilinx's documentation. We go back to 0 once nextpnr accepts it ([#27](https://github.com/chili-chips-ba/openPCIE/issues/27), upstream [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88)).
+> ⚠ **This is a hack, and hacks like it are dangerous.** The value pleases the tool, not the silicon. So our RTL departs from Xilinx's default here, in the Vivado build too. It works on our board, but what `TXPI_SYNFREQ_PPM = 1` does to the TX phase interpolator is unverified. Never change a hard-block attribute just to silence a tool. Fix the tool, or check the value against Xilinx's documentation. We go back to 0 once nextpnr accepts it ([#27](https://github.com/chili-chips-ba/openPCIE/issues/27), upstream [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88)).
 
 ### Unused GT refclk inputs left unconnected
 
-`gtp_wrapper.sv` tied seven unused refclk inputs (`GTGREFCLK0/1`, `GTREFCLK1`, `GTEASTREFCLK0/1`, `GTWESTREFCLK0/1`) to `1'd0`. Vivado accepts that; nextpnr rejects any constant on a refclk input (`pack_gt_xc7.cc:184`). They are now unconnected.
+`gtp_wrapper.sv` tied seven unused refclk inputs (`GTGREFCLK0/1`, `GTREFCLK1`, `GTEASTREFCLK0/1`, `GTWESTREFCLK0/1`) to `1'd0`. Vivado accepts that. nextpnr rejects any constant on a refclk input (`pack_gt_xc7.cc:184`). Now they float, unconnected.
 
 ### PLL0 power-up delay clocked from `clk125`
 
@@ -241,7 +224,7 @@ Xilinx's wrapper clocks the PLL0 power-up delay from:
 BUFG wake_refclk_bufg (.I (PIPE_CLK), .O (gt_cpllpdrefclk));
 ```
 
-`PIPE_CLK` is `IBUFDS_GTE2.O`. In Vivado this works. **nextpnr routes the net without error, but the BUFG output does not toggle on the board**: a JTAG probe read a counter on `gt_cpllpdrefclk` stuck at 0, while counters on `clk62m5` and `clk_pclk` ran.
+`PIPE_CLK` is `IBUFDS_GTE2.O`. In Vivado this works. **nextpnr routes the net without error, but the BUFG output does not toggle on the board.** A JTAG probe read a counter on `gt_cpllpdrefclk`: stuck at 0. Counters on `clk62m5` and `clk_pclk` ran. A clock with no pulse.
 
 ```
 gt_cpllpdrefclk dead -> power-up delay never finishes counting
@@ -251,9 +234,9 @@ gt_cpllpdrefclk dead -> power-up delay never finishes counting
                      -> LTSSM stuck in DETECT_QUIET forever
 ```
 
-So no PLL0 *configuration* fix could help: the PLL was off.
+So no PLL0 *configuration* fix could help. You can't tune a PLL that is switched off.
 
-Workaround: `gtp_wrapper` clocks the delay from `clk125`, the MMCM's 125 MHz output. It runs while PLL0 is still down, since the MMCM is fed by `TXOUTCLK`, which follows the reference clock regardless of PLL lock. The delay only times startup, so 125 instead of 100 MHz shortens it by 20%, harmlessly.
+Workaround: `gtp_wrapper` clocks the delay from `clk125`, the MMCM's 125 MHz output. It runs while PLL0 is still down. The MMCM is fed by `TXOUTCLK`, which follows the reference clock, lock or no lock. The delay only times startup, so 125 instead of 100 MHz makes it 20% shorter. Harmless.
 
 All RTL changes were re-validated in Vivado end to end: synthesis, implementation, bitstream, 0 errors, 0 critical warnings, link up at Gen2.
 
@@ -261,15 +244,15 @@ All RTL changes were re-validated in Vivado end to end: synthesis, implementatio
 
 ## Prerequisites
 
-Run [`../set-env.sh`](../set-env.sh) first: it finds these tools, checks their versions and lists what is missing ([4.build/README.md](../README.md#build-environment)).
+Run [`../set-env.sh`](../set-env.sh) first. It finds these tools, checks their versions and lists what is missing ([4.build/README.md](../README.md#build-environment)).
 
 ### 1. openXC7 toolchain
 
-Provides `yosys`, nextpnr and the bitstream tools. The validated build used the openXC7 snap of the time (Yosys 0.38, prjxray `fasm2frames` / `xc7frames2bit`) with nextpnr `45a986b` built as above. The snap and installer are gone; see [Pre-v1.0.0 and new openXC7 toolchain](#pre-v100-and-new-openxc7-toolchain) and [Building with the new toolchain](#building-with-the-new-toolchain).
+`yosys`, nextpnr and the bitstream tools: see [Building with the new toolchain](#building-with-the-new-toolchain), or [Building the right version](#building-the-right-version) for pre-v1.0.0.
 
 ### 2. sv2v
 
-**Required with pre-v1.0.0**: Yosys 0.38 does not understand SystemVerilog packages, interfaces or packed structs (`link_pkg`, `axis_if`, `pipe_if`). Optional with v1.0.0, whose Slang front end reads our sources as they are ([Native SV within Yosys, through Slang](#native-sv-within-yosys-through-slang)); sv2v is still the more mature path.
+**Required with pre-v1.0.0.** Yosys 0.38 does not understand SystemVerilog packages, interfaces or packed structs (`link_pkg`, `axis_if`, `pipe_if`). Optional with v1.0.0, whose Slang front end reads our sources as they are ([Native SV within Yosys, through Slang](#native-sv-within-yosys-through-slang)). sv2v is still the more mature path.
 
 ```bash
 wget https://github.com/zachjs/sv2v/releases/latest/download/sv2v-Linux.zip
@@ -278,11 +261,11 @@ unzip sv2v-Linux.zip && install -Dm755 sv2v-Linux/sv2v /usr/local/bin/sv2v
 
 ### 3. firmware.hex
 
-`riscv_pcie_soc.sv` loads its RAM with `$readmemh("firmware.hex", ram)`, so run sw_build first. The Makefile reads `../sw_build/firmware.hex`.
+`riscv_pcie_soc.sv` loads its RAM with `$readmemh("firmware.hex", ram)`. So run sw_build first. The Makefile reads `../sw_build/firmware.hex`.
 
 ### 4. The generated CSR
 
-`soc_csr.sv` wraps the register block PeakRDL generates from `../csr_build/csr.rdl`, so two RTL inputs come from `../csr_build/generated-files/`. They are checked in; regenerate only after editing `csr.rdl`:
+`soc_csr.sv` wraps the register block PeakRDL generates from `../csr_build/csr.rdl`. So two RTL inputs come from `../csr_build/generated-files/`. They are checked in. Regenerate only after editing `csr.rdl`:
 
 ```bash
 cd ..                     # 4.build/
@@ -294,10 +277,12 @@ make -f MakefileCSR       # -> csr_build/generated-files/{csr_pkg,csr}.sv
 ## Building
 
 ```bash
+source ../set-env.sh                    # once per shell
 make check-env                          # tools present; warns if nextpnr is the wrong version
 make check-sources                      # every RTL file and firmware.hex present
 make                                    # v1.0.0, read_slang (default), x4 -> build_artifacts.x4.slang/top.x4.direct.bit
 make LANES=1                            # v1.0.0, read_slang, x1           -> build_artifacts.slang/top.x1.direct.bit
+make VARIANT=switched                   # v1.0.0, read_slang, x1           -> build_artifacts.switched.slang/top.x1.switched.bit
 make CPU=picorv32                       # PicoRV32 instead of eduBOS5      -> build_artifacts.x4.picorv32.slang/top.x4.direct.bit
 make FRONTEND=sv2v                      # v1.0.0, sv2v, x4                 -> build_artifacts.x4.new/top.x4.direct.bit
 make TOOLCHAIN=old LANES=1              # pre-v1.0.0, x1                   -> build_artifacts/top.x1.direct.bit
@@ -314,23 +299,23 @@ make TOOLCHAIN=old VARIANT=switched     # pre-v1.0.0, x1                   -> bu
 | `make clean-converted` | remove `converted/` |
 | `make clean-all` | all of the above, plus `chipdb/` |
 
-Each tool is called through a variable (`YOSYS`, `NEXTPNR_XILINX`, `FPGA_AS`, ...) that `set-env.sh` sets; override one with e.g. `make YOSYS=/path/to/yosys`.
+Each tool is called through a variable (`YOSYS`, `NEXTPNR_XILINX`, `FPGA_AS`, ...) that `set-env.sh` sets. Override one with e.g. `make YOSYS=/path/to/yosys`.
 
-`VARIANT=switched` gets its own `converted.switched/` and `build_artifacts.switched/`, and the clean targets act on those, so the variants never mix. `chipdb/` is shared (it depends on the part, not the design). `../sw_build/firmware.hex` is **not** separated: build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
+`VARIANT=switched` gets its own `converted.switched/` and `build_artifacts.switched/`, and the clean targets act on those. The variants never mix. `chipdb/` is shared: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
 
-**Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `CSR` changes the file list but no file, so a date-based make would keep the old bitstream, and dates on a network share can be from the future. Always rebuilding avoids both; `make clean` is never needed.
+**Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `CSR` changes the file list but no file, so a date-based make would keep the old bitstream. And dates on a network share can come from the future. Always rebuilding beats both, and `make clean` is never needed.
 
-The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `chipdb/`. After that a build takes about 2 minutes.
+The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `chipdb/`. After that, a build takes about 2 minutes.
 
 ---
 
 ## Constraints
 
-nextpnr's XDC parser accepts only `[get_ports]` and `[get_nets]` targets, so the Vivado XDC cannot be used. `openxc7.x4.xdc` (RC-direct x4, default), `openxc7.x1.xdc` (RC-direct x1) and `openxc7.switched.xdc` (RC-switched, x1) are cut-down versions. The Vivado files (`2.rtl/0.common.opensource/xdc/` plus each variant's GT lane XDC) remain the reference for the AMD flow.
+nextpnr's XDC parser takes only `[get_ports]` and `[get_nets]` targets, so the Vivado XDC won't do. `openxc7.x4.xdc` (RC-direct x4, default), `openxc7.x1.xdc` (RC-direct x1) and `openxc7.switched.xdc` (RC-switched, x1) are cut-down versions. The Vivado files (`2.rtl/0.common.opensource/xdc/` plus each variant's GT lane XDC) stay the reference for the AMD flow.
 
 ### GT channel
 
-The GT channel `LOC` (x1: `GTPE2_CHANNEL_X0Y5`) is set **indirectly**, through the GT pad pins. In prjxray the `IPAD`, `OPAD` and `GTPE2_CHANNEL` sites share a hard-wired tile, so the pins choose the channel:
+The GT channel `LOC` (x1: `GTPE2_CHANNEL_X0Y5`) is set **indirectly**, through the GT pad pins. In prjxray the `IPAD`, `OPAD` and `GTPE2_CHANNEL` sites share a hard-wired tile. So the pins choose the channel:
 
 ```tcl
 set_property PACKAGE_PIN C5  [get_ports txn]   ;# MGTPTXN1_216
@@ -339,7 +324,7 @@ set_property PACKAGE_PIN C11 [get_ports rxn]   ;# MGTPRXN1_216
 set_property PACKAGE_PIN D11 [get_ports rxp]   ;# MGTPRXP1_216
 ```
 
-Vivado is the other way round: the channel `LOC` decides the pads, and pin constraints alone do not move the lane.
+Vivado is the other way round. The channel `LOC` decides the pads, and pin constraints alone do not move the lane.
 
 Bank 216, from `prjxray-db/artix7/xc7a200tfbg484-3/package_pins.csv` (the `tile` column names the tile):
 
@@ -350,29 +335,29 @@ Bank 216, from `prjxray-db/artix7/xc7a200tfbg484-3/package_pins.csv` (the `tile`
 | 2 | `GTPE2_CHANNEL_X0Y6` | A10/B10 | A6/B6 |
 | 3 | `GTPE2_CHANNEL_X0Y7` | C9/D9 | C7/D7 |
 
-RC-switched uses channel **2** (`openxc7.switched.xdc`), the position its Vivado XDC locks. x4 (`openxc7.x4.xdc`) uses all four: board lanes 0, 1, 2, 3 on channels 2, 0, 1, 3. Channels are numbered as in prjxray; [`2.rtl/README.md`](../../2.rtl/README.md#common-physical-constraints-xdc) lists the same positions by board lane.
+RC-switched uses channel **2** (`openxc7.switched.xdc`), the position its Vivado XDC locks. x4 (`openxc7.x4.xdc`) uses all four: board lanes 0, 1, 2, 3 on channels 2, 0, 1, 3. Channels are numbered as in prjxray. [`2.rtl/README.md`](../../2.rtl/README.md#common-physical-constraints-xdc) lists the same positions by board lane.
 
-After every build the FASM must contain `GTP_CHANNEL_1_MID_LEFT` (`GTP_CHANNEL_2_...` for RC-switched). The P&R step prints it:
+After every build, the FASM must contain `GTP_CHANNEL_1_MID_LEFT` (`GTP_CHANNEL_2_...` for RC-switched). The P&R step prints it:
 
 ```bash
 grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/top.fasm | sort -u
 ```
 
-**Gotcha:** at `PCIE_LANES=1` the netlist port is `txn`, not `txn[0]`; `[get_ports {txn[0]}]` silently matches nothing. At x4 it is the reverse: `openxc7.x4.xdc` must use `{txn[0]}` ... `{txn[3]}`.
+**Gotcha:** at `PCIE_LANES=1` the netlist port is `txn`, not `txn[0]`. `[get_ports {txn[0]}]` silently matches nothing. At x4 it is the reverse: `openxc7.x4.xdc` must use `{txn[0]}` ... `{txn[3]}`.
 
 ### Clocks
 
-`create_clock` on `[get_nets]` **is** supported (`xilinx/xdc.cc:169`); `create_generated_clock`, `set_false_path` and `set_clock_groups` are not.
+`create_clock` on `[get_nets]` **is** supported (`xilinx/xdc.cc:169`). `create_generated_clock`, `set_false_path` and `set_clock_groups` are not.
 
-An **unconstrained** clock gets nextpnr's default target of **12 MHz**, so it is never optimised and never reported as failing. Three of the four domains here were like that; the pipe clock reached 245 MHz against 250 MHz required, silently.
+An **unconstrained** clock gets nextpnr's default target of **12 MHz**. So it is never optimised, and never reported as failing. Three of our four domains were like that. The pipe clock reached 245 MHz against 250 MHz required, and nobody said a word.
 
-The target must be the **exact** net name nextpnr reports (`u_pcie.clk_oobclk`), not the RTL hierarchical name. On a miss (`getNetByAlias`), the constraint is dropped **silently** (v1.0.0 now warns). That is why the five `create_clock` lines in regymm/pcie_7x do nothing there: Vivado-style `a/b/c` names, while the netlist has `a.b.c`.
+The target must be the **exact** net name nextpnr reports (`u_pcie.clk_oobclk`), not the RTL hierarchical name. On a miss (`getNetByAlias`), the constraint is dropped **silently** (v1.0.0 now warns). That is why the five `create_clock` lines in regymm/pcie_7x do nothing there. They use Vivado-style `a/b/c` names; the netlist has `a.b.c`.
 
 ---
 
 ## Shims
 
-Vivado supplies these from libraries openXC7 lacks. Open replacements here, unused by the Vivado build:
+Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Vivado build does not use them.
 
 | File | Replaces | Evidence it is faithful |
 |---|---|---|
@@ -396,28 +381,28 @@ Vivado supplies these from libraries openXC7 lacks. Open replacements here, unus
 | Bitstream | 9 730 756 B | 9 730 769 B |
 
 - openXC7: area is Yosys `synth_xilinx` (`stat`), Fmax nextpnr's report. Vivado: area after implementation (`report_utilization`).
-- Vivado reports no Fmax. Its figure here is 1 / (period - WNS); Vivado optimises only until each target is met, so it understates what the design could reach. Compare with care.
-- nextpnr's Fmax varies between builds: the same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
+- Vivado reports no Fmax. Its figure here is 1 / (period - WNS). Vivado optimises only until each target is met, so it undersells what the design could reach. Compare with care.
+- nextpnr's Fmax varies between builds. The same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
 - The committed `top.x4.direct.bit` is a later build (2026-10-21, current RTL, after eduBOS5 #40), assembled with the prjxray pair: `clk62m5` 146.5 MHz, `clk125` 361.7 MHz, pipe clock **229.3 MHz, misses 250 MHz**. The critical path starts in `u_rx_eios_filter` (lane 0), with 1.15 ns of routing on its first net. The x1 builds pass: pipe clock 330.7 MHz (direct), 335.8 MHz (switched).
-- The bitstream is uncompressed, so its size does not depend on the design; the difference is header metadata.
+- The bitstream is uncompressed, so its size does not depend on the design. The 13 bytes of difference are header metadata.
 
 ## CPU options compared
 
-The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). The three CPUs compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). The three compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 ## Lint and formal equivalence of RTL changes
 
-`run-lint.sh` lints the RTL in phases: Verilator, Yosys `check`, slang (Yosys `read_slang`), Verible, and Vivado `report_cdc` for clock-domain crossings. A phase whose tool is missing is skipped; usage is in the script header. Reviewed findings are waived inline on an unused instance output, `.PIN (/*LINT:OK*/)` (flagged on an input), or in `run-lint-waivers.txt` where there is no line of ours (generated code). Anything not waived fails the script.
+`run-lint.sh` lints the RTL in phases: Verilator, Yosys `check`, slang (Yosys `read_slang`), Verible, and Vivado `report_cdc` for clock-domain crossings. A phase whose tool is missing is skipped. Usage is in the script header. Reviewed findings are waived inline: on an unused instance output, `.PIN (/*LINT:OK*/)` (flagged on an input). Where no line is ours (generated code), they go in `run-lint-waivers.txt`. Anything not waived fails the script.
 
 `run-format.sh` applies the project style: `begin` ... `end` around every single-statement body, then `verible-verilog-format` with the project flags. `--check` changes nothing and exits 1 on an unformatted file. Rules: [2.rtl/README.md](../../2.rtl/README.md).
 
-`run-leq.sh` proves, with the v1.0.0 Yosys, that two versions of the whole design (`RC_opensource`: PCIE stack, SOC, CPU, CSR) behave the same. We use it on RTL cleanups before co-sim and the board; usage is in the script header. Hard macros are black boxes whose pins are compared; logic constant only after reset is reported as unproven and needs a manual look.
+`run-leq.sh` proves, with the v1.0.0 Yosys, that two versions of the whole design (`RC_opensource`: PCIE stack, SOC, CPU, CSR) behave the same. We run it on RTL cleanups, before co-sim and the board. Usage is in the script header. Hard macros are black boxes whose pins are compared. Logic that is constant only after reset comes out unproven and needs a human look.
 
 ---
 
 ## Programming the board from WSL
 
-WSL has no direct USB access. [usbipd-win](https://github.com/dorssel/usbipd-win) passes the JTAG cable through:
+WSL has no direct USB access. [usbipd-win](https://github.com/dorssel/usbipd-win) passes the JTAG cable through, across the border:
 
 ```powershell
 winget install usbipd                   # Windows, once
@@ -439,9 +424,9 @@ Vivado's Hardware Manager works the same way, once its cable drivers are install
 
 ## Debugging on the board without an ILA
 
-openXC7 has no ILA. What made bring-up possible was a `BSCANE2` shift register read over JTAG: a small module that Vivado reads with `scan_ir_hw_jtag` / `scan_dr_hw_jtag` while the openXC7 bitstream is loaded.
+openXC7 has no ILA. Bring-up was saved by a `BSCANE2` shift register, read over JTAG. It is a small module. Vivado reads it with `scan_ir_hw_jtag` / `scan_dr_hw_jtag` while the openXC7 bitstream is loaded.
 
-Three probes sat on separate JTAG user chains. `BSCANE2` connects straight to JTAG, so each probe sits next to its signals, with nothing routed up the hierarchy.
+Three probes sat on separate JTAG user chains. `BSCANE2` connects straight to JTAG, so each probe sits next to its signals. Nothing is routed up the hierarchy.
 
 | Chain | IR | Location | Contents |
 |---|---|---|---|
@@ -451,45 +436,43 @@ Three probes sat on separate JTAG user chains. `BSCANE2` connects straight to JT
 
 The probes are now removed from the RTL. Two lessons for reuse:
 
-- **`(* keep *)` is mandatory** on the `BSCANE2`, the shift register and the probe instance. With no output ports the module drives nothing, so Yosys silently deletes it, and JTAG reads return garbage.
-- **Heartbeat counters on each clock** were the most useful signal. Two running while a third stayed at 0 exposed the dead `IBUFDS_GTE2.O` BUFG, a net static analysis showed as correctly routed.
+- **`(* keep *)` is mandatory** on the `BSCANE2`, the shift register and the probe instance. With no output ports, the module drives nothing. So Yosys silently deletes it, and JTAG reads return garbage.
+- **Heartbeat counters on each clock** were the most useful signal. Two ran, a third flatlined at 0. That exposed the dead `IBUFDS_GTE2.O` BUFG, a net that static analysis showed as correctly routed.
 
-The other decisive technique was an **A/B build**: the same RTL and probes built once with Vivado and once with openXC7, on the same board. That settled at once whether a fault was in the design or the tool. It also corrected one assumption: `TXDLYSRESETDONE` reads 0 in the *working* build too, because it is a pulse, not a level.
+The other decisive trick was an **A/B build**: the same RTL and probes, built once with Vivado and once with openXC7, on the same board. It settled at once whether a fault was in the design or the tool. It also killed one assumption: `TXDLYSRESETDONE` reads 0 in the *working* build too. It is a pulse, not a level.
 
 ---
 
 ## openXC7 findings
 
-Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). The numbers are stable, for reference from issues and commits. Open items are tracked under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report. Board checks run once, for all fixes together, after upstream closes every open item.
+Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). The numbers are stable, so issues and commits can refer to them. Open items are tracked under the [post-release](https://github.com/chili-chips-ba/openPCIE/milestone/1) milestone, each linked to its upstream report. Board checks run once, for all fixes together, after upstream closes every open item.
 
 ### Issues we found: Still Open
 
 | # | Finding | Status | openPCIE | Upstream |
 |---|---|---|---|---|
 | 1 | GT attribute defaults differ from Xilinx's | open | [#17](https://github.com/chili-chips-ba/openPCIE/issues/17) | [nextpnr#21](https://github.com/openXC7/nextpnr/issues/21) |
-| 8 | `BEL` attribute on non-IO cells | still broken, reproduced upstream (a) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
-| 18 | Derived-constraint warning swaps its values | new in v1.0.0 | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21) | [nextpnr#85](https://github.com/openXC7/nextpnr/issues/85) |
-| 19 | Yosys: wrong `CLKSWING_CFG` default | new, Slang | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) | [yosys#6322](https://github.com/YosysHQ/yosys/issues/6322) |
-| 20 | sv-elab: no `real` primitive parameters | new, Slang | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) | [sv-elab#282](https://github.com/povik/sv-elab/issues/282) |
-| 22 | `read_slang` fails on `xilinx/cells_sim.v` | new, Slang (b) | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29) | [yosys#6323](https://github.com/YosysHQ/yosys/issues/6323), [sv-elab#72](https://github.com/povik/sv-elab/issues/72) |
+| 8 | `BEL` attribute on non-IO cells | partly fixed: malformed names give an error, not an abort (main, [nextpnr#123](https://github.com/openXC7/nextpnr/pull/123)); the rest still broken (a) | [#28](https://github.com/chili-chips-ba/openPCIE/issues/28) | [nextpnr#89](https://github.com/openXC7/nextpnr/issues/89) |
+| 19 | Yosys: wrong `CLKSWING_CFG` default | new, Slang; still on main | [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) | [yosys#6322](https://github.com/YosysHQ/yosys/issues/6322) |
+| 20 | sv-elab: no `real` primitive parameters | new, Slang; blocks `read_slang --target xilinx` on main (`MMCME2_ADV`) | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) | [sv-elab#282](https://github.com/povik/sv-elab/issues/282) |
+| 22 | `read_slang` fails on `xilinx/cells_sim.v` | new, Slang (b); with `--target xilinx` on main, only `FDCE` fails (6 errors) | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29) | [yosys#6323](https://github.com/YosysHQ/yosys/issues/6323), [sv-elab#72](https://github.com/povik/sv-elab/issues/72) |
 | 24 | No XPM / UNIMACRO libraries | open; [shims](#shims) stand in | - | - |
 | 26 | `set_multicycle_path` cannot reach registers | new (c) | [#36](https://github.com/chili-chips-ba/openPCIE/issues/36) | [nextpnr#110](https://github.com/openXC7/nextpnr/issues/110) |
-| 27 | `fpga-as` writes `RXCDR_CFG` wrong on every GTP lane | new (d); the Makefile assembles with `fasm2frames` + `xc7frames2bit` until the toolchain ships the fix; upstream moves toolchain-nix and toolchain-installer to lromor/fpga-assembler `main` | [#41](https://github.com/chili-chips-ba/openPCIE/issues/41) | [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88), fixed in [fpga-assembler `282ef7c2`](https://github.com/lromor/fpga-assembler/commit/282ef7c2) |
+| 27 | `fpga-as` writes `RXCDR_CFG` wrong on every GTP lane | new (d); the Makefile uses `fasm2frames` + `xc7frames2bit` until the toolchain ships the fix | [#41](https://github.com/chili-chips-ba/openPCIE/issues/41) | [nextpnr#88](https://github.com/openXC7/nextpnr/issues/88), fixed in [fpga-assembler `282ef7c2`](https://github.com/lromor/fpga-assembler/commit/282ef7c2) |
 
-- (a) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored, and a malformed one aborts nextpnr. Not used by openPCIE.
+- (a) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, and an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored. Not used by openPCIE.
 - (b) 106 errors in `specify` blocks; the reason for `gen_xilinx_bb.py`.
-- (c) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read, and it matches cell names, which flip-flops lose in synthesis; `-from` drops the whole constraint. eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) therefore shows no Fmax gain over 2-stage. Test case, proven safe by formal: [eduBOS5 3-stage multicycle paths](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#3-stage-multicycle-paths).
-- (d) For the 83-bit `RXCDR_CFG` (`83'h0_0001_07FE_4060_0104_1010`), `fpga-as` v1.0.0 keeps bits 0-23, drops 24 and 37-64, and sets 69 and 82. `fasm2frames` writes it exactly. Found by assembling our x4 FASM both ways: the only difference is `RXCDR_CFG`, in all four lanes. The v1.0.0 installer pins `hansfbaier/fpga-assembler` `cf0e3f08`, which lacks the fix.
+- (c) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read. It matches cell names, which flip-flops lose in synthesis. `-from` drops the whole constraint. So eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) shows no Fmax gain over 2-stage. Test case, proven safe by formal: [eduBOS5 3-stage multicycle paths](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#3-stage-multicycle-paths).
+- (d) For the 83-bit `RXCDR_CFG` (`83'h0_0001_07FE_4060_0104_1010`), `fpga-as` v1.0.0 keeps bits 0-23, drops 24 and 37-64, and sets 69 and 82. `fasm2frames` writes it exactly. We assembled our x4 FASM both ways: the only difference is `RXCDR_CFG`, in all four lanes. The v1.0.0 installer pins `hansfbaier/fpga-assembler` `cf0e3f08`, which lacks the fix. Upstream is moving toolchain-nix and toolchain-installer to lromor/fpga-assembler `main`.
 
 #### Temp RTL Workarounds / FIXMEs
 
-Each tool workaround in the sources carries a `FIXME` comment (`grep -rn FIXME`), to be removed once its issue is fixed:
+Each tool workaround in the sources carries a `FIXME` comment (`grep -rn FIXME`). It goes once its issue is fixed:
 
 | Where | Workaround | Issue |
 |---|---|---|
 | `lane_xcvr.sv` | `TXPI_SYNFREQ_PPM = 3'd1` instead of Xilinx's 0 | [#27](https://github.com/chili-chips-ba/openPCIE/issues/27) |
 | `gtp_wrapper.sv` | PLL0 power-up delay clocked from `clk125` instead of `BUFG(PIPE_CLK)` | [#22](https://github.com/chili-chips-ba/openPCIE/issues/22) |
-| `gtp_wrapper.sv` | none, but nextpnr v1.0.0 ignores `PLL0_CFG`/`PLL1_CFG` here (fixed on main, not yet released) | [#18](https://github.com/chili-chips-ba/openPCIE/issues/18) |
 | `Makefile` | `ASSEMBLER=prjxray` by default instead of `fpga-as` | row 27 |
 | `clk_rst_gen.sv` | MMCM `real` parameters left out under `SYN_YOSYS_BUG` (slang flow) | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) |
 | `gen_xilinx_bb.py` | whole script (blackbox stubs for slang), plus the `CLKSWING_CFG` fix | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29), [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) |
@@ -517,17 +500,20 @@ These affect only the pre-v1.0.0 toolchain.
 | 21 | Truncated FASM on error still assembles | main `f9e07df8`; the Makefile also checks nextpnr's exit status | [#26](https://github.com/chili-chips-ba/openPCIE/issues/26), [nextpnr#93](https://github.com/openXC7/nextpnr/issues/93) |
 | 23 | Contradicting GT `LOC` accepted silently | main `d3acad91` | [#30](https://github.com/chili-chips-ba/openPCIE/issues/30), [nextpnr#94](https://github.com/openXC7/nextpnr/issues/94) |
 | 14 | `IBUFDS_GTE2.ODIV2` unusable | main: the pin ([nextpnr-xilinx-meta#7](https://github.com/openXC7/nextpnr-xilinx-meta/pull/7)), the packer ([nextpnr#131](https://github.com/openXC7/nextpnr/pull/131)), the `ODIV2` select bit ([prjxray-db#41](https://github.com/openXC7/prjxray-db/pull/41)); bits match Vivado; artix7 chipdb must be regenerated; board check in the final run | [#24](https://github.com/chili-chips-ba/openPCIE/issues/24), [nextpnr#91](https://github.com/openXC7/nextpnr/issues/91) |
+| 18 | Derived-constraint warning swaps its values | main `e313e46f` ([nextpnr#122](https://github.com/openXC7/nextpnr/pull/122)) | [#21](https://github.com/chili-chips-ba/openPCIE/issues/21), [nextpnr#85](https://github.com/openXC7/nextpnr/issues/85) |
 
 #### Fixed in v1.0.0
 
-| # | Finding | Note | Tracked |
-|---|---|---|---|
-| 7 | `create_clock` on an unknown net dropped silently | now warns | not needed |
-| 12 | prjxray `bitread` segfaults on xc7a200t | | not needed |
-| 13 | SRL32 cascade `Q31` missing | no `-nosrl`: 216 fewer FFs ([more](#-nosrl-at-synthesis)) | not needed |
-| 15 | `PSEUDO_GND` rejected on unused `GTREFCLK` | | not needed |
-| 16 | `CARRY4.CIN` ground not routable | no `-nocarry`; 384 carry cells pass timing | not needed |
-| 25 | No `get_cells` in XDC, so no `LOC` on a hard block | `LOC` now pins `GTPE2_CHANNEL`; pad pins still required | not needed |
+None of these needed a tracker.
+
+| # | Finding | Note |
+|---|---|---|
+| 7 | `create_clock` on an unknown net dropped silently | now warns |
+| 12 | prjxray `bitread` segfaults on xc7a200t | |
+| 13 | SRL32 cascade `Q31` missing | no `-nosrl`: 216 fewer FFs ([more](#-nosrl-at-synthesis)) |
+| 15 | `PSEUDO_GND` rejected on unused `GTREFCLK` | |
+| 16 | `CARRY4.CIN` ground not routable | no `-nocarry`; 384 carry cells pass timing |
+| 25 | No `get_cells` in XDC, so no `LOC` on a hard block | `LOC` now pins `GTPE2_CHANNEL`; pad pins still required |
 
 -----------
 #### End-of-Document

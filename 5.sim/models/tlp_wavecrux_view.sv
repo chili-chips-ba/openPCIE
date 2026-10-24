@@ -7,7 +7,7 @@
 //--------------------------------------------------------------------------
 // Description:
 //   Simulation-only signal set for the openPCIE PCIe TLP decoder plugin
-//   (5.sim/tools/wavecrux-pcie-tlp) in WaveCrux.
+//   (wavecrux-decoders, decoders/pcie-tlp) in WaveCrux.
 //
 //   The decoder takes nine signals: clk, the stream it decodes (tlp_*), and
 //   the opposite direction (peer_*), which it uses to name each Completion

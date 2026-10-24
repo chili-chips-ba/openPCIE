@@ -11,7 +11,7 @@
 //   tlp_wavecrux_view.sv.
 //
 //   The member names are the signal roles of the openPCIE PCIe TLP decoder
-//   plugin (5.sim/tools/wavecrux-pcie-tlp), so a dumped instance already
+//   plugin (wavecrux-decoders, decoders/pcie-tlp), so a dumped instance already
 //   binds the decoder's five required inputs by name:
 //
 //     clk        stream clock, rising edge samples
