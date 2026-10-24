@@ -573,20 +573,23 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 </p>
 
 <p align="center">
-  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="80%" src="0.doc/artwork/openXC7.logo.png"></a>
-  <a href="https://www.yosyshq.com"><img alt="YosysHQ logo" width="25%" src="0.doc/artwork/YosysHQ.logo.png"></a>
-  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="14%" src="0.doc/artwork/PeakRDL.logo.png"></a>
-  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="35%" src="0.doc/artwork/WaveCrux.logo.png"></a>
-</p>
-
-<p align="center">
+  <a href="https://github.com/openXC7"><img alt="openXC7 logo" width="30%" src="0.doc/artwork/openXC7.logo.png"></a>
   <a href="https://www.symbioticeda.com"><img alt="Symbiotic EDA logo" width="25%" src="0.doc/artwork/symbioticeda.logo.png"></a>
 </p>   
 
 <p align="center">
+  <a href="https://peakrdl.readthedocs.io"><img alt="PeakRDL logo" width="14%" src="0.doc/artwork/PeakRDL.logo.png"></a>
+  <a href="https://www.yosyshq.com"><img alt="YosysHQ logo" width="25%" src="0.doc/artwork/YosysHQ.logo.png"></a>
+</p>
+
+<p align="center">  
+  <a href="https://wavecrux.app"><img alt="WaveCrux logo" width="35%" src="0.doc/artwork/WaveCrux.logo.png"></a>
   <a href="https://verilator.org"><img alt="Verilator logo" width="25%" src="0.doc/artwork/Verilator.logo.png"></a>
-  <a href="https://www.drawio.com"><img alt="draw.io logo" width="25%" src="0.doc/artwork/drawio.logo.png"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/MikePopoloski/slang"><img alt="MikePopoloski slang logo" width="25%" src="0.doc/artwork/slang.logo.png"></a>
+  <a href="https://www.drawio.com"><img alt="draw.io logo" width="25%" src="0.doc/artwork/drawio.logo.png"></a>
   <a href="https://www.chipsalliance.org/projects"><img alt="Chips Alliance SV Tools logo" width="15%" src="0.doc/artwork/ChipsAlliance-SV-Tools.logo.png"></a>
   <a href="https://github.com/chipsalliance/verible"><img alt="Verible logo" width="25%" src="0.doc/artwork/Verible.logo.png"></a>
   <a href="https://github.com/trabucayre/openFPGALoader"><img alt="openFPGALoader logo" width="20%" src="0.doc/artwork/openFPGAloader.logo.png"></a>
