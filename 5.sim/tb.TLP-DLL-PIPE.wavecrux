@@ -15,7 +15,7 @@
     {
       "kind": "signal",
       "id": "6eda0999-1",
-      "ref": "60",
+      "ref": "120",
       "path": "tb.tlp_view.tx_tlp_valid",
       "name": "tx_tlp_valid",
       "color": 4283417591,
@@ -25,7 +25,7 @@
     {
       "kind": "signal",
       "id": "6eda0999-2",
-      "ref": "57",
+      "ref": "117",
       "path": "tb.tlp_view.tx_tlp_data",
       "name": "tx_tlp_data",
       "color": 4283417591,
@@ -35,7 +35,7 @@
     {
       "kind": "signal",
       "id": "6eda0999-3",
-      "ref": "69",
+      "ref": "129",
       "path": "tb.tlp_view.rx_tlp_valid",
       "name": "rx_tlp_valid",
       "color": 4294948685,
@@ -45,7 +45,7 @@
     {
       "kind": "signal",
       "id": "6eda0999-4",
-      "ref": "66",
+      "ref": "126",
       "path": "tb.tlp_view.rx_tlp_data",
       "name": "rx_tlp_data",
       "color": 4294948685,
@@ -55,7 +55,7 @@
     {
       "kind": "signal",
       "id": "4d164393-6",
-      "ref": "4",
+      "ref": "5",
       "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.RxData",
       "name": "RxData",
       "color": 4283417591,
@@ -65,7 +65,7 @@
     {
       "kind": "signal",
       "id": "4d164393-7",
-      "ref": "5",
+      "ref": "6",
       "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.RxDataK",
       "name": "RxDataK",
       "color": 4283417591,
@@ -75,7 +75,7 @@
     {
       "kind": "signal",
       "id": "4d164393-8",
-      "ref": "6",
+      "ref": "7",
       "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.TxData",
       "name": "TxData",
       "color": 4294948685,
@@ -85,7 +85,7 @@
     {
       "kind": "signal",
       "id": "4d164393-9",
-      "ref": "7",
+      "ref": "8",
       "path": "tb.dut.u_pcie.u_phy_top.u_pcie_ep.TxDataK",
       "name": "TxDataK",
       "color": 4294948685,
@@ -122,15 +122,9 @@
     }
   },
   "signalTreeState": {
-    "expanded": [
-      "tb",
-      "tb.tlp_tx",
-      "tb.tlp_rx"
-    ],
-    "selected": [
-      "tb.dut.u_pcie.pl_ltssm_state_int"
-    ],
-    "scroll": 448.20000000000005
+    "expanded": [],
+    "selected": [],
+    "scroll": 0.0
   },
   "translateFilters": {},
   "stage": {
@@ -143,15 +137,15 @@
       "instanceNumber": 1,
       "config": {
         "bindings": {
-          "clk": "56",
-          "tlp_data": "57",
-          "tlp_sop": "58",
-          "tlp_eop": "59",
-          "tlp_valid": "60",
-          "peer_data": "61",
-          "peer_sop": "62",
-          "peer_eop": "63",
-          "peer_valid": "64"
+          "clk": "116",
+          "tlp_data": "117",
+          "tlp_sop": "118",
+          "tlp_eop": "119",
+          "tlp_valid": "120",
+          "peer_data": "121",
+          "peer_sop": "122",
+          "peer_eop": "123",
+          "peer_valid": "124"
         },
         "parameters": {
           "span": "until_next"
@@ -163,15 +157,15 @@
       "instanceNumber": 1,
       "config": {
         "bindings": {
-          "clk": "65",
-          "tlp_data": "66",
-          "tlp_sop": "67",
-          "tlp_eop": "68",
-          "tlp_valid": "69",
-          "peer_data": "70",
-          "peer_sop": "71",
-          "peer_eop": "72",
-          "peer_valid": "73"
+          "clk": "125",
+          "tlp_data": "126",
+          "tlp_sop": "127",
+          "tlp_eop": "128",
+          "tlp_valid": "129",
+          "peer_data": "130",
+          "peer_sop": "131",
+          "peer_eop": "132",
+          "peer_valid": "133"
         },
         "parameters": {
           "span": "until_next"
@@ -183,9 +177,9 @@
       "instanceNumber": 3,
       "config": {
         "bindings": {
-          "pclk": "2",
-          "data": "4",
-          "datak": "5"
+          "pclk": "3",
+          "data": "5",
+          "datak": "6"
         },
         "parameters": {
           "scrambling": "auto",
@@ -198,9 +192,9 @@
       "instanceNumber": 4,
       "config": {
         "bindings": {
-          "pclk": "2",
-          "data": "6",
-          "datak": "7"
+          "pclk": "3",
+          "data": "7",
+          "datak": "8"
         },
         "parameters": {
           "scrambling": "auto",
@@ -213,9 +207,9 @@
       "instanceNumber": 3,
       "config": {
         "bindings": {
-          "pclk": "2",
-          "data": "4",
-          "datak": "5"
+          "pclk": "3",
+          "data": "5",
+          "datak": "6"
         },
         "parameters": {
           "scrambling": "auto",
@@ -230,9 +224,9 @@
       "instanceNumber": 4,
       "config": {
         "bindings": {
-          "pclk": "2",
-          "data": "6",
-          "datak": "7"
+          "pclk": "3",
+          "data": "7",
+          "datak": "8"
         },
         "parameters": {
           "scrambling": "auto",

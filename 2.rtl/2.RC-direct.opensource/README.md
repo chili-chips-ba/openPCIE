@@ -27,20 +27,20 @@ foundation for the makers to build their future applications upon...
 | | |
 |---|---|
 | Target device | `xc7a200tfbg484-3`, Acorn CLE-215P |
-| Link | **PCIE Gen2 x4** by default, **x1** selectable; both trained RC-to-EP on hardware (x4 on the backplane's RC4 ⇔ EP4 island) |
+| Link | **PCIE x4 Gen1** by default, **x1 Gen2** selectable. On hardware: x1 Gen2 works; x4 Gen2 trained (backplane RC4 ⇔ EP4 island), but its TLPs needed the new user clock, not re-tested |
 | Note | x4 can only be tested in the **Direct** topology; [RC-switched](../3.Bonus--RC-switched.opensource) is x1 |
 | Vivado build | works |
 | Opensource build | works - see [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) |
 
-Link width is one define, `PCIE_LANES`, read by [`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv): **4 by default**, 1 on request. x4 can only be tested in the **Direct** PCIE topology. Each build sets it, and picks the matching lane XDC and bitstream name:
+Link width and speed are two defines, `PCIE_LANES` and `PCIE_GEN`, read by [`link_pkg.sv`](../0.common.opensource/src/pcie/link_pkg.sv): **x4 Gen1 by default**, x1 Gen2. x4 can only be tested in the **Direct** PCIE topology. Each build sets them, and picks the matching lane XDC and bitstream name:
 
-| | x4 (default) | x1 |
-|---|---|---|
-| openXC7 | `make` -> `top.x4.direct.bit` | `make LANES=1` -> `top.x1.direct.bit` |
-| Vivado | `RC-direct.opensource.tcl` | `set ::pcie_lanes 1` before sourcing it |
-| `run-lint.sh`, `run-leq.sh` | default | `LANES=1` |
+| | x4 Gen1 (default) | x4 Gen2 | x1 Gen2 |
+|---|---|---|---|
+| openXC7 | `make` -> `top.x4g1.direct.bit` | `make GEN=2` -> `top.x4g2.direct.bit` | `make LANES=1` -> `top.x1.direct.bit` |
+| Vivado | `RC-direct.opensource.tcl` | `set ::pcie_gen 2` before sourcing it | `set ::pcie_lanes 1` before sourcing it |
+| `run-lint.sh`, `run-leq.sh` | default | Gen1 only (no `GEN` option) | `LANES=1` |
 
-Link speed is set in `link_pkg.sv` as well (`PCIE_GEN`, 2 = Gen2).
+Width and speed set the user clock: see [Link width, speed and user clock](../README.md#link-width-speed-and-user-clock). The CPU: openXC7 `make CPU=edubos5|edubos5_3stg|picorv32`, Vivado `set ::cpu ...`. Default CPU: the 2-stage eduBOS5; at x4 Gen2 the 3-stage, which 250 MHz needs. The 3-stage eduBOS5 adds its multicycle constraint, [`edubos5.3STG-ONLY.mcp.xdc`](../0.common.opensource/src/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.xdc).
 
 ---
 
@@ -64,7 +64,7 @@ They differ only in the GT lanes the link uses and in the firmware they run.
 
 2.rtl/2.RC-direct.opensource/     this folder
   xdc/
-    RC-direct.x4g2.AcornCLE-215P.xdc   GT lanes of the x4 link (default): X0Y6, X0Y4, X0Y5, X0Y7
+    RC-direct.x4g2.AcornCLE-215P.xdc   GT lanes of the x4 link (default; any speed): X0Y6, X0Y4, X0Y5, X0Y7
     RC-direct.x1g2.AcornCLE-215P.xdc   GT lane of the x1 link: GTPE2_CHANNEL_X0Y5
   RC-direct.opensource.tcl        regenerates the Vivado project from scratch
 ```
@@ -83,7 +83,7 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 | PHY control | `phy_top.sv`, `gtp_wrapper.sv` | PIPE-level control, reset and rate sequencing |
 | Bring-up FSMs | `init_ctrl.sv`, `phase_align.sv`, `lane_xcvr.sv` | GT reset sequence, TX phase alignment, per-lane status |
 | Transceiver | `lane_xcvr.sv`, `gtp_wrapper.sv` | `GTPE2_CHANNEL` and `GTPE2_COMMON` instances |
-| Clocking | `clk_rst_gen.sv` | MMCM: 125 / 250 / 62.5 MHz from the 100 MHz refclk |
+| Clocking | `clk_rst_gen.sv` | MMCM: 125 / 250 MHz and the user clock from the 100 MHz refclk |
 | Tuning | `chan_retune.sv`, `speed_ctrl.sv`, `rx_eios_filter.sv` | RX data width (x16/x20) via DRP, Gen1/Gen2 rate change, EIOS filtering |
 | Interfaces | `link_pkg.sv`, `axis_if.sv`, `trn_if.sv`, `pipe_if.sv`, `cfg_if.sv`, `mem_if.sv`, `mim_if.sv`, `gtp_if.sv` | package and SystemVerilog interfaces, see [SystemVerilog interfaces](../README.md#systemverilog-interfaces) |
 
@@ -96,13 +96,15 @@ refclk_p/n (100 MHz PCIE refclk)
 GTPE2_CHANNEL.TXOUTCLK ─ BUFG ─ MMCM ─┬─ CLKOUT0  125 MHz  ─ clk125 (DRP,
                                       │                      and PLL0 power-up)
                                       ├─ CLKOUT1  250 MHz  ─┐
-                                      └─ CLKOUT2  62.5 MHz ─ clk62m5 (USERCLK, SOC)
+                                      └─ CLKOUT2  62.5 / 125 / 250 MHz ─ user_clk (USERCLK, SOC)
                                                              │
                               BUFGCTRL mux (125 | 250) ─ pipe_clk = pipe clock
 ```
 
 The pipe clock is 125 MHz in Gen1 and 250 MHz in Gen2; the BUFGCTRL mux switches
-it on rate change. It is the tightest timing domain in the design.
+it on rate change. It is the tightest timing domain in the design, with
+`user_clk` at x4 Gen2. The user clock follows the link: 62.5 MHz at x1, 125 MHz
+at x4 Gen1, 250 MHz at x4 Gen2 (`USER_CLK_FREQ` in `pcie_pkg.sv`).
 
 The PLL0 power-up delay in `init_ctrl` runs from `clk125` rather than from the refclk buffer - see [PLL0 power-up delay clocked from `clk125`](../../4.build/hw_build.openXC7/README.md#pll0-power-up-delay-clocked-from-clk125) for why.
 

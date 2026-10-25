@@ -66,8 +66,9 @@ else
   $(error CPU must be one of: rtl, vproc, iss  (got "$(CPU)"))
 endif
 
-# DUMP_SOC_CPU (the CPU in WaveCrux, tb.sv) needs the core's RVFI outputs
-ifneq ($(findstring DUMP_SOC_CPU,$(USRSIMOPTS)),)
+# DUMP_SOC_CPU (the CPU in WaveCrux, tb.sv) and SOC_IPC (the IPC count, tb.sv)
+# need the core's RVFI outputs
+ifneq ($(findstring DUMP_SOC_CPU,$(USRSIMOPTS))$(findstring SOC_IPC,$(USRSIMOPTS)),)
   CPUDEFINE     += --define RISCV_FORMAL
 endif
 
@@ -131,7 +132,10 @@ ARCHFLAG         = -m64
 # generated register access classes the native C++ CPU model uses, so that it
 # talks to the CSR through the same single source of truth as the firmware.
 INCLPATHS        = -I$(USRCODEDIR) -I$(PCIECODEDIR) -I$(COSIMDIR)/include -I$(PCIEDIR)/include -I$(PCIEDIR)/ltssm -I$(BLD_DIR)/csr_build/generated-files $(RV32INCLOPTS)
-DEFS             = -DVPROC_SV -DVPROC -DEXCLUDE_LTSSM $(ISS_DEFS)
+# The soc_cpu clock period of the C++ side, as sysrdl_cosim.py -C sets it in
+# csr_cosim.h: user_clk is 62.5 MHz at x1, 125 MHz at x4 (Gen1)
+SOC_CPU_CLK_PS   = $(if $(filter 4,$(SIM_LANES)),8000,16000)
+DEFS             = -DVPROC_SV -DVPROC -DEXCLUDE_LTSSM -DSOC_CPU_CLK_PERIOD_PS=$(SOC_CPU_CLK_PS) $(ISS_DEFS)
 
 VOBJDIR          = $(CURDIR)/obj
 
@@ -203,8 +207,9 @@ FW_DIR           = $(VOBJDIR)/fw
 # Flags for xsim
 # SIM_FAST_TRAIN turns on the hard macro's shortened LTSSM training timers.
 # It is a simulation-only parameter of PCIE_2_1 -- see pcie_core.sv.
-# PCIE_LANES goes to xvlog through an options file (xvlog.defines).
-# SIM_LANES = 1 until the PIPE model and the test program drive x4 too.
+# PCIE_LANES goes to xvlog through an options file (xvlog.defines); at 4
+# lanes also PIPE_X4, which dumps the four-lane PIPE page (tb.sv).
+# SIM_LANES: 1 (default) or 4.
 SIM_LANES         ?= 1
 ANALYSEFLAGS       = -i $(PCIEDIR)/verilog/headers --define VPROC_SV --define VPROC_BYTE_ENABLE --define SIM_FAST_TRAIN --define SIM_GEN1_ONLY --define SIM_PIPE_CODING -f xvlog.defines $(CPUDEFINE) $(USRSIMOPTS) --prj tb.prj
 ELABFLAGS          = -sv_lib $(VPROC_PLI) --timescale 1ps/1ps --debug typical $(XILLIBS) $(TB_NAME) glbl
@@ -254,13 +259,14 @@ $(VOBJDIR)/%.o: $(PCIECODEDIR)/%.cpp
 $(VOBJDIR)/%.o: $(PCIEDIR)/ltssm/%.c
 	@$(CC) -c -fPIC $(OPTFLAG) -Wno-write-strings $(DEFS) $(INCLPATHS) $< -o $@
 
-# The user code differs per CPU option (VUserMain0, the ISS and its defines):
-# a change of CPU= throws the objects and the library away, so that the next
-# build cannot mix them. obj/.cpu holds the CPU of the last build.
+# The user code differs per CPU option (VUserMain0, the ISS and its defines)
+# and per clock period (SIM_LANES): a change of either throws the objects and
+# the library away, so that the next build cannot mix them. obj/.cpu holds the
+# CPU and period of the last build.
 CPU_STAMP = $(VOBJDIR)/.cpu
 $(CPU_STAMP): FORCE | $(VOBJDIR)
-	@if [ "$$(cat $@ 2>/dev/null)" != "$(CPU)" ]; then \
-	    rm -f $(VOBJDIR)/*.o $(USERLIB) $(VPROC_PLI); echo "$(CPU)" > $@; fi
+	@if [ "$$(cat $@ 2>/dev/null)" != "$(CPU) $(SOC_CPU_CLK_PS)" ]; then \
+	    rm -f $(VOBJDIR)/*.o $(USERLIB) $(VPROC_PLI); echo "$(CPU) $(SOC_CPU_CLK_PS)" > $@; fi
 
 # Rule to build library of user code
 $(USERLIB): $(CPU_STAMP) $(VOBJS)
@@ -285,7 +291,7 @@ $(VPROC_PLI): $(USERLIB) $(RV32LIB)
 # Compile simulation
 #
 sysverilog: $(VPROC_PLI) firmware.hex
-	@echo "--define PCIE_LANES=$(SIM_LANES)" > xvlog.defines
+	@echo "--define PCIE_LANES=$(SIM_LANES)$(if $(filter 4,$(SIM_LANES)), --define PIPE_X4)" > xvlog.defines
 	@$(XVLOG) $(ANALYSEFLAGS)
 	@$(XVLOG) $(GLBL)
 	@$(XELAB) $(ELABFLAGS)

@@ -28,6 +28,7 @@ fetch() {
     local repo=$1 ref=${2:-}
     [ -d "$W/$repo" ] || git clone -q "https://github.com/wyvernSemi/$repo.git" "$W/$repo"
     git -C "$W/$repo" fetch -q --tags origin
+    git -C "$W/$repo" checkout -q -- .  # drop a patch from the last run
     [ -n "$ref" ] || ref=$(git -C "$W/$repo" tag --sort=-creatordate | head -1)
     git -C "$W/$repo" checkout -q "$ref"
     echo "$ref"
@@ -62,6 +63,15 @@ lf "$W/mem_model/mem_model_dpi.vh" > "$M/cosim/mem_model_dpi.vh"
 
 # ---- pcievhost: libpcielnx.a, headers, HDL ---------------------------------
 P=$W/pcievhost
+# local change: transaction taps, TLP and DLLP ports (models/pcievhost/README.md),
+# on LF copies of the files it changes
+for f in src/displink.c src/pcie_vhost_map.h verilog/pcieVHost/pcieVHost.v verilog/pcieVHost/pcieVHostPipex1.v; do
+    sed -i 's/\r$//' "$P/$f"
+done
+if ! patch -s --no-backup-if-mismatch -p1 -d "$P" < "$M/pcievhost/pcievhost-taps.patch"; then
+    echo "ERROR: pcievhost-taps.patch no longer applies to pcievhost $PCIEVHOST_REF."
+    exit 1
+fi
 for f in codec mem pcie pcie_utils pcicrc32 displink; do
     gcc -c -fPIC -m64 -I"$V/code" -DVPROC_SV -DLTSSM_ABBREVIATED "$P/src/$f.c" -o "$O/$f.o"
 done

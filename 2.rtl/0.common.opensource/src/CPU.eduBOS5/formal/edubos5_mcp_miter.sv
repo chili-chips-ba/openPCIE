@@ -62,10 +62,10 @@ module edubos5_mcp_miter
     end
   end
 
-  // the cycle after a launch edge (the edge that ends FETCH_INSTR)
+  // the cycle after a fetch edge (the edge that ends FETCH_INSTR or FETCH_TARGET)
   logic settling = 1'b0;
   always_ff @(posedge clk) begin
-    settling <= arst_n && u_a.state == 3'd0;  // FETCH_INSTR
+    settling <= arst_n && (u_a.state == 3'd0 || u_a.state == 3'd5);
   end
 
   edubos5 #(

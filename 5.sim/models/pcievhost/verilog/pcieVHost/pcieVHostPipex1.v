@@ -54,8 +54,17 @@ module pcieVHostPipex1
   input  [(DataWidth/8)-1:0]     RxDataK,
 
   output reg [DataWidth-1:0]     TxData,
-  output reg [(DataWidth/8)-1:0] TxDataK
+  output reg [(DataWidth/8)-1:0] TxDataK,
 
+  // Transaction taps (openPCIE), on ClkOut: see pcieVHost.v
+  output [31:0]                  TlpTxData,
+  output                         TlpTxSop,  TlpTxEop,  TlpTxValid,
+  output [31:0]                  TlpRxData,
+  output                         TlpRxSop,  TlpRxEop,  TlpRxValid,
+  output [31:0]                  DllpTxData,
+  output                         DllpTxValid,
+  output [31:0]                  DllpRxData,
+  output                         DllpRxValid
 );
 
 //-------------------------------------------------------------
@@ -258,7 +267,13 @@ end
     .LinkOut4              (), .LinkOut5  (), .LinkOut6  (),
     .LinkOut7              (), .LinkOut8  (), .LinkOut9  (),
     .LinkOut10             (), .LinkOut11 (), .LinkOut12 (),
-    .LinkOut13             (), .LinkOut14 (), .LinkOut15 ()
+    .LinkOut13             (), .LinkOut14 (), .LinkOut15 (),
+
+    // Transaction taps
+    .TlpTxData             (TlpTxData),   .TlpTxSop (TlpTxSop), .TlpTxEop (TlpTxEop), .TlpTxValid (TlpTxValid),
+    .TlpRxData             (TlpRxData),   .TlpRxSop (TlpRxSop), .TlpRxEop (TlpRxEop), .TlpRxValid (TlpRxValid),
+    .DllpTxData            (DllpTxData),  .DllpTxValid (DllpTxValid),
+    .DllpRxData            (DllpRxData),  .DllpRxValid (DllpRxValid)
   );
 
 endmodule

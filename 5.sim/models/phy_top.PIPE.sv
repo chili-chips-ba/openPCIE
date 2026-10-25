@@ -25,10 +25,12 @@
 //     1. a behavioural PIPE PHY -- the sideband handshake the PCIE_2_1 LTSSM
 //        needs from a PHY: PHYSTATUS pulses, receiver detection, RXVALID,
 //        RXELECIDLE and the PCLK/rate handling
-//     2. the link partner itself -- a pcieVHostPipex1 configured as an
-//        ENDPOINT, so the openPCIE Root Complex has something to enumerate
+//     2. the link partner itself -- a pcieVHost in our wrapper
+//        PIPExN__pcieVHost, configured as an ENDPOINT, so the openPCIE Root
+//        Complex has something to enumerate. x1 or x4, as PCIE_LANES
 //
 //        PCIE_2_1  <--16-bit PIPE-->  this PHY  <--16-bit PIPE-->  pcieVHost EP
+//                     per lane                      per lane
 //              (pcie_core.sv)                                 (VUserMain1)
 //
 //   Clocking
@@ -145,29 +147,36 @@ module phy_top
   end
 
   //------------------------------------------------------------------
-  // pcievhost endpoint, connected over a 16-bit PIPE
+  // pcievhost endpoint, connected over a 16-bit PIPE, one lane per lane of
+  // the hard macro (PCIE_LANES: 1 or 4, make SIM_LANES)
   //------------------------------------------------------------------
-  // What we transmit is what the model receives, and vice versa.
-  logic [15:0] ep_rx_data;      // -> model
-  logic [1:0]  ep_rx_datak;
-  wire  [15:0] ep_tx_data;      // <- model
-  wire  [1:0]  ep_tx_datak;
+  // What we transmit is what the model receives, and vice versa. Lane l is
+  // bits [16*l +: 16] (data) and [2*l +: 2] (K flags).
+  logic [16*PCIE_LANES-1:0] ep_rx_data;      // -> model
+  logic [ 2*PCIE_LANES-1:0] ep_rx_datak;
+  wire  [16*PCIE_LANES-1:0] ep_tx_data;      // <- model
+  wire  [ 2*PCIE_LANES-1:0] ep_tx_datak;
 
   // Register the outgoing symbols on PCLK so the model sees a clean bus
   always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
     if (!pipe_rst_n) begin
-      ep_rx_data  <= 16'h0000;
-      ep_rx_datak <= 2'b00;
+      ep_rx_data  <= '0;
+      ep_rx_datak <= '0;
     end
     else begin
-      ep_rx_data  <= pipe_mac.tx[0].data;
-      ep_rx_datak <= pipe_mac.tx[0].char_is_k;
+      for (int l = 0; l < PCIE_LANES; l++) begin
+        ep_rx_data [16*l +: 16] <= pipe_mac.tx[l].data;
+        ep_rx_datak[ 2*l +:  2] <= pipe_mac.tx[l].char_is_k;
+      end
     end
   end
 
-  pcieVHostPipex1 #(
+  // The model in our wrapper: the same link, plus its TLPs and DLLPs at the
+  // Data Link and Transaction layers, for the dump (models/PIPExN__pcieVHost.sv)
+  PIPExN__pcieVHost #(
     .NodeNum   (1),      // VUserMain1.cpp -- the endpoint program
     .EndPoint  (1),      // enables the config space and auto-completions
+    .Lanes     (PCIE_LANES),
     .DataWidth (16)      // matches the 7-series 2-symbol PIPE
   ) u_pcie_ep (
     .pcieclk   (symclk),
@@ -180,7 +189,31 @@ module phy_top
     .TxData    (ep_tx_data),
     .TxDataK   (ep_tx_datak),
 
-    .Gen2ClkSel(/*LINT:OK*/)  // the model's Gen1/Gen2 clock select; pipe_clk is ours
+    .dll_clk   (pipe_clk),
+
+    // the decoder page: read from the dump only
+    .pipe_dn_pclk (), .pipe_dn_data (), .pipe_dn_datak (),
+    .pipe_up_pclk (), .pipe_up_data (), .pipe_up_datak (),
+    .dll_rx_data  (), .dll_rx_tlp_valid (), .dll_rx_tlp_first (), .dll_rx_tlp_last (),
+    .dll_rx_hdr_credit  (), .dll_rx_data_credit (),
+    .dll_rx_update_type (), .dll_rx_packet_type (), .dll_rx_dllp_valid (),
+    .dllp_clk     (), .dllp_dn_data (), .dllp_dn_valid (), .dllp_up_data (), .dllp_up_valid (),
+    .tx_clk       (), .tx_tlp_data  (), .tx_tlp_sop  (), .tx_tlp_eop  (), .tx_tlp_valid  (),
+    .tx_peer_data (), .tx_peer_sop  (), .tx_peer_eop (), .tx_peer_valid (),
+    .rx_clk       (), .rx_tlp_data  (), .rx_tlp_sop  (), .rx_tlp_eop  (), .rx_tlp_valid  (),
+    .rx_peer_data (), .rx_peer_sop  (), .rx_peer_eop (), .rx_peer_valid ()
+  );
+
+  // All lanes of an x4 link, for the multi-lane decoders; dumped at x4 only
+  // (tb.sv). At x1, lanes 1 to 3 are 0.
+  pipe_x4_view #(
+    .DataWidth (16)
+  ) u_x4 (
+    .pclk (pipe_clk),
+    .dn   (64'(ep_rx_data)),
+    .dnk  ( 8'(ep_rx_datak)),
+    .up   (64'(ep_tx_data)),
+    .upk  ( 8'(ep_tx_datak))
   );
 
   //------------------------------------------------------------------
@@ -281,8 +314,8 @@ module phy_top
   genvar i;
   generate
     for (i = 0; i < PCIE_LANES; i = i + 1) begin : g_lane
-        assign pipe_mac.rx[i].data          = ep_tx_data;
-        assign pipe_mac.rx[i].char_is_k     = ep_tx_datak;
+        assign pipe_mac.rx[i].data          = ep_tx_data [16*i +: 16];
+        assign pipe_mac.rx[i].char_is_k     = ep_tx_datak[ 2*i +:  2];
         assign pipe_mac.rx[i].valid         = rx_active;
         assign pipe_mac.rx[i].chanisaligned = rx_active;
         assign pipe_mac.rx[i].status        = rx_status_r;

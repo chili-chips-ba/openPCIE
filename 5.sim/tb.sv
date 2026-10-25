@@ -175,7 +175,7 @@ module tb;
 // enumeration is making progress without opening a waveform.
 
 `ifndef NO_TLP_TRACE
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if (dut.s_axis_tx.tvalid && dut.s_axis_tx.tready && !dut.s_axis_tx.tlast) begin
       $display("%t  TX-TLP hdr0=%08h hdr1=%08h", $time,
                dut.s_axis_tx.tdata[31:0], dut.s_axis_tx.tdata[63:32]);
@@ -191,8 +191,8 @@ module tb;
 //   tlp_tx  RC -> EP, what the firmware sends
 //   tlp_rx  EP -> RC, the completions coming back
 
-  tlp_dw_if tx_dw (dut.clk62m5);
-  tlp_dw_if rx_dw (dut.clk62m5);
+  tlp_dw_if tx_dw (dut.user_clk);
+  tlp_dw_if rx_dw (dut.user_clk);
 
   tlp_dw_monitor tlp_tx (
     .axis_tdata  (dut.s_axis_tx.tdata),
@@ -253,9 +253,11 @@ module tb;
 //     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd, converted to tb.fst
 // Add --define DUMP_SOC_CPU for the CPU under RVFI names (CPU.eduBOS5/wavecrux).
 // Only the TLP monitors, the decoder view, the SOC level, the LTSSM
-// state and the 16-bit PIPE at the pcieVHost endpoint (pclk, TxData/K,
-// RxData/K, plus rx_active for rxvalid) for Ferrite's PCIe PIPE and
-// Data Link Layer decoders. That keeps the file small enough to open in seconds.
+// state and the decoder page of the pcieVHost endpoint (u_pcie_ep, our
+// wrapper models/PIPExN__pcieVHost.sv): its 16-bit PIPE for Ferrite's PCIe
+// PIPE and Data Link Layer decoders (plus rx_active for rxvalid), and the
+// TLPs and DLLPs it sends and receives, from the taps we added to the model.
+// That keeps the file small enough to open in seconds.
 //--------------------------------------------------------------
 
 `ifdef DUMP_VCD
@@ -266,14 +268,13 @@ module tb;
     $dumpvars(1, tlp_view);
     $dumpvars(1, dut.u_soc);
     $dumpvars(0, dut.u_pcie.pl_ltssm_state_int);
-    // PIPE pins only: the model's level-1 scope also has its 500 MHz symbol
-    // clock and shift registers, which would make the file four times larger
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.pclk);
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.nreset);
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.TxData);
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.TxDataK);
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxData);
-    $dumpvars(0, dut.u_pcie.u_phy_top.u_pcie_ep.RxDataK);
+    // the wrapper's level only: the model below it has shift registers that
+    // would make the file four times larger
+    $dumpvars(1, dut.u_pcie.u_phy_top.u_pcie_ep);
+`ifdef PIPE_X4
+    // make SIM_LANES=4: all four lanes, for the multi-lane PIPE and DLL decoders
+    $dumpvars(1, dut.u_pcie.u_phy_top.u_x4);
+`endif
     $dumpvars(0, dut.u_pcie.u_phy_top.rx_active);
 `ifdef DUMP_SOC_CPU
     // the SOC CPU under RVFI names; last, so the ids of the signals above stay put
@@ -299,7 +300,7 @@ module tb;
   integer csr_acc;
   initial csr_acc = 0;
 
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if ((dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb)) ||
         (dut.u_soc.mem.valid && dut.u_soc.is_bridge && dut.u_soc.mem.ready && !(|dut.u_soc.mem.wstrb))) begin
       csr_acc = csr_acc + 1;
@@ -321,7 +322,7 @@ module tb;
   integer first_n;
   initial first_n = 0;
 
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready && first_n < `BUS_TRACE_N) begin
       first_n = first_n + 1;
       $display("%t  BUS  %2d  addr=%08h %s data=%08h", $time, first_n,
@@ -339,7 +340,7 @@ module tb;
     cpu_acc = 0; cpu_pc_min = 32'h7fffffff; cpu_pc_max = 0;
   end
 
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready) begin
       cpu_acc = cpu_acc + 1;
       if (dut.u_soc.is_ram) begin
@@ -395,7 +396,7 @@ module tb;
 
   // Every firmware read of rx.data. The last one before the marker is the
   // memory read-back, so it is frozen into mem_rd_payload when the marker lands.
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if (dut.u_soc.mem.valid && dut.u_soc.mem.ready &&
         dut.u_soc.is_bridge && !(|dut.u_soc.mem.wstrb) &&
         dut.u_soc.mem.addr[7:0] == 8'h14) begin
@@ -407,7 +408,7 @@ module tb;
   // holds valid until ready, but eduBOS5 stores are one-cycle requests whose
   // ready comes after valid has dropped
   // tx.data (0x0C) launches a TLP; status.result (0x24) carries the marker
-  always @(posedge dut.clk62m5) begin
+  always @(posedge dut.user_clk) begin
     if (dut.u_soc.u_soc_csr.cpuif_req && (|dut.u_soc.mem.wstrb)) begin
 
       if (dut.u_soc.mem.addr[7:0] == 8'h0c) begin
@@ -430,6 +431,24 @@ module tb;
       end
     end
   end
+
+`ifdef SOC_IPC
+  // IPC: instructions the CPU retires (RVFI) per user_clk cycle, from SOC
+  // reset release to the firmware result. The Makefile adds RISCV_FORMAL.
+  longint ipc_cycles = 0, ipc_instrs = 0;
+  bit     ipc_on = 1'b1;
+  always @(posedge dut.user_clk) begin
+    if (ipc_on && dut.u_soc.resetn) begin
+      ipc_cycles++;
+      if (dut.u_soc.cpu.rvfi_valid) ipc_instrs++;
+    end
+  end
+  always @(result_seen) begin
+    ipc_on = 1'b0;
+    $display("%t  TB     IPC %0d instructions / %0d cycles = %0.4f", $time, ipc_instrs,
+             ipc_cycles, real'(ipc_instrs) / real'(ipc_cycles));
+  end
+`endif
 
 //--------------------------------------------------------------
 // Final report

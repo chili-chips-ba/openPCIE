@@ -29,4 +29,5 @@ create_clock -period  8.000 -name clk_125mhz [get_nets u_pcie.u_clk_rst_gen.clk_
 create_clock -period  4.000 -name clk_250mhz [get_nets u_pcie.u_clk_rst_gen.clk_250mhz]
 create_clock -period  4.000 -name pipe_clk [get_nets u_pcie.pipe_clk]
 create_clock -period  8.000 -name clk125 [get_nets u_pcie.clk125]
-create_clock -period 16.000 -name clk62m5 [get_nets u_pcie.clk62m5]
+# user_clk: no create_clock; nextpnr derives it from the MMCM's CLKOUT2
+# (62.5 / 125 / 250 MHz, set by pcie_pkg.sv USER_CLK_FREQ)

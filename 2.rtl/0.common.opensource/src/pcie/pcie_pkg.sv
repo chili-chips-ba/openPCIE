@@ -49,12 +49,21 @@
 // listed as rsvd0, rsvd1, ... so that each struct spans its full width.
 
 package pcie_pkg;
+  import link_pkg::*;
 
   // TRN / AXI-Stream widths of this design: declared and sized here, used
   // everywhere else (interface instances and modules)
-  localparam int TRN_DATA_W = 64;
-  localparam int TRN_KEEP_W = TRN_DATA_W / 8;
-  localparam int TRN_REM_W  = 1;
+  localparam int TRN_DATA_W    = 64;
+  localparam int TRN_KEEP_W    = TRN_DATA_W / 8;
+  localparam int TRN_REM_W     = 1;
+
+  // User clock (user_clk): PCIE_2_1 USERCLK = USERCLK2, the TRN bus and the SOC.
+  // The 64-bit TRN bus carries the link's bandwidth at this rate (UG477 table
+  // 2-8). PCIE_2_1 encoding: 1 = 62.5 MHz, 2 = 125 MHz, 3 = 250 MHz.
+  //   x1 Gen1 / Gen2:  62.5 MHz  (250 / 500 MB/s)
+  //   x4 Gen1:          125 MHz  (1 GB/s)
+  //   x4 Gen2:          250 MHz  (2 GB/s; 128-bit TRN would need only 125 MHz)
+  localparam int USER_CLK_FREQ = (PCIE_LANES == 1) ? 1 : (PCIE_GEN == 1) ? 2 : 3;
 
   // ---- TLP header -----------------------------------------------------------
 

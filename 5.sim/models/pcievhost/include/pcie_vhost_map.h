@@ -53,6 +53,17 @@
 #define DISABLE_8B10B          208
 #define GEN2_CLK               209
 
+// Transaction taps (openPCIE): each TLP and DLLP this node sends
+// (TX) or receives (RX), written in zero time, one DW per write
+#define TAP_TLP_TX_SOP         210
+#define TAP_TLP_TX             211
+#define TAP_TLP_TX_EOP         212
+#define TAP_TLP_RX_SOP         213
+#define TAP_TLP_RX             214
+#define TAP_TLP_RX_EOP         215
+#define TAP_DLLP_TX            216
+#define TAP_DLLP_RX            217
+
 #define PVH_STOP        0xfffffffd
 #define PVH_FINISH      0xfffffffe
 #define PVH_FATAL       0xffffffff 

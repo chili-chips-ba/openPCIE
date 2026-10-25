@@ -47,7 +47,7 @@ module trn_tx_throttle
 
 
     output logic tready_thrtl,
-    input  logic clk62m5,
+    input  logic user_clk,
     input  logic core_rst_n
 );
 
@@ -108,7 +108,7 @@ module trn_tx_throttle
   assign lnk_up_trig = !trn.link_up;
   assign lnk_up_exit = trn.tdst_rdy;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       lnk_up_thrtl <= 1'b1;
     end
@@ -124,7 +124,7 @@ module trn_tx_throttle
 
   assign tbuf_av_min_trig = (trn.tbuf_av <= TBUF_AV_MIN);
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       tbuf_av_min_thrtl <= 1'b0;
     end
@@ -146,7 +146,7 @@ module trn_tx_throttle
   assign tbuf_av_gap_trig = gap_trig_tlast || gap_trig_decr;
   assign tbuf_av_gap_exit = (tbuf_gap_cnt == 0);
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       tbuf_av_gap_thrtl <= 1'b0;
       tbuf_gap_cnt      <= 3'h0;
@@ -177,7 +177,7 @@ module trn_tx_throttle
                        (cfg_pcie_link_state == LINKSTATE_PPM_L1_TRANS);
   assign ppm_l1_exit = cfg_pcie_link_state == LINKSTATE_L0;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       ppm_l1_thrtl          <= 1'b0;
       cfg_pcie_link_state_d <= 3'b0;
@@ -193,7 +193,7 @@ module trn_tx_throttle
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       reg_axi_in_pkt <= 1'b0;
     end
@@ -245,7 +245,7 @@ module trn_tx_throttle
     endcase
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       cur_state    <= THROTTLE;
 
@@ -271,7 +271,7 @@ module trn_tx_throttle
   assign tx_ecrc_pkt = tx_tuser.ecrc_gen && pause_needed &&
                         tready_thrtl && s_axis_tx.tvalid && !reg_axi_in_pkt;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       reg_tx_ecrc_pkt <= 1'b0;
     end

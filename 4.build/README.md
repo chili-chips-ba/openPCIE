@@ -36,7 +36,7 @@ Windows `.exe` files on `PATH` count as missing.
 |---|---|---|
 | 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h`, `csr_hw.h`, `csr_cosim.h` |
 | 2. SW | [`sw_build`](./sw_build) | `firmware.elf`, `firmware.bin`, `firmware.hex` |
-| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.x4.slang/top.x4.direct.bit` |
+| 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts.x4.slang/top.x4g1.direct.bit` |
 
 <p align="center"><img src="../0.doc/4.build/build-flow.drawio.png" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (sv2v or slang, yosys, nextpnr, fpga-as) into top.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
 
@@ -124,8 +124,10 @@ only:
   code. To fake processing time, each access adds a random delay of 0 to `DELAY`
   clocks, default 32.
 - `-C`: the `soc_cpu` clock period in ps, for delay and timing functions. Default
-  16000: the 62.5 MHz `clk62m5` (MMCM in `clk_rst_gen`) that clocks
-  `riscv_pcie_soc` and the 64-bit TRN side of the PCIE hard macro.
+  16000: the 62.5 MHz x1 `user_clk` (MMCM in `clk_rst_gen`) that clocks
+  `riscv_pcie_soc` and the 64-bit TRN side of the PCIE hard macro. The x4
+  co-simulation (`user_clk` 125 MHz) needs 8000, which the 5.sim Makefile
+  passes as `-DSOC_CPU_CLK_PERIOD_PS=8000` at `SIM_LANES=4`.
 
 To generate all the required HAL headers and RTL a make file is provided as
 `4.build/MakefileCSR` to wrap up the script calls. Running this make file
@@ -284,16 +286,17 @@ Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and 
 
 | Build | Chain | Output |
 |---|---|---|
-| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.slang/top.x4.direct.bit` |
+| `make` | `yosys` (`read_slang`, no sv2v) -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.slang/top.x4g1.direct.bit` |
+| `make GEN=2` | same, x4 Gen2, 3-stage eduBOS5; misses 250 MHz here ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)) | `build_artifacts.x4.g2.slang/top.x4g2.direct.bit` |
 | `make LANES=1` | same, x1 link | `build_artifacts.slang/top.x1.direct.bit` |
-| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.new/top.x4.direct.bit` |
+| `make FRONTEND=sv2v` | `sv2v` -> `yosys` -> `nextpnr-himbaechel` -> `fasm2frames` -> `xc7frames2bit` (1) | `build_artifacts.x4.new/top.x4g1.direct.bit` |
 | `make TOOLCHAIN=old LANES=1` | `sv2v` -> `yosys` -> `nextpnr-xilinx` -> `fasm2frames` -> `xc7frames2bit` | `build_artifacts/top.x1.direct.bit` |
 
 1. `ASSEMBLER=fpga-as` for the one-step assembler. Not the default yet: it writes `RXCDR_CFG` wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)).
 
 Add `VARIANT=switched` for RC-switched. Its folders carry `.switched` (e.g. `build_artifacts.switched.slang/`), so the variants never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` checks the tools.
 
-**Verified on hardware:** the pre-v1.0.0 bitstream (`TOOLCHAIN=old`) brings the PCIE link up at **Gen2**, against a second Artix-7 board as endpoint. The Vivado bitstream from the same RTL gets the same. The v1.0.0 bitstreams build and meet timing, but have not met the board yet.
+**Verified on hardware:** the pre-v1.0.0 bitstream (`TOOLCHAIN=old`) brings the PCIE link up at **Gen2**, against a second Artix-7 board as endpoint. The Vivado bitstream from the same RTL gets the same. The v1.0.0 bitstreams build and meet timing, except x4 Gen2 (181 MHz of 250 MHz: nextpnr cannot apply the eduBOS5 multicycle paths, [nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), but have not met the board yet.
 
 Two things to know before the first build. Details in
 [`hw_build.openXC7/README.md`](./hw_build.openXC7/README.md):
@@ -311,7 +314,7 @@ Two things to know before the first build. Details in
 
 ```sh
 openFPGALoader --detect                                    # cable and FPGA found?
-openFPGALoader hw_build.openXC7/build_artifacts.x4.slang/top.x4.direct.bit
+openFPGALoader hw_build.openXC7/build_artifacts.x4.slang/top.x4g1.direct.bit
 ```
 
 Ubuntu's own package is older, so build it from source. On WSL, attach the JTAG cable with usbipd-win first. `set-env.sh` checks both. Details: [Programming the board from WSL](./hw_build.openXC7/README.md#programming-the-board-from-wsl).

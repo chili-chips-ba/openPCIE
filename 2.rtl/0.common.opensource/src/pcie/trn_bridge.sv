@@ -47,7 +47,7 @@ module trn_bridge
 
     input logic [2:0] cfg_pcie_link_state,
 
-    input logic clk62m5,
+    input logic user_clk,
     input logic core_rst_n
 );
 
@@ -56,7 +56,7 @@ module trn_bridge
   trn_rx u_trn_rx (
       .m_axis_rx (m_axis_rx),
       .trn       (trn),
-      .clk62m5   (clk62m5),
+      .user_clk  (user_clk),
       .core_rst_n(core_rst_n)
   );
 
@@ -65,7 +65,7 @@ module trn_bridge
       .s_axis_tx   (s_axis_tx),
       .trn         (trn),
       .tready_thrtl(tready_thrtl),
-      .clk62m5     (clk62m5),
+      .user_clk    (user_clk),
       .core_rst_n  (core_rst_n)
   );
 
@@ -74,7 +74,7 @@ module trn_bridge
       .trn                (trn),
       .cfg_pcie_link_state(cfg_pcie_link_state),
       .tready_thrtl       (tready_thrtl),
-      .clk62m5            (clk62m5),
+      .user_clk           (user_clk),
       .core_rst_n         (core_rst_n)
   );
 

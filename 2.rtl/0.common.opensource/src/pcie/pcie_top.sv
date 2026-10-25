@@ -46,9 +46,9 @@ module pcie_top
     input  logic [PCIE_LANES-1:0] pci_exp_rxn,
 
 
-    output logic clk62m5,     // 62.5 MHz, from clk_rst_gen
-    output logic core_rst_n,  // clk62m5 reset: low on PERST# or no data link
-    output logic trn_link_up, // data link up (TRNLNKUP), clk62m5
+    output logic user_clk,    // 62.5 / 125 / 250 MHz, from clk_rst_gen
+    output logic core_rst_n,  // user_clk reset: low on PERST# or no data link
+    output logic trn_link_up, // data link up (TRNLNKUP), user_clk
 
     axis_if.slave  s_axis_tx,  // TLPs from the SOC (tuser: pcie_tx_tuser_t)
     axis_if.master m_axis_rx,  // TLPs to the SOC   (tuser: pcie_rx_tuser_t)
@@ -80,20 +80,20 @@ module pcie_top
   pipe_if pipe_mac ();  // 16-bit PIPE at the MAC
 
   logic rst125_n;  // from clk_rst_gen: PERST# or FPGA configuration
-  logic rst62m5_n;  // the same, released on clk62m5
+  logic user_rst_n;  // the same, released on user_clk
   logic pipe_rst_n;  // the same, released on pipe_clk
 
   clk_rst_gen u_clk_rst_gen (
       .txoutclk    (pipe_txoutclk),
       .perst_n     (perst_n),
       .rst125_n    (rst125_n),
-      .rst62m5_n   (rst62m5_n),
+      .user_rst_n  (user_rst_n),
       .pipe_clk_sel(pipe_clk_sel),
 
       .pipe_clk  (pipe_clk),
       .pipe_rst_n(pipe_rst_n),
       .clk125    (clk125),
-      .clk62m5   (clk62m5),
+      .user_clk  (user_clk),
       .mmcm_lock (clk_mmcm_lock)
   );
 
@@ -142,15 +142,15 @@ module pcie_top
       .pipe_mac (pipe_mac),
       .phy_rdy_n(phy_rdy_n),
       .pipe_clk (pipe_clk),
-      .clk62m5  (clk62m5)
+      .user_clk (user_clk)
   );
 
-  // core_rst_n: the clk62m5 reset of the TRN modules and the SOC. PERST# (by
-  // rst62m5_n) asserts it; it is released once the PCIE data link is up
+  // core_rst_n: the user_clk reset of the TRN modules and the SOC. PERST# (by
+  // user_rst_n) asserts it; it is released once the PCIE data link is up
   // (trn_link_up, from TRNLNKUP in this clock domain), and a link drop asserts
   // it again. An RC is a Downstream Port and never receives a hot reset.
-  always_ff @(posedge clk62m5 or negedge rst62m5_n) begin
-    if (!rst62m5_n) begin
+  always_ff @(posedge user_clk or negedge user_rst_n) begin
+    if (!user_rst_n) begin
       core_rst_n <= 1'b0;
     end
     else begin

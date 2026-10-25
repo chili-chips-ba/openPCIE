@@ -39,6 +39,7 @@
 
 module clk_rst_gen
   import link_pkg::*;
+  import pcie_pkg::*;
 (
     input logic txoutclk,     // GT TXOUTCLK: the 100 MHz refclk, passed through
     input logic perst_n,      // PERST# from the connector, active low
@@ -47,8 +48,8 @@ module clk_rst_gen
     output logic clk125,   // 125 MHz: GT DRP, PLL0 power-up, reset release
     output logic rst125_n, // the design's reset, released on clk125
 
-    output logic clk62m5,   // 62.5 MHz: PCIE_2_1 USERCLK, TRN bridge, SOC
-    output logic rst62m5_n, // rst125_n, released on clk62m5
+    output logic user_clk,   // 62.5 / 125 / 250 MHz: PCIE_2_1 USERCLK, TRN bridge, SOC
+    output logic user_rst_n, // rst125_n, released on user_clk
 
     output logic pipe_clk,    // PIPE clock: 125 MHz Gen1, 250 MHz Gen2
     output logic pipe_rst_n,  // rst125_n, released on pipe_clk
@@ -56,19 +57,19 @@ module clk_rst_gen
 );
 
   localparam int DIVCLK_DIVIDE    = 1;
-  localparam int CLKFBOUT_MULT_F  = 10;  // 100 MHz refclk -> 1 GHz VCO
+  localparam int CLKFBOUT_MULT_F  = 10;                   // 100 MHz refclk -> 1 GHz VCO
   localparam int CLKIN1_PERIOD    = 10;
-  localparam int CLKOUT0_DIVIDE_F = 8;   // 125 MHz
-  localparam int CLKOUT1_DIVIDE   = 4;   // 250 MHz
-  localparam int CLKOUT2_DIVIDE   = 16;  // 62.5 MHz user clock (USERCLK and USERCLK2 of PCIE_2_1)
-  localparam int CLKOUT3_DIVIDE   = 16;  // CLKOUT3 unused
+  localparam int CLKOUT0_DIVIDE_F = 8;                    // 125 MHz
+  localparam int CLKOUT1_DIVIDE   = 4;                    // 250 MHz
+  localparam int CLKOUT2_DIVIDE   = 32 >> USER_CLK_FREQ;  // user clock: 62.5, 125, 250 MHz
+  localparam int CLKOUT3_DIVIDE   = 16;                   // CLKOUT3 unused
   localparam int CLKOUT4_DIVIDE   = 20;
 
   logic       refclk;
   logic       mmcm_fb;
   logic       clk_125mhz;
   logic       clk_250mhz;
-  logic       clk62m5_mmcm;
+  logic       user_clk_mmcm;
 
 
   // ---- The design's one reset source: power-on reset + PERST#
@@ -121,22 +122,22 @@ module clk_rst_gen
 
   assign rst125_n = rst_sync[1];
 
-  // ---- rst125_n for the clk62m5 domain: asserted with rst125_n,
-  // released on clk62m5
-  (* ASYNC_REG = "TRUE" *) logic rst62m5_meta, rst62m5_q;
+  // ---- rst125_n for the user_clk domain: asserted with rst125_n,
+  // released on user_clk
+  (* ASYNC_REG = "TRUE" *) logic user_rst_meta, user_rst_q;
 
-  always_ff @(posedge clk62m5 or negedge rst125_n) begin
+  always_ff @(posedge user_clk or negedge rst125_n) begin
     if (!rst125_n) begin
-      rst62m5_meta <= 1'b0;
-      rst62m5_q    <= 1'b0;
+      user_rst_meta <= 1'b0;
+      user_rst_q    <= 1'b0;
     end
     else begin
-      rst62m5_meta <= 1'b1;
-      rst62m5_q    <= rst62m5_meta;
+      user_rst_meta <= 1'b1;
+      user_rst_q    <= user_rst_meta;
     end
   end
 
-  assign rst62m5_n = rst62m5_q;
+  assign user_rst_n = user_rst_q;
 
   // ---- rst125_n for the pipe_clk domain: asserted with rst125_n,
   // released on pipe_clk. Asserting it needs no clock, so it also resets the
@@ -212,7 +213,7 @@ module clk_rst_gen
       .CLKOUT0B    (  /*LINT:OK*/),
       .CLKOUT1     (clk_250mhz),
       .CLKOUT1B    (  /*LINT:OK*/),
-      .CLKOUT2     (clk62m5_mmcm),
+      .CLKOUT2     (user_clk_mmcm),
       .CLKOUT2B    (  /*LINT:OK*/),
       .CLKOUT3     (  /*LINT:OK*/),
       .CLKOUT3B    (  /*LINT:OK*/),
@@ -252,9 +253,9 @@ module clk_rst_gen
       .O(clk125)
   );
 
-  BUFG u_clk62m5 (
-      .I(clk62m5_mmcm),
-      .O(clk62m5)
+  BUFG u_user_clk (
+      .I(user_clk_mmcm),
+      .O(user_clk)
   );
 
 

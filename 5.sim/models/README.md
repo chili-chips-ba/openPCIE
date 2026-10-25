@@ -10,6 +10,12 @@ This directory contains the following bus functional models
 * `phy_top.PIPE.sv` : behavioural PIPE PHY that stands in for
   `2.rtl/0.common.opensource/src/pcie/phy_top.sv` and carries the _pcieVHost_ endpoint. Described
   [here](../README.md#the-pipe-phy-model).
+* `PIPExN__pcieVHost.sv` : that endpoint, in our wrapper: its PIPE link, TLPs and DLLPs on one
+  decoder page for WaveCrux, x1 or x4. Described [here](../README.md#every-layer-at-the-endpoint-transaction-taps).
+* `pcieVHostPipexN.sv` : upstream's x1 PIPE wrapper `pcieVHostPipex1`, for any number of lanes;
+  the x4 link.
+* `pipe_x4_view.sv` : the four lanes of an x4 link, both directions, under the names the
+  multi-lane PIPE and DLL decoders bind; dumped only at x4.
 * `bfm_uart.sv` : UART bus functional model.
 
 **First rule for the models: follow the RTL they stand in for as closely as possible** -- same ports, interfaces, structs, loops, names and widths -- so that a model differs from the RTL only where it has to (behaviour instead of hard macros), and a change in the RTL maps onto the model one to one.

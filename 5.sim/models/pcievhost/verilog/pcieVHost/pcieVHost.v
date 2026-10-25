@@ -59,7 +59,19 @@ module PcieVhost
   output      [9:0] LinkOut0,  LinkOut1,  LinkOut2,  LinkOut3,
   output      [9:0] LinkOut4,  LinkOut5,  LinkOut6,  LinkOut7,
   output      [9:0] LinkOut8,  LinkOut9,  LinkOut10, LinkOut11,
-  output      [9:0] LinkOut12, LinkOut13, LinkOut14, LinkOut15
+  output      [9:0] LinkOut12, LinkOut13, LinkOut14, LinkOut15,
+
+  // Transaction taps (openPCIE): each TLP this node sends (Tx) or
+  // receives (Rx), one DW per ClkOut with start/end flags, byte 0 in
+  // [31:24]; each DLLP as one word. They follow the link, a few clocks late.
+  output reg [31:0] TlpTxData,
+  output reg        TlpTxSop,  TlpTxEop,  TlpTxValid,
+  output reg [31:0] TlpRxData,
+  output reg        TlpRxSop,  TlpRxEop,  TlpRxValid,
+  output reg [31:0] DllpTxData,
+  output reg        DllpTxValid,
+  output reg [31:0] DllpRxData,
+  output reg        DllpRxValid
 );
 
 
@@ -80,6 +92,13 @@ reg          ReverseOut;
 reg          UpdateResponse;
 integer      ClkCount;
 integer      i;
+
+// Transaction tap queues (openPCIE): {sop, eop, data}, pushed by
+// the C model in zero time, popped one entry per clock
+reg   [33:0] TlpTxQ  [$];
+reg   [33:0] TlpRxQ  [$];
+reg   [31:0] DllpTxQ [$];
+reg   [31:0] DllpRxQ [$];
 
 // VP Interface wires
 wire  [31:0] Addr;
@@ -194,6 +213,11 @@ begin
     ClkCount               = 0;
     Gen2ClkSel             = 1'b0;
     clk_div2               = 1'b1;
+
+    {TlpTxData,  TlpTxSop, TlpTxEop, TlpTxValid} = 35'h0;
+    {TlpRxData,  TlpRxSop, TlpRxEop, TlpRxValid} = 35'h0;
+    {DllpTxData, DllpTxValid}                    = 33'h0;
+    {DllpRxData, DllpRxValid}                    = 33'h0;
 end
 
 // --------------------------------
@@ -204,6 +228,42 @@ always @(posedge clk_main)
 begin
     notResetLast           <= #`RegDel notReset;
     ClkCount               <= #`RegDel ClkCount + 1;
+end
+
+// Transaction taps: one queued entry per clock, per stream
+always @(posedge clk_main)
+begin
+    if (TlpTxQ.size() != 0)
+    begin
+        {TlpTxSop, TlpTxEop, TlpTxData} <= #`RegDel TlpTxQ.pop_front();
+        TlpTxValid         <= #`RegDel 1'b1;
+    end
+    else
+        {TlpTxSop, TlpTxEop, TlpTxValid} <= #`RegDel 3'b000;
+
+    if (TlpRxQ.size() != 0)
+    begin
+        {TlpRxSop, TlpRxEop, TlpRxData} <= #`RegDel TlpRxQ.pop_front();
+        TlpRxValid         <= #`RegDel 1'b1;
+    end
+    else
+        {TlpRxSop, TlpRxEop, TlpRxValid} <= #`RegDel 3'b000;
+
+    if (DllpTxQ.size() != 0)
+    begin
+        DllpTxData         <= #`RegDel DllpTxQ.pop_front();
+        DllpTxValid        <= #`RegDel 1'b1;
+    end
+    else
+        DllpTxValid        <= #`RegDel 1'b0;
+
+    if (DllpRxQ.size() != 0)
+    begin
+        DllpRxData         <= #`RegDel DllpRxQ.pop_front();
+        DllpRxValid        <= #`RegDel 1'b1;
+    end
+    else
+        DllpRxValid        <= #`RegDel 1'b0;
 end
 
 always @(Update)
@@ -257,6 +317,18 @@ begin
                 {ReverseOut, ReverseIn, InvertOut, InvertIn} = DataOut[3:0] ;
             DataIn = {28'h0000000, ReverseOut, ReverseIn, InvertOut, InvertIn};
         end
+
+        // Transaction taps (openPCIE)
+        `TAP_TLP_TX_SOP, `TAP_TLP_TX, `TAP_TLP_TX_EOP:
+            if (WE === 1'b1)
+                TlpTxQ.push_back({Addr == `TAP_TLP_TX_SOP, Addr == `TAP_TLP_TX_EOP, DataOut});
+
+        `TAP_TLP_RX_SOP, `TAP_TLP_RX, `TAP_TLP_RX_EOP:
+            if (WE === 1'b1)
+                TlpRxQ.push_back({Addr == `TAP_TLP_RX_SOP, Addr == `TAP_TLP_RX_EOP, DataOut});
+
+        `TAP_DLLP_TX: if (WE === 1'b1) DllpTxQ.push_back(DataOut);
+        `TAP_DLLP_RX: if (WE === 1'b1) DllpRxQ.push_back(DataOut);
 
         `PVH_STOP:    if (WE === 1'b1) $stop;
         `PVH_FINISH:  if (WE === 1'b1) $finish;

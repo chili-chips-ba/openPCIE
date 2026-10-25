@@ -57,7 +57,7 @@ module RC_opensource
 );
 
 
-  logic clk62m5;
+  logic user_clk;
   logic core_rst_n;
   logic trn_link_up;
   logic fw_pass;
@@ -87,7 +87,7 @@ module RC_opensource
       .refclk_n(refclk_n),
       .perst_n (perst_n),
 
-      .clk62m5    (clk62m5),
+      .user_clk   (user_clk),
       .core_rst_n (core_rst_n),
       .trn_link_up(trn_link_up),
 
@@ -98,7 +98,7 @@ module RC_opensource
   );
 
   riscv_pcie_soc u_soc (
-      .clk   (clk62m5),
+      .clk   (user_clk),
       .resetn(core_rst_n),
 
       .s_axis_tx(s_axis_tx),

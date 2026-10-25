@@ -9,6 +9,7 @@
 #   source ../set-env.sh      (tcsh: source ../set-env.csh) -- finds the tools
 #   make                      RC-direct, x4   (default)
 #   make LANES=1              RC-direct, x1
+#   make GEN=2                Gen2 (default: Gen1 at x4, Gen2 at x1)
 #   make VARIANT=switched     RC-switched (x1 only)
 #
 # Each variant and link width uses its own converted/ and build_artifacts/
@@ -23,10 +24,12 @@
 # TOOLCHAIN=new  (openXC7 v1.0.0, the default; not yet tested on hardware),
 # FRONTEND=slang (the default with TOOLCHAIN=new, no sv2v):
 #        .sv --yosys read_slang--> .json --nextpnr (himbaechel)--> .fasm
-#            --fpga-as--> .bit
+#            --fasm2frames--> .frames --xc7frames2bit--> .bit
 # TOOLCHAIN=new FRONTEND=sv2v:
 #        .sv --sv2v--> .v --yosys--> .json --nextpnr (himbaechel)--> .fasm
-#            --fpga-as--> .bit
+#            --fasm2frames--> .frames --xc7frames2bit--> .bit
+# ASSEMBLER=fpga-as replaces the last two steps with  --fpga-as--> .bit
+# (not the default: it writes RXCDR_CFG wrong, #41).
 #
 # Recipes that use a pipeline need  set -o pipefail  -- otherwise make sees the
 # exit status of the last command in the pipe (tee) and a tool crash passes as
@@ -172,22 +175,39 @@ VARIANT ?= direct
 # x1 build).
 LANES ?= $(if $(filter switched,$(VARIANT)),1,4)
 
-# The bitstream's name says what it is for: top.x4.direct.bit, top.x1.direct.bit,
-# top.x1.switched.bit. A non-default CPU (CPU=picorv32, edubos5_3stg) builds
-# into its own folder, named for it
-BITFILE = top.x$(LANES).$(VARIANT).bit
+# ---- Link speed -------------------------------------------------------------
+# GEN=1 or 2; passed to link_pkg.sv as PCIE_GEN. Default: Gen1 at x4 (x4 Gen2
+# closes timing in Vivado only), Gen2 at x1. Width and speed set the user clock
+# (pcie_pkg.sv USER_CLK_FREQ, the MMCM's CLKOUT2): 62.5 MHz at x1, 125 MHz at
+# x4 Gen1, 250 MHz at x4 Gen2. nextpnr derives its period from the MMCM, so the
+# XDC has none; USER_CLK_NS is for the info line only.
+GEN_DEF = $(if $(filter 4,$(LANES)),1,2)
+GEN    ?= $(GEN_DEF)
+ifeq ($(filter 1 2,$(GEN)),)
+    $(error GEN must be 1 or 2, got "$(GEN)")
+endif
+GEN_SFX     = $(if $(filter-out $(GEN_DEF),$(GEN)),.g$(GEN))
+USER_CLK_NS = $(if $(filter 1,$(LANES)),16.000,$(if $(filter 1,$(GEN)),8.000,4.000))
+
+# The bitstream's name says what it is for: top.x4g1.direct.bit, top.x4g2.direct.bit,
+# top.x1.direct.bit and top.x1.switched.bit (Gen2; Gen1 adds g1: top.x1g1.direct.bit).
+# A non-default CPU (CPU=picorv32, edubos5_3stg) builds into its own folder, named for it
+BIT_GEN = $(if $(filter 4,$(LANES)),g$(GEN),$(if $(filter 1,$(GEN)),g1))
+BITFILE = top.x$(LANES)$(BIT_GEN).$(VARIANT).bit
 ifeq ($(filter 1 4,$(LANES)),)
     $(error LANES must be 1 or 4, got "$(LANES)")
 endif
 
 # ---- CPU --------------------------------------------------------------------
-# edubos5 (default: src/CPU.eduBOS5, 2-stage), edubos5_3stg or picorv32;
-# see riscv_pcie_soc.sv
-CPU ?= edubos5
+# edubos5 (src/CPU.eduBOS5, 2-stage), edubos5_3stg or picorv32; see
+# riscv_pcie_soc.sv. Default: edubos5_3stg at x4 Gen2 (250 MHz user clock),
+# else edubos5
+CPU_DEF = $(if $(and $(filter 4,$(LANES)),$(filter 2,$(GEN))),edubos5_3stg,edubos5)
+CPU    ?= $(CPU_DEF)
 ifeq ($(filter picorv32 edubos5 edubos5_3stg,$(CPU)),)
     $(error CPU must be picorv32, edubos5 or edubos5_3stg, got "$(CPU)")
 endif
-CPU_SFX = $(if $(filter-out edubos5,$(CPU)),.$(CPU))
+CPU_SFX = $(if $(filter-out $(CPU_DEF),$(CPU)),.$(CPU))
 
 TOP        = RC_opensource
 COMMON_DIR = ../../2.rtl/0.common.opensource
@@ -257,9 +277,9 @@ PCIE_DIR = $(SRC_DIR)/pcie
 # $readmemh with a bare name, so it must sit in Yosys' working directory.
 FIRMWARE = ../sw_build/firmware.hex
 
-CONV_DIR      = converted$(OUT_SFX)$(CPU_SFX)$(TC_SFX)
+CONV_DIR      = converted$(OUT_SFX)$(GEN_SFX)$(CPU_SFX)$(TC_SFX)
 EXTRACTED_DIR = $(CONV_DIR)/extracted
-BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)$(CPU_SFX)$(TC_SFX)
+BUILD_ARTIFACTS = build_artifacts$(OUT_SFX)$(GEN_SFX)$(CPU_SFX)$(TC_SFX)
 
 CONV_TIMESTAMP    = $(CONV_DIR)/.conversion_timestamp
 EXTRACT_TIMESTAMP = $(EXTRACTED_DIR)/.extraction_timestamp
@@ -334,10 +354,11 @@ all: $(BUILD_ARTIFACTS)/$(BITFILE)
 
 help:
 	@echo "================================================================"
-	@echo " openXC7 build -- opensource RC  [$(VARIANT) x$(LANES), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
+	@echo " openXC7 build -- opensource RC  [$(VARIANT) x$(LANES) Gen$(GEN), TOOLCHAIN=$(TOOLCHAIN), FRONTEND=$(FRONTEND)]"
 	@echo "================================================================"
 	@echo " make                 full build up to $(BITFILE)"
 	@echo " make LANES=1         RC-direct as x1 (default x4)"
+	@echo " make GEN=2           x4 Gen2 (default x4 Gen1, x1 Gen2)  -> build_artifacts*.g2/"
 	@echo " make VARIANT=switched  build the RC-switched variant (x1)"
 	@echo " make CPU=picorv32   PicoRV32 instead of eduBOS5  -> build_artifacts.*picorv32*/"
 	@echo " make CPU=edubos5_3stg  eduBOS5, 3-stage pipeline -> build_artifacts.*edubos5_3stg*/"
@@ -354,6 +375,7 @@ help:
 info:
 	@echo "VARIANT        : $(VARIANT)"
 	@echo "LANES          : $(LANES)"
+	@echo "GEN            : $(GEN)  (user_clk $(USER_CLK_NS) ns)"
 	@echo "CPU            : $(CPU)"
 	@echo "TOOLCHAIN      : $(TOOLCHAIN)"
 	@echo "FRONTEND       : $(FRONTEND)"
@@ -465,7 +487,7 @@ $(CONV_TIMESTAMP): $(SV_ORDERED) FORCE | check-sv2v
 	@echo " sv2v: SystemVerilog -> Verilog  ($(words $(SV_ORDERED)) files)"
 	@echo "================================================================"
 	@mkdir -p $(CONV_DIR)
-	@if $(SV2V) -DPCIE_LANES=$(LANES) $(CPU_DEFS) -I$(PCIE_DIR) -I$(SRC_DIR) \
+	@if $(SV2V) -DPCIE_LANES=$(LANES) -DPCIE_GEN=$(GEN) $(CPU_DEFS) -I$(PCIE_DIR) -I$(SRC_DIR) \
 	        $(SV_ORDERED) > $(CONV_DIR)/all_converted.v 2> $(CONV_DIR)/sv2v.log; then \
 	    echo "  lines   : $$(wc -l < $(CONV_DIR)/all_converted.v)"; \
 	    echo "  modules : $$(grep -c '^module ' $(CONV_DIR)/all_converted.v)"; \
@@ -511,7 +533,7 @@ ifeq ($(FRONTEND),slang)
 # take yet (real-valued primitive parameters, povik/sv-elab#282).
 XILINX_PRIMS = PCIE_2_1 GTPE2_CHANNEL GTPE2_COMMON MMCME2_ADV IBUFDS_GTE2 \
                BUFG BUFGCTRL FDCE RAMB36E1
-SLANG_DEFS   = -D SYN_YOSYS_BUG -D PCIE_LANES=$(LANES) $(CPU_DEFS)
+SLANG_DEFS   = -D SYN_YOSYS_BUG -D PCIE_LANES=$(LANES) -D PCIE_GEN=$(GEN) $(CPU_DEFS)
 
 $(BUILD_ARTIFACTS)/top.json: $(SV_ORDERED) $(PURE_V_FILES) $(FIRMWARE) gen_xilinx_bb.py FORCE
 	@echo "================================================================"
@@ -684,7 +706,7 @@ endif
 # =============================================================================
 
 clean:
-	rm -rf $(BUILD_ARTIFACTS) firmware.hex .build-config$(OUT_SFX)
+	rm -rf $(BUILD_ARTIFACTS) firmware.hex .build-config$(OUT_SFX)$(GEN_SFX)
 
 clean-converted:
 	rm -rf $(CONV_DIR)

@@ -35,9 +35,12 @@ Cycles per instruction (`EN_WAIT4REGS` selects the pipeline):
 
 | | 2-stage (`EN_WAIT4REGS=0`, default) | 3-stage (`EN_WAIT4REGS=1`) |
 |---|---|---|
-| ALU, branch, `jal`, `jalr`, store | 2 | 3 |
+| ALU, store, branch not taken | 2 | 3 |
+| `jal`, `jalr`, branch taken | 2 | 4 |
 | load, eduBOS5 own: memory `ready` with `valid` | 4 | 5 |
 | load in the openPCIE SOC: RAM/CSR `ready` 1 cycle after `valid` | 5 | 6 |
+
+The 3-stage is built for Fmax. Its `FETCH_INSTR` fetches `pc + 1`, so the RAM address never waits for the ALU; a jump fetches again from its target (`FETCH_TARGET`, 1 cycle). Its ALU registers the shift result, like add and sub. The 2-stage has neither.
 
 eduBOS5 registers `dmem_vld`, so a load requests in `WAIT_DATA`. The SOC adds one `WAIT_DATA` cycle. The SOC figures are measured on the RTL. Stores do not wait (`STORE_WAITS_RDY=0`: the default, and the openPCIE SOC). With `STORE_WAITS_RDY=1`, each clock without `dmem_rdy` adds one ([#40](https://github.com/chili-chips-ba/openPCIE/issues/40)).
 
@@ -66,30 +69,32 @@ The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.bui
 
 ## CPU options compared: the SOC only
 
-**Scope:** `riscv_pcie_soc` only, not the PCIE stack: the CPU, the 8 KB RAM and the CSR. The CSR had 9 registers in these builds (10 since `status.result`, 2026-10-17). So a 9-input read mux, registered at its output (`soc_csr.sv`). Only the RAM/CSR select after it is combinational. Built 2026-10-16: same firmware, x4 build, CPU picked with `make`, `make CPU=edubos5_3stg` or `make CPU=picorv32` ([openXC7](../../../../4.build/hw_build.openXC7/README.md#cpu-options-compared)). The entire design, openXC7 against Vivado: [openXC7 README](../../../../4.build/hw_build.openXC7/README.md#openxc7-compared-with-vivado-the-entire-design).
+**Scope:** `riscv_pcie_soc`: the CPU, the 8 KB RAM and the 10-register CSR (read data registered, `soc_csr.sv`). Built 2026-10-25 in the x4 Gen2 design, where the SOC runs on the 250 MHz `user_clk`: same RTL and firmware, CPU picked with `CPU=` ([openXC7](../../../../4.build/hw_build.openXC7/README.md#cpu-options-compared)) or `::cpu` (Vivado). The 3-stage includes its jump refetch and registered shift (October 2026). The entire design, openXC7 against Vivado: [openXC7 README](../../../../4.build/hw_build.openXC7/README.md#openxc7-compared-with-vivado-the-entire-design).
 
 | | PicoRV32 | eduBOS5 2-stage | eduBOS5 3-stage |
 |---|---|---|---|
-| IPC on this firmware | 0.18 (1x) | **0.35 (1.9x)** | 0.26 (1.4x) |
-| Fmax, openXC7 v1.0.0 | 151.9 MHz | 138.6 MHz | 149.4 MHz |
-| Fmax, Vivado 2026.1 estimate | **238.0 MHz** | 205.7 MHz | 197.7 MHz; 224.1 MHz with multicycle paths |
-| MIPS = IPC × Vivado Fmax | 43 | **72** | 58, with multicycle paths |
-| Vivado critical path | RAM -> `reg_out` | RAM -> ALU adder | RAM -> ALU adder; with multicycle paths `shamt_reg` -> RAM instruction address |
-| CPU LUT (incl. LUT-RAM) / FF, Yosys / Vivado | 961 / 966, 431 / 416 | 818 / 907, 468 / 456 | 802 / 917, 470 / 454 |
-| SOC LUT (incl. LUT-RAM) / FF, Yosys / Vivado | 1323 / 1038, 731 / 714 | 1214 / 975, 802 / 755 | 1198 / 986, 804 / 753 |
+| IPC on this firmware | 0.172 (1x) | **0.345 (2.0x)** | 0.251 (1.5x) |
+| Fmax, Vivado 2026.1 estimate | 246 MHz | 203 MHz | **284 MHz** |
+| MIPS = IPC × Vivado Fmax | 42 | 70 | **71** |
+| Vivado critical path | RAM -> `reg_out` (3 levels) | RAM -> register file -> ALU adder (10) | load data -> register-file write (5) |
+| Fmax, openXC7 v1.0.0, target 250 MHz | 173 MHz | 157 MHz | 181 MHz, without its multicycle paths |
+| **Resource&nbsp;utilization:&nbsp;CPU&nbsp;LUT&nbsp;(incl.&nbsp;LUT-RAM)&nbsp;/&nbsp;FF**<br>&nbsp;&nbsp;&nbsp;&nbsp;Vivado 2026.1<br>&nbsp;&nbsp;&nbsp;&nbsp;openXC7 v1.0.0 | <br>913 / 416<br>958 / 430 | <br>791 / 456<br>833 / 464 | <br>791 / 447<br>757 / 462 |
+| SOC LUT (incl. LUT-RAM) / FF, Vivado | 1199 / 746 | 1042 / 787 | 1043 / 778 |
 | BRAM / DSP48 | 2 / 0 | 2 / 0 | 2 / 0 |
-| Co-simulation result at, 62.5 MHz | 667.2 µs | **389.5 µs** | 470.9 µs |
+| Co-simulation result at, x1, 62.5 MHz | 667.2 µs | **389.6 µs** | 481.2 µs |
 
+- **The 3-stage now trades IPC for clock, and breaks even.** 1.40x the 2-stage's Fmax against 0.73x its IPC: 71 against 70 MIPS. It is the only core here that closes timing at x4 Gen2's 250 MHz. Where the clock is free, the 2-stage does the same work with fewer cycles and less latency.
+- **IPC:** retired instructions (RVFI) per `user_clk` cycle, from SOC reset release to the firmware result: `make run CORE=... USRSIMOPTS="--define SOC_IPC"` ([5.sim](../../../../5.sim/README.md)). The firmware polls the PCIE stack, so each core retires a different count (6367, 6783, 6368). The 3-stage pays 1 more cycle per instruction, 2 more per jump or taken branch.
+- **Vivado Fmax:** the full design at x4 Gen2, `user_clk` over-constrained by 0.8 ns of setup uncertainty (3.2 ns), so that no core meets its target and Vivado keeps optimising. Fmax = 1 / (3.2 ns - WNS). The 3-stage uses [`edubos5.3STG-ONLY.mcp.xdc`](edubos5.3STG-ONLY.mcp.xdc). Area: `report_utilization -hierarchical`.
+- **openXC7 Fmax:** nextpnr's report at the 250 MHz target (`make GEN=2 CPU=...`). It cannot apply the multicycle paths ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), so it times the 3-stage's 2-cycle paths as 1-cycle. It varies between builds by 10-20 MHz.
+- **Yosys area:** `synth_xilinx -flatten` of the sv2v-converted design, the CPU kept as its own hierarchy. sv2v inlines the SOC, so it has no SOC row.
 - PicoRV32 with `BARREL_SHIFTER=0`, `ENABLE_COUNTERS=0`, as in [`riscv_pcie_soc.sv`](../riscv_pcie_soc.sv).
-- The board needs 62.5 MHz. All three pass with margin to spare. openXC7 Fmax is nextpnr's report, and it varies between builds: the 2-stage gave 138.6 and 158.4 MHz in two builds of the same RTL. nextpnr cannot apply multicycle paths.
-- Vivado reports no Fmax. Its figure here is 1 / (4.545 ns - WNS), with the CPU clock constrained to 220 MHz. Vivado stops optimising once the target is met, so PicoRV32 and the 3-stage with multicycle paths could go higher. Its area is at that target too.
-- Yosys area: `synth_xilinx` of `riscv_pcie_soc` in context, CPU kept as its own hierarchy. Vivado: `report_utilization -hierarchical`.
 - Co-simulation: the same firmware ([5.sim](../../../../5.sim/README.md#what-they-cost)). The result time includes the PCIE link-up, so it improves less than IPC.
 - The data bus is lightly loaded: RAM and CSR only, no interconnect mux. A larger SOC lengthens the CPU's external paths. The RAM is comparatively large (8 KB, 2 RAMB36), and eduBOS5's critical paths start or end at it.
 
 ### Experiment: CSR read without its output register
 
-By default the CSR registers its read data and ready, so every CSR access takes 1 cycle more. `` `define SOC_CSR_RD_COMB `` (`soc_csr.sv`, `RD_FLOP=0`) answers straight from the 9-input read mux, in the request cycle. Does the flop favour one CPU? Or is it a flop?
+Built 2026-10-16, before the user-clock fix, with the CPU clock constrained to 220 MHz. By default the CSR registers its read data and ready, so every CSR access takes 1 cycle more. `` `define SOC_CSR_RD_COMB `` (`soc_csr.sv`, `RD_FLOP=0`) answers straight from the 9-input read mux, in the request cycle. Does the flop favour one CPU? Or is it a flop?
 
 | Flop (default) / comb | PicoRV32 | eduBOS5 2-stage |
 |---|---|---|
@@ -241,9 +246,9 @@ This is how the multicycle constraint above was proven, gotchas included. Use it
 
 ### 1. State the claim in plain words
 
-In the 3-stage pipeline, an instruction moves `FETCH_INSTR` → `WAIT4REGS` → `EXECUTE`. The instruction word (`imem_rdat`) and the register-file reads (`rs1`, `rs2`) change on the edge that ends `FETCH_INSTR`: the **launch** edge. The constraint is safe if:
+In the 3-stage pipeline, an instruction moves `FETCH_INSTR` → `WAIT4REGS` → `EXECUTE`; after a jump, `FETCH_INSTR` → `FETCH_TARGET` → `WAIT4REGS` → `EXECUTE`. The instruction word (`imem_rdat`) and the register-file reads (`rs1`, `rs2`) change on the edge that ends a fetch state. The last one, into `WAIT4REGS`, is the **launch** edge. The constraint is safe if:
 
-1. **Source side:** they change only on the launch edge, and hold for 2 clocks.
+1. **Source side:** they change only on a fetch edge, and hold for 2 clocks from the launch edge.
 2. **Capture side:** whatever a register captures from them on the 1st edge after launch is never used. Only the 2nd edge counts.
 
 Both are needed. Point 1 alone is not enough: see gotcha 3.
@@ -253,8 +258,9 @@ Both are needed. Point 1 alone is not enough: see gotcha 3.
 The source side in SVA, under `` `define EDUBOS5_MCP_CHECK `` in `edubos5.sv`:
 
 ```systemverilog
-$changed({imem_rdat, rs1, rs2}) |-> $past(state) == FETCH_INSTR   // change only at launch
-state == FETCH_INSTR |-> ##2 $stable({imem_rdat, rs1, rs2})       // hold 2 clocks
+$changed({imem_rdat, rs1, rs2}) |-> $past(state) inside {FETCH_INSTR, FETCH_TARGET}  // change only on a fetch
+$past(state) inside {FETCH_INSTR, FETCH_TARGET} && state != FETCH_TARGET            // the cycle after launch
+    |=> $stable({imem_rdat, rs1, rs2})                                                // hold 2 clocks
 ```
 
 These are *declarative* (concurrent) assertions. They say what must hold over time, not how to check it.
@@ -414,7 +420,7 @@ EBMC's sister tools are CBMC (C/C++) and JBMC (Java), for software.
 
 ## Future improvement ideas
 
-- **A 3-stage pipeline that pays off.** With its multicycle constraint, the 3-stage core reaches about 1.09x the 2-stage clock (Vivado, 220 MHz target). To break even on IPC (0.26 vs 0.35), it needs about 1.35x. Its critical path has already moved to a 1-cycle path, `shamt_reg` -> RAM instruction address. The next gain has to come from there. A third stage that earns its keep: future work.
+- **A 3-stage pipeline that pays off.** Done for clock, October 2026: fetch from `pc + 1` with a refetch after a jump, and a registered shift. It now breaks even on MIPS ([CPU options compared](#cpu-options-compared-the-soc-only)). Its critical path is now load data -> `rf_wdat` -> register-file write.
 - **An illegal-instruction trap**, and a documented `dmem_rdy` rule: see [Bonus goodies from FV](#bonus-goodies-from-fv), items 1 and 2.
 - **A misaligned trap**, so that riscv-formal passes without `LEGAL=1`.
 

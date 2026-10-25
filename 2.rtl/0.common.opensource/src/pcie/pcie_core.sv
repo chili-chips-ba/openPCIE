@@ -41,8 +41,8 @@ module pcie_core
   import link_pkg::*;
   import pcie_pkg::*;
 (
-    input  logic core_rst_n,  // clk62m5 reset: low on PERST# or no data link
-    output logic trn_link_up, // data link up (TRNLNKUP), clk62m5
+    input  logic core_rst_n,  // user_clk reset: low on PERST# or no data link
+    output logic trn_link_up, // data link up (TRNLNKUP), user_clk
 
     axis_if.slave  s_axis_tx,
     axis_if.master m_axis_rx,
@@ -62,7 +62,7 @@ module pcie_core
           pipe_if.mac pipe_mac,
     input logic       phy_rdy_n,
     input logic       pipe_clk,
-    input logic       clk62m5
+    input logic       user_clk
 );
   logic [2:0] cfg_pcie_link_state;
 
@@ -178,7 +178,7 @@ module pcie_core
 
       .cfg_pcie_link_state(cfg_pcie_link_state),
 
-      .clk62m5   (clk62m5),
+      .user_clk  (user_clk),
       .core_rst_n(core_rst_n)
   );
 
@@ -452,7 +452,6 @@ module pcie_core
   localparam string         UR_INV_REQ                        = "TRUE";
   localparam string         UR_PRS_RESPONSE                   = "TRUE";
   localparam string         USER_CLK2_DIV2                    = "FALSE";
-  localparam integer        USER_CLK_FREQ                     = 1;
   localparam string         USE_RID_PINS                      = "FALSE";
   localparam string         VC0_CPL_INFINITE                  = "TRUE";
   localparam logic   [12:0] VC0_RX_RAM_LIMIT                  = 13'h7FF;
@@ -506,7 +505,7 @@ module pcie_core
       .NUM_BRAMS        (BRT_COLS_TX),
       .RAM_RDATA_LATENCY(TL_TX_RAM_RDATA_LATENCY)
   ) tx_buf_bank (
-      .user_clk_i(clk62m5),
+      .user_clk_i(user_clk),
       .mim       (mim_tx)
   );
 
@@ -515,7 +514,7 @@ module pcie_core
       .NUM_BRAMS        (BRT_COLS_RX),
       .RAM_RDATA_LATENCY(TL_RX_RAM_RDATA_LATENCY)
   ) rx_buf_bank (
-      .user_clk_i(clk62m5),
+      .user_clk_i(user_clk),
       .mim       (mim_rx)
   );
 
@@ -899,8 +898,8 @@ module pcie_core
       .PIPERX6ELECIDLE((rx_blk[6].elec_idle)),
       .PIPERX7ELECIDLE((rx_blk[7].elec_idle)),
       .PIPECLK(pipe_clk),
-      .USERCLK(clk62m5),
-      .USERCLK2(clk62m5),
+      .USERCLK(user_clk),
+      .USERCLK2(user_clk),
       .SYSRSTN((~phy_rdy_n)),
       .CMRSTN(1'b1),
       .CMSTICKYRSTN(1'b1),

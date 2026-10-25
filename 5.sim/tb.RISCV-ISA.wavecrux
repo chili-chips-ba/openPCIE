@@ -5,7 +5,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-10",
-      "ref": "94",
+      "ref": "154",
       "path": "tb.cpu_view.rvfi_clk",
       "name": "rvfi_clk",
       "color": 4283215696,
@@ -15,7 +15,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-11",
-      "ref": "95",
+      "ref": "155",
       "path": "tb.cpu_view.rvfi_valid",
       "name": "rvfi_valid",
       "color": 4280731354,
@@ -25,7 +25,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-12",
-      "ref": "96",
+      "ref": "156",
       "path": "tb.cpu_view.rvfi_order",
       "name": "rvfi_order",
       "color": 4294962776,
@@ -35,7 +35,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-13",
-      "ref": "109",
+      "ref": "169",
       "path": "tb.cpu_view.rvfi_pc_rdata",
       "name": "rvfi_pc_rdata",
       "color": 4293673082,
@@ -45,7 +45,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-14",
-      "ref": "97",
+      "ref": "157",
       "path": "tb.cpu_view.rvfi_insn",
       "name": "rvfi_insn",
       "color": 4294944550,
@@ -55,7 +55,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-15",
-      "ref": "107",
+      "ref": "167",
       "path": "tb.cpu_view.rvfi_rd_addr",
       "name": "rvfi_rd_addr",
       "color": 4293848814,
@@ -65,7 +65,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-16",
-      "ref": "108",
+      "ref": "168",
       "path": "tb.cpu_view.rvfi_rd_wdata",
       "name": "rvfi_rd_wdata",
       "color": 4283215696,
@@ -75,7 +75,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-17",
-      "ref": "111",
+      "ref": "171",
       "path": "tb.cpu_view.rvfi_mem_addr",
       "name": "rvfi_mem_addr",
       "color": 4280731354,
@@ -85,7 +85,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-18",
-      "ref": "113",
+      "ref": "173",
       "path": "tb.cpu_view.rvfi_mem_wmask",
       "name": "rvfi_mem_wmask",
       "color": 4294962776,
@@ -95,7 +95,7 @@
     {
       "kind": "signal",
       "id": "2fe227fa-19",
-      "ref": "115",
+      "ref": "175",
       "path": "tb.cpu_view.rvfi_mem_wdata",
       "name": "rvfi_mem_wdata",
       "color": 4293673082,
@@ -130,9 +130,9 @@
     }
   },
   "signalTreeState": {
-    "selected": [
-      "tb.cpu_view.rvfi_pc_rdata"
-    ]
+    "expanded": [],
+    "selected": [],
+    "scroll": 0.0
   },
   "translateFilters": {},
   "stage": {
@@ -147,67 +147,67 @@
             "widgetId": "riscv_commit",
             "bindings": {
               "rvfi_valid": {
-                "ref": "95"
+                "ref": "155"
               },
               "rvfi_insn": {
-                "ref": "97"
+                "ref": "157"
               },
               "rvfi_pc_rdata": {
-                "ref": "109"
+                "ref": "169"
               },
               "rvfi_order": {
-                "ref": "96"
+                "ref": "156"
               },
               "rvfi_pc_wdata": {
-                "ref": "110"
+                "ref": "170"
               },
               "rvfi_trap": {
-                "ref": "98"
+                "ref": "158"
               },
               "rvfi_halt": {
-                "ref": "99"
+                "ref": "159"
               },
               "rvfi_intr": {
-                "ref": "100"
+                "ref": "160"
               },
               "rvfi_mode": {
-                "ref": "101"
+                "ref": "161"
               },
               "rvfi_ixl": {
-                "ref": "102"
+                "ref": "162"
               },
               "rvfi_rs1_addr": {
-                "ref": "103"
+                "ref": "163"
               },
               "rvfi_rs1_rdata": {
-                "ref": "105"
+                "ref": "165"
               },
               "rvfi_rs2_addr": {
-                "ref": "104"
+                "ref": "164"
               },
               "rvfi_rs2_rdata": {
-                "ref": "106"
+                "ref": "166"
               },
               "rvfi_rd_addr": {
-                "ref": "107"
+                "ref": "167"
               },
               "rvfi_rd_wdata": {
-                "ref": "108"
+                "ref": "168"
               },
               "rvfi_mem_addr": {
-                "ref": "111"
+                "ref": "171"
               },
               "rvfi_mem_rmask": {
-                "ref": "112"
+                "ref": "172"
               },
               "rvfi_mem_wmask": {
-                "ref": "113"
+                "ref": "173"
               },
               "rvfi_mem_rdata": {
-                "ref": "114"
+                "ref": "174"
               },
               "rvfi_mem_wdata": {
-                "ref": "115"
+                "ref": "175"
               }
             },
             "x": 0.0,
@@ -226,10 +226,10 @@
       "instanceNumber": 2,
       "config": {
         "bindings": {
-          "clk": "94",
-          "instruction": "97",
-          "valid": "95",
-          "pc": "109"
+          "clk": "154",
+          "instruction": "157",
+          "valid": "155",
+          "pc": "169"
         },
         "parameters": {
           "xlen": "32",

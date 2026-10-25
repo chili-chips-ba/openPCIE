@@ -38,27 +38,33 @@
 //--------------------------------------------------------------------------
 
 // Link width: 4 (default) or 1, set by the build with  PCIE_LANES=1 / =4.
-// x4 runs only on the direct link; RC-switched and co-simulation use x1.
+// x4 runs only on the direct link: RC-switched is x1.
 `ifndef PCIE_LANES
 `define PCIE_LANES 4
+`endif
+
+// Link speed: 1 (Gen1) or 2 (Gen2), set by the build with  PCIE_GEN=1 / =2.
+// Default (0): Gen1 at x4 (x4 Gen2 closes timing in Vivado only), Gen2 at x1.
+// Width and speed set the user clock (pcie_pkg.sv).
+`ifndef PCIE_GEN
+`define PCIE_GEN 0
 `endif
 
 package link_pkg;
 
   localparam int PCIE_LANES = `PCIE_LANES;
 
-  // Link speed: 1 = Gen1, 2 = Gen2. The hardware runs at Gen2.
+  // Link speed: 1 = Gen1, 2 = Gen2.
   //
   // SIM_GEN1_ONLY pins it to Gen1 for co-simulation. The pcievhost endpoint VIP
   // advertises Gen1 in its training sequences and its LTSSM helper hands control
   // back to the user program once L0 is reached, so it cannot follow the RC into
   // Recovery.Speed for a Gen1 -> Gen2 change: the RC would sit in Recovery until
-  // it times out. Only the simulation file list defines it -- both synthesis
-  // flows build Gen2, unchanged.
+  // it times out. Only the simulation file list defines it.
 `ifdef SIM_GEN1_ONLY
   localparam int PCIE_GEN = 1;
 `else
-  localparam int PCIE_GEN = 2;
+  localparam int PCIE_GEN = (`PCIE_GEN != 0) ? `PCIE_GEN : (PCIE_LANES == 4) ? 1 : 2;
 `endif
 
   localparam int PIPE_MAX_LANES = 8;

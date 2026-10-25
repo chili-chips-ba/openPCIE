@@ -289,8 +289,11 @@ extern "C" void VUserMain1(int node)
 
     Interrupt &= ~RST_DEASSERT_INT;
 
-    // Initialise the link for 1 lane
-    InitLink(1, node);
+    // Initialise the link for as many lanes as the model has (its LinkWidth,
+    // set by the PIPE model: 1 or 4, make SIM_LANES)
+    unsigned lanes;
+    vp1->read(LANESADDR, &lanes);
+    InitLink(lanes, node);
 
     // Initialise DLLP flow control.
     //

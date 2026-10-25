@@ -13,6 +13,8 @@
   * [WaveCrux decoders](#wavecrux-decoders)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
   * [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)
+  * [The x4 link in WaveCrux](#the-x4-link-in-wavecrux)
+  * [Every layer at the Endpoint: transaction taps](#every-layer-at-the-endpoint-transaction-taps)
   * [How long a TLP spends in the hard macro](#how-long-a-tlp-spends-in-the-hard-macro)
 * [The three CPU options](#the-three-cpu-options)
   * [What they cost](#what-they-cost)
@@ -119,7 +121,8 @@ PHY:
 
 It also makes the clocks. `TXOUTCLK` is a behavioural 100 MHz oscillator, and
 everything after it is the real `clk_rst_gen` MMCM. So the design sees its normal
-clock topology: PCLK at 125 MHz (Gen1) or 250 MHz (Gen2), USERCLK1/2 at 62.5 MHz.
+clock topology: PCLK at 125 MHz (Gen1) or 250 MHz (Gen2), USERCLK1/2 at 62.5 MHz
+(x1) or 125 MHz (x4, Gen1).
 **The 100 MHz matters.** `clk_rst_gen` is set for `CLKIN1_PERIOD = 10 ns` and
 `CLKFBOUT_MULT_F = 10`. Any other input frequency scales every clock in the
 design, and the PIPE then over- or under-samples the link partner. Feed it
@@ -192,12 +195,12 @@ compilers, and lists anything missing. `peakrdl` is needed only if you edit
 | Component | In use | Latest upstream (Oct 2026) | Source |
 |---|---|---|---|
 | VProc | 1.13.4 | 1.13.4 | [wyvernSemi/vproc](https://github.com/wyvernSemi/vproc) |
-| pcievhost **(modified, see below)** | 1.9.3 | 1.9.3 (without our changes) | [wyvernSemi/pcievhost](https://github.com/wyvernSemi/pcievhost) |
+| pcievhost **(modified: DLL and TL access points besides the PIPE, x4; see below)** | 1.9.3 | 1.9.3 (without our changes) | [wyvernSemi/pcievhost](https://github.com/wyvernSemi/pcievhost) |
 | mem_model **(modified, see below)** | `main` c7b9c62 (1.0.1 + one fix) | same | [wyvernSemi/mem_model](https://github.com/wyvernSemi/mem_model) |
 | rv32 ISS **(modified, see below)** | 1.3.3 | 1.3.3 | [wyvernSemi/rv32](https://github.com/wyvernSemi/rv32) |
 | Vivado simulator (`xsim`) | 2026.1 | 2026.1 | [AMD Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) |
 | WaveCrux Pro | 1.1.0 | 1.1.0 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
-| TLP decoder plugin (ours) | `wcx-pcie-tlp` pcie-tlp-v0.1.0 | pcie-tlp-v0.1.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp) |
+| TLP decoder plugin (ours) | `wcx-pcie-tlp` pcie-tlp-v0.1.1 | pcie-tlp-v0.1.1 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp) |
 | PIPE, DLL and serial-line decoder plugin | `wcx-pcie` pcie-v0.2.0 | pcie-v0.2.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
 | RISC-V instruction-trace decoder | built into WaveCrux | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 
@@ -239,9 +242,10 @@ pcievhost:
 |---|---|---|
 | `ltssm/ltssm.c` | As upstream port: send Link and Lane = PAD until the partner assigns them; stay in Configuration.Lanenum for at least 16 TS1 | real PCIE_2_1 downstream port deadlocked or timed out against the model's endpoint LTSSM ([Endpoint feature limitations](#endpoint-feature-limitations)) |
 | `verilog/pcieVHost/pcieVHost.v` | VProc `BE` and `Burst` ports, left open | we build VProc with `VPROC_BYTE_ENABLE` |
+| `src/displink.c` (in `lib/libpcielnx.a`), `include/pcie_vhost_map.h`, `verilog/headers/pcie_vhost_map.v`, `verilog/pcieVHost/pcieVHost.v`, `pcieVHostPipex1.v` | transaction taps: TLP and DLLP ports, in [`pcievhost-taps.patch`](models/pcievhost/pcievhost-taps.patch) | the decoders need the TLPs and DLLPs; the model keeps them in C ([transaction taps](#every-layer-at-the-endpoint-transaction-taps)) |
 | `verilog/headers/test_defs.v` | `` `fatal`` calls `tb.Fatal` | our test bench top is `tb` |
 
-The unmodified `ltssm.c` is kept beside it as `ltssm.c.orig`, and our fixes as `ltssm/ltssm-openpcie.patch`. [`tools/vip-upgrade.sh`](tools/vip-upgrade.sh) rebuilds all four models from upstream and re-applies these changes. It stops if the LTSSM or the rv32 patch no longer applies. rv32 is built here from its sources (`models/rv32/src`, upstream `774d84fa`).
+The unmodified `ltssm.c` is kept beside it as `ltssm.c.orig`, and our fixes as `ltssm/ltssm-openpcie.patch`. [`tools/vip-upgrade.sh`](tools/vip-upgrade.sh) rebuilds all four models from upstream and re-applies these changes. It stops if the LTSSM, the taps or the rv32 patch no longer applies. rv32 is built here from its sources (`models/rv32/src`, upstream `774d84fa`).
 
 ### What the simulation does
 
@@ -378,7 +382,7 @@ make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> 5.sim/tb.vc
 The tracked `tb.fst` comes from this command. `DUMP_SOC_CPU` adds the CPU's RVFI trace for [`tb.RISCV-ISA.wavecrux`](tb.RISCV-ISA.wavecrux). Leave it out, and that session comes up empty.
 
 Then, once per machine:
-1. Get the TLP decoder from its [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-tlp-v0.1.0) (Windows: `wcx-pcie-tlp-0.1.0-windows-x64.zip`; check it against `SHA256SUMS`). Unzip it to a folder of its own.
+1. Get the TLP decoder from its [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-tlp-v0.1.1) (Windows: `wcx-pcie-tlp-0.1.1-windows-x64.zip`; check it against `SHA256SUMS`). Unzip it to a folder of its own.
 2. In WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder Plugins**, accept the safety notice, **Add directory...** that folder, **Reload plugins**.
 3. Add Ferrite's PIPE and Data Link Layer plugin the same way ([Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)).
 
@@ -433,8 +437,11 @@ What makes this possible in the test bench:
 
 The session stores the decoder bindings as positions in the FST. They are the
 same for every run of this test bench. If another simulator version orders the
-dump differently, the decoder rows come up empty. Remove them and add them again
-with **Ctrl+Shift+D**: auto-bind fills in all nine inputs.
+dump differently, or a change to `tb.sv` dumps other signals, the decoder rows
+come up empty. Then rebind the session to the new dump:
+`python3 tools/wavecrux-rebind.py tb.TLP-DLL-PIPE.wavecrux tb.fst <old tb.fst>`
+(needs `fst2vcd`, from GTKWave). Or remove the rows and add them again with
+**Ctrl+Shift+D**: auto-bind fills in all nine inputs.
 
 ### Viewing the PIPE in WaveCrux
 
@@ -553,6 +560,37 @@ Its wave snapshots are coming soon.
 - **Nothing left unacknowledged.** Every TLP in both directions got its Ack.
 - **Every request answered.** 21 requests, one of them the posted Memory Write: 20 completions came back, exactly one per non-posted request.
 
+### The x4 link in WaveCrux
+
+`make run SIM_LANES=4 USRSIMOPTS="--define DUMP_VCD"` runs the same firmware over an x4 Gen1 link. The tracked dump is `tb.x4.fst`, and [`tb.x4.wavecrux`](tb.x4.wavecrux) opens it with all four lanes in each direction. Decoding them needs Ferrite's multi-lane PIPE and Data Link Layer decoders, [wavecrux-decoders PR #18](https://github.com/Ferrite-Engineering/wavecrux-decoders/pull/18) (not released yet).
+
+**Training on four lanes.** Configuration numbers the lanes: TS1 `link=0 lanes=PAD,PAD,PAD,PAD`, then `lanes=0,1,2,3`, then TS2 with both numbers. The decoder deskews the lanes on these ordered sets and reports `Link width x4` and `Lanes aligned x4 (offsets 0,0,0,0)` at 73.97 µs. In each direction, the four lanes switch from training to data together, and the LTSSM reaches L0 (`16`) at 74.5 µs:
+
+<p align="center">
+<img alt="WaveCrux x4 PIPE view: link training on four lanes" src="images/wavecrux-x4-pipe-training.png" width=1000>
+</p>
+
+**The first TLP, striped.** The firmware's first Configuration Read leaves at 114.6 µs, earlier than at x1 because the SOC runs on the 125 MHz `user_clk`. Its 18 symbols are spread over the four lanes, starting with STP (`fb`) on lane 0, so they take 3 PIPE clocks instead of 9. The Endpoint answers with `CplD` (22 symbols), `Ack seq=0` and `UpdateFC-NP`, as at x1:
+
+<p align="center">
+<img alt="WaveCrux x4 PIPE view: first TLP and its Ack" src="images/wavecrux-x4-pipe-tlp-ack.png" width=1000>
+</p>
+
+### Every layer at the Endpoint: transaction taps
+
+The PIPE shows the link as symbols. The Endpoint model also reports each TLP and DLLP it sends and receives, through transaction taps we added to pcieVHost. Our wrapper [`models/PIPExN__pcieVHost.sv`](models/PIPExN__pcieVHost.sv) puts them on one decoder page, `tb.dut.u_pcie.u_phy_top.u_pcie_ep`, next to its PIPE link, under the names WaveCrux auto-binds (dn = RC -> EP, up = EP -> RC):
+
+| Layer | Signals | For |
+|---|---|---|
+| PIPE | `pipe_dn_*`, `pipe_up_*` (`pclk`, `data`, `datak`) | the PIPE and Data Link Layer decoders |
+| Data Link | `dllp_dn_*`, `dllp_up_*`: every DLLP, one word each | DLLP rows |
+| Data Link | `dll_rx_*`: RC -> EP TLPs and DLLPs, as an Endpoint's DLL hands them to its TL | driving a TL under test |
+| Transaction | `tx_*` (RC -> EP), `rx_*` (EP -> RC) | the TLP decoder |
+
+So the dump now has two TLP views, one at each end of the link: `tb.tlp_view` at the Root Complex's AXI-Stream, `u_pcie_ep` at the Endpoint. Same TLPs (21 down, 20 up), the hard macro and the link apart. The run also shows 67 DLLPs down and 92 up.
+
+The C side is [`models/pcievhost/pcievhost-taps.patch`](models/pcievhost/pcievhost-taps.patch), applied by [`tools/vip-upgrade.sh`](tools/vip-upgrade.sh). The wrapper is the one [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE/tree/main/5.sim#transaction-taps-a-test-platform-at-every-layer) uses for its host and its mock Endpoint; [how it works](https://github.com/chili-chips-ba/openCologne-PCIE/blob/main/0.doc/5.sim/pcievhost-taps.drawio.png).
+
 ### How long a TLP spends in the hard macro
 
 With all three layers in one view, you can follow a single request through the
@@ -615,21 +653,21 @@ The native C++ model reaches the CSR through `csr_cosim.h`. PeakRDL generates it
 
 ### What they cost
 
-Vivado XSIM 2026.1, simulated time, which is exact. Every run gives the same result: link up, LTSSM `0x16`, 21 TLPs, `PASS (0x0000face)`.
+Vivado XSIM 2026.1, x1 Gen1 runs, simulated time, which is exact. Every run gives the same result: link up, LTSSM `0x16`, 21 TLPs, `PASS (0x0000face)`.
 
 | `CPU=` | Core | Result at (simulated) | Run time, wall clock, relative |
 |---|---|---|---|
 | `rtl` | PicoRV32 | 667.2 µs | 1.3x |
 | `rtl` | eduBOS5 2-stage | **389.5 µs** | 1.0x |
-| `rtl` | eduBOS5 3-stage | 470.9 µs | 1.1x |
+| `rtl` | eduBOS5 3-stage | 481.2 µs | 1.1x |
 | `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | 1.4x |
 | `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) | 1.4x |
-| `iss` | eduBOS5 3-stage timing | 470.9 µs (0.0%) | 1.4x |
+| `iss` | eduBOS5 3-stage timing | 481.1 µs (0.0%) | 1.4x |
 | `vproc` | native C++ | **138.3 µs** | **0.7x** |
 
-The run times are for information only. They come from one batch of single runs (2026-10-16, Ryzen 9 6900HX, WSL2, `rtl` eduBOS5 = about 55 s). Wall-clock time varies with host load: two identical `rtl` eduBOS5 runs with `DUMP_VCD` took 54 s and 197 s on this machine, the same day. The simulated times are exact.
+The 3-stage results are from 2026-10-24, after its jump refetch (1 cycle more per jump or taken branch). The run times are for information only. They come from one batch of single runs (2026-10-16, Ryzen 9 6900HX, WSL2, `rtl` eduBOS5 = about 55 s). Wall-clock time varies with host load: two identical `rtl` eduBOS5 runs with `DUMP_VCD` took 54 s and 197 s on this machine, the same day. The simulated times are exact.
 
-- **eduBOS5 vs PicoRV32:** IPC, Fmax and area compared in the [eduBOS5 README](../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+- **eduBOS5 vs PicoRV32:** IPC, Fmax and area compared in the [eduBOS5 README](../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only). `USRSIMOPTS="--define SOC_IPC"` prints a core's IPC at the firmware result: retired instructions (RVFI) per `user_clk` cycle since SOC reset release.
 - **`iss`** matches the RTL core it models to within 0.6% ([Our Local VIP Improvements](#our-local-vip-improvements)). It runs the real firmware binary in a debuggable native process (`-g` in `vusermain.cfg` opens a gdb port).
 - **`vproc`** covers the least simulated time. The native program skips the firmware's start-up delay, and polls the CSR with no instructions in between.
 
@@ -1094,12 +1132,14 @@ void PCIEMAIN (void)
 
 The second is delays: standard C functions such as `usleep`, or the application's own instruction loops. Wrap them in one common function, e.g. `pcie_usleep(int time)`. Under `VPROC`, the wrapper converts the time to clock cycles and calls the *VProc* API's `VTick` (or its C++ twin) to advance simulation time. Otherwise it calls the target's delay function.
 
-The generated co-simulation header defines `SOC_CPU_CLK_PERIOD_PS`, set with `-C` / `--clk_period` on the `4.build/sysrdl_cosim.py` command line. Default 16000: the 62.5 MHz `clk62m5` (MMCM in `clk_rst_gen`) that clocks `riscv_pcie_soc`. It also defines `SOC_CPU_VPNODE`, default 0, for calling the *VProc* C API directly; `-v` / `--vp_node` sets it.
+The generated co-simulation header defines `SOC_CPU_CLK_PERIOD_PS`, set with `-C` / `--clk_period` on the `4.build/sysrdl_cosim.py` command line. Default 16000: the 62.5 MHz x1 `user_clk` (MMCM in `clk_rst_gen`) that clocks `riscv_pcie_soc`. x4 (Gen1, 125 MHz) needs 8000, which the Makefile passes as `-DSOC_CPU_CLK_PERIOD_PS=8000` at `SIM_LANES=4`. It also defines `SOC_CPU_VPNODE`, default 0, for calling the *VProc* C API directly; `-v` / `--vp_node` sets it.
 
 ## Our Local VIP Improvements
 
 How our co-simulation models differ from upstream, beyond [Local changes](#local-changes):
 
+- **pcievhost: Data Link and Transaction access points, besides the PIPE.** Upstream, the model's link is visible only as PIPE symbols; its TLPs and DLLPs stay inside the C model. Our transaction taps bring every TLP and DLLP it sends and receives out to ports, and our wrapper `PIPExN__pcieVHost` offers them at the Data Link Layer (`dllp_*`, `dll_rx_*`) and the Transaction Layer (`tx_*`, `rx_*`), next to the PIPE. Details: [transaction taps](#every-layer-at-the-endpoint-transaction-taps).
+- **pcievhost: x4 PIPE.** Upstream's PIPE wrapper `pcieVHostPipex1` is x1 only. Ours, `pcieVHostPipexN`, runs the same model over any number of lanes; the test bench uses x1 and x4 (`make SIM_LANES=4`, Gen1, `user_clk` 125 MHz), and both pass ([the x4 link in WaveCrux](#the-x4-link-in-wavecrux)).
 - **rv32 ISS built from source.** `models/rv32/src` holds the ISS sources at upstream `774d84fa`; the make file builds the library. Two fixes in `rv32-openpcie.patch`: the timer-compare check no longer adds 2 cycles to every instruction, and `sw`/`sh` take store timing, not load.
 - **Timing measured on our RTL.** `rv32_timing_config.h` holds cycles per instruction class measured in this SOC, so they include its memory latency (fetch included, no wait states):
 
@@ -1107,9 +1147,9 @@ How our co-simulation models differ from upstream, beyond [Local changes](#local
   |---|---|---|---|---|
   | PicoRV32 (`BARREL_SHIFTER=0`) | 4 | 4 | 8 | 7 |
   | eduBOS5 2-stage | 2 | 2 | 5 | 2 |
-  | eduBOS5 3-stage | 3 | 3 | 6 | 3 |
+  | eduBOS5 3-stage | 3 | 4 | 6 | 3 |
 
-  eduBOS5 is exact. PicoRV32 is a fit: it prefetches, and its shifts take 1 cycle per 4 bits or per bit.
+  jump: `jal`, `jalr` and a taken branch. eduBOS5 is exact. PicoRV32 is a fit: it prefetches, and its shifts take 1 cycle per 4 bits or per bit.
 - **Bus credit.** A load or store to the simulation takes real clocks on the VProc bus, but the timing table already counts them. So the ISS takes those clocks (2 per access) off its next synchronisation, and an access costs only its table cycles. No double billing.
 - **2-clock bus.** `soc_cpu.VPROC.picorv32.sv` runs picorv32's handshake: `mem_valid` with the request, `mem_ready` as the ack, one idle cycle after. Was 4 clocks.
 - **Reset input.** `!resetn` drives VProc interrupt bit 3. The ISS starts at reset release, as the RTL core does, and restarts at the reset vector on a new reset.

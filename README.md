@@ -525,7 +525,7 @@ With the full end-to-end simulation thus in place, we hope that the need for har
 
 Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
 
-The design has also been ported to, and tested with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what _"ScalePNR"_ idea eventually evolved into. It brought to the forefront _Yosys0.69_ with integrated _**Slang**_, _**nextpnr-himbaechel**_ (instead of _nextpnr-xilinx_) and _**fpga-as**_. With that, the earlier SV2V standalone prep step for our SystemVerilog design sources proved to be unnecessary, which simplified the build process. The SV2V option is however still retained for cross-tool checking.
+The design has also been ported to, and built with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what _"ScalePNR"_ idea eventually evolved into. Its bitstreams have not been tested on hardware yet; the Gen2 result above is from the earlier flow. It brought to the forefront _Yosys0.69_ with integrated _**Slang**_, _**nextpnr-himbaechel**_ (instead of _nextpnr-xilinx_) and _**fpga-as**_. We do not use _fpga-as_ yet: it writes one GTP setting wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)), so the build still assembles with _fasm2frames_ and _xc7frames2bit_. With that, the earlier SV2V standalone prep step for our SystemVerilog design sources proved to be unnecessary, which simplified the build process. The SV2V option is however still retained for cross-tool checking.
 
 --------------------
 
@@ -620,6 +620,7 @@ The **Envox**, our next-door buddy, is responsible for the birth of our backplan
 
 
 ### Community Outreach:
+- [2026-10-25, LinkedIn](https://lnkd.in/p/gNncVdNv)
 - [2026-10-20, LinkedIn (Ferrite)](https://lnkd.in/p/g-yGBEU8)
 - [2026-10-20, Hacker News](https://news.ycombinator.com/item?id=50162122)
 - [2026-10-20, Mastodon](https://mastodon.social/@chili_chips/117472074410775767)

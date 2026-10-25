@@ -43,7 +43,7 @@ module trn_rx
     axis_if.master m_axis_rx,
     trn_if.user    trn,        // RX half: rd ... recrc_err, rdst_rdy
 
-    input logic clk62m5,
+    input logic user_clk,
     input logic core_rst_n
 );
 
@@ -79,7 +79,7 @@ module trn_rx
 
   assign rsrc_rdy_filtered = trn.rsrc_rdy && (trn_in_packet || (trn.rsof && !trn.rsrc_dsc));
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       trn_rd_prev        <= {TRN_DATA_W{1'b0}};
       trn_rrem_prev      <= {TRN_REM_W{1'b0}};
@@ -104,7 +104,7 @@ module trn_rx
 
   assign trn_rd_dw_swapped = {trn.rd[31:0], trn.rd[63:32]};
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       m_axis_rx.tdata <= {TRN_DATA_W{1'b0}};
     end
@@ -122,7 +122,7 @@ module trn_rx
 
   assign data_hold = (!m_axis_rx.tready && m_axis_rx.tvalid);
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       data_prev <= 1'b0;
     end
@@ -131,7 +131,7 @@ module trn_rx
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       m_axis_rx.tvalid <= 1'b0;
       reg_tlast        <= 1'b0;
@@ -176,7 +176,7 @@ module trn_rx
   assign tkeep           = trn.rrem ? 8'hFF : 8'h0F;
   assign tkeep_prev      = trn_rrem_prev ? 8'hFF : 8'h0F;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       trn.rdst_rdy <= 1'b0;
     end
@@ -196,7 +196,7 @@ module trn_rx
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       null_mux_sel <= 1'b0;
     end
@@ -210,7 +210,7 @@ module trn_rx
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       trn_in_packet <= 1'b0;
     end
@@ -230,7 +230,7 @@ module trn_rx
   assign dsc_detect = trn.rsrc_dsc && !trn_rsrc_dsc_d && trn_in_packet &&
                          (!trn.rsof || trn.reof) && !(trn.rdst_rdy && trn.reof);
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       reg_dsc_detect <= 1'b0;
       trn_rsrc_dsc_d <= 1'b0;
@@ -316,7 +316,7 @@ module trn_rx
     endcase
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       ng_q <= '{state: NG_IDLE, pkt_len: 12'h0};
     end

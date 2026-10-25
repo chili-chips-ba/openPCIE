@@ -67,10 +67,11 @@ private:
     // (riscv_pcie_soc.sv, RAM ready one cycle after valid), fetch included. PicoRV32
     // with BARREL_SHIFTER=0, ENABLE_COUNTERS=0: a least-squares fit, as it prefetches
     // and its shifts take 1 cycle per 4 or 1 bit (upstream: 4, 4, 5, 5). eduBOS5:
-    // exact (upstream: 2, 2, 3, 3 and 3, 3, 4, 4). See 5.sim/README.md.
+    // exact (upstream: 2, 2, 3, 3 and 3, 3, 4, 4); the 3-stage takes 1 cycle more
+    // on a jump or taken branch (FETCH_TARGET). See 5.sim/README.md.
     const rv32_iss_timing_t picorv32      = {4, 4, 8, 7, 4,  4, 4};
     const rv32_iss_timing_t edubos5_2stg  = {2, 2, 5, 2, 2,  2, 2};
-    const rv32_iss_timing_t edubos5_3stg  = {3, 3, 6, 3, 3,  3, 3};
+    const rv32_iss_timing_t edubos5_3stg  = {3, 4, 6, 3, 3,  3, 3};
     const rv32_iss_timing_t ibex_mul_sgl  = {1, 2, 2, 2, 1,  1, 1};
     const rv32_iss_timing_t ibex_mul_fast = {1, 2, 2, 2, 1,  3, 1};
     const rv32_iss_timing_t ibex_mul_slow = {1, 2, 2, 2, 1, 33, 1};

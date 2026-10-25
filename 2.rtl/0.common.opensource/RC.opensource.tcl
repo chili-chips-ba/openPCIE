@@ -3,7 +3,7 @@
 #                      open-source SystemVerilog root complexes
 #
 # Board : Acorn CLE-215P  ->  xc7a200tfbg484-3
-# Link  : PCIe Gen2, x4 (default, direct only) or x1
+# Link  : PCIe x4 (default, direct only) or x1; Gen1 at x4, Gen2 at x1 (defaults)
 # Top   : RC_opensource
 #
 # Not run directly. Each root complex has a short wrapper that names itself
@@ -21,6 +21,9 @@
 #   set ::origin_dir_loc    <path>   ;# variant folder (default: the wrapper's)
 #   set ::user_project_name <name>   ;# .xpr name (default: Vivado-v2024.2)
 #   set ::pcie_lanes        1|4      ;# link width (default: 4 direct, 1 switched)
+#   set ::pcie_gen          1|2      ;# link speed (default: 1 at x4, 2 at x1)
+#   set ::cpu               edubos5|edubos5_3stg|picorv32  ;# (default: edubos5;
+#                                    edubos5_3stg at x4 Gen2, for its 250 MHz user clock)
 #
 # Afterwards open  xbuild.Vivado-v2024.2/Vivado-v2024.2.xpr  in the variant's
 # folder in the Vivado GUI:
@@ -66,6 +69,17 @@ switch -- $::rc_variant {
     return -code error "rc_variant must be \"direct\" or \"switched\", got \"$::rc_variant\""
   }
 }
+# Default speed: Gen1 at x4 (x4 Gen2 closes timing in Vivado only), Gen2 at x1
+set pcie_gen [expr { [info exists ::pcie_gen] ? $::pcie_gen : ($pcie_lanes == 4 ? 1 : 2) }]
+if { $pcie_gen ni {1 2} } {
+  return -code error "pcie_gen must be 1 or 2, got \"$pcie_gen\""
+}
+# Default CPU: the 3-stage eduBOS5 at x4 Gen2 (250 MHz user clock), else the 2-stage
+set cpu_def [expr { $pcie_lanes == 4 && $pcie_gen == 2 ? "edubos5_3stg" : "edubos5" }]
+set cpu [expr { [info exists ::cpu] ? $::cpu : $cpu_def }]
+if { $cpu ni {edubos5 edubos5_3stg picorv32} } {
+  return -code error "cpu must be edubos5, edubos5_3stg or picorv32, got \"$cpu\""
+}
 set origin_dir [file normalize $origin_dir]
 if { [info exists ::origin_dir_loc] } {
   set origin_dir [file normalize $::origin_dir_loc]
@@ -87,7 +101,13 @@ set xdc_files [list "$common_dir/xdc/RC.x1g2.AcornCLE-215P.xdc" \
 
 set top_sv "$src_dir/RC_opensource.sv"
 set soc_sv "$src_dir/riscv_pcie_soc.sv"
-set cpu_v  "$src_dir/picorv32.CHILI.sv"
+# CPU: eduBOS5 (the default, riscv_pcie_soc.sv) and picorv32 (SOC_CPU_PICORV32)
+set cpu_v  [list {*}[lmap f {edubos5_pkg.sv edubos5_rf.sv edubos5_alu.sv edubos5.sv} \
+                       {file join $src_dir CPU.eduBOS5 $f}] \
+                 "$src_dir/picorv32.CHILI.sv"]
+set cpu_defines [dict get {edubos5 {} edubos5_3stg SOC_EDUBOS5_3STG picorv32 SOC_CPU_PICORV32} $cpu]
+# The 3-stage pipeline's multicycle paths, implementation only (post-synthesis names)
+set mcp_xdc [expr { $cpu eq "edubos5_3stg" ? "$src_dir/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.xdc" : "" }]
 
 # ---- CSR: PeakRDL-generated register block ----------------------------------
 # csr_pkg.sv and csr.sv are generated from 4.build/csr_build/csr.rdl by
@@ -107,7 +127,7 @@ set hex_file [file normalize "$common_dir/../../4.build/sw_build/firmware.hex"]
 
 # ---- Check everything exists before Vivado is even started ------------------
 set missing {}
-foreach f [concat [list $top_sv $soc_sv $cpu_v $hex_file] $xdc_files $csr_files] {
+foreach f [concat [list $top_sv $soc_sv $hex_file] $cpu_v $xdc_files $mcp_xdc $csr_files] {
   if { ![file isfile $f] } { lappend missing $f }
 }
 if { ![file isdirectory $pcie_dir] } { lappend missing "$pcie_dir (folder)" }
@@ -146,17 +166,18 @@ if { ![llength $svfiles] } {
   return -code error "No .sv file found in $pcie_dir"
 }
 
-add_files -norecurse [concat $svfiles $vfiles $csr_files [list $cpu_v $soc_sv $top_sv]]
+add_files -norecurse [concat $svfiles $vfiles $csr_files $cpu_v [list $soc_sv $top_sv]]
 
-# Link width for link_pkg.sv, for synthesis and simulation alike
-set_property verilog_define "PCIE_LANES=$pcie_lanes" [get_filesets sources_1]
-set_property verilog_define "PCIE_LANES=$pcie_lanes" [get_filesets sim_1]
+# Link width and speed for link_pkg.sv, for synthesis and simulation alike
+set link_defines [list "PCIE_LANES=$pcie_lanes" "PCIE_GEN=$pcie_gen" {*}$cpu_defines]
+set_property verilog_define $link_defines [get_filesets sources_1]
+set_property verilog_define $link_defines [get_filesets sim_1]
 
 # Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
 # package (link_pkg.sv) and SV interfaces (axis_if, trn_if, pipe_if, cfg_if, mem_if) --
 # if Vivado treats them as plain Verilog, elaboration fails. picorv32.CHILI.sv is
 # SystemVerilog too.
-foreach f [concat $svfiles $csr_files [list $cpu_v $soc_sv $top_sv]] {
+foreach f [concat $svfiles $csr_files $cpu_v [list $soc_sv $top_sv]] {
   set_property file_type "SystemVerilog" [get_files [file normalize $f]]
 }
 
@@ -171,6 +192,10 @@ set_property file_type {Memory Initialization Files} [get_files [file normalize 
 add_files -fileset constrs_1 -norecurse $xdc_files
 foreach f $xdc_files {
   set_property file_type "XDC" [get_files [file normalize $f]]
+}
+if { $mcp_xdc ne "" } {
+  add_files -fileset constrs_1 -norecurse $mcp_xdc
+  set_property USED_IN_SYNTHESIS false [get_files [file normalize $mcp_xdc]]
 }
 
 # ---- Top module + compile order ---------------------------------------------
@@ -187,12 +212,13 @@ puts "--------------------------------------------------------------"
 puts "  xpr       : $proj_dir/$proj_name.xpr"
 puts "  part      : xc7a200tfbg484-3   (Acorn CLE-215P)"
 puts "  variant   : $::rc_variant"
-puts "  lanes     : x$pcie_lanes"
+puts "  link      : x$pcie_lanes Gen$pcie_gen"
+puts "  cpu       : $cpu"
 puts "  top       : RC_opensource"
 puts "  src/pcie  : [llength $svfiles] .sv  +  [llength $vfiles] .v   (0.common.opensource)"
-puts "  src/      : picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_opensource.sv"
+puts "  src/      : CPU.eduBOS5/, picorv32.CHILI.sv, riscv_pcie_soc.sv, RC_opensource.sv"
 puts "  csr       : PeakRDL -- csr_pkg.sv, csr.sv, soc_csr.sv"
-puts "  xdc       : [join [lmap f $xdc_files {file tail $f}] {, }]"
+puts "  xdc       : [join [lmap f [concat $xdc_files $mcp_xdc] {file tail $f}] {, }]"
 puts "  firmware  : $hex_file"
 puts "--------------------------------------------------------------"
 puts " Open the .xpr in the Vivado GUI, then:"

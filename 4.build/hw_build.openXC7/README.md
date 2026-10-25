@@ -2,7 +2,7 @@
 
 From RTL to bitstream with **open-source tools only**. No Vivado, no license server, no tears. Part `xc7a200tfbg484-3` (Acorn CLE-215P), same as the Vivado build.
 
-- `make`: [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource), **x4** (default). `make LANES=1` for x1.
+- `make`: [`RC-direct.opensource`](../../2.rtl/2.RC-direct.opensource), **x4 Gen1** (default). `make GEN=2` for x4 Gen2, `make LANES=1` for x1 Gen2.
 - `make VARIANT=switched`: [`RC-switched.opensource`](../../2.rtl/3.Bonus--RC-switched.opensource), x1.
 
 Both share one RTL, [`2.rtl/0.common.opensource`](../../2.rtl/0.common.opensource) (top `RC_opensource`). Only the firmware and the GT pins differ ([GT channel](#gt-channel)). All commands and output folders: [Building](#building).
@@ -280,11 +280,12 @@ make -f MakefileCSR       # -> csr_build/generated-files/{csr_pkg,csr}.sv
 source ../set-env.sh                    # once per shell
 make check-env                          # tools present; warns if nextpnr is the wrong version
 make check-sources                      # every RTL file and firmware.hex present
-make                                    # v1.0.0, read_slang (default), x4 -> build_artifacts.x4.slang/top.x4.direct.bit
+make                                    # v1.0.0, read_slang (default), x4 Gen1 -> build_artifacts.x4.slang/top.x4g1.direct.bit
+make GEN=2                              # v1.0.0, read_slang, x4 Gen2      -> build_artifacts.x4.g2.slang/top.x4g2.direct.bit
 make LANES=1                            # v1.0.0, read_slang, x1           -> build_artifacts.slang/top.x1.direct.bit
 make VARIANT=switched                   # v1.0.0, read_slang, x1           -> build_artifacts.switched.slang/top.x1.switched.bit
-make CPU=picorv32                       # PicoRV32 instead of eduBOS5      -> build_artifacts.x4.picorv32.slang/top.x4.direct.bit
-make FRONTEND=sv2v                      # v1.0.0, sv2v, x4                 -> build_artifacts.x4.new/top.x4.direct.bit
+make CPU=picorv32                       # PicoRV32 instead of eduBOS5      -> build_artifacts.x4.picorv32.slang/top.x4g1.direct.bit
+make FRONTEND=sv2v                      # v1.0.0, sv2v, x4                 -> build_artifacts.x4.new/top.x4g1.direct.bit
 make TOOLCHAIN=old LANES=1              # pre-v1.0.0, x1                   -> build_artifacts/top.x1.direct.bit
 make TOOLCHAIN=old VARIANT=switched     # pre-v1.0.0, x1                   -> build_artifacts.switched/top.x1.switched.bit
 ```
@@ -347,7 +348,7 @@ grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/top.fasm | sort 
 
 ### Clocks
 
-`create_clock` on `[get_nets]` **is** supported (`xilinx/xdc.cc:169`). `create_generated_clock`, `set_false_path` and `set_clock_groups` are not.
+`create_clock` on `[get_nets]` **is** supported (`xilinx/xdc.cc:169`). `create_generated_clock`, `set_false_path` and `set_clock_groups` are not. Nor are they needed for the MMCM: nextpnr derives its outputs from `CLKIN1` and the divide settings, and carries them through `BUFG`. So `user_clk` (62.5 / 125 / 250 MHz) has no `create_clock` of its own.
 
 An **unconstrained** clock gets nextpnr's default target of **12 MHz**. So it is never optimised, and never reported as failing. Three of our four domains were like that. The pipe clock reached 245 MHz against 250 MHz required, and nobody said a word.
 
@@ -365,7 +366,7 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 
 ## openXC7 compared with Vivado: the entire design
 
-**Scope:** the entire RC-direct design (`RC_opensource`): PCIE stack, GTPs, SOC with the default CPU (eduBOS5 2-stage), x4 build, 2026-10-16. The SOC alone, with each of the three CPUs: [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+**Scope:** the entire RC-direct design (`RC_opensource`): PCIE stack, GTPs, SOC with the default CPU (eduBOS5 2-stage), x4 Gen2 build with `user_clk` then 62.5 MHz (`clk62m5`), 2026-10-16. The SOC alone, with each of the three CPUs: [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 | | openXC7 v1.0.0 | Vivado 2026.1 |
 |---|---|---|
@@ -383,12 +384,12 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 - openXC7: area is Yosys `synth_xilinx` (`stat`), Fmax nextpnr's report. Vivado: area after implementation (`report_utilization`).
 - Vivado reports no Fmax. Its figure here is 1 / (period - WNS). Vivado optimises only until each target is met, so it undersells what the design could reach. Compare with care.
 - nextpnr's Fmax varies between builds. The same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
-- The committed `top.x4.direct.bit` is a later build (2026-10-21, current RTL, after eduBOS5 #40), assembled with the prjxray pair: `clk62m5` 146.5 MHz, `clk125` 361.7 MHz, pipe clock **229.3 MHz, misses 250 MHz**. The critical path starts in `u_rx_eios_filter` (lane 0), with 1.15 ns of routing on its first net. The x1 builds pass: pipe clock 330.7 MHz (direct), 335.8 MHz (switched).
+- The committed x4 bitstreams are later builds (2026-10-25, current RTL), assembled with the prjxray pair. `top.x4g1.direct.bit` (x4 Gen1, 2-stage eduBOS5): `user_clk` 157.2 MHz (needs 125), `clk125` 337.0 MHz, pipe clock 283.9 MHz. `top.x4g2.direct.bit` (x4 Gen2, 3-stage eduBOS5): `user_clk` **181.1 MHz, misses 250 MHz** ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), `clk125` 348.6 MHz, pipe clock 285.1 MHz. Neither is tested on hardware yet. The x1 builds (2026-10-21) pass: pipe clock 330.7 MHz (direct), 335.8 MHz (switched).
 - The bitstream is uncompressed, so its size does not depend on the design. The 13 bytes of difference are header metadata.
 
 ## CPU options compared
 
-The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). The three compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. At x4 Gen2 (`make GEN=2`, `user_clk` 250 MHz) the 3-stage is the default. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). nextpnr cannot apply the 3-stage's multicycle paths, so x4 Gen2 reaches 181 MHz here, 250 MHz in Vivado ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)). The three compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 ## Lint and formal equivalence of RTL changes
 
@@ -415,7 +416,7 @@ In WSL, `lsusb` now lists the cable. Load the bitstream with [openFPGALoader](ht
 
 ```bash
 openFPGALoader --detect                 # cable and FPGA found?
-openFPGALoader build_artifacts.x4.slang/top.x4.direct.bit
+openFPGALoader build_artifacts.x4.slang/top.x4g1.direct.bit
 ```
 
 Vivado's Hardware Manager works the same way, once its cable drivers are installed (`<Vivado>/data/xicom/cable_drivers/lin64/install_script/install_drivers/install_drivers`, as root). `usbipd detach --busid <BUSID>` hands the cable back to Windows.
@@ -462,7 +463,7 @@ Every openXC7 issue this project hit, rechecked on v1.0.0 (nextpnr `3e5c2cdd`). 
 
 - (a) The old error is gone, but the name nextpnr reports (`SLICE_X162Y177/A5FF`) is rejected, and an accepted one (`X250Y5/SLICE_X0Y0.AFF`) is ignored. Not used by openPCIE.
 - (b) 106 errors in `specify` blocks; the reason for `gen_xilinx_bb.py`.
-- (c) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read. It matches cell names, which flip-flops lose in synthesis. `-from` drops the whole constraint. So eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) shows no Fmax gain over 2-stage. Test case, proven safe by formal: [eduBOS5 3-stage multicycle paths](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#3-stage-multicycle-paths).
+- (c) Only `-to [get_cells -hier -filter {NAME =~ <glob>}]` is read. It matches cell names, which flip-flops lose in synthesis. `-from` drops the whole constraint. So eduBOS5's 3-stage pipeline (`make CPU=edubos5_3stg`) showed no Fmax gain over the 2-stage (2026-10-16, before its jump refetch). Test case, proven safe by formal: [eduBOS5 3-stage multicycle paths](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#3-stage-multicycle-paths).
 - (d) For the 83-bit `RXCDR_CFG` (`83'h0_0001_07FE_4060_0104_1010`), `fpga-as` v1.0.0 keeps bits 0-23, drops 24 and 37-64, and sets 69 and 82. `fasm2frames` writes it exactly. We assembled our x4 FASM both ways: the only difference is `RXCDR_CFG`, in all four lanes. The v1.0.0 installer pins `hansfbaier/fpga-assembler` `cf0e3f08`, which lacks the fix. Upstream is moving toolchain-nix and toolchain-installer to lromor/fpga-assembler `main`.
 
 #### Temp RTL Workarounds / FIXMEs

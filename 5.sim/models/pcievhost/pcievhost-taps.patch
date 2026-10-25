@@ -1,0 +1,239 @@
+--- a/src/displink.c
++++ b/src/displink.c
+@@ -54,6 +54,50 @@
+ }
+ 
+ // -------------------------------------------------------------------------
++// TapTl() / TapDll()  (openPCIE)
++//
++// Write each TLP (one DW per write, byte 0 in bits 31:24, without framing,
++// sequence number and LCRC) and each DLLP (its 4 bytes, without CRC) to the
++// HDL tap addresses, in zero time. pcieVHost.v queues them and plays them
++// out one DW per clock on its Tlp*/Dllp* ports. Nullified TLPs (EDB) are
++// not tapped.
++//
++// -------------------------------------------------------------------------
++
++static void TapTl(const pPcieModelState_t const state, const pPkt_t const pkt, const bool rx)
++{
++    int end, last, idx;
++
++    for (end = 1; pkt->data[end] != EDB && pkt->data[end] != END; end++)
++        ;
++
++    if (pkt->data[end] == EDB)
++        return;
++
++    // STP, 2 sequence bytes, TLP, 4 LCRC bytes, END
++    last = end - 5;
++
++    for (idx = 3; idx + 3 <= last; idx += 4)
++    {
++        uint32_t dw = ((pkt->data[idx]   & 0xff) << 24) | ((pkt->data[idx+1] & 0xff) << 16) |
++                      ((pkt->data[idx+2] & 0xff) <<  8) |  (pkt->data[idx+3] & 0xff);
++        int      addr = (idx == 3)        ? (rx ? TAP_TLP_RX_SOP : TAP_TLP_TX_SOP) :
++                        (idx + 3 == last) ? (rx ? TAP_TLP_RX_EOP : TAP_TLP_TX_EOP) :
++                                            (rx ? TAP_TLP_RX     : TAP_TLP_TX);
++
++        VWrite(addr, dw, 1, state->thisnode);
++    }
++}
++
++static void TapDll(const pPcieModelState_t const state, const pPkt_t const pkt, const bool rx)
++{
++    uint32_t dw = ((pkt->data[1] & 0xff) << 24) | ((pkt->data[2] & 0xff) << 16) |
++                  ((pkt->data[3] & 0xff) <<  8) |  (pkt->data[4] & 0xff);
++
++    VWrite(rx ? TAP_DLLP_RX : TAP_DLLP_TX, dw, 1, state->thisnode);
++}
++
++// -------------------------------------------------------------------------
+ // ConfigDispFormat()
+ //
+ // Enable or disable link display colour formatting
+@@ -415,6 +459,8 @@
+     bool dllen   = IsDispEnabled(state, rx, DISPDL | DISPALL);
+     bool is_down = (rx && state->Endpoint) | (!rx && !state->Endpoint);
+ 
++    TapDll(state, pkt, rx);
++
+     sprintf(prefixstr, "%sPCIE%s%d%s", is_down ? fmtdnstr : fmtupstr, is_down ? "D" : "U", rx ? state->usrconf.BackNodeNum : state->thisnode, fmtnormstr);
+ 
+     if (phyen)
+@@ -529,6 +575,8 @@
+ 
+     int is_down = (rx && state->Endpoint) | (!rx && !state->Endpoint);
+ 
++    TapTl(state, pkt, rx);
++
+     // Create marker suffix
+     sprintf(prefixstr, "%sPCIE%s%d%s", is_down ? fmtdnstr : fmtupstr, is_down ? "D" : "U", rx ? state->usrconf.BackNodeNum : state->thisnode, fmtnormstr);
+ 
+--- a/src/pcie_vhost_map.h
++++ b/src/pcie_vhost_map.h
+@@ -53,6 +53,17 @@
+ #define DISABLE_8B10B          208
+ #define GEN2_CLK               209
+ 
++// Transaction taps (openPCIE): each TLP and DLLP this node sends
++// (TX) or receives (RX), written in zero time, one DW per write
++#define TAP_TLP_TX_SOP         210
++#define TAP_TLP_TX             211
++#define TAP_TLP_TX_EOP         212
++#define TAP_TLP_RX_SOP         213
++#define TAP_TLP_RX             214
++#define TAP_TLP_RX_EOP         215
++#define TAP_DLLP_TX            216
++#define TAP_DLLP_RX            217
++
+ #define PVH_STOP        0xfffffffd
+ #define PVH_FINISH      0xfffffffe
+ #define PVH_FATAL       0xffffffff 
+--- a/verilog/pcieVHost/pcieVHost.v
++++ b/verilog/pcieVHost/pcieVHost.v
+@@ -59,7 +59,19 @@
+   output      [9:0] LinkOut0,  LinkOut1,  LinkOut2,  LinkOut3,
+   output      [9:0] LinkOut4,  LinkOut5,  LinkOut6,  LinkOut7,
+   output      [9:0] LinkOut8,  LinkOut9,  LinkOut10, LinkOut11,
+-  output      [9:0] LinkOut12, LinkOut13, LinkOut14, LinkOut15
++  output      [9:0] LinkOut12, LinkOut13, LinkOut14, LinkOut15,
++
++  // Transaction taps (openPCIE): each TLP this node sends (Tx) or
++  // receives (Rx), one DW per ClkOut with start/end flags, byte 0 in
++  // [31:24]; each DLLP as one word. They follow the link, a few clocks late.
++  output reg [31:0] TlpTxData,
++  output reg        TlpTxSop,  TlpTxEop,  TlpTxValid,
++  output reg [31:0] TlpRxData,
++  output reg        TlpRxSop,  TlpRxEop,  TlpRxValid,
++  output reg [31:0] DllpTxData,
++  output reg        DllpTxValid,
++  output reg [31:0] DllpRxData,
++  output reg        DllpRxValid
+ );
+ 
+ 
+@@ -81,6 +93,13 @@
+ integer      ClkCount;
+ integer      i;
+ 
++// Transaction tap queues (openPCIE): {sop, eop, data}, pushed by
++// the C model in zero time, popped one entry per clock
++reg   [33:0] TlpTxQ  [$];
++reg   [33:0] TlpRxQ  [$];
++reg   [31:0] DllpTxQ [$];
++reg   [31:0] DllpRxQ [$];
++
+ // VP Interface wires
+ wire  [31:0] Addr;
+ wire  [31:0] DataOut;
+@@ -194,6 +213,11 @@
+     ClkCount               = 0;
+     Gen2ClkSel             = 1'b0;
+     clk_div2               = 1'b1;
++
++    {TlpTxData,  TlpTxSop, TlpTxEop, TlpTxValid} = 35'h0;
++    {TlpRxData,  TlpRxSop, TlpRxEop, TlpRxValid} = 35'h0;
++    {DllpTxData, DllpTxValid}                    = 33'h0;
++    {DllpRxData, DllpRxValid}                    = 33'h0;
+ end
+ 
+ // --------------------------------
+@@ -206,6 +230,42 @@
+     ClkCount               <= #`RegDel ClkCount + 1;
+ end
+ 
++// Transaction taps: one queued entry per clock, per stream
++always @(posedge clk_main)
++begin
++    if (TlpTxQ.size() != 0)
++    begin
++        {TlpTxSop, TlpTxEop, TlpTxData} <= #`RegDel TlpTxQ.pop_front();
++        TlpTxValid         <= #`RegDel 1'b1;
++    end
++    else
++        {TlpTxSop, TlpTxEop, TlpTxValid} <= #`RegDel 3'b000;
++
++    if (TlpRxQ.size() != 0)
++    begin
++        {TlpRxSop, TlpRxEop, TlpRxData} <= #`RegDel TlpRxQ.pop_front();
++        TlpRxValid         <= #`RegDel 1'b1;
++    end
++    else
++        {TlpRxSop, TlpRxEop, TlpRxValid} <= #`RegDel 3'b000;
++
++    if (DllpTxQ.size() != 0)
++    begin
++        DllpTxData         <= #`RegDel DllpTxQ.pop_front();
++        DllpTxValid        <= #`RegDel 1'b1;
++    end
++    else
++        DllpTxValid        <= #`RegDel 1'b0;
++
++    if (DllpRxQ.size() != 0)
++    begin
++        DllpRxData         <= #`RegDel DllpRxQ.pop_front();
++        DllpRxValid        <= #`RegDel 1'b1;
++    end
++    else
++        DllpRxValid        <= #`RegDel 1'b0;
++end
++
+ always @(Update)
+ begin
+     DataIn = 32'h00000000;
+@@ -258,6 +318,18 @@
+             DataIn = {28'h0000000, ReverseOut, ReverseIn, InvertOut, InvertIn};
+         end
+ 
++        // Transaction taps (openPCIE)
++        `TAP_TLP_TX_SOP, `TAP_TLP_TX, `TAP_TLP_TX_EOP:
++            if (WE === 1'b1)
++                TlpTxQ.push_back({Addr == `TAP_TLP_TX_SOP, Addr == `TAP_TLP_TX_EOP, DataOut});
++
++        `TAP_TLP_RX_SOP, `TAP_TLP_RX, `TAP_TLP_RX_EOP:
++            if (WE === 1'b1)
++                TlpRxQ.push_back({Addr == `TAP_TLP_RX_SOP, Addr == `TAP_TLP_RX_EOP, DataOut});
++
++        `TAP_DLLP_TX: if (WE === 1'b1) DllpTxQ.push_back(DataOut);
++        `TAP_DLLP_RX: if (WE === 1'b1) DllpRxQ.push_back(DataOut);
++
+         `PVH_STOP:    if (WE === 1'b1) $stop;
+         `PVH_FINISH:  if (WE === 1'b1) $finish;
+         `PVH_FATAL:   if (WE === 1'b1) `fatal
+--- a/verilog/pcieVHost/pcieVHostPipex1.v
++++ b/verilog/pcieVHost/pcieVHostPipex1.v
+@@ -54,8 +54,17 @@
+   input  [(DataWidth/8)-1:0]     RxDataK,
+ 
+   output reg [DataWidth-1:0]     TxData,
+-  output reg [(DataWidth/8)-1:0] TxDataK
++  output reg [(DataWidth/8)-1:0] TxDataK,
+ 
++  // Transaction taps (openPCIE), on ClkOut: see pcieVHost.v
++  output [31:0]                  TlpTxData,
++  output                         TlpTxSop,  TlpTxEop,  TlpTxValid,
++  output [31:0]                  TlpRxData,
++  output                         TlpRxSop,  TlpRxEop,  TlpRxValid,
++  output [31:0]                  DllpTxData,
++  output                         DllpTxValid,
++  output [31:0]                  DllpRxData,
++  output                         DllpRxValid
+ );
+ 
+ //-------------------------------------------------------------
+@@ -258,7 +267,13 @@
+     .LinkOut4              (), .LinkOut5  (), .LinkOut6  (),
+     .LinkOut7              (), .LinkOut8  (), .LinkOut9  (),
+     .LinkOut10             (), .LinkOut11 (), .LinkOut12 (),
+-    .LinkOut13             (), .LinkOut14 (), .LinkOut15 ()
++    .LinkOut13             (), .LinkOut14 (), .LinkOut15 (),
++
++    // Transaction taps
++    .TlpTxData             (TlpTxData),   .TlpTxSop (TlpTxSop), .TlpTxEop (TlpTxEop), .TlpTxValid (TlpTxValid),
++    .TlpRxData             (TlpRxData),   .TlpRxSop (TlpRxSop), .TlpRxEop (TlpRxEop), .TlpRxValid (TlpRxValid),
++    .DllpTxData            (DllpTxData),  .DllpTxValid (DllpTxValid),
++    .DllpRxData            (DllpRxData),  .DllpRxValid (DllpRxValid)
+   );
+ 
+ endmodule
+\ No newline at end of file

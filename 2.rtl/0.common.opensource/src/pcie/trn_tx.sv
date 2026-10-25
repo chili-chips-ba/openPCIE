@@ -44,7 +44,7 @@ module trn_tx
     trn_if.user   trn,        // TX half: td ... tecrc_gen, tdst_rdy, link_up
 
     input logic tready_thrtl,
-    input logic clk62m5,
+    input logic user_clk,
     input logic core_rst_n
 );
 
@@ -70,7 +70,7 @@ module trn_tx
 
   assign trn.tsof       = reg_tvalid && !trn_in_packet;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       trn_in_packet <= 1'b0;
     end
@@ -84,7 +84,7 @@ module trn_tx
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       axi_in_packet <= 1'b0;
     end
@@ -98,7 +98,7 @@ module trn_tx
     end
   end
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       reg_disable_trn <= 1'b0;
     end
@@ -121,7 +121,7 @@ module trn_tx
   assign trn.tstr      = reg_tuser.str;
   assign trn.tsrc_dsc  = reg_tuser.src_dsc;
 
-  always_ff @(posedge clk62m5 or negedge core_rst_n) begin
+  always_ff @(posedge user_clk or negedge core_rst_n) begin
     if (!core_rst_n) begin
       reg_tdata    <= {TRN_DATA_W{1'b0}};
       reg_tvalid   <= 1'b0;

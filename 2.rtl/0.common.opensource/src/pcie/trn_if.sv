@@ -59,7 +59,7 @@ interface trn_if #(
   logic       rdst_rdy;
 
   // status: core -> user
-  logic       link_up;  // data link up (TRNLNKUP), clk62m5
+  logic       link_up;  // data link up (TRNLNKUP), user_clk
 
   modport user(
       output td, trem, tsof, teof, tsrc_rdy, tsrc_dsc, terrfwd, tstr, tecrc_gen, rdst_rdy,
