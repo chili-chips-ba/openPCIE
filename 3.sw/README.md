@@ -26,6 +26,17 @@ Both are built in [`4.build/sw_build`](../4.build/sw_build) (`make`, or `make VA
 *   **`common/start.S`**: The assembly startup code. It initializes the Stack Pointer and jumps to the `main()` C function.
 *   **`common/sections.lds`**: The Linker script. It maps the code and data to the FPGA's Block RAM (BRAM), starting at address `0x00000000` with a size of 8KB.
 
+### Code and data size
+
+RV32I without the C extension (no compressed instructions), built without optimisation (`-O0`), riscv-none-elf-gcc 15.2; `riscv-none-elf-size -A` on the board build. Code, data and stack share the 8 KB SOC RAM; the stack starts at its top (`li sp, 0x2000` in `start.S`).
+
+| Firmware | Code (`.text`) | Read-only data | Data (`.data` + `.bss`) | Stack, worst case | Of the 8 KB RAM |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| `RC-direct` | 2,540 B | 0 B | 1 B | 368 B | 36% |
+| `RC-switched` | 3,524 B | 8 B | 1 B | 416 B | 48% |
+
+The firmware keeps its data on the stack: its only global is `tx_tag` (`common/pcie.c`), the tag of the next request TLP; `RC-switched` adds two 4-byte constant tables of the switch ports. The worst case is the deepest call chain, from `gcc -fcallgraph-info=su`: `main` → `assign_bars` → `cfg_read32_checked` → `cfg_read32` → `pcie_cfg_read` → `pcie_request` → `wait_for_completion`. No recursion and no variable-size frames.
+
 ---
 
 ## **API Reference**

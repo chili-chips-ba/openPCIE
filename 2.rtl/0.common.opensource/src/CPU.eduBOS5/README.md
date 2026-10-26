@@ -395,6 +395,8 @@ Beyond the multicycle constraint, formal found two things in eduBOS5 itself, and
    - `dmem_addr` is never built from an unsettled value, which removes the multicycle part of finding 2.
    - It does not fix finding 1: an illegal store still makes a bus cycle without write strobes.
 
+**Kept simple: unknown variants of known opcodes.** eduBOS5 halts on an unknown major opcode, but its ALU looks only at `funct3` and bit 5 of `funct7`. So an instruction from an extension it lacks can run as an RV32I one: a `mul` (`funct7` = 1, `funct3` = 0) runs as an `add`. We leave it so, for a small decoder. The firmware is built with `-march=rv32i`, and in co-simulation the ISS rejects every word outside RV32I and halts ([RV32I only](../../../../5.sim/README.md#our-local-vip-improvements)), so code built for the wrong ISA shows up there first.
+
 ### Open-source formal tools
 
 | Tool | What it is | Reads declarative SVA? |
