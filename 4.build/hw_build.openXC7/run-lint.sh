@@ -20,6 +20,8 @@
 #
 # usage:  bash run-lint.sh [phase ...]      default: all phases
 #         LANES=1 bash run-lint.sh            lint the x1 link (default x4)
+#         GEN=2 bash run-lint.sh              lint the Gen2 build (default: link_pkg.sv's,
+#                                             Gen1 at x4, Gen2 at x1)
 #         CPU=picorv32 bash run-lint.sh       lint the PicoRV32 build (default edubos5;
 #                                             edubos5_3stg: 3-stage pipeline)
 #
@@ -60,6 +62,7 @@ YOSYS_ARGS=${YOSYS_ARGS:-}   # e.g. "-m slang" where read_slang is a plugin (OSS
 VERIBLE=${VERIBLE:-verible-verilog-lint}
 VIVADO=${VIVADO:-vivado}
 LANES=${LANES:-4}
+GEN=${GEN:-}
 CPU=${CPU:-edubos5}
 PICORV32_SV="src/picorv32.CHILI.sv"
 EDUBOS5_SV=$(for f in pkg rf alu; do echo src/CPU.eduBOS5/edubos5_$f.sv; done; echo src/CPU.eduBOS5/edubos5.sv)
@@ -83,7 +86,8 @@ mkdir -p "$W"
 cp -r "$SRC/src" "$SRC/xdc" "$W/"
 cp "$CSR/csr_pkg.sv" "$CSR/csr.sv" "$HERE/unimacro_shim.v" "$W/"
 cp "$HERE/../sw_build/firmware.hex" "$W/"
-cp "$SRC/../2.RC-direct.opensource/xdc/RC-direct.x${LANES}g2.AcornCLE-215P.xdc" "$W/xdc/"
+LANE_XDC=$([ "$LANES" = 4 ] && echo x4g1g2 || echo x1g2)   # one x4 file for Gen1 and Gen2
+cp "$SRC/../2.RC-direct.opensource/xdc/RC-direct.$LANE_XDC.AcornCLE-215P.xdc" "$W/xdc/"
 cd "$W"
 
 P=src/pcie
@@ -184,7 +188,7 @@ run_verilator() {
 lint_off -file "*bb.sv"
 lint_off -file "*_shim.v"
 EOF
-  "$VERILATOR" --lint-only -Wall -Wno-fatal --top-module $TOP -DSYN_YOSYS_BUG -DPCIE_LANES=$LANES $VL_DEFS \
+  "$VERILATOR" --lint-only -Wall -Wno-fatal --top-module $TOP -DSYN_YOSYS_BUG -DPCIE_LANES=$LANES ${GEN:+-DPCIE_GEN=$GEN} $VL_DEFS \
     -Isrc -I$P waive.vlt bb.sv $SV $SHIMS > verilator.log 2>&1
   found verilator < <(grep -E '^%(Warning|Error)' verilator.log)
 }
@@ -192,7 +196,7 @@ EOF
 run_yosys() {
   have "$YOSYS" || { skip yosys "$YOSYS not found"; return; }
   bb || { skip yosys "no Xilinx stubs"; return; }
-  "$YOSYS" $YOSYS_ARGS -q -l yosys.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $SL_DEFS --top $TOP -I $P -I src \
+  "$YOSYS" $YOSYS_ARGS -q -l yosys.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $SL_DEFS --top $TOP -I $P -I src \
       bb.sv $SV $SHIMS; hierarchy -check -top $TOP; proc; check -nolatches -initdrv" \
       >/dev/null 2>&1
   # read_slang's own warnings are the slang phase's business; take check's
@@ -202,7 +206,7 @@ run_yosys() {
 run_slang() {
   have "$YOSYS" || { skip slang "$YOSYS not found"; return; }
   bb || { skip slang "no Xilinx stubs"; return; }
-  "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $SL_DEFS --top $TOP -I $P -I src \
+  "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $SL_DEFS --top $TOP -I $P -I src \
       -Wextra bb.sv $SV $SHIMS" >/dev/null 2>&1
   # Yosys' built-in read_slang prints "file:line:col: warning:", the yosys-slang
   # plugin (OSS CAD Suite, CI) prints "file:line: Warning:"; bring both to the
@@ -224,7 +228,7 @@ run_cdc() {
   cat > cdc.tcl <<EOF
 read_verilog -sv {$SV}
 read_xdc [glob xdc/*.xdc]
-synth_design -top $TOP -part $PART -flatten_hierarchy rebuilt -verilog_define PCIE_LANES=$LANES$VIV_DEFS
+synth_design -top $TOP -part $PART -flatten_hierarchy rebuilt -verilog_define PCIE_LANES=$LANES${GEN:+ -verilog_define PCIE_GEN=$GEN}$VIV_DEFS
 report_cdc -details -file cdc.rpt
 report_clock_interaction -file clock_interaction.rpt
 EOF
@@ -240,7 +244,7 @@ for ph in $PHASES; do
   esac
 done
 
-echo; echo "== summary  (x$LANES, $W)"
+echo; echo "== summary  (x$LANES${GEN:+ Gen$GEN}, $W)"
 FAIL=0
 for ph in $PHASES; do
   printf '  %-10s %s\n' "$ph" "${RESULT[$ph]}"

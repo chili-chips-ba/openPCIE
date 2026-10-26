@@ -3,35 +3,31 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # =============================================================================
-# CSR compilation for openPCIE -- SystemRDL in, RTL + HAL out
+# CSR compilation for openPCIE -- SystemRDL in, RTL + C header out
 #
 # Run FROM THIS FOLDER (4.build/), on Linux or WSL:
 #   source set-env.sh              (tcsh: source set-env.csh) -- finds the tools
 #   make -f MakefileCSR            regenerate everything
-#   make -f MakefileCSR clean      remove all generated files
+#   make -f MakefileCSR clean      remove temporary files only
+#   make -f MakefileCSR clean-all  also remove the generated (checked-in) files
 #
 # Single source of truth is  csr_build/csr.rdl. Everything below is derived
 # from it and lands in  csr_build/generated-files/ :
 #
-#   csr_cosim.rdl : filtered RDL, buffer-write commands removed
 #   csr.sv        : the CSR RTL for the hardware target
 #   csr_pkg.sv    : the hwif_in / hwif_out struct package for that RTL
-#   csr.h         : "peakrdl c-header" output, used by both HAL headers
-#   csr_hw.h      : C++ HAL for the hardware target (the C firmware uses csr.h)
-#   csr_cosim.h   : HAL for the VProc based co-simulation
+#   csr.h         : "peakrdl c-header" output, the layout csr_regs.h uses
+#   csr_top.h     : CSR_TOP_T, the address map's struct in csr.h, for csr_regs.h
 #   openpcie.md   : the register map as markdown
 #   html/         : the register map as a browsable HTML document
 #
 # Requires (pip install peakrdl peakrdl-regblock peakrdl-cheader \
 #                       peakrdl-html peakrdl-markdown systemrdl-compiler)
 #
-# PEAKRDL and PYTHON must come from the same install, or sysrdl_cosim.py fails
-# with "ModuleNotFoundError: No module named 'systemrdl'". set-env.sh sets
-# both; run "make -f MakefileCSR tools" to see what was picked up.
+# set-env.sh sets PEAKRDL; run "make -f MakefileCSR tools" to see what was
+# picked up.
 # =============================================================================
 
-# Interpreter for sysrdl_cosim.py, and the PeakRDL command line tool
-PYTHON   ?= python3
 PEAKRDL  ?= peakrdl
 
 RDLCSRTOP = csr
@@ -41,17 +37,14 @@ RDLDIR    = csr_build
 GENDIR    = $(RDLDIR)/generated-files
 RDLSRC    = $(RDLDIR)/$(RDLPREFIX).rdl
 
-COSIMRDL  = $(GENDIR)/$(RDLPREFIX)_cosim.rdl
-COSIMHDR  = $(GENDIR)/$(RDLPREFIX)_cosim.h
 PKRDLHDR  = $(GENDIR)/$(RDLPREFIX).h
-HWHDR     = $(GENDIR)/$(RDLPREFIX)_hw.h
+PKRDLTOP  = $(GENDIR)/$(RDLPREFIX)_top.h
 PKRDLHTML = $(GENDIR)/html/
 PKRDLMD   = $(GENDIR)/$(RDLPCIETOP).md
 
 # ---- REUSE compliance -------------------------------------------------------
 # The tools do not emit SPDX headers, and the repository is REUSE-linted, so
 # every generated text file gets stamped right after it is written.
-# csr_cosim.rdl needs no stamping -- sed copies csr.rdl verbatim, header and all.
 # REUSE-IgnoreStart  (the SPDX tags below are text this make file writes, not its own)
 define spdx_c
 @printf '%s\n' '// SPDX-FileCopyrightText: 2026 Chili.CHIPS' \
@@ -70,21 +63,17 @@ define spdx_md
 endef
 # REUSE-IgnoreEnd
 
-all: $(COSIMHDR) $(HWHDR) rtl $(PKRDLHTML) $(PKRDLMD)
+all: $(PKRDLHDR) $(PKRDLTOP) rtl $(PKRDLHTML) $(PKRDLMD)
 
-$(COSIMHDR): $(COSIMRDL) $(PKRDLHDR)
-	@$(PYTHON) sysrdl_cosim.py -c -r $< -o $@
-	$(call spdx_c,$@)
-
-$(HWHDR): $(COSIMRDL) $(PKRDLHDR)
-	@$(PYTHON) sysrdl_cosim.py -r $< -o $@
-	$(call spdx_c,$@)
-
-$(COSIMRDL): $(RDLSRC)
-	@sed -e "/buffer_writes/d" -e "/wbuffer_trigger/d" < $^ > $@
-
-$(PKRDLHDR): $(COSIMRDL)
+$(PKRDLHDR): $(RDLSRC)
 	@$(PEAKRDL) c-header $^ -b ltoh -o $@
+	$(call spdx_c,$@)
+
+# csr_top.h: the struct of the SOC address map in csr.h, so csr_regs.h takes
+# the CSR base address from csr.h too
+$(PKRDLTOP): MakefileCSR
+	@printf '%s\n' '#ifndef _CSR_TOP_H_' '#define _CSR_TOP_H_' \
+	               '#define CSR_TOP_T  $(RDLPCIETOP)_t' '#endif' > $@
 	$(call spdx_c,$@)
 
 rtl: $(RDLSRC)
@@ -103,18 +92,19 @@ $(PKRDLMD): $(RDLSRC)
 # "make -f MakefileCSR" fails -- it says which interpreter was picked up and
 # whether the packages are in it.
 tools:
-	@echo "PYTHON   = $(PYTHON)"
-	@echo "  path   : $$(command -v $(PYTHON) 2>/dev/null || echo 'NOT FOUND')"
-	@$(PYTHON) -c "import systemrdl; print('  systemrdl-compiler: OK')" 2>/dev/null \
-	   || echo "  systemrdl-compiler: MISSING  <-- see the note at the top of this file"
 	@echo "PEAKRDL  = $(PEAKRDL)"
 	@echo "  path   : $$(command -v $(PEAKRDL) 2>/dev/null || echo 'NOT FOUND')"
 	@$(PEAKRDL) --version 2>/dev/null | sed 's/^/  version: /' || true
 
+# clean keeps the generated files: they are checked in, so builds need no
+# peakrdl. clean-all deletes them too; make -f MakefileCSR writes them again.
 clean:
-	@rm -rf $(COSIMRDL) $(COSIMHDR) $(HWHDR) $(PKRDLHDR) $(GENDIR)/*.sv $(PKRDLHTML) $(PKRDLMD)
+	@rm -f $(GENDIR)/*.spdx
 
-.PHONY: all rtl tools clean
+clean-all: clean
+	@rm -rf $(PKRDLHDR) $(PKRDLTOP) $(GENDIR)/*.sv $(PKRDLHTML) $(PKRDLMD)
+
+.PHONY: all rtl tools clean clean-all
 
 # -----------------------------------------------------------------------------
 # Project:     openPCIE

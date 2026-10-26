@@ -16,7 +16,7 @@
 # Sim
 #--------
 *.fst
-!5.sim/tb.fst
+!5.sim/tb.*.fst
 *.vcd
 
 
@@ -40,6 +40,8 @@
 *.str
 *.dcp
 *.lpr
+# The opensource designs' Vivado projects: RC.opensource.tcl regenerates them
+2.rtl/*.opensource/xbuild.*/
 
 2.rtl/**/*.xml
 
@@ -66,35 +68,17 @@ kibot_*.kicad_pro
 4.build/sw_build/.build-config
 4.build/hw_build.openXC7/.build-config
 4.build/hw_build.openXC7/.build-config.switched
-4.build/hw_build.openXC7/chipdb/
 
 # Intermediates -- rebuilt on every run. Kept on purpose (not ignored):
 #   4.build/csr_build/generated-files/  so a build never needs peakrdl
 #   4.build/sw_build/firmware.hex       hard dependency of the Vivado tcl
-#   build_artifacts*/top.x*.bit         prebuilt bitstreams (pre-v1.0.0, board-tested)
-#   build_artifacts*.slang/top.x*.bit   prebuilt bitstreams (v1.0.0, not yet board-tested)
+#   4.build/hw_build.openXC7/build_artifacts/*.bit             prebuilt bitstreams (v1.0.0, not yet board-tested)
+#   4.build/hw_build.openXC7/build_artifacts/pre-v1.0.0/*.bit  prebuilt bitstreams (pre-v1.0.0, board-tested)
 4.build/sw_build/firmware.elf
 4.build/sw_build/firmware.bin
 4.build/hw_build.openXC7/firmware.hex
-4.build/hw_build.openXC7/converted/
-4.build/hw_build.openXC7/converted.switched/
-4.build/hw_build.openXC7/build_artifacts*/*
-!4.build/hw_build.openXC7/build_artifacts*/top.x*.bit
-# openXC7 v1.0.0: only the read_slang bitstreams are kept; the sv2v ones
-# (*.new) are not. Directory rules win over the top.x*.bit exception above.
-4.build/hw_build.openXC7/build_artifacts*.new/
-4.build/hw_build.openXC7/build_artifacts*.slang/*
-!4.build/hw_build.openXC7/build_artifacts*.slang/top.x*.bit
-# Builds for a non-default CPU (make CPU=picorv32, edubos5_3stg; edubos5 at
-# x4 Gen2) are not kept
-4.build/hw_build.openXC7/build_artifacts*.edubos5_3stg*/
-4.build/hw_build.openXC7/build_artifacts*.edubos5.*/
-4.build/hw_build.openXC7/build_artifacts*.picorv32*/
-4.build/hw_build.openXC7/converted*.edubos5_3stg*/
-4.build/hw_build.openXC7/converted*.edubos5.*/
-4.build/hw_build.openXC7/converted*.picorv32*/
-4.build/hw_build.openXC7/converted*.new/
-4.build/hw_build.openXC7/chipdb.new/
+# Every build's netlist, FASM, frames, logs, sv2v output, and the chipdb
+4.build/hw_build.openXC7/build_artifacts/work/
 
 #--------
 # Sim build products (5.sim)

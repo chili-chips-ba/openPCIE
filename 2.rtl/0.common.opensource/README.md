@@ -7,13 +7,14 @@ RTL. It lives here, once.
 
 ```
 src/
-  RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
+  RC_opensource.sv              top level: PCIE stack, SOC, LEDs
   riscv_pcie_soc.sv             RISC-V SOC (eduBOS5 or picorv32), drives the AXI-Stream TLP interface
   soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
-  picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
+  picorv32.CHILI.sv             the alternative RISC-V core (Chili.CHIPS-improved picorv32)
+  CPU.eduBOS5/                  the default RISC-V core
   pcie/                         the opensource PCIE stack
 xdc/
-  RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+  RC.common.xdc                 constraints, all but the GT lane (source of truth)
 RC.opensource.tcl               the Vivado project script behind both wrappers
 ```
 

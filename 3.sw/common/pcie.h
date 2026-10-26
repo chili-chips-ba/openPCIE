@@ -53,7 +53,7 @@
 // PeakRDL generates out of 4.build/csr_build/csr.rdl, so hardware and
 // software cannot drift apart.
 // -------------------------------------------------------------------------
-#include "openpcie_regs.h"
+#include "csr_regs.h"
 
 #define PCIE_TX_HEADER0      CSR_REG32(tx.header0)
 #define PCIE_TX_HEADER1      CSR_REG32(tx.header1)
@@ -107,7 +107,7 @@
 // Cycles to idle at start-up, waiting for the PCIe link to finish training.
 // On hardware that wait is unavoidable. In co-simulation the link is already up
 // by the time the SOC leaves reset, and this loop -- compiled without
-// optimisation -- costs about 80 ms of simulated time, so the simulation build
+// optimisation -- costs about 37 ms of simulated time on eduBOS5, so the simulation build
 // shortens it:  make SIM=1  in 4.build/sw_build.
 #ifndef STARTUP_DELAY
 #define STARTUP_DELAY 100000

@@ -244,7 +244,7 @@ module gtp_wrapper
   end
 
   logic gt_txoutclk;
-  assign gt_txoutclk   = gtp.txoutclk;  // openxc7.x*.xdc create the txoutclk clock on this net
+  assign gt_txoutclk   = gtp.txoutclk;  // openxc7.*.xdc create the txoutclk clock on this net
 
   assign phystatus_rst = gtp.phystatus_rst;
   assign txoutclk      = gt_txoutclk;

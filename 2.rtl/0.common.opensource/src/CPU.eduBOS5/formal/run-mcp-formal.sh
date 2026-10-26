@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Static proof of edubos5.3STG-ONLY.mcp.xdc with Yosys (read_slang) and ABC,
+# Static proof of edubos5.3STG-ONLY.mcp.tcl with Yosys (read_slang) and ABC,
 # both in openXC7 v1.0.0 (source 4.build/set-env.sh first).
 #
 # usage: bash run-mcp-formal.sh [source|miter] [EN_WAIT4REGS] [ABC engine]

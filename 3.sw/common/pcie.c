@@ -51,7 +51,13 @@ void wait_cycles(int n) {
 
 __attribute__((noreturn)) void halt(uint32_t marker) {
     PCIE_RESULT = marker;
+#ifdef VPROC
+    // Co-simulation (make CPU=vproc): park the VProc node without stopping
+    // the simulation
+    while (1) VTick(10000, SOC_CPU_VPNODE);
+#else
     while (1) {}
+#endif
 }
 
 void send_tlp(uint32_t h0, uint32_t h1, uint32_t h2, uint32_t data) {

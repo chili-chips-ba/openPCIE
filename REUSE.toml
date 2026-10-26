@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2026 CHILI.CHIPS.LLC
+# SPDX-FileCopyrightText: 2026 Chili.CHIPS
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
@@ -11,7 +11,7 @@
 version = 1
 
 # =============================================================================
-# 1. Project defaults (CHILI.CHIPS.LLC)
+# 1. Project defaults (Chili.CHIPS)
 # =============================================================================
 
 # Everything not listed below: RTL, firmware, build/sim scripts, constraints,
@@ -19,14 +19,14 @@ version = 1
 [[annotations]]
 path = ["**"]
 precedence = "closest"
-SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
+SPDX-FileCopyrightText = "2026 Chili.CHIPS"
 SPDX-License-Identifier = "BSD-3-Clause"
 
 # Hardware: backplane design, own KiCad library, PCB docs, photos, test results.
 [[annotations]]
 path = ["1.pcb/**"]
 precedence = "closest"
-SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
+SPDX-FileCopyrightText = "2026 Chili.CHIPS"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
 
 # =============================================================================
@@ -66,7 +66,7 @@ SPDX-License-Identifier = "LGPL-3.0-only"
 [[annotations]]
 path = ["4.build/csr_build/generated-files/html/content/**", "4.build/csr_build/generated-files/html/data/**", "4.build/csr_build/generated-files/html/search/**"]
 precedence = "override"
-SPDX-FileCopyrightText = "2026 CHILI.CHIPS.LLC"
+SPDX-FileCopyrightText = "2026 Chili.CHIPS"
 SPDX-License-Identifier = "BSD-3-Clause"
 
 [[annotations]]
@@ -122,21 +122,35 @@ path = [
   "0.doc/xilinx/**",
   "0.doc/Reference-SCH/**",
   "0.doc/pcie-primer.Simon-Southwell.pdf",
+  "0.doc/artwork/ChipsAlliance-SV-Tools.logo.png",
   "0.doc/artwork/CrowdSupply.logo.png",
+  "0.doc/artwork/EBMC.logo.png",
   "0.doc/artwork/EEZ-web-logo.png",
   "0.doc/artwork/Elecrow-logo.png",
   "0.doc/artwork/Hackster-logo.png",
+  "0.doc/artwork/LiteX.logo.png",
+  "0.doc/artwork/NGI0-logo.png",
   "0.doc/artwork/NLnet-Foundation.svg",
+  "0.doc/artwork/NLnet-logo.png",
   "0.doc/artwork/PeakRDL.logo.png",
+  "0.doc/artwork/RISC-V-logo.svg",
+  "0.doc/artwork/Verible.logo.png",
+  "0.doc/artwork/Verilator.logo.png",
   "0.doc/artwork/WaveCrux.logo.png",
   "0.doc/artwork/YosysHQ.logo.png",
+  "0.doc/artwork/drawio.logo.png",
   "0.doc/artwork/kicad_logo.png",
   "0.doc/artwork/kickstarter.logo.png",
+  "0.doc/artwork/ngscopeclient.logo.png",
   "0.doc/artwork/openEMS.logo*",
+  "0.doc/artwork/openFPGAloader.logo.png",
   "0.doc/artwork/openXC7.logo.png",
   "0.doc/artwork/oshw-logo-*",
+  "0.doc/artwork/picoRV32.logo.png",
+  "0.doc/artwork/slang.logo.png",
   "0.doc/artwork/symbioticeda.logo.png",
   "0.doc/artwork/wyvernSemi-logo-rounded.png",
+  "1.pcb/0.doc/Reference-SCH/**",
   "1.pcb/1.datasheets/**",
   "1.pcb/0.doc/*.slla414a.pdf",
   "1.pcb/0.doc/*.slyt467.pdf",
@@ -149,7 +163,14 @@ precedence = "override"
 SPDX-FileCopyrightText = "Respective owners, as identified in each document"
 SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
 
-# Screenshot of a public LinkedIn post (README "Academic Outreach"); the photo
+# Photos in the PCB docs: credit for each photo belongs to its owner.
+[[annotations]]
+path = ["1.pcb/0.doc/images/*.jpg", "1.pcb/0.doc/images/*.JPG"]
+precedence = "override"
+SPDX-FileCopyrightText = "Respective owners of the photos"
+SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
+
+# Screenshot of a public LinkedIn post (README "Academia Outreach"); the photo
 # and the post text belong to their author.
 [[annotations]]
 path = ["0.doc/pictures/Aladin-Brdar-Master-Thesis-Oct2026.png"]
@@ -161,13 +182,13 @@ SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
 [[annotations]]
 path = ["1.pcb/0.doc/openPCIE3-backplane.ASMedia.png"]
 precedence = "override"
-SPDX-FileCopyrightText = ["ASMedia Technology Inc.", "2026 CHILI.CHIPS.LLC (modifications)"]
+SPDX-FileCopyrightText = ["ASMedia Technology Inc.", "2026 Chili.CHIPS (modifications)"]
 SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
 
 [[annotations]]
 path = ["1.pcb/0.doc/openPCIE3-backplane.DiodesInc.png"]
 precedence = "override"
-SPDX-FileCopyrightText = ["Diodes Incorporated", "2026 CHILI.CHIPS.LLC (modifications)"]
+SPDX-FileCopyrightText = ["Diodes Incorporated", "2026 Chili.CHIPS (modifications)"]
 SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
 
 # Vendor-generated footprints (Ultra Librarian "-L" / TI "-MFG" / vendor-code
@@ -200,7 +221,7 @@ SPDX-License-Identifier = "LicenseRef-Third-Party-Document"
 path = ["1.pcb/*/production/*-iBOM.html"]
 precedence = "override"
 SPDX-FileCopyrightText = [
-  "2026 CHILI.CHIPS.LLC (board data)",
+  "2026 Chili.CHIPS (board data)",
   "qu1ck and InteractiveHtmlBom contributors",
   "Nathan Cahill (Split.js)",
   "jQuery Foundation and other contributors (PEP)",

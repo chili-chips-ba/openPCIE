@@ -26,6 +26,14 @@ _se_csh=0
 _se_src=0
 [ -n "${BASH_SOURCE:-}" ] && [ "${BASH_SOURCE[0]}" != "$0" ] && _se_src=1
 [ -n "${ZSH_VERSION:-}" ] && case $ZSH_EVAL_CONTEXT in *:file) _se_src=1 ;; esac
+# zsh aborts a whole command when one of its globs matches nothing; the tool
+# searches below list several places, most of them absent. null_glob drops the
+# unmatched ones, as bash does here; the user's setting is restored at the end.
+_se_zng=1
+if [ -n "${ZSH_VERSION:-}" ]; then
+    [[ -o null_glob ]] || _se_zng=0
+    setopt null_glob
+fi
 
 _se_path0=$PATH
 _se_bad=0
@@ -96,7 +104,6 @@ if [ -n "$_se_x7" ]; then
     _se_msg "  OPENXC7_ROOT       $_se_x7"
     _se_set OPENXC7_ROOT              "$_se_x7"
     _se_set NEXTPNR_XILINX_DIR        "$_se_x7"
-    _se_set NEXTPNR_XILINX_PYTHON_DIR "$_se_x7/lib/python"
     _se_set PRJXRAY_DB_DIR            "$_se_x7/share/nextpnr/prjxray-db"
     case ":$PATH:" in *":$_se_x7/bin:"*) ;; *) PATH="$_se_x7/venv/bin:$_se_x7/bin:$PATH" ;; esac
     [ -x "$_se_x7/venv/bin/python3" ] && OPENXC7_PYTHON=${OPENXC7_PYTHON:-$_se_x7/venv/bin/python3}
@@ -140,20 +147,13 @@ if _se_tool RISCV_GCC riscv-none-elf-gcc 15.2 '$T -dumpfullversion' "$_se_hint_r
 fi
 unset RISCV_GCC
 
-# ---- CSR generation: PeakRDL, and the Python that has systemrdl-compiler ---
+# ---- CSR generation (PeakRDL); PYTHON for the scripts -------------------------
 _se_msg "CSR:"
-_se_hint_rdl="PeakRDL 1.5.0: pip install --user peakrdl peakrdl-regblock peakrdl-cheader peakrdl-html peakrdl-markdown systemrdl-compiler"
-if _se_tool PEAKRDL peakrdl 1.5.0 '$T --version' "$_se_hint_rdl"; then
-    # sysrdl_cosim.py must run on peakrdl's own interpreter -- take it from its #!
-    _se_py=$(head -1 "$PEAKRDL" | sed -n 's|^#! *||p' | sed 's|^/usr/bin/env  *||')
-    [ -n "${PYTHON:-}" ] || PYTHON=$_se_py
-fi
-# otherwise the first python3 on the PATH as it was before openXC7 went in front
+_se_hint_rdl="PeakRDL 1.5.0: pip install --user peakrdl peakrdl-regblock peakrdl-cheader peakrdl-html peakrdl-markdown"
+_se_tool PEAKRDL peakrdl 1.5.0 '$T --version' "$_se_hint_rdl"
+# the first python3 on the PATH as it was before openXC7 went in front
 [ -n "${PYTHON:-}" ] || PYTHON=$(PATH=$_se_path0 command -v python3)
-_se_tool PYTHON python3 3.10 '$T --version' "$_se_hint_rdl" && \
-    { "$PYTHON" -c "import systemrdl" 2>/dev/null || {
-        _se_msg "  PYTHON             $PYTHON has no systemrdl-compiler"
-        _se_need "$_se_hint_rdl"; }; }
+_se_tool PYTHON python3 3.10 '$T --version' "Python 3.10+: sudo apt install python3"
 
 # ---- lint, format ---------------------------------------------------------
 _se_msg "lint:"
@@ -190,7 +190,7 @@ _se_hint_cc="GCC 10+ (C++20) and binutils: sudo apt install build-essential"
 _se_tool HOST_CC  gcc 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_CXX g++ 10 '$T -dumpfullversion' "$_se_hint_cc"
 _se_tool HOST_AR  ar  "" ''                    "$_se_hint_cc"
-_se_tool VCD2FST  vcd2fst "" ''                "vcd2fst (tb.vcd -> tb.fst): sudo apt install gtkwave"
+_se_tool VCD2FST  vcd2fst "" ''                "vcd2fst (tb.vcd -> tb.<link>.<variant>.fst): sudo apt install gtkwave"
 
 _se_hint_viv="AMD Vivado 2026.1+ for Linux, e.g. /tools/Xilinx/2026.1/Vivado (or set XILINX_VIVADO). Windows xsim cannot load the Linux-built co-sim models."
 _se_vv=${XILINX_VIVADO:-}
@@ -228,8 +228,9 @@ fi
 [ $_se_src = 0 ] && [ $_se_csh = 0 ] && \
     _se_msg "(report only -- 'source' this file to set the variables)"
 
-unset _se_csh _se_src _se_path0 _se_bad _se_todo _se_x7 _se_hint_x7 _se_rv _se_hint_rv \
-      _se_hint_rdl _se_py _se_vb _se_hint_cc _se_hint_viv _se_vv _se_vver _se_ui
+[ "$_se_zng" = 0 ] && unsetopt null_glob
+unset _se_csh _se_src _se_zng _se_path0 _se_bad _se_todo _se_x7 _se_hint_x7 _se_rv _se_hint_rv \
+      _se_hint_rdl _se_vb _se_hint_cc _se_hint_viv _se_vv _se_vver _se_ui
 unset -f _se_msg _se_set _se_need _se_num _se_ge _se_newest _se_tool
 
 # -----------------------------------------------------------------------------

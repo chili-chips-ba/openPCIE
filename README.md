@@ -239,11 +239,12 @@ The test bench has the following features:
 
 * A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.native`](5.sim/models/README.md#soc_cpuvprocnative) component
   * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL core (eduBOS5 by default, or PicoRV32), with `make CPU=rtl|vproc|iss`
-  * Can run natively compiled test code
-  * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#csr-hal-compilation)
+  * Can run the firmware itself, compiled for the host: all three options run the same firmware source
   * Can run RISC-V compiled code using the [rv32 RISC-V ISS model](5.sim/models/rv32/README.md)
   * All three have been [built and measured](5.sim/README.md#what-they-cost); each reaches the same result over the same PCIE link
 * The [_pcieVHost VIP_](https://github.com/wyvernSemi/pcievhost) is used to drive the logic's PCIE link
+  * x1 or x4 (`make SIM_LANES=4`), always Gen1: pcieVHost models Gen1 only
+  * RC-direct, or RC-switched (`make VARIANT=switched`): a switch with two endpoints and two empty slots behind the link, walked through step by step in a [hands-on tutorial](5.sim/README.md#pcie-through-a-switch-a-hands-on-tutorial)
 * Uses a C [sparse memory model](https://github.com/wyvernSemi/mem_model)
   * An [HDL component](5.sim/models/cosim/README.md) instantiated in logic gives logic access to this memory
   * An API is provided to _VProc_ running code for direct access from the _pcieVHost_ software, which implements this sparse memory C model.
@@ -260,7 +261,7 @@ One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://githu
 
 ### Co-sim HAL
 
-The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
+The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header, `csr.h`. The firmware reaches every register through one accessor, `CSR_REG32()`: a load or store on the RISC-V cores, a *VProc* bus cycle when the same firmware is compiled for the host in co-simulation. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
 
 More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
   
@@ -431,7 +432,7 @@ Using the Vivado Integrated Logic Analyzer (ILA) on both PCs enables detailed mo
 
 ### Bench Validation Results
 
-The implementation was verified on physical hardware by checking both PCIE link establishment and successful payload transfer between the Root Complex (RC) and Endpoint (EP).
+The implementation was verified on physical hardware, on an **x1 Gen2** link, by checking both PCIE link establishment and successful payload transfer between the Root Complex (RC) and Endpoint (EP).
 
 On the RC board, LED **A3** indicates the PCIE link status. When this LED is illuminated, the PCIE link has been successfully established. We can see that the LED A3 is active, confirming that the link between the RC and EP is up.
 
@@ -526,6 +527,8 @@ With the full end-to-end simulation thus in place, we hope that the need for har
 Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xilinx_ and openXC7 shortcomings when it comes to timing constraints and timing closure, we expect to run into showstoppers, and have therefore planned to experiment with WIP _ScalePNR_. In turned out that, with some corrections, the _nextpnr-xilinx_ was good enough -- The bitstream built with it brings the link up at **Gen2** speeds on hardware, the same as Vivado does. Getting there took six fixes - one latent bug in our RTL and five workarounds for openXC7 defects - all documented in [4.build/hw_build.openXC7](4.build/hw_build.openXC7/README.md), along with the issues we filed against openXC7.
 
 The design has also been ported to, and built with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what _"ScalePNR"_ idea eventually evolved into. Its bitstreams have not been tested on hardware yet; the Gen2 result above is from the earlier flow. It brought to the forefront _Yosys0.69_ with integrated _**Slang**_, _**nextpnr-himbaechel**_ (instead of _nextpnr-xilinx_) and _**fpga-as**_. We do not use _fpga-as_ yet: it writes one GTP setting wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)), so the build still assembles with _fasm2frames_ and _xc7frames2bit_. With that, the earlier SV2V standalone prep step for our SystemVerilog design sources proved to be unnecessary, which simplified the build process. The SV2V option is however still retained for cross-tool checking.
+
+**x4 and Gen2.** The RC now builds as x4 Gen1 (default), x4 Gen2 or x1 Gen2, with the user clock scaled to the link (62.5, 125 or 250 MHz) and the eduBOS5 CPU at 250 MHz in its 3-stage form. The x4 co-simulation passes, and Vivado meets timing on all three. On hardware, the x4 link trained before the user-clock fix; x4 TLP traffic is not re-tested yet ([2.rtl](2.rtl/README.md#link-width-speed-and-user-clock)).
 
 --------------------
 

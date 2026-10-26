@@ -6,7 +6,7 @@ them is built any more; they are here so the earlier arrangement stays readable.
 | File | What it was |
 |---|---|
 | `dut_stub.v`, `tb.STUB.sv`, `tb.STUB.prj` | the stub DUT and its test bench, described below. The live test bench is [`../tb.sv`](../tb.sv) with [`../tb.prj`](../tb.prj). |
-| `VUserMain0.SANITY.cpp` | the original node-0 sanity program: a single write and read-back at `0x10001000`, an address this design does not have. Superseded by [`../usercode/VUserMain0.cpp`](../usercode/VUserMain0.cpp), which runs the real bring-up sequence for `make CPU=vproc`. |
+| `VUserMain0.SANITY.cpp` | the original node-0 sanity program: a single write and read-back at `0x10001000`, an address this design does not have. Superseded by [`../usercode/VUserMain0.cpp`](../usercode/VUserMain0.cpp), which runs the real firmware, compiled for the host, for `make CPU=vproc`. |
 
 To go back to the stub test bench, analyse with `tb.STUB.prj` in place of
 `tb.prj`.

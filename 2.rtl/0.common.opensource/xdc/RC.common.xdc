@@ -1,4 +1,7 @@
 
+# Compressed bitstream: identical frames are written once (Multiple Frame Write)
+set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+
 set_property PACKAGE_PIN F6 [get_ports refclk_p]
 set_property PACKAGE_PIN E6 [get_ports refclk_n]
 create_clock -period 10.000 -name refclk [get_ports refclk_p]
@@ -14,7 +17,7 @@ create_clock -name txoutclk_x0y0 -period 10 [get_pins {u_pcie/u_phy_top/u_gtp_wr
 # what differs between the root complexes and link widths, so they live in each
 # variant's own xdc/, one file per width, which Vivado reads together with this
 # file (RC.opensource.tcl picks the one for PCIE_LANES):
-#   2.RC-direct.opensource/xdc/RC-direct.x4g2.AcornCLE-215P.xdc       (default)
+#   2.RC-direct.opensource/xdc/RC-direct.x4g1g2.AcornCLE-215P.xdc       (default)
 #   2.RC-direct.opensource/xdc/RC-direct.x1g2.AcornCLE-215P.xdc
 #   3.Bonus--RC-switched.opensource/xdc/RC-switched.x1g2.AcornCLE-215P.xdc
 

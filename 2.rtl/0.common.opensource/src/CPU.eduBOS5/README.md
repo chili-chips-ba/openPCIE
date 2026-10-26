@@ -8,7 +8,7 @@
 
 | | eduBOS5 (default) | PicoRV32 |
 |---|---|---|
-| openXC7 build | `make` | `make CPU=picorv32` → `build_artifacts.*picorv32*/` |
+| openXC7 build | `make` | `make CPU=picorv32` → `build_artifacts/work/*.picorv32/` |
 | co-simulation | `make run` | `make CORE=picorv32 run` |
 | ISS timing model | `make CPU=iss run` | `make CPU=iss CORE=picorv32 run` |
 | lint, LEQ | `bash run-lint.sh` | `CPU=picorv32 bash run-lint.sh` |
@@ -58,7 +58,7 @@ The rv32 ISS models both (`-V EDUBOS5STG2`, `-V EDUBOS5STG3`, see [5.sim](../../
 | Yosys + slang (`read_slang`), openXC7 v1.0.0 | 0.69 | lint; equivalence (LEQ): an RTL change keeps behaviour | `run-lint.sh`, `run-leq.sh` |
 | ABC `pdr` (`yosys-abc`) | 1.01, in Yosys 0.69 | the static multicycle proof, unbounded | [`formal/run-mcp-formal.sh`](formal/run-mcp-formal.sh) |
 | ABC `bmc3` (`yosys-abc`) | 1.01, in Yosys 0.69 | bounded runs: the negative tests, the miter | [`formal/run-mcp-formal.sh`](formal/run-mcp-formal.sh) |
-| Vivado | 2026.1 | timing with the multicycle constraint; Fmax, area | [`edubos5.3STG-ONLY.mcp.xdc`](edubos5.3STG-ONLY.mcp.xdc) |
+| Vivado | 2026.1 | timing with the multicycle constraint; Fmax, area | [`edubos5.3STG-ONLY.mcp.tcl`](edubos5.3STG-ONLY.mcp.tcl) |
 | openXC7 (nextpnr) | v1.0.0 | Fmax, area | [4.build/hw_build.openXC7](../../../../4.build/hw_build.openXC7/README.md) |
 | WaveCrux | 1.0.1 | retired instructions, decoded and cross-checked (RVFI) | [Watching the CPU in WaveCrux](#watching-the-cpu-in-wavecrux) |
 | EBMC | 6.1 | declarative SVA; cannot read eduBOS5 yet: a typed parameter bug ([diffblue/hw-cbmc#2274](https://github.com/diffblue/hw-cbmc/issues/2274), gotcha 6) | tried |
@@ -85,7 +85,7 @@ The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.bui
 
 - **The 3-stage now trades IPC for clock, and breaks even.** 1.40x the 2-stage's Fmax against 0.73x its IPC: 71 against 70 MIPS. It is the only core here that closes timing at x4 Gen2's 250 MHz. Where the clock is free, the 2-stage does the same work with fewer cycles and less latency.
 - **IPC:** retired instructions (RVFI) per `user_clk` cycle, from SOC reset release to the firmware result: `make run CORE=... USRSIMOPTS="--define SOC_IPC"` ([5.sim](../../../../5.sim/README.md)). The firmware polls the PCIE stack, so each core retires a different count (6367, 6783, 6368). The 3-stage pays 1 more cycle per instruction, 2 more per jump or taken branch.
-- **Vivado Fmax:** the full design at x4 Gen2, `user_clk` over-constrained by 0.8 ns of setup uncertainty (3.2 ns), so that no core meets its target and Vivado keeps optimising. Fmax = 1 / (3.2 ns - WNS). The 3-stage uses [`edubos5.3STG-ONLY.mcp.xdc`](edubos5.3STG-ONLY.mcp.xdc). Area: `report_utilization -hierarchical`.
+- **Vivado Fmax:** the full design at x4 Gen2, `user_clk` over-constrained by 0.8 ns of setup uncertainty (3.2 ns), so that no core meets its target and Vivado keeps optimising. Fmax = 1 / (3.2 ns - WNS). The 3-stage uses [`edubos5.3STG-ONLY.mcp.tcl`](edubos5.3STG-ONLY.mcp.tcl). Area: `report_utilization -hierarchical`.
 - **openXC7 Fmax:** nextpnr's report at the 250 MHz target (`make GEN=2 CPU=...`). It cannot apply the multicycle paths ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), so it times the 3-stage's 2-cycle paths as 1-cycle. It varies between builds by 10-20 MHz.
 - **Yosys area:** `synth_xilinx -flatten` of the sv2v-converted design, the CPU kept as its own hierarchy. sv2v inlines the SOC, so it has no SOC row.
 - PicoRV32 with `BARREL_SHIFTER=0`, `ENABLE_COUNTERS=0`, as in [`riscv_pcie_soc.sv`](../riscv_pcie_soc.sv).
@@ -119,10 +119,10 @@ eduBOS5 and PicoRV32 have RVFI outputs, built with `` `define RISCV_FORMAL `` (s
 
 ```sh
 cd 5.sim
-make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> tb.vcd + tb.fst, signals under tb.cpu_view
+make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> tb.vcd + tb.x1g1.direct.fst, signals under tb.cpu_view
 ```
 
-Then open [`5.sim/tb.RISCV-ISA.wavecrux`](../../../../5.sim/tb.RISCV-ISA.wavecrux) in WaveCrux 1.0.1 or later. The rows, the decoder and the inspector come bound.
+Then open [`5.sim/tb.x1g1.direct.RISCV-ISA.wavecrux`](../../../../5.sim/tb.x1g1.direct.RISCV-ISA.wavecrux) in WaveCrux 1.0.1 or later. The rows, the decoder and the inspector come bound.
 
 **The decoded instructions** (View -> Toggle Transactions Panel). eduBOS5 leaves reset at PC 0, sets the stack, jumps to `main` at `0x904` and builds its frame:
 
@@ -148,7 +148,7 @@ Its Memory tab lists every access up to the cursor, newest first, with address, 
 <img alt="WaveCrux RVFI memory log: eduBOS5 stores" src="wavecrux/wavecrux-rvfi-memory.png" width=750>
 </p>
 
-Its Checks tab checks all 7,096 instructions of the run: consistency, memory access, retirement order and traps. Not a single complaint:
+Its Checks tab checks all 7,096 instructions of the dump (the 6,783 up to the firmware result, then the halt loop until the run ends): consistency, memory access, retirement order and traps. Not a single complaint:
 
 <p align="center">
 <img alt="WaveCrux RVFI checks: 7096 retirements, no inconsistency" src="wavecrux/wavecrux-rvfi-checks.png" width=500>
@@ -238,7 +238,7 @@ The failures are expected:
 
 ## 3-stage multicycle paths
 
-[`edubos5.3STG-ONLY.mcp.xdc`](edubos5.3STG-ONLY.mcp.xdc) gives Vivado 2 cycles from the instruction port and the register file. That is only safe if the RTL really gives those paths 2 cycles. Trust, but verify: the next section proves it, step by step.
+[`edubos5.3STG-ONLY.mcp.tcl`](edubos5.3STG-ONLY.mcp.tcl) gives Vivado 2 cycles from the instruction port and the register file. It finds the instruction port by connectivity (the RAM port on `imem_addr`) and stops the run if that is not exactly one port, so a different RAM mapping cannot relax the data port instead. That is only safe if the RTL really gives those paths 2 cycles. Trust, but verify: the next section proves it, step by step.
 
 ## Getting started with formal proving: a worked example
 

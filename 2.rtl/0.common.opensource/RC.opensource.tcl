@@ -53,7 +53,9 @@ switch -- $::rc_variant {
       return -code error "pcie_lanes must be 1 or 4, got \"$pcie_lanes\""
     }
     set origin_dir "$common_dir/../2.RC-direct.opensource"
-    set lane_xdc   "RC-direct.x${pcie_lanes}g2.AcornCLE-215P.xdc"
+    # one x4 lane file for Gen1 and Gen2
+    set lane_xdc   [expr {$pcie_lanes == 4 ? "RC-direct.x4g1g2.AcornCLE-215P.xdc"
+                                           : "RC-direct.x1g2.AcornCLE-215P.xdc"}]
     set fw_make    "make"
   }
   switched {
@@ -96,7 +98,7 @@ set proj_dir "$origin_dir/xbuild.Vivado-v2024.2"
 # lane LOC is the variant's own.
 set src_dir   "$common_dir/src"
 set pcie_dir  "$common_dir/src/pcie"
-set xdc_files [list "$common_dir/xdc/RC.x1g2.AcornCLE-215P.xdc" \
+set xdc_files [list "$common_dir/xdc/RC.common.xdc" \
                     "$origin_dir/xdc/$lane_xdc"]
 
 set top_sv "$src_dir/RC_opensource.sv"
@@ -107,7 +109,7 @@ set cpu_v  [list {*}[lmap f {edubos5_pkg.sv edubos5_rf.sv edubos5_alu.sv edubos5
                  "$src_dir/picorv32.CHILI.sv"]
 set cpu_defines [dict get {edubos5 {} edubos5_3stg SOC_EDUBOS5_3STG picorv32 SOC_CPU_PICORV32} $cpu]
 # The 3-stage pipeline's multicycle paths, implementation only (post-synthesis names)
-set mcp_xdc [expr { $cpu eq "edubos5_3stg" ? "$src_dir/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.xdc" : "" }]
+set mcp_xdc [expr { $cpu eq "edubos5_3stg" ? "$src_dir/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.tcl" : "" }]
 
 # ---- CSR: PeakRDL-generated register block ----------------------------------
 # csr_pkg.sv and csr.sv are generated from 4.build/csr_build/csr.rdl by

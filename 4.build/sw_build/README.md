@@ -19,7 +19,7 @@ land here, next to the Makefile.
 | `direct` (default) | `3.sw/RC-direct/` | one endpoint, straight RC-to-EP link |
 | `switched` | `3.sw/RC-switched/` | ASM1184e switch with up to 4 endpoints |
 
-The register map comes from `../csr_build/generated-files/` (`csr.h`, `openpcie_regs.h`), generated from `csr.rdl` - see [`4.build/README.md`](../README.md#csr-hal-compilation).
+The register map comes from `../csr_build/generated-files/` (`csr.h`, `csr_top.h`), generated from `csr.rdl`, and the accessors from `../csr_build/csr_regs.h` - see [`4.build/README.md`](../README.md#csr-hal-compilation).
 
 ---
 
@@ -82,10 +82,9 @@ unaffected: without `SIM=1` the delay is the full 100000 as before.
 
 You do not run it by hand: `make` in [`5.sim`](../../5.sim) builds its own copy, on every build, with `make SIM=1 OUT=5.sim/obj/fw`. The `firmware.hex` tracked in this folder is therefore always the board build.
 
-`SIM=1` matters for the two co-simulation builds that execute this firmware --
-`CPU=rtl` and `CPU=iss`. The `CPU=vproc` build does not use it at all: that one
-replaces the firmware with a native C++ program, which waits on the CSR instead
-of counting instructions, and so pays no start-up delay in the first place.
+`SIM=1` matters for the two co-simulation builds that execute this image --
+`CPU=rtl` and `CPU=iss`. The `CPU=vproc` build compiles the same sources for
+the host instead, where the start-up loop takes no simulated time at all.
 
 ## Outputs
 

@@ -39,7 +39,7 @@
 // Description:
 //   This file defines the Control and Status Registers (CSR) of the
 //   openPCIE Root Complex SOC -- the TLP transmit/receive window that the
-//   picorv32 firmware uses in place of the AMD-proprietary hardware FSM.
+//   RISC-V firmware uses in place of the AMD-proprietary hardware FSM.
 //
 //   Register map:
 //
@@ -252,7 +252,7 @@ addrmap csr {
 };
 
 //==========================================================================
-// SOC top level -- the address map the picorv32 firmware sees
+// SOC top level -- the address map the RISC-V firmware sees
 //==========================================================================
 addrmap openpcie {
    littleendian;

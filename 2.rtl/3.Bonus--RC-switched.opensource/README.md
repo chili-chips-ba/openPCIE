@@ -124,6 +124,8 @@ bus 2  dev 1 ....... downstream port 1 --> bus 3, window 0x10000000
 bus 3..6  dev 0 .... the endpoint cards, BAR0 at the window base
 ```
 
+The co-simulation runs this firmware against a switch model with two endpoints and two empty slots: `make run VARIANT=switched` in [5.sim](../../5.sim/README.md#rc-switched-a-switch-behind-the-link).
+
 * **Step 1 - switch upstream port.** Bus numbers (primary 1, secondary 2,
   subordinate 6), one memory window `0x10000000 - 0x103FFFFF` covering
   everything behind the switch, then Memory Space + Bus Master.
@@ -173,14 +175,14 @@ answered with CRS are re-issued up to 100 times.
 ```
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
-    RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
+    RC_opensource.sv              top level: PCIE stack, SOC, LEDs
     riscv_pcie_soc.sv             RISC-V SOC (eduBOS5 or picorv32) + the Type 0/Type 1 routing above
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
     picorv32.CHILI.sv             the alternative RISC-V core (Chili.CHIPS-improved picorv32)
     CPU.eduBOS5/                  the default RISC-V core
     pcie/                         the opensource PCIE stack
   xdc/
-    RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+    RC.common.xdc                 constraints, all but the GT lane (source of truth)
   RC.opensource.tcl               the Vivado project script behind both wrappers
 
 2.rtl/3.Bonus--RC-switched.opensource/   this folder
@@ -199,7 +201,7 @@ The register window the firmware drives (`0x3000_0000` in the SOC address map)
 is **generated**, not hand-written. The source of truth is a SystemRDL file,
 [`4.build/csr_build/csr.rdl`](../../4.build/csr_build/csr.rdl), out of which
 `peakrdl` produces the register block RTL (`csr_pkg.sv`, `csr.sv`) and the
-software headers (`csr.h`, `csr_hw.h`, `csr_cosim.h`) in
+software header (`csr.h`) in
 `4.build/csr_build/generated-files/`. `soc_csr.sv` is the only hand-written
 piece: it bridges the picorv32 native memory interface to the "passthrough" CPU
 interface of the generated block.
@@ -243,9 +245,9 @@ cd 4.build/hw_build.openXC7
 make VARIANT=switched
 ```
 
-Output goes to `build_artifacts.switched.slang/top.x1.switched.bit`, kept separate from the direct
-build. See [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) for the
-toolchain requirements - in particular, the nextpnr version is critical.
+Output goes to `4.build/hw_build.openXC7/build_artifacts/top.x1g2.switched.bit`, next to the direct
+builds. See [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) for the
+toolchain requirements.
 
 ----
 End-of-Document

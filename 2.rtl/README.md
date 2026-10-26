@@ -121,7 +121,7 @@ Two build defines, read by [`link_pkg.sv`](0.common.opensource/src/pcie/link_pkg
 | x1 Gen1 | 250 MB/s | 64-bit | 62.5 MHz | 1 | co-simulation (pcieVHost is Gen1) |
 | x1 Gen2 (x1 default) | 500 MB/s | 64-bit | 62.5 MHz | 1 | **works on hardware** |
 | x4 Gen1 (default) | 1 GB/s | 64-bit | 125 MHz | 2 | co-simulation passes; Vivado meets timing; not tested on hardware |
-| x4 Gen2 | 2 GB/s | 64-bit | 250 MHz | 3 | Vivado meets timing with the 3-stage eduBOS5 (below); not tested on hardware |
+| x4 Gen2 | 2 GB/s | 64-bit | 250 MHz | 3 | Vivado meets timing with the 3-stage eduBOS5 (below); the link trained on hardware before the user-clock fix, TLPs not re-tested |
 | x4 Gen2 | 2 GB/s | 128-bit | 125 MHz | 3, with `USER_CLK2_DIV2` | not implemented, [open for contribution](../CONTRIBUTING.md) |
 
 `trn_if` is fixed at 64 bits, so `user_clk` scales with the link bandwidth. Vivado and openXC7 both derive it through the MMCM: one constraint set fits all four builds.
@@ -212,7 +212,7 @@ IEEE 1800-2009 SystemVerilog. For the opensource RTL and the models that stand i
 - **Packages:** `import` right after the module name, no package prefix on every use.
 - **Case:** signals and ports lower case, constants UPPER CASE (parameters, localparams, enum values, macros). Only vendor hard-macro and primitive pins (`PCIE_2_1`, `GTPE2_CHANNEL`, `MMCME2_ADV`, ...) keep vendor names.
 - **Descriptor names:** a signal of a `pcie_pkg` header or sideband type is named `*_dw0` ... `*_dw3`, `*_hdr_*` or `*_tuser` (e.g. `rx_hdr_dw0`, `tx_cfg_dw2`). It reads only the fields it needs; `run-lint.sh` waives the unread fields by that name.
-- **Procedural blocks:** `always_ff` for flip-flops, `always_comb` for combinational logic, never plain `always`. `unique case` for parallel muxes whose items cover every value, `unique0 case` where no item may match, `priority case` for priority encoders; never plain `case`. A `unique case` has no `default`.
+- **Procedural blocks:** `always_ff` for flip-flops, `always_comb` for combinational logic, never plain `always`. `unique case` for parallel muxes whose items cover every value, `unique0 case` where no item may match, `priority case` for priority encoders; never plain `case`. The CPU cores (`CPU.eduBOS5/`, `picorv32.CHILI.sv`) keep their own projects' style here. A `unique case` has no `default`.
 
   | Keyword | Several items match | No item matches | Synthesis meaning |
   |---|---|---|---|
@@ -222,7 +222,7 @@ IEEE 1800-2009 SystemVerilog. For the opensource RTL and the models that stand i
 
   `unique0` (IEEE 1800-2009) is the simulation-aware `parallel_case`; the old work-around, `unique case` with an empty `default`, is not used.
 - **`logic`, not `wire`:** every signal and port is `logic`, every `input`/`output` typed (`input logic ...`), never left to default to `wire`. Only an `inout` would be a `wire`; there are none. `wire x = expr;` becomes `logic x;` + `assign x = expr;` (`logic x = expr;` is only an initial value).
-- **`initial` blocks:** not in RTL, except `$readmemh` of the firmware into the SOC RAM. Models and test benches (`5.sim`) may use them freely.
+- **`initial` blocks:** not in RTL, except `$readmemh` of the firmware into the SOC RAM, and the register-file RAM of the CPU cores, cleared so that x0 reads 0 (`edubos5_rf.sv`, `picorv32.CHILI.sv`). Models and test benches (`5.sim`) may use them freely.
 - **No `` `timescale `` in RTL:** the test bench sets it (`5.sim/tb.sv`, and `--timescale 1ps/1ps` for xelab in `5.sim/Makefile`). RTL has no `#` delays; a directive in only some files is a lint finding (Verilator TIMESCALEMOD).
 - **No initial values on registers:** a register gets its value from the reset branch of its `always_ff`. The one exception is the design's reset source, two `FDCE` instances in `clk_rst_gen.sv` (`u_rst_sync0/1`), instantiated by name so it stands out: their `INIT` asserts reset at configuration (flash or JTAG, which can end after PERST# is released); PERST# asserts it later. Every other reset derives from it.
 - **Arrays, not flat buses:** arrays of lanes or structs, no index arithmetic on flat buses.
@@ -233,7 +233,7 @@ IEEE 1800-2009 SystemVerilog. For the opensource RTL and the models that stand i
 - **Flopped controls:** a high-fanout control (load enable, mux select) comes from a flop, placed next to the logic it serves. Its next value is derived from existing signals; an FSM is neither copied nor edited for it.
 - **One signal per function:** no `x` plus `x_q` pairs. When a control is registered, the flop is the signal.
 - **Minimal logic:** leave out terms that do not change behaviour, and say why in a comment (e.g. `go2exec` ignores the `SYSTEM` halt).
-- **Assertions:** only under an `ifdef`, and the RTL is never changed for them. Simulation gets SVA, open-source formal gets immediate `assert` with `$past`, and both forms stay ([eduBOS5](0.common.opensource/src/CPU.eduBOS5/README.md#getting-started-with-formal-proving-a-worked-example)). In an RTL file they follow these rules too (`always_ff`, reset instead of initial values). The harnesses in `formal/` are verification code, like `5.sim`.
+- **Assertions:** only under an `ifdef`, and the RTL is never changed for them. Simulation gets SVA, open-source formal gets immediate `assert` with `$past`, and both forms stay ([eduBOS5](0.common.opensource/src/CPU.eduBOS5/README.md#getting-started-with-formal-proving-a-worked-example)). In an RTL file they follow these rules too (`always_ff`, reset instead of initial values). The harnesses in `0.common.opensource/src/CPU.eduBOS5/formal/` are verification code, like `5.sim`.
 - **Clean diffs:** no blank-line or alignment changes beyond what `run-format.sh` makes; check `git diff` before a commit.
 - **Models follow the RTL:** a model keeps the ports, interfaces, structs, loops and names of the RTL it replaces.
 - **Formatting:** [`run-format.sh`](../4.build/hw_build.openXC7/run-format.sh) puts every `if`, `else`, `always`, `for` and `initial` body in `begin` ... `end`, even a single statement, then runs Verible (`verible-verilog-format`) at its defaults plus all alignment options set to `align`, `end` and `else` on separate lines, LF line endings (flags in the script). Lines are at most 100 columns; wrap longer ones by hand. Run it last, after lint, before a commit. `run-format.sh --check` only lists unformatted files; the `Verible` GitHub Action runs that check and the Verible lint.

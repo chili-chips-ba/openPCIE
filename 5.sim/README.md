@@ -10,8 +10,10 @@
   * [Model and viewer versions](#model-and-viewer-versions)
   * [What the simulation does](#what-the-simulation-does)
   * [Building and running](#building-and-running)
+  * [RC-switched: a switch behind the link](#rc-switched-a-switch-behind-the-link)
   * [WaveCrux decoders](#wavecrux-decoders)
   * [Viewing the TLPs in WaveCrux](#viewing-the-tlps-in-wavecrux)
+  * [PCIe through a switch: a hands-on tutorial](#pcie-through-a-switch-a-hands-on-tutorial)
   * [Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)
   * [The x4 link in WaveCrux](#the-x4-link-in-wavecrux)
   * [Every layer at the Endpoint: transaction taps](#every-layer-at-the-endpoint-transaction-taps)
@@ -34,8 +36,6 @@
 * [The mem_model Co-Simulation Sparse Memory Model](#the-mem_model-co-simulation-sparse-memory-model)
 * [Driving the PCIE Link](#driving-the-pcie-link)
 * [Co-simulation HAL](#co-simulation-hal)
-  * [Using the HAL](#using-the-hal)
-  * [Other Co-simulation considerations](#other-co-simulation-considerations)
 * [Our Local VIP Improvements](#our-local-vip-improvements)
 * [Open-source PCIE Validation Stacks](#open-source-pcie-validation-stacks)
 * [Simulation issues](#simulation-issues)
@@ -201,7 +201,7 @@ compilers, and lists anything missing. `peakrdl` is needed only if you edit
 | mem_model **(modified, see below)** | `main` c7b9c62 (1.0.1 + one fix) | same | [wyvernSemi/mem_model](https://github.com/wyvernSemi/mem_model) |
 | rv32 ISS **(modified, see below)** | 1.3.3 | 1.3.3 | [wyvernSemi/rv32](https://github.com/wyvernSemi/rv32) |
 | Vivado simulator (`xsim`) | 2026.1 | 2026.1 | [AMD Vivado](https://www.amd.com/en/products/software/adaptive-socs-and-fpgas/vivado.html) |
-| WaveCrux Pro | 1.1.0 | 1.1.0 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
+| WaveCrux Pro | 1.1.1 | 1.1.1 | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
 | TLP decoder plugin (ours) | `wcx-pcie-tlp` pcie-tlp-v0.1.1 | pcie-tlp-v0.1.1 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp) |
 | PIPE, DLL and serial-line decoder plugin | `wcx-pcie` pcie-v0.2.0 | pcie-v0.2.0 | [Ferrite-Engineering/wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) |
 | RISC-V instruction-trace decoder | built into WaveCrux | -- | [Ferrite-Engineering/wavecrux](https://github.com/Ferrite-Engineering/wavecrux) |
@@ -223,9 +223,9 @@ A Verilator run would need `--timing` for the whole test bench, not only for the
 
 #### Why VCD and not FST?
 
-XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. [`tb.fst`](tb.fst) is tracked (11.6 MB VCD -> 86 KB, a 134x diet). `tb.vcd` is not.
+XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. The FSTs are tracked (`tb.x1g1.direct.fst`: 11.6 MB VCD -> 86 KB, a 134x diet). `tb.vcd` is not.
 
-The ready-made `.wavecrux` sessions open `tb.fst`, so they work from a fresh clone. They bind signals by their number in the file, and that number differs between the VCD and the FST.
+The ready-made `.wavecrux` sessions open the tracked FSTs (`tb.x1g1.direct.fst`, `tb.x1g1.switched.fst`, `tb.x4g1.direct.fst`), named like the bitstreams, so they work from a fresh clone. They bind signals by their number in the file, and that number differs between the VCD and the FST.
 
 #### Local changes
 
@@ -266,11 +266,11 @@ no hardware in sight. It ends 10 µs after the firmware reports its result. `RUN
             72559000  LTSSM  0x2c -> 0x11      <- Configuration complete
             74103001  TB     pl_phy_lnk_up = 1  <- physical layer up
             74479000  LTSSM  0x15 -> 0x16 L0  (linkup)
-            75255001  TB     trn_link_up   = 1  <- data link layer up, flow control done
-            75255001  TB     ===> PCIe LINK UP -- SOC released from reset
-            75271000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
-           389543000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
-           399543000  TB     *** run ends 10 us after the firmware result ***
+            75287001  TB     trn_link_up   = 1  <- data link layer up, flow control done
+            75287001  TB     ===> PCIe LINK UP -- SOC released from reset
+            75303000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
+           389575000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+           399575000  TB     *** run ends 10 us after the firmware result ***
 --------------------------------------------------------
  openpcie2-rc co-simulation summary
 --------------------------------------------------------
@@ -340,7 +340,7 @@ make run                            # -> the summary above
 make gui                            # same, with waveforms
 ```
 
-`make` builds the firmware itself, every time, into `obj/fw`, with `SIM=1`. Why: `main()` opens with `wait_cycles(100000)`, to wait for the link to train. On hardware that costs nothing. In simulation it is tens of milliseconds of simulated time with the firmware twiddling its thumbs. `SIM=1` cuts it to 200 iterations, and the whole run fits in under 0.7 ms (0.4 ms on eduBOS5). The tracked `4.build/sw_build/firmware.hex` stays the board build; no simulation touches it. `VARIANT=switched` builds the RC-switched firmware instead.
+`make` builds the firmware itself, every time, into `obj/fw`, with `SIM=1`. Why: `main()` opens with `wait_cycles(100000)`, to wait for the link to train. On hardware that costs nothing. In simulation it is tens of milliseconds of simulated time with the firmware twiddling its thumbs. `SIM=1` cuts it to 200 iterations, and the whole run fits in about 0.4 ms (0.7 ms with `CORE=picorv32`). The tracked `4.build/sw_build/firmware.hex` stays the board build; no simulation touches it. `VARIANT=switched` builds the RC-switched firmware instead and puts a switch behind the link ([below](#rc-switched-a-switch-behind-the-link); step by step in [the tutorial](#pcie-through-a-switch-a-hands-on-tutorial)).
 
 Useful switches:
 
@@ -353,6 +353,31 @@ make USRSIMOPTS="--define PIPE_RAW_DUMP"     # raw PIPE symbols
 
 The LTSSM state, the link status bits and the firmware's result marker are
 always printed, with no define.
+
+### RC-switched: a switch behind the link
+
+`make run VARIANT=switched` runs the RC-switched firmware ([`3.sw/RC-switched/main.c`](../3.sw/RC-switched/main.c)) on the same RTL. pcieVHost stays the link partner, and [`usercode/pcie_switch.cpp`](usercode/pcie_switch.cpp) answers its requests as a switch with endpoints behind it:
+
+| Bus | Device | Answers |
+|---|---|---|
+| 1 | 0 | the switch upstream port (Type 0) |
+| 2 | 1, 3, 5, 7 | the four downstream ports, as on the ASM1184e |
+| 3, 5 | 0 | an endpoint on ports 1 and 3, with the RC-direct endpoint's IDs, class and BAR0-3 |
+| 4, 6 | 0 | nobody: ports 2 and 4 are empty slots and answer Unsupported Request |
+
+Routing follows what the firmware programs, as in hardware: Type 1 by the bus numbers, memory by the base/limit windows and Memory Space Enable, endpoint memory by BAR0 and BAR1. Each endpoint has its own memory, so a request routed to the wrong slot fails the readback. The model prints what it routes:
+
+```
+pcie_switch: CfgRd1 bus 4 dev 0 reg 0x000: Unsupported Request
+pcie_switch: CfgRd1 bus 6 dev 0 reg 0x000: Unsupported Request
+pcie_switch: MWr 0x10000000 -> endpoint on port 1
+pcie_switch: MRd 0x10000000 <- endpoint on port 1
+pcie_switch: MWr 0x10200000 -> endpoint on port 3
+pcie_switch: MRd 0x10200000 <- endpoint on port 3
+  FIRMWARE RESULT ......... PASS (0x0000face)
+```
+
+With eduBOS5 the run ends at 0.86 ms of simulated time, in about 3 minutes. x1 only, as the board.
 
 ### WaveCrux decoders
 
@@ -368,9 +393,7 @@ Setting them up on this test bench: [TLPs](#viewing-the-tlps-in-wavecrux) and [P
 
 ### Viewing the TLPs in WaveCrux
 
-All pictures in this section and the next two are from the **RC-direct** run: the Root Complex talks straight to one Endpoint, with no switch in between.
-
-> **Coming in v1.1.0: RC-switched.** The same views for the switched Root Complex: Type 1 Configuration requests through the switch, BARs assigned slot by slot, and a self-test per Endpoint.
+All pictures in this section, [the PIPE section](#viewing-the-pipe-in-wavecrux) and [the x4 section](#the-x4-link-in-wavecrux) are from the **RC-direct** run: the Root Complex talks straight to one Endpoint, with no switch in between.
 
 XSIM's own waveform database is the `.wdb` that `make gui` opens. For a view at
 *TLP level*, with every packet named and every completion paired with its
@@ -378,17 +401,17 @@ request, the run can also write a VCD for [WaveCrux](https://wavecrux.app). A
 decoder plugin and a ready-made session do the rest:
 
 ```
-make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> 5.sim/tb.vcd (not tracked) + tb.fst (tracked)
+make run USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> 5.sim/tb.vcd (not tracked) + tb.x1g1.direct.fst (tracked)
 ```
 
-The tracked `tb.fst` comes from this command. `DUMP_SOC_CPU` adds the CPU's RVFI trace for [`tb.RISCV-ISA.wavecrux`](tb.RISCV-ISA.wavecrux). Leave it out, and that session comes up empty.
+The tracked `tb.x1g1.direct.fst` comes from this command. `DUMP_SOC_CPU` adds the CPU's RVFI trace for [`tb.x1g1.direct.RISCV-ISA.wavecrux`](tb.x1g1.direct.RISCV-ISA.wavecrux). Leave it out, and that session comes up empty.
 
 Then, once per machine:
 1. Get the TLP decoder from its [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-tlp-v0.1.1) (Windows: `wcx-pcie-tlp-0.1.1-windows-x64.zip`; check it against `SHA256SUMS`). Unzip it to a folder of its own.
 2. In WaveCrux (1.0.1 or later): **Settings -> Extensions -> Decoder Plugins**, accept the safety notice, **Add directory...** that folder, **Reload plugins**.
 3. Add Ferrite's PIPE and Data Link Layer plugin the same way ([Viewing the PIPE in WaveCrux](#viewing-the-pipe-in-wavecrux)).
 
-Then open [`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (File -> Open, or `wavecrux_pro tb.TLP-DLL-PIPE.wavecrux`). It loads `tb.fst` from the same directory, with all decoders bound. The decoder's source, signals and parameters: [wavecrux-decoders `decoders/pcie-tlp`](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp).
+Then open [`tb.x1g1.direct.TLP-DLL-PIPE.wavecrux`](tb.x1g1.direct.TLP-DLL-PIPE.wavecrux) (File -> Open, or `wavecrux_pro tb.x1g1.direct.TLP-DLL-PIPE.wavecrux`). It loads `tb.x1g1.direct.fst` from the same directory, with all decoders bound. The decoder's source, signals and parameters: [wavecrux-decoders `decoders/pcie-tlp`](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp).
 
 In each picture, the TLP decoder rows are the TLP stream in either direction.
 **TLP Downstream** is Root Complex -> Endpoint (`tx_`), **TLP Upstream** is
@@ -441,9 +464,73 @@ The session stores the decoder bindings as positions in the FST. They are the
 same for every run of this test bench. If another simulator version orders the
 dump differently, or a change to `tb.sv` dumps other signals, the decoder rows
 come up empty. Then rebind the session to the new dump:
-`python3 tools/wavecrux-rebind.py tb.TLP-DLL-PIPE.wavecrux tb.fst <old tb.fst>`
+`python3 tools/wavecrux-rebind.py tb.x1g1.direct.TLP-DLL-PIPE.wavecrux tb.x1g1.direct.fst <old FST>`
 (needs `fst2vcd`, from GTKWave). Or remove the rows and add them again with
 **Ctrl+Shift+D**: auto-bind fills in all nine inputs.
+
+### PCIe through a switch: a hands-on tutorial
+
+The RC-direct pictures above show one Root Complex and one Endpoint. Most real systems have a switch in between. This section walks the [RC-switched run](#rc-switched-a-switch-behind-the-link) step by step: what the firmware asks, what the switch answers, and the PCIe rule behind each answer.
+
+```
+make run VARIANT=switched USRSIMOPTS="--define DUMP_VCD --define DUMP_SOC_CPU"   # -> tb.x1g1.switched.fst
+```
+
+Then open [`tb.x1g1.switched.TLP-DLL-PIPE.wavecrux`](tb.x1g1.switched.TLP-DLL-PIPE.wavecrux), with the same decoders as above.
+
+**The picture to keep in mind.** To software, a switch is not one device. It is a set of PCI-to-PCI bridges: an upstream port facing the Root Complex, one downstream port per slot, and an internal bus that joins them. Each bridge has a Type 1 configuration header with three bus numbers (primary, secondary, subordinate) and a memory window (base, limit). Enumerating a switch means filling these in:
+
+```
+RC -- bus 1 -- upstream port -- bus 2 (internal) --+-- dev 1: port 1 -- bus 3 -- endpoint
+                                                   +-- dev 3: port 2 -- bus 4 -- (empty slot)
+                                                   +-- dev 5: port 3 -- bus 5 -- endpoint
+                                                   +-- dev 7: port 4 -- bus 6 -- (empty slot)
+```
+
+The switch is a model ([`usercode/pcie_switch.cpp`](usercode/pcie_switch.cpp)). The waveforms show the one real link: what the Root Complex sends and what a switch must answer.
+
+**1. Who is there?** The first request is the same as in RC-direct: a Type 0 Configuration Read of register 0, at bus 1, device 0. The answer is not an Endpoint's ID. It is `0x11841B21`: vendor `0x1B21` (ASMedia), device `0x1184`, the switch. Type 0 means "the device at the other end of this link", and here that is the switch's upstream port:
+
+<p align="center">
+<img alt="WaveCrux TLP view: the first Configuration Read finds the switch" src="images/wavecrux-switched-1-switch-id.png" width=1000>
+</p>
+
+**2. The upstream port gets its bus numbers and its window.** Register `0x18` = `0x00060201`: primary bus 1 (towards the Root Complex), secondary bus 2 (the internal bus), subordinate bus 6 (the highest bus behind it). Register `0x20` = `0x10301000`: memory base `0x1000_0000`, limit `0x103F_FFFF`, in 1 MB steps. Then Command = `0x0006`: Memory Space and Bus Master on. From now on the port forwards Type 1 requests for buses 2 to 6 and memory requests inside its window, and nothing else.
+
+The decoder names registers by the Endpoint (Type 0) layout. In a bridge header, `0x18` is Bus Numbers, not BAR2, and `0x20` is Memory Base/Limit, not BAR4:
+
+<p align="center">
+<img alt="WaveCrux TLP view: bus numbers and memory window of the upstream port" src="images/wavecrux-switched-2-upstream-port.png" width=1000>
+</p>
+
+**3. Type 1: talking past the first bridge.** The downstream ports sit on bus 2, one bus beyond the link. The firmware sends the same Configuration Write as before, but the Root Complex sends it as Type 1 (`CfgWr1 02:01.0`), because the bus number is not 1 ([`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv) picks the type from the bus number). The upstream port sees that bus 2 is its own secondary bus, and passes the request on as Type 0. Port 1 (device 1) gets bus 3 and the first 1 MB of the window, `0x1000_0000`. The Completer ID says who answered: `0x0208` = bus 2, device 1. Ports 2 to 4 follow the same way:
+
+<p align="center">
+<img alt="WaveCrux TLP view: Type 1 Configuration Writes to downstream port 1" src="images/wavecrux-switched-3-type1.png" width=1000>
+</p>
+
+**4. The Endpoint behind port 1.** Bus 3 is port 1's secondary bus. The request crosses two bridges and becomes Type 0 at the last one. The Endpoint answers `0x000214FC`, and BAR0 sizing works exactly as in RC-direct: write all ones, read back `0xFFFFF008` (4 KB), then place it at `0x1000_0000`, the base of port 1's window. A BAR outside its port's window could never be reached, as the bridge would not forward requests to it:
+
+<p align="center">
+<img alt="WaveCrux TLP view: Endpoint ID and BAR0 sizing through the switch" src="images/wavecrux-switched-4-ep-bar0.png" width=1000>
+</p>
+
+**5. An empty slot.** Bus 4 belongs to port 2, which has no card. Port 2 answers the read itself, with Unsupported Request, in red (Completer ID `0x0218`: bus 2, device 3). The firmware takes UR as "no device" and moves on to bus 5, where the second Endpoint answers:
+
+<p align="center">
+<img alt="WaveCrux TLP view: an empty slot answers Unsupported Request" src="images/wavecrux-switched-5-empty-slot.png" width=1000>
+</p>
+
+**6. Memory goes by address, not by bus number.** A Memory request carries no bus number. The switch routes it by the windows of steps 2 and 3: `0x1000_0000` is in port 1's window and reaches the Endpoint on bus 3; `0x1020_0000` is in port 3's window and reaches bus 5. Each Memory Write is posted (no completion), and each Memory Read brings back the `6` just written, from its own Endpoint:
+
+<p align="center">
+<img alt="WaveCrux TLP view: memory writes and reads routed by address" src="images/wavecrux-switched-6-mem-routing.png" width=1000>
+</p>
+
+**Try it yourself:**
+- Fill slot 2: set `port_has_ep` in [`usercode/pcie_switch.cpp`](usercode/pcie_switch.cpp) to `{true, true, true, false}`. The firmware finds three Endpoints, and bus 4 now answers.
+- Empty all four slots (`{false, false, false, false}`). The switch is still found, and the run ends with `0xBAD00001`: switch up, no Endpoint behind it.
+- Leave out the `bridge_set_window()` call for the downstream ports in [`3.sw/RC-switched/main.c`](../3.sw/RC-switched/main.c). Enumeration still passes, as it uses bus numbers only. The memory test should then fail with `0x0000DEAD`: with no window, the switch has no route for the address.
 
 ### Viewing the PIPE in WaveCrux
 
@@ -464,8 +551,8 @@ These are the inputs of Ferrite's
 [release page](https://github.com/Ferrite-Engineering/wavecrux-decoders/releases/tag/pcie-v0.2.0)
 (Windows: `wcx-pcie-0.2.0-windows-x64.zip`; check it against `SHA256SUMS`). Unzip it to a folder of its own, and add
 that folder under **Settings -> Extensions -> Decoder Plugins**, as above. Then open
-[`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (File -> Open, or
-`wavecrux_pro tb.TLP-DLL-PIPE.wavecrux`). It loads `tb.fst` from the same directory, with the TLP and PIPE rows and all six decoders bound, at the first TLP (a CfgRd0 at 155 µs).
+[`tb.x1g1.direct.TLP-DLL-PIPE.wavecrux`](tb.x1g1.direct.TLP-DLL-PIPE.wavecrux) (File -> Open, or
+`wavecrux_pro tb.x1g1.direct.TLP-DLL-PIPE.wavecrux`). It loads `tb.x1g1.direct.fst` from the same directory, with the TLP and PIPE rows and all six decoders bound, at the first TLP (a CfgRd0 at 155 µs).
 
 To set it up by hand instead:
 - Add **PCIe PIPE (16-bit)** and **PCIe Data Link Layer (16-bit)** with **Ctrl+Shift+D**, once per direction: prefix `Rx`, then `Tx`, each time **Apply confirmed only**.
@@ -564,7 +651,7 @@ Its wave snapshots are coming soon.
 
 ### The x4 link in WaveCrux
 
-`make run SIM_LANES=4 USRSIMOPTS="--define DUMP_VCD"` runs the same firmware over an x4 Gen1 link. The tracked dump is `tb.x4.fst`, and [`tb.x4.wavecrux`](tb.x4.wavecrux) opens it with all four lanes in each direction. Decoding them needs Ferrite's multi-lane PIPE and Data Link Layer decoders, [wavecrux-decoders PR #18](https://github.com/Ferrite-Engineering/wavecrux-decoders/pull/18) (not released yet).
+`make run SIM_LANES=4 USRSIMOPTS="--define DUMP_VCD"` runs the same firmware over an x4 Gen1 link. The tracked dump is `tb.x4g1.direct.fst`, and [`tb.x4g1.direct.PIPE-DLL.wavecrux`](tb.x4g1.direct.PIPE-DLL.wavecrux) opens it with all four lanes in each direction. Decoding them needs Ferrite's multi-lane PIPE and Data Link Layer decoders, [wavecrux-decoders PR #18](https://github.com/Ferrite-Engineering/wavecrux-decoders/pull/18) (not released yet).
 
 **Training on four lanes.** Configuration numbers the lanes: TS1 `link=0 lanes=PAD,PAD,PAD,PAD`, then `lanes=0,1,2,3`, then TS2 with both numbers. The decoder deskews the lanes on these ordered sets and reports `Link width x4` and `Lanes aligned x4 (offsets 0,0,0,0)` at 73.97 µs. In each direction, the four lanes switch from training to data together, and the LTSSM reaches L0 (`16`) at 74.5 µs:
 
@@ -597,7 +684,7 @@ The C side is [`models/pcievhost/pcievhost-taps.patch`](models/pcievhost/pcievho
 
 With all three layers in one view, you can follow a single request through the
 Root Complex, and time how long the PCIE_2_1 hard macro takes to pass it on.
-Open [`tb.TLP-DLL-PIPE.wavecrux`](tb.TLP-DLL-PIPE.wavecrux) (it needs both
+Open [`tb.x1g1.direct.TLP-DLL-PIPE.wavecrux`](tb.x1g1.direct.TLP-DLL-PIPE.wavecrux) (it needs both
 plugins). The TLP view of the SOC's AXI-Stream is at the top, the PIPE below
 it, and the TLP, PIPE and Data Link Layer decoders at the bottom.
 
@@ -636,7 +723,7 @@ The SOC's CPU socket takes three different tenants, picked with `CPU=` on the ma
 | `CPU=` | What sits on VProc node 0 | Executes |
 |---|---|---|
 | `rtl` (default) | nothing -- the real RTL core: `CORE=edubos5` (default), `edubos5_3stg` or `picorv32` | `firmware.hex`, the same image that goes into the bitstream |
-| `vproc` | VProc | [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp), compiled for the host |
+| `vproc` | VProc | the same firmware (`3.sw/common/pcie.c`, `3.sw/RC-<VARIANT>/main.c`), compiled for the host; [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp) calls its `main` |
 | `iss` | VProc + the [rv32](models/rv32) instruction set simulator, with `CORE`'s timing model | `firmware.elf`, interpreted -- real RISC-V instructions, no RTL core |
 
 ```sh
@@ -651,7 +738,7 @@ The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv
 
 > Not to be confused with the inherited `models/soc_cpu.VPROC.sv`, kept for reference. That one speaks the `soc_if` bus of the sibling Chili.CHIPS SOC infrastructure. This design has no `soc_if`: it instantiates the core directly, so it needed its own wrapper.
 
-The native C++ model reaches the CSR through `csr_cosim.h`. PeakRDL generates it from the same [`csr.rdl`](../4.build/csr_build/csr.rdl) that produces the register RTL and the firmware's `csr.h`. So hardware, firmware and the co-simulation CPU model cannot drift apart. The ISS is configured in [`vusermain.cfg`](vusermain.cfg). There, `-x`/`-X` put the CSR window on the simulated bus, and leave code and data in the ISS's own memory. The make file copies it to `iss.cfg`, with `-V` set from `CORE`.
+So all three run one firmware source. With `CPU=vproc`, the firmware's register accesses (`CSR_REG32` in [`csr_regs.h`](../4.build/csr_build/csr_regs.h)) become VProc bus cycles, each followed by 8 idle SOC cycles (`CSR_VP_GAP`), about what a core spends between two accesses. The register offsets come from the same [`csr.rdl`](../4.build/csr_build/csr.rdl) that produces the register RTL, so hardware, firmware and the co-simulation cannot drift apart. The ISS is configured in [`vusermain.cfg`](vusermain.cfg). There, `-x`/`-X` put the CSR window on the simulated bus, and leave code and data in the ISS's own memory. The make file copies it to `iss.cfg`, with `-V` set from `CORE`.
 
 ### What they cost
 
@@ -660,14 +747,14 @@ Vivado XSIM 2026.1, x1 Gen1 runs, simulated time, which is exact. Every run give
 | `CPU=` | Core | Result at (simulated) | Run time, wall clock, relative |
 |---|---|---|---|
 | `rtl` | PicoRV32 | 667.2 µs | 1.3x |
-| `rtl` | eduBOS5 2-stage | **389.5 µs** | 1.0x |
+| `rtl` | eduBOS5 2-stage | **389.6 µs** | 1.0x |
 | `rtl` | eduBOS5 3-stage | 481.2 µs | 1.1x |
 | `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | 1.4x |
-| `iss` | eduBOS5 2-stage timing | 389.5 µs (0.0%) | 1.4x |
+| `iss` | eduBOS5 2-stage timing | 389.6 µs (0.0%) | 1.4x |
 | `iss` | eduBOS5 3-stage timing | 481.1 µs (0.0%) | 1.4x |
-| `vproc` | native C++ | **138.3 µs** | **0.7x** |
+| `vproc` | native C++, the real firmware | **122.4 µs** | **0.9x** |
 
-The 3-stage results are from 2026-10-24, after its jump refetch (1 cycle more per jump or taken branch). The run times are for information only. They come from one batch of single runs (2026-10-16, Ryzen 9 6900HX, WSL2, `rtl` eduBOS5 = about 55 s). Wall-clock time varies with host load: two identical `rtl` eduBOS5 runs with `DUMP_VCD` took 54 s and 197 s on this machine, the same day. The simulated times are exact.
+The 3-stage results are from 2026-10-24, after its jump refetch (1 cycle more per jump or taken branch). The run times are for information only. They come from one batch of single runs (2026-10-16; `vproc` 2026-10-26, against `rtl` eduBOS5 in the same batch, Ryzen 9 6900HX, WSL2, `rtl` eduBOS5 = about 55 s). Wall-clock time varies with host load: two identical `rtl` eduBOS5 runs with `DUMP_VCD` took 54 s and 197 s on this machine, the same day. The simulated times are exact.
 
 - **eduBOS5 vs PicoRV32:** IPC, Fmax and area compared in the [eduBOS5 README](../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only). `USRSIMOPTS="--define SOC_IPC"` prints a core's IPC at the firmware result: retired instructions (RVFI) per `user_clk` cycle since SOC reset release.
 - **`iss`** matches the RTL core it models to within 0.6% ([Our Local VIP Improvements](#our-local-vip-improvements)). It runs the real firmware binary in a debuggable native process (`-g` in `vusermain.cfg` opens a gdb port).
@@ -790,9 +877,9 @@ Application code compiled for the host, or for the <tt>rv32</tt> RISC-V ISS, nee
 
 #### Natively Compiled Application
 
-Besides the native test code above, the _openPCIE_ application itself can be compiled for the host, with its hardware access layer (HAL) generated from SystemRDL. The co-simulation version of the HAL calls the _VProc_ and PCIE memory model APIs, instead of dereferencing pointers to memory ([Co-simulation HAL](#co-simulation-hal)). The rest of the application never notices: it sees the same API as the generated code. The <tt>main</tt> entry point becomes <tt>VUserMain0</tt>.
+Besides native test code like the above, the _openPCIE_ firmware itself can be compiled for the host. Its register accesses then become _VProc_ bus cycles instead of loads and stores ([Co-simulation HAL](#co-simulation-hal)), and the rest of the firmware never notices.
 
-That is exactly the `CPU=vproc` build. In _openPCIE_ the transactions leave the CPU model on picorv32's native memory interface, not on an <tt>soc_if</tt> port, because that is what this SOC instantiates ([The three CPU options](#the-three-cpu-options)). The co-simulation HAL is `csr_cosim.h`, and [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp) is the application on top of it.
+That is exactly the `CPU=vproc` build. The Makefile compiles `3.sw/common/pcie.c` and `3.sw/RC-<VARIANT>/main.c` as C++, with `main` renamed `fw_main`, and [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp) calls it. Under `VPROC`, `csr_regs.h` turns each `CSR_REG32` access into a _VProc_ read or write. In _openPCIE_ the transactions leave the CPU model on picorv32's native memory interface, not on an <tt>soc_if</tt> port, because that is what this SOC instantiates ([The three CPU options](#the-three-cpu-options)).
 
 #### RISC-V Compiled Application
 
@@ -863,9 +950,9 @@ These match the models in [Configuring ISS timing model](#configuring-iss-timing
 
 The <tt>Makefile</tt> in <tt>5.sim/</tt> compiles the user *VProc* software, for both the `soc_cpu` and _pcieVHost_ components, and builds and runs the test bench HDL. For an ISS build, the `soc_cpu` code is the _rv32_ ISS integration software provided.
 
-In _openPCIE_, the node-1 (_pcieVHost_) entry point is <tt>VUserMain1.cpp</tt> in <tt>5.sim/usercode</tt>, named in `PCIE_C`. It is always compiled. What gets compiled for node 0 depends on `CPU`:
+In _openPCIE_, the node-1 (_pcieVHost_) entry point is <tt>VUserMain1.cpp</tt> in <tt>5.sim/usercode</tt>, named in `PCIE_C`. It is always compiled, with <tt>pcie_switch.cpp</tt> next to it when `VARIANT=switched`. What gets compiled for node 0 depends on `CPU`:
 - `CPU=rtl`: nothing
-- `CPU=vproc`: <tt>usercode/VUserMain0.cpp</tt>
+- `CPU=vproc`: <tt>usercode/VUserMain0.cpp</tt>, plus the firmware itself (<tt>3.sw/common/pcie.c</tt> and <tt>3.sw/RC-&lt;VARIANT&gt;/main.c</tt>) compiled for the host
 - `CPU=iss`: the ISS integration code in <tt>models/rv32/usercode</tt>
 
 To change what is compiled, list C++ files in `USER_C` (`soc_cpu`) or `PCIE_C` (the PCIE component). `USRCODEDIR` is where they live. Change them in the make file or on the command line, e.g. to add files to the `soc_cpu` build:
@@ -885,22 +972,22 @@ make help          Display this message
 make               Build C/C++ and HDL code without running simulation
 make run           Build and run batch simulation
 make rungui/gui    Build and run GUI simulation
-make fst           Convert tb.vcd into tb.fst (run does it when USRSIMOPTS has DUMP_VCD)
+make fst           Convert tb.vcd into tb.<link>.<variant>.fst, e.g. tb.x1g1.direct.fst (run does it when USRSIMOPTS has DUMP_VCD)
 make clean         clean previous build artefacts
 
 Command line configurable variables:
   USER_C:       list of user source code files for VProc (default ltssm.c; CPU=vproc/iss add VUserMain0.cpp)
-  PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp)
+  PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp, plus pcie_switch.cpp with VARIANT=switched)
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
   USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
   BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
   CPU:          CPU model on VProc node 0 (default rtl)
                   rtl    the RTL core (CORE), executing firmware.hex
-                  vproc  native C++ in usercode/VUserMain0.cpp
+                  vproc  the 3.sw firmware, compiled for the host (usercode/VUserMain0.cpp)
                   iss    the rv32 ISS, executing firmware.elf
   CORE:         edubos5, edubos5_3stg or picorv32: the RTL core, or the ISS timing model (default edubos5)
-  VARIANT:      firmware variant, direct or switched, built with SIM=1 into obj/fw (default direct)
+  VARIANT:      direct (one endpoint) or switched (a switch, endpoints behind it); firmware built with SIM=1 into obj/fw (default direct)
   SIM_LANES:    link width, 1 or 4; 4 is Gen1 with a 125 MHz user_clk (default 1)
   RUN_US:       time limit in microseconds; a run ends 10 us after the firmware result (default 2000)
 ```
@@ -914,7 +1001,7 @@ The _VProc_ code is compiled for debugging (<tt>-g</tt>); <tt>OPTFLAG</tt> chang
 ```
 make run                                                   # Build and run with the RTL eduBOS5 (the default)
 make                                                       # Build but don't run
-make run CPU=vproc                                         # Native C++ CPU model, usercode/VUserMain0.cpp
+make run CPU=vproc                                         # the 3.sw firmware, compiled for the host
 make run CPU=iss                                           # rv32 ISS on the real firmware.elf
 make CPU=iss gui                                           # Build and run ISS simulation and show waves
 make run RUN_US=3000                                       # Higher time limit
@@ -1086,59 +1173,39 @@ More on the PCIE driver and _pcieVHost_, and on configuring and driving the mode
 
 ## Co-simulation HAL
 
-### Using the HAL
+The firmware reaches the CSR through the accessors in
+[`csr_regs.h`](../4.build/csr_build/csr_regs.h), which
+take the register layout from the PeakRDL-generated `csr.h`
+([4.build](../4.build/README.md#csr-hal-compilation)): `CSR_REG32()` for a whole
+register, `CSR_GET()`, `CSR_SET()` and `CSR_RMW()` for one field. On the RISC-V
+cores they are loads and stores: `lw`, and `sb`, `sh` or `sw` as wide as the
+field's bytes. With `CPU=vproc` the Makefile compiles the firmware for the host,
+as C++ with `VPROC` defined, and the same accessors become _VProc_ bus cycles:
+`VRead`, `VWrite`, or `VWriteBE` with the byte enables of the core's store, each
+followed by `CSR_VP_GAP` (8) idle SOC cycles. Every access shows up in the
+waveform and the `CPU_TRACE` output like the RTL core's.
 
-The HAL reaches the registers the way the RDL nests them: a chain of pointer dereferences, then one access method that reads or writes a register or a bit field. Real accesses from [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp), the `CPU=vproc` application, based on `4.build/csr_build/csr.rdl`:
+> **Why `CSR_VP_GAP`.** The host runs the firmware in zero simulated time
+> between two accesses. Without the gap, accesses come back to back, faster than
+> any core issues them, and a polling loop costs one _VProc_ round trip (a
+> thread switch between simulator and C code) per bus cycle: `CPU=vproc` took
+> 84 s of wall-clock time against 28 s for the RTL core. The 8 cycles are about
+> what a core spends on the instructions between two accesses. To change it:
+> `make clean`, then `make CPU=vproc OPTFLAG="-g -DCSR_VP_GAP=<n>" run`.
 
-```c++
-#include "csr_cosim.h"
+Three more things differ on the host. The build handles all three, so the
+firmware source has no co-simulation code but the halt loop:
 
-// The root object, at the CSR base address in the SOC memory map
-csr_vp_t* csr = new csr_vp_t((uint32_t*)0x30000000);
-
-// Whole-register write. Writing tx.data is what launches the TLP,
-// because the field is marked swmod in the RDL.
-csr->tx->header0->full(h0);
-csr->tx->header1->full(h1);
-csr->tx->header2->full(h2);
-csr->tx->data->full(data);
-
-// Whole-register read, then fields picked out with the generated
-// masks and positions from csr.h -- one bus access, not two
-uint32_t phy = csr->status->phy->full();
-uint32_t state = (phy & CSR__STATUS__PHY__TX_STATE_bm)  >> CSR__STATUS__PHY__TX_STATE_bp;
-uint32_t avail = (phy & CSR__STATUS__PHY__TX_BUF_AV_bm) >> CSR__STATUS__PHY__TX_BUF_AV_bp;
-
-// Single-field read -- one bus access, field extracted for you
-uint32_t status = csr->rx->status->cpl_status();
-```
-
-Each access becomes a real transaction on the CPU bus in the simulation. So the
-waveform and the `CPU_TRACE` output show them just like the RTL core's accesses.
-
-The same code compiles natively for *VProc* or for the RISC-V hardware, with the matching header (see above). A write calls the method named after the field, with a `uint32_t` or `uint64_t` argument, as the register is defined. A read calls it without an argument, and returns the value.
-
-By convention, the method for the whole register is `full`; fields use their declared names. The script makes some assumptions based on the current `csr.rdl`, and new features can be added. The main one: no multi-dimensional arrays (use hierarchy instead). It stops with an error if it finds one.
-
-### Other Co-simulation considerations
-
-The HAL hides how a register is reached, on hardware or in co-simulation. For code that compiles for both, two more things need care. The first is the `main` entry point.
-
-A normal target application has `main()`. In *VProc* co-simulation the logic simulation already has its own `main()`, and every *VProc* node has its own entry point: `VUserMain<n>`, `<n>` being the node number. So node 0 starts at `VUserMain0`. The generated HAL headers define `PCIEMAIN`: `main` for hardware code, `VUserMain0` for *VProc* code (node 0 for `soc_cpu`). Use it in place of `main` in the top-level application code.
-
-```
-#include "openpcie_regs.h"
-
-// Application top level
-void PCIEMAIN (void)
-{
-  // Top level source code here
-}
-```
-
-The second is delays: standard C functions such as `usleep`, or the application's own instruction loops. Wrap them in one common function, e.g. `pcie_usleep(int time)`. Under `VPROC`, the wrapper converts the time to clock cycles and calls the *VProc* API's `VTick` (or its C++ twin) to advance simulation time. Otherwise it calls the target's delay function.
-
-The generated co-simulation header defines `SOC_CPU_CLK_PERIOD_PS`, set with `-C` / `--clk_period` on the `4.build/sysrdl_cosim.py` command line. Default 16000: the 62.5 MHz x1 `user_clk` (MMCM in `clk_rst_gen`) that clocks `riscv_pcie_soc`. x4 (Gen1, 125 MHz) needs 8000, which the Makefile passes as `-DSOC_CPU_CLK_PERIOD_PS=8000` at `SIM_LANES=4`. It also defines `SOC_CPU_VPNODE`, default 0, for calling the *VProc* C API directly; `-v` / `--vp_node` sets it.
+- **Entry point:** every _VProc_ node starts at `VUserMain<n>`, and the
+  simulator has its own `main()`. So the firmware is compiled with
+  `-Dmain=fw_main`, and [`usercode/VUserMain0.cpp`](usercode/VUserMain0.cpp)
+  calls it.
+- **Halt:** `halt()` in [`3.sw/common/pcie.c`](../3.sw/common/pcie.c) ends in an
+  endless loop. Under `VPROC` the loop ticks the _VProc_ node, so the simulation
+  runs on to its end.
+- **Delays:** `wait_cycles()` is a loop of `nop`s, which takes no simulated time
+  on the host. The firmware needs no delay there: `send_tlp()` waits for
+  `tx_buf_avail`, which stays zero until the link is up.
 
 ## Our Local VIP Improvements
 

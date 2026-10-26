@@ -5,10 +5,12 @@
 #
 # Convert the VCD that "make run USRSIMOPTS=--define DUMP_VCD" writes into FST
 # (GTKWave's compressed format, also read by WaveCrux and Surfer). XSIM writes
-# only VCD; tb.fst is the tracked copy, tb.vcd stays local.
+# only VCD; the FST is the tracked copy, tb.vcd stays local. make run names
+# it like the bitstreams: tb.x1g1.direct.fst, tb.x1g1.switched.fst, tb.x4g1.direct.fst.
 #
 # usage:  bash 5.sim/tools/vcd2fst.sh [in.vcd [out.fst]]
-#         defaults: 5.sim/tb.vcd -> 5.sim/tb.fst
+#         defaults: 5.sim/tb.vcd -> 5.sim/tb.fst; make run and make fst pass
+#         the tracked name, tb.<link>.<variant>.fst
 #
 # Needs vcd2fst from GTKWave (sudo apt install gtkwave), or VCD2FST set by
 # 4.build/set-env.sh.

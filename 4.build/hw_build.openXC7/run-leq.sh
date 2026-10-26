@@ -10,6 +10,7 @@
 #
 # usage:  bash run-leq.sh <gold src> <gate src> [sed script]
 #         LANES=1 bash run-leq.sh ...         compare the x1 build (default x4)
+#         GEN=2 bash run-leq.sh ...           compare the Gen2 build (default: link_pkg.sv's)
 #         CPU=picorv32 bash run-leq.sh ...    compare the PicoRV32 build (default edubos5;
 #                                              edubos5_3stg: 3-stage pipeline)
 #         LEQ_EXTRA=<file> bash run-leq.sh ... Yosys commands run after equiv_make,
@@ -41,6 +42,7 @@ GOLD=$(cd "$1" && pwd); GATE=$(cd "$2" && pwd); MAP=${3:-}
 CSR=$HERE/../csr_build/generated-files
 TOP=RC_opensource
 LANES=${LANES:-4}
+GEN=${GEN:-}
 CPU=${CPU:-edubos5}
 case $CPU in
   picorv32) CPU_DEF="-D SOC_CPU_PICORV32" ;;
@@ -106,7 +108,7 @@ PREP="hierarchy -top $TOP; proc; flatten; memory; async2sync"
 REN=""
 if [ -n "$MAP" ]; then   # rename gold objects to their gate names (skip names the gold already has)
   cat > names.ys <<EOF
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
 tee -q -o names.txt select -list $TOP/w:* $TOP/c:*
 EOF
@@ -122,11 +124,11 @@ EXTRA=""
 [ -n "${LEQ_EXTRA:-}" ] && EXTRA="script $(cd "$(dirname "$LEQ_EXTRA")" && pwd)/$(basename "$LEQ_EXTRA")"
 
 cat > eq.ys <<EOF
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $CPU_DEF --top $TOP -I $GOLD/pcie -I $GOLD $(files $GOLD)
 $PREP
 $REN
 expose -evert $BB; opt_clean; rename $TOP gold; design -stash gold
-read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES $CPU_DEF --top $TOP -I $GATE/pcie -I $GATE $(files $GATE)
+read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $CPU_DEF --top $TOP -I $GATE/pcie -I $GATE $(files $GATE)
 $PREP
 expose -evert $BB; opt_clean; rename $TOP gate; design -stash gate
 design -copy-from gold -as gold gold

@@ -36,11 +36,11 @@ Link width and speed are two defines, `PCIE_LANES` and `PCIE_GEN`, read by [`lin
 
 | | x4 Gen1 (default) | x4 Gen2 | x1 Gen2 |
 |---|---|---|---|
-| openXC7 | `make` -> `top.x4g1.direct.bit` | `make GEN=2` -> `top.x4g2.direct.bit` | `make LANES=1` -> `top.x1.direct.bit` |
+| openXC7 | `make` -> `top.x4g1.direct.bit` | `make GEN=2` -> `top.x4g2.direct.bit` | `make LANES=1` -> `top.x1g2.direct.bit` |
 | Vivado | `RC-direct.opensource.tcl` | `set ::pcie_gen 2` before sourcing it | `set ::pcie_lanes 1` before sourcing it |
 | `run-lint.sh`, `run-leq.sh` | default | Gen1 only (no `GEN` option) | `LANES=1` |
 
-Width and speed set the user clock: see [Link width, speed and user clock](../README.md#link-width-speed-and-user-clock). The CPU: openXC7 `make CPU=edubos5|edubos5_3stg|picorv32`, Vivado `set ::cpu ...`. Default CPU: the 2-stage eduBOS5; at x4 Gen2 the 3-stage, which 250 MHz needs. The 3-stage eduBOS5 adds its multicycle constraint, [`edubos5.3STG-ONLY.mcp.xdc`](../0.common.opensource/src/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.xdc).
+Width and speed set the user clock: see [Link width, speed and user clock](../README.md#link-width-speed-and-user-clock). The CPU: openXC7 `make CPU=edubos5|edubos5_3stg|picorv32`, Vivado `set ::cpu ...`. Default CPU: the 2-stage eduBOS5; at x4 Gen2 the 3-stage, which 250 MHz needs. The 3-stage eduBOS5 adds its multicycle constraint, [`edubos5.3STG-ONLY.mcp.tcl`](../0.common.opensource/src/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.tcl).
 
 ---
 
@@ -53,18 +53,19 @@ They differ only in the GT lanes the link uses and in the firmware they run.
 ```
 2.rtl/0.common.opensource/        shared by both root complexes
   src/
-    RC_opensource.sv              top level: refclk buffer, PCIE bridge, SOC, LEDs
+    RC_opensource.sv              top level: PCIE stack, SOC, LEDs
     riscv_pcie_soc.sv             RISC-V SOC (eduBOS5 or picorv32), drives the AXI-Stream TLP interface
     soc_csr.sv                    wrapper for the PeakRDL-generated CSR block
-    picorv32.CHILI.sv             the RISC-V core (Chili.CHIPS-improved picorv32)
+    picorv32.CHILI.sv             the alternative RISC-V core (Chili.CHIPS-improved picorv32)
+    CPU.eduBOS5/                  the default RISC-V core
     pcie/                         the opensource PCIE stack
   xdc/
-    RC.x1g2.AcornCLE-215P.xdc  constraints, all but the GT lane (source of truth)
+    RC.common.xdc                 constraints, all but the GT lane (source of truth)
   RC.opensource.tcl               the Vivado project script behind both wrappers
 
 2.rtl/2.RC-direct.opensource/     this folder
   xdc/
-    RC-direct.x4g2.AcornCLE-215P.xdc   GT lanes of the x4 link (default; any speed): X0Y6, X0Y4, X0Y5, X0Y7
+    RC-direct.x4g1g2.AcornCLE-215P.xdc GT lanes of the x4 link (default; any speed): X0Y6, X0Y4, X0Y5, X0Y7
     RC-direct.x1g2.AcornCLE-215P.xdc   GT lane of the x1 link: GTPE2_CHANNEL_X0Y5
   RC-direct.opensource.tcl        regenerates the Vivado project from scratch
 ```
@@ -120,8 +121,7 @@ is **generated**, not hand-written. The source of truth is a SystemRDL file,
 | Product | Where it lands | Who consumes it |
 |---|---|---|
 | `csr_pkg.sv`, `csr.sv` | `4.build/csr_build/generated-files/` | `soc_csr.sv` in this design |
-| `csr.h` | same | the firmware in `3.sw/` |
-| `csr_hw.h`, `csr_cosim.h` | same | C++ / co-simulation code in `5.sim/` |
+| `csr.h` | same | the firmware in `3.sw/`, through `csr_regs.h` (also in co-simulation) |
 | `openpcie.md`, `html/` | same | the documentation of the map itself |
 
 `soc_csr.sv` is the only hand-written piece: it bridges the picorv32 native
@@ -144,12 +144,12 @@ and `SOC_CPU_VPROC`. The last is **co-simulation only** -- nothing in either
 bitstream flow defines it, so the synthesised design always contains a real
 RTL core. Only
 [`5.sim`](../../5.sim) sets it, to swap the core for a VProc virtual processor and
-let a native C++ program or the rv32 ISS drive the identical bus:
+let the firmware, compiled for the host, or the rv32 ISS drive the identical bus:
 
 ```sh
 cd ../../5.sim
 make run              # the eduBOS5 RTL core -- the default, and the reference
-make run CPU=vproc    # native C++
+make run CPU=vproc    # the firmware, compiled for the host
 make run CPU=iss      # rv32 ISS on the real firmware.elf
 ```
 

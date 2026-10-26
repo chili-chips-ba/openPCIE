@@ -118,7 +118,7 @@ Impedance-controlled traces:
 ---
 ## Usage scenarios
 
-### Usecase 1: Direct FPGA_RC to FPGA_EP (Gen2 x4)
+### Usecase 1: Direct FPGA_RC to FPGA_EP (x4)
 
 <p align="center" width="100%">
     <img alt="Direct FPGA RC to FPGA EP setup, view 1" width="70%" src="0.doc/images/Direct FPGA_RC to FPGA_EP 1.JPG">
@@ -139,9 +139,9 @@ Impedance-controlled traces:
   </tr>
 </table>
 
-This scenario is the bread-and-butter, the meat of this project. That's what it is about. Our Artix-7 RootComplex has been tested in this setup and trains a **Gen2 x4** link to the EndPoint, using all four lanes of the RC4 ⇔ EP4 island; x4 is the default build. A **Gen2 x1** link works too.
+This scenario is the bread-and-butter, the meat of this project. That's what it is about. Our Artix-7 RootComplex has been tested in this setup. A **Gen2 x1** link works end to end. A **Gen2 x4** link trains, using all four lanes of the RC4 ⇔ EP4 island, but its TLPs needed a faster user clock, added since and not yet re-tested on the board. The default build is x4 Gen1, not yet tested on the board either.
 
-> **Note:** x4 can only be tested in this Direct topology. Behind the switch (Usecase 2) the link is x1. Both the opensource and the AMD RC designs have been tested at x4; the AMD design is checked in at x1.
+> **Note:** x4 can only be tested in this Direct topology. Behind the switch (Usecase 2) the link is x1. Both the opensource and the AMD RC designs have trained an x4 link; the AMD design is checked in at x1.
 
 This same scenario is also envisioned for testing the interoperability of our [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint with Xilinx Artix-7 RootComplex.
 

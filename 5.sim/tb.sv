@@ -120,7 +120,7 @@ module tb;
 // DUT -- the real opensource Root Complex
 //--------------------------------------------------------------
 
-  wire [0:0] rxp, rxn, txp, txn;
+  wire [link_pkg::PCIE_LANES-1:0] rxp, rxn, txp, txn;  // unused: the link runs over PIPE
   wire [3:0] led_link_up;
   wire       clk_req;
 
@@ -250,7 +250,7 @@ module tb;
 
 //--------------------------------------------------------------
 // VCD dump, for viewers that do not read xsim's .wdb (e.g. WaveCrux):
-//     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd, converted to tb.fst
+//     make run USRSIMOPTS="--define DUMP_VCD"     -> tb.vcd, converted to tb.x1g1.direct.fst
 // Add --define DUMP_SOC_CPU for the CPU under RVFI names (CPU.eduBOS5/wavecrux).
 // Only the TLP monitors, the decoder view, the SOC level, the LTSSM
 // state and the decoder page of the pcieVHost endpoint (u_pcie_ep, our
@@ -477,7 +477,7 @@ module tb;
     case (result_marker)
       32'h0000_face: $display("  FIRMWARE RESULT ......... PASS (0x%08h)", result_marker);
       32'h0000_dead: $display("  FIRMWARE RESULT ......... FAIL (0x%08h)", result_marker);
-      32'hbad0_0000: $display("  FIRMWARE RESULT ......... no endpoint found (0x%08h)", result_marker);
+      32'hbad0_0000: $display("  FIRMWARE RESULT ......... no device at bus 1 (switched: the switch) (0x%08h)", result_marker);
       32'hbad0_0001: $display("  FIRMWARE RESULT ......... switch up, no endpoint behind it (0x%08h)", result_marker);
       32'hbad0_0002: $display("  FIRMWARE RESULT ......... config request failed (0x%08h)", result_marker);
       32'hbad0_0003: $display("  FIRMWARE RESULT ......... BAR0 not usable (0x%08h)", result_marker);

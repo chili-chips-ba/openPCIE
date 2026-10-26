@@ -120,7 +120,7 @@ The driver exposes four high-level functions for interacting with the PCIE Endpo
 The driver interacts with the custom PCIE Bridge RTL via **Memory Mapped I/O (MMIO)**. The C code writes to specific memory addresses that the hardware interprets as control registers.
 
 ### Register Map
-The following addresses map directly to the RTL bridge inputs/outputs. `common/pcie.h` takes them from `openpcie_regs.h`, generated from `csr.rdl` - see [4.build/README.md](../4.build/README.md#the-register-map).
+The following addresses map directly to the RTL bridge inputs/outputs. `common/pcie.h` takes them from `csr.h`, generated from `csr.rdl`, through `csr_regs.h` - see [4.build/README.md](../4.build/README.md#the-register-map).
 
 <div align="center">
 

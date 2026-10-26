@@ -7,16 +7,16 @@ From RTL to bitstream with **open-source tools only**. No Vivado, no license ser
 
 Both share one RTL, [`2.rtl/0.common.opensource`](../../2.rtl/0.common.opensource) (top `RC_opensource`). Only the firmware and the GT pins differ ([GT channel](#gt-channel)). All commands and output folders: [Building](#building).
 
-| Stage | v1.0.0 (default) | pre-v1.0.0 (`TOOLCHAIN=old`) |
-|---|---|---|
-| SV front end | `yosys read_slang` (or `sv2v`) | `sv2v` -> `.v` |
-| Synthesis | `yosys` -> `top.json` | `yosys` -> `top.json` |
-| Place & route | `nextpnr-himbaechel` (via the `nextpnr-xilinx` shim) -> `top.fasm` | `nextpnr-xilinx` -> `top.fasm` |
-| Bitstream | `fasm2frames` + `xc7frames2bit` -> `top.bit` (`ASSEMBLER=fpga-as` for the one-step assembler, row 27) | `fasm2frames` + `xc7frames2bit` (prjxray) -> `top.bit` |
+| Stage | openXC7 v1.0.0 |
+|---|---|
+| SV front end | `yosys read_slang` (or `sv2v`) |
+| Synthesis | `yosys` -> `top.json` |
+| Place & route | `nextpnr-himbaechel` (via the `nextpnr-xilinx` shim) -> `top.fasm` |
+| Bitstream | `fasm2frames` + `xc7frames2bit` -> `top.<link>.<variant>.bit` (`ASSEMBLER=fpga-as` for the one-step assembler, row 27). Not compressed: neither can do it yet ([lromor/fpga-assembler#59](https://github.com/lromor/fpga-assembler/issues/59)) |
 
 ## Status: working on hardware
 
-The pre-v1.0.0 bitstream (`make TOOLCHAIN=old LANES=1`) brings the link **up at Gen2**, against a second Artix-7 board as endpoint. Same readings as the Vivado bitstream from the same RTL:
+The pre-v1.0.0 bitstream (`build_artifacts/pre-v1.0.0/top.x1g2.direct.bit`) brings the link **up at Gen2**, against a second Artix-7 board as endpoint. Same readings as the Vivado bitstream from the same RTL:
 
 ```
 user_lnk_up = 1
@@ -27,39 +27,7 @@ rate        = Gen2
 
 It took six fixes: one latent RTL bug and five workarounds for openXC7 defects. All below.
 
-v1.0.0 builds both variants, and their configuration checks out. None of its bitstreams has met the board yet. Below, pre-v1.0.0 is meant unless stated.
-
----
-
-## ⚠ The nextpnr-xilinx version is critical
-
-The pre-v1.0.0 toolchain builds this design **only** with nextpnr-xilinx `45a986b` (`v0.8.2-79-g45a986b8`, 2026-04-18).
-
-| Version | Result |
-|---|---|
-| 0.8.2, snap (Jun 2024) | **too old**: no `site_type_PCIE_2_1.json`, so no `PCIE_2_1` BELs |
-| master `bab26c2` (Jul 2026) | **regression**: `router2` loops in `route_xilinx_const` (gdb) |
-| **`45a986b` (Apr 2026)** | **works** |
-
-Yosys 0.38 from the snap is fine. Goldilocks would approve.
-
-### Building the right version
-
-```bash
-git clone https://github.com/openXC7/nextpnr-xilinx.git && cd nextpnr-xilinx
-git checkout 45a986b
-git submodule update --init --depth 1 \
-    xilinx/external/prjxray-db xilinx/external/nextpnr-xilinx-meta
-mkdir build && cd build
-cmake .. -DARCH=xilinx -DCMAKE_BUILD_TYPE=Release -DBUILD_GUI=OFF \
-         -DCMAKE_POLICY_VERSION_MINIMUM=3.5      # needed with cmake 4.x
-make -j$(nproc)
-install -Dm755 nextpnr-xilinx bbasm /usr/local/bin/
-```
-
-Default tree: `/opt/openxc7_extra/npnr_45a986b`; elsewhere, pass `NEXTPNR_SRC=`.
-
-**Do not mix versions.** `prjxray-db`, the site metadata and `constids.inc` must come from the same tree as the nextpnr binary. Otherwise wire indices go wrong, and the failures pose as router bugs. The Makefile takes all of them from `$(NEXTPNR_SRC)`.
+The pre-v1.0.0 flow that built it (nextpnr-xilinx `45a986b`, Yosys 0.38, sv2v) is no longer in the Makefile; commit `54c5409` is the last one that has it (`make TOOLCHAIN=old`). v1.0.0 builds both variants, and their configuration checks out. None of its bitstreams has met the board yet. The findings below were made with pre-v1.0.0, unless stated.
 
 ---
 
@@ -83,7 +51,7 @@ Since then, `nextpnr-xilinx` is archived, and the snap and the one-line installe
 | Bitstream | `fpga-as`, replacing `fasm2frames` + `xc7frames2bit`; we keep the prjxray pair until `fpga-as` is fixed (row 27) |
 | Formal, optional | Yosys `sat`; [EBMC](https://www.cprover.org/ebmc/) 6.1 |
 
-The Makefile takes both: `TOOLCHAIN=new` (default) and `TOOLCHAIN=old`. To reproduce the board result, use pre-v1.0.0. `45a986b` is still in the archived repo ([Building the right version](#building-the-right-version)).
+The Makefile builds with v1.0.0 only. To rebuild the board-tested bitstream, check out commit `54c5409` and run `make TOOLCHAIN=old LANES=1` there, with nextpnr-xilinx `45a986b` from the archived repo (its README has the steps).
 
 ### Building with the new toolchain
 
@@ -100,7 +68,7 @@ It installs missing Ubuntu packages, then builds Yosys, nextpnr, prjxray and `fp
 
 **3. Build:** `source ../set-env.sh`, then the commands in [Building](#building). `set-env.sh` finds openXC7 in `~/opt/openxc7` or `/opt/openxc7`.
 
-v1.0.0 has its own `chipdb.new/` (different format) and output folders. It never overwrites the validated `build_artifacts*/top.x1.*.bit`. Its `read_slang` bitstreams are in git, prebuilt from the current RTL, not yet on the board. The `sv2v` ones are not in git.
+Bitstreams go to `build_artifacts/`, everything else to `build_artifacts/work/` ([Building](#building)). The `read_slang` bitstreams are in git, prebuilt from the current RTL, not yet on the board. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
 
 The chipdb now comes from `xilinx_gen.py` instead of `bbaexport.py`. Synthesis and P&R are called as before: the new `nextpnr-xilinx` is a small shim that hands the same options to `nextpnr-himbaechel`.
 
@@ -189,7 +157,7 @@ Required with pre-v1.0.0. Without it, the 96- and 128-bit shift registers of the
 ERROR: No wire found for port Q31 on source cell ... fpga_srl_0
 ```
 
-v1.0.0 handles the cascade, so the Makefile passes `-nosrl` only with `TOOLCHAIN=old`.
+v1.0.0 handles the cascade, so the Makefile no longer passes `-nosrl`.
 
 | v1.0.0, RC-direct | with `-nosrl` | without |
 |---|---|---|
@@ -224,7 +192,7 @@ Xilinx's wrapper clocks the PLL0 power-up delay from:
 BUFG wake_refclk_bufg (.I (PIPE_CLK), .O (gt_cpllpdrefclk));
 ```
 
-`PIPE_CLK` is `IBUFDS_GTE2.O`. In Vivado this works. **nextpnr routes the net without error, but the BUFG output does not toggle on the board.** A JTAG probe read a counter on `gt_cpllpdrefclk`: stuck at 0. Counters on `clk62m5` and `clk_pclk` ran. A clock with no pulse.
+`PIPE_CLK` is `IBUFDS_GTE2.O`. In Vivado this works. **nextpnr routes the net without error, but the BUFG output does not toggle on the board.** A JTAG probe read a counter on `gt_cpllpdrefclk`: stuck at 0. Counters on the 62.5 MHz SOC clock (`clk62m5` then, `user_clk` now) and `clk_pclk` ran. A clock with no pulse.
 
 ```
 gt_cpllpdrefclk dead -> power-up delay never finishes counting
@@ -248,11 +216,11 @@ Run [`../set-env.sh`](../set-env.sh) first. It finds these tools, checks their v
 
 ### 1. openXC7 toolchain
 
-`yosys`, nextpnr and the bitstream tools: see [Building with the new toolchain](#building-with-the-new-toolchain), or [Building the right version](#building-the-right-version) for pre-v1.0.0.
+`yosys`, nextpnr and the bitstream tools: see [Building with the new toolchain](#building-with-the-new-toolchain).
 
 ### 2. sv2v
 
-**Required with pre-v1.0.0.** Yosys 0.38 does not understand SystemVerilog packages, interfaces or packed structs (`link_pkg`, `axis_if`, `pipe_if`). Optional with v1.0.0, whose Slang front end reads our sources as they are ([Native SV within Yosys, through Slang](#native-sv-within-yosys-through-slang)). sv2v is still the more mature path.
+Optional (`make FRONTEND=sv2v`). The pre-v1.0.0 Yosys 0.38 needed it: it does not understand SystemVerilog packages, interfaces or packed structs (`link_pkg`, `axis_if`, `pipe_if`). v1.0.0's Slang front end reads our sources as they are ([Native SV within Yosys, through Slang](#native-sv-within-yosys-through-slang)). sv2v is still the more mature path.
 
 ```bash
 wget https://github.com/zachjs/sv2v/releases/latest/download/sv2v-Linux.zip
@@ -278,35 +246,35 @@ make -f MakefileCSR       # -> csr_build/generated-files/{csr_pkg,csr}.sv
 
 ```bash
 source ../set-env.sh                    # once per shell
-make check-env                          # tools present; warns if nextpnr is the wrong version
+make check-env                          # tools present
 make check-sources                      # every RTL file and firmware.hex present
-make                                    # v1.0.0, read_slang (default), x4 Gen1 -> build_artifacts.x4.slang/top.x4g1.direct.bit
-make GEN=2                              # v1.0.0, read_slang, x4 Gen2      -> build_artifacts.x4.g2.slang/top.x4g2.direct.bit
-make LANES=1                            # v1.0.0, read_slang, x1           -> build_artifacts.slang/top.x1.direct.bit
-make VARIANT=switched                   # v1.0.0, read_slang, x1           -> build_artifacts.switched.slang/top.x1.switched.bit
-make CPU=picorv32                       # PicoRV32 instead of eduBOS5      -> build_artifacts.x4.picorv32.slang/top.x4g1.direct.bit
-make FRONTEND=sv2v                      # v1.0.0, sv2v, x4                 -> build_artifacts.x4.new/top.x4g1.direct.bit
-make TOOLCHAIN=old LANES=1              # pre-v1.0.0, x1                   -> build_artifacts/top.x1.direct.bit
-make TOOLCHAIN=old VARIANT=switched     # pre-v1.0.0, x1                   -> build_artifacts.switched/top.x1.switched.bit
+make                                    # x4 Gen1 (default)  -> build_artifacts/top.x4g1.direct.bit
+make GEN=2                              # x4 Gen2            -> build_artifacts/top.x4g2.direct.bit
+make LANES=1                            # x1 Gen2            -> build_artifacts/top.x1g2.direct.bit
+make VARIANT=switched                   # RC-switched, x1    -> build_artifacts/top.x1g2.switched.bit
+make CPU=picorv32                       # PicoRV32           -> build_artifacts/work/x4g1.direct.picorv32/top.x4g1.direct.bit
+make FRONTEND=sv2v                      # sv2v, not slang    -> build_artifacts/work/x4g1.direct.sv2v/top.x4g1.direct.bit
 ```
+
+All bitstreams sit side by side in `build_artifacts/`, named for the link and variant: `top.x4g1.direct.bit`, `top.x4g2.direct.bit`, `top.x1g2.direct.bit`, `top.x1g2.switched.bit`. These four are in git. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
+
+Everything else a build makes goes to `build_artifacts/work/<build>/`, not in git: `top.json`, `top_routed.json`, `top.fasm`, `top.frames`, the logs, and with sv2v the converted sources. Any build other than the default (another `CPU`, `FRONTEND=sv2v`, `ASSEMBLER=fpga-as` or another `SEED`) keeps its bitstream there too, in a folder named for it (e.g. `x4g1.direct.seed1/`), so it never replaces a committed one.
 
 | Target | Purpose |
 |---|---|
 | `make convert` | only sv2v conversion + module extraction (`FRONTEND=sv2v`) |
-| `make TOOLCHAIN=old` | build with the pre-v1.0.0 toolchain, into `build_artifacts.x4/` (`build_artifacts/` with `LANES=1`) |
-| `make FRONTEND=sv2v` | v1.0.0 through sv2v instead of `read_slang`, into `build_artifacts.x4.new/` |
 | `make info` | print resolved configuration and tool paths |
-| `make clean` | remove this configuration's `build_artifacts*/` and the local copy of `firmware.hex` |
-| `make clean-converted` | remove this configuration's `converted*/` |
-| `make clean-all` | all of the above, plus the chipdb (`chipdb.new/`; `chipdb/` with `TOOLCHAIN=old`) |
+| `make clean` | remove this build's `build_artifacts/work/<build>/` and the local copy of `firmware.hex` |
+| `make clean-converted` | remove this build's sv2v output |
+| `make clean-all` | remove all of `build_artifacts/work/`, the chipdb included; the bitstreams stay |
 
 Each tool is called through a variable (`YOSYS`, `NEXTPNR_XILINX`, `FPGA_AS`, ...) that `set-env.sh` sets. Override one with e.g. `make YOSYS=/path/to/yosys`.
 
-`VARIANT=switched` gets its own `converted.switched*/` and `build_artifacts.switched.slang/` (`build_artifacts.switched/` with `TOOLCHAIN=old`), and the clean targets act on those. The variants never mix. The chipdb is shared: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
+The chipdb is shared by all builds: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
 
-**Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `CSR` changes the file list but no file, so a date-based make would keep the old bitstream. And dates on a network share can come from the future. Always rebuilding beats both, and `make clean` is never needed.
+**Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `LANES`, `GEN` or `CPU` changes only defines and the file list, no file, so a date-based make would keep the old bitstream. And dates on a network share can come from the future. Always rebuilding beats both, and `make clean` is never needed.
 
-The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `chipdb.new/` (`chipdb/` with `TOOLCHAIN=old`). After that, a build takes about 2 minutes.
+The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `build_artifacts/work/chipdb/`. After that, a build takes about 2 minutes.
 
 ---
 
@@ -341,7 +309,7 @@ RC-switched uses channel **2** (`openxc7.switched.xdc`), the position its Vivado
 After every build, the FASM must contain `GTP_CHANNEL_1_MID_LEFT` at x1 (`GTP_CHANNEL_2_...` for RC-switched), and channels 0-3 at x4. The P&R step prints them:
 
 ```bash
-grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts.x4.slang/top.fasm | sort -u   # default x4 build
+grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/work/x4g1.direct/top.fasm | sort -u   # default x4 build
 ```
 
 **Gotcha:** at `PCIE_LANES=1` the netlist port is `txn`, not `txn[0]`. `[get_ports {txn[0]}]` silently matches nothing. At x4 it is the reverse: `openxc7.x4.xdc` must use `{txn[0]}` ... `{txn[3]}`.
@@ -366,7 +334,7 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 
 ## openXC7 compared with Vivado: the entire design
 
-**Scope:** the entire RC-direct design (`RC_opensource`): PCIE stack, GTPs, SOC with the default CPU (eduBOS5 2-stage), x4 Gen2 build with `user_clk` then 62.5 MHz (`clk62m5`), 2026-10-16. The SOC alone, with each of the three CPUs: [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+**Scope:** the entire RC-direct design (`RC_opensource`): PCIE stack, GTPs, SOC with the default CPU (eduBOS5 2-stage), x4 build of 2026-10-16, before the user clock scaled with the link: `user_clk` was 62.5 MHz (then named `clk62m5`). The SOC alone, with each of the three CPUs: [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 | | openXC7 v1.0.0 | Vivado 2026.1 |
 |---|---|---|
@@ -376,7 +344,7 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 | CARRY4 | 71 | 52 |
 | RAMB36E1 / DSP48 | 10 / 0 | 10 / 0 |
 | PCIE_2_1 / GTPE2_CHANNEL / GTPE2_COMMON / MMCME2 | 1 / 4 / 1 / 1 | 1 / 4 / 1 / 1 |
-| Fmax `clk62m5` (CPU, SOC), needs 62.5 MHz | 138.6 MHz | 142.0 MHz |
+| Fmax `user_clk` (CPU, SOC), needs 62.5 MHz in that build | 138.6 MHz | 142.0 MHz |
 | Fmax `clk125`, needs 125 MHz | 357.9 MHz | 181.6 MHz |
 | Fmax pipe clock, needs 250 MHz | 311.0 MHz | 301.6 MHz |
 | Bitstream | 9 730 756 B | 9 730 769 B |
@@ -385,11 +353,11 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 - Vivado reports no Fmax. Its figure here is 1 / (period - WNS). Vivado optimises only until each target is met, so it undersells what the design could reach. Compare with care.
 - nextpnr's Fmax varies between builds. The same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
 - The committed x4 bitstreams are later builds (2026-10-25, current RTL), assembled with the prjxray pair. `top.x4g1.direct.bit` (x4 Gen1, 2-stage eduBOS5): `user_clk` 157.2 MHz (needs 125), `clk125` 337.0 MHz, pipe clock 283.9 MHz. `top.x4g2.direct.bit` (x4 Gen2, 3-stage eduBOS5): `user_clk` **181.1 MHz, misses 250 MHz** ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), `clk125` 348.6 MHz, pipe clock 285.1 MHz. Neither is tested on hardware yet. The x1 builds (2026-10-21) pass: pipe clock 330.7 MHz (direct), 335.8 MHz (switched).
-- The bitstream is uncompressed, so its size does not depend on the design. The 13 bytes of difference are header metadata.
+- Both bitstreams were uncompressed, so their size does not depend on the design. The 13 bytes of difference are header metadata. The Vivado build now compresses (`BITSTREAM.GENERAL.COMPRESS` in the common XDC). openXC7's assemblers cannot yet ([lromor/fpga-assembler#59](https://github.com/lromor/fpga-assembler/issues/59)); a smaller bitstream would also be easier to keep in the repo.
 
 ## CPU options compared
 
-The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. At x4 Gen2 (`make GEN=2`, `user_clk` 250 MHz) the 3-stage is the default. A non-default CPU builds into its own folder (`build_artifacts.x4.picorv32.slang/`). nextpnr cannot apply the 3-stage's multicycle paths, so x4 Gen2 reaches 181 MHz here, 250 MHz in Vivado ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)). The three compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
+The SOC CPU is eduBOS5 2-stage (default), `make CPU=edubos5_3stg` or `make CPU=picorv32`. At x4 Gen2 (`make GEN=2`, `user_clk` 250 MHz) the 3-stage is the default. A non-default CPU builds in its own work folder (`build_artifacts/work/x4g1.direct.picorv32/`). nextpnr cannot apply the 3-stage's multicycle paths, so x4 Gen2 reaches 181 MHz here, 250 MHz in Vivado ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)). The three compared on the SOC only (Fmax, area, IPC): [eduBOS5 README](../../2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md#cpu-options-compared-the-soc-only).
 
 ## Lint and formal equivalence of RTL changes
 
@@ -416,7 +384,7 @@ In WSL, `lsusb` now lists the cable. Load the bitstream with [openFPGALoader](ht
 
 ```bash
 openFPGALoader --detect                 # cable and FPGA found?
-openFPGALoader build_artifacts.x4.slang/top.x4g1.direct.bit
+openFPGALoader build_artifacts/top.x4g1.direct.bit
 ```
 
 Vivado's Hardware Manager works the same way, once its cable drivers are installed (`<Vivado>/data/xicom/cable_drivers/lin64/install_script/install_drivers/install_drivers`, as root). `usbipd detach --busid <BUSID>` hands the cable back to Windows.
@@ -481,7 +449,7 @@ Each tool workaround in the sources carries a `FIXME` comment (`grep -rn FIXME`)
 
 ### Issues we found: Closed
 
-These affect only the pre-v1.0.0 toolchain.
+These affected only the pre-v1.0.0 toolchain, which the Makefile no longer uses.
 
 | # | Finding | Note | Tracked |
 |---|---|---|---|

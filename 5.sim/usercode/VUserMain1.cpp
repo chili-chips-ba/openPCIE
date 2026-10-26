@@ -48,6 +48,9 @@
 
 #include "VProcClass.h"
 #include "pcieModelClass.h"
+#ifdef SIM_SWITCHED
+#include "pcie_switch.h"
+#endif
 
 extern "C" {
 #include "ltssm.h"
@@ -255,8 +258,16 @@ extern "C" void VUserMain1(int node)
     // Create pcievhost API object for this node
     pcieModelClass *pcie = new pcieModelClass(node);
 
+#ifdef SIM_SWITCHED
+    // RC-switched (make VARIANT=switched): pcie_switch.cpp answers every
+    // request as a switch with endpoints behind it, so the model's own memory
+    // and config space are off
+    pcie->initialisePcie(SwitchInput, pcie);
+    pcie->configurePcie(CONFIG_DISABLE_MEM);
+#else
     // Initialise PCIe VHost, with input callback function and no user pointer.
     pcie->initialisePcie(VUserInput_1, NULL);
+#endif
 
     // Make sure the link is out of electrical idle
     vp1->write(LINK_STATE, 0);
@@ -277,8 +288,12 @@ extern "C" void VUserMain1(int node)
     // Use node number as seed
     pcie->pcieSeed(node);
 
+#ifdef SIM_SWITCHED
+    SwitchInit();
+#else
     // Construct an endpoint PCIe configuration space
     ConfigureType0PcieCfg(pcie);
+#endif
 
     // Send out idles until we recieve an interrupt
     do
