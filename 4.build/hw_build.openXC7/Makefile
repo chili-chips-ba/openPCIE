@@ -265,8 +265,8 @@ SRC_DIR  = $(COMMON_DIR)/src
 PCIE_DIR = $(SRC_DIR)/pcie
 # nextpnr-xilinx accepts only [get_ports]/[get_nets] targets, so it CANNOT read
 # the full Vivado XDC from 2.rtl/ (shared part in $(COMMON_DIR)/xdc/, GT lane in
-# $(RTL_DIR)/xdc/). A reduced version lives here; what was left
-# out and why is documented in the header of that file. XDC_FILE is set by the
+# $(RTL_DIR)/xdc/). A reduced version lives here, with only the pins, the
+# clocks and the GT pad positions. XDC_FILE is set by the
 # variant block above -- they differ only in the GT lanes:
 #   openxc7.x1.xdc       C5/D5/C11/D11  -> GTP_CHANNEL_1 = GTPE2_CHANNEL_X0Y5  (lane 2)
 #   openxc7.switched.xdc A6/B6/A10/B10  -> GTP_CHANNEL_2 = GTPE2_CHANNEL_X0Y6  (lane 0)
@@ -369,7 +369,7 @@ help:
 	@echo " make check-sources   verify all source files exist"
 	@echo " make info            print the configuration"
 	@echo " make clean           remove $(BUILD_ARTIFACTS)"
-	@echo " make clean-all       remove $(CONV_DIR)/ and chipdb/ as well"
+	@echo " make clean-all       remove $(CONV_DIR)/ and $(CHIPDB)/ as well"
 	@echo "================================================================"
 
 info:
@@ -566,7 +566,7 @@ $(BUILD_ARTIFACTS)/top.json: $(EXTRACT_TIMESTAMP) $(PURE_V_FILES) $(FIRMWARE)
 	@# but -ignore in yosys 0.38 ENTERS AN INFINITE LOOP (99% CPU, RSS flat,
 	@# >25 min with no end; the same command without -ignore finishes in ~25 s).
 	@# So the default flow stays, and the GT channel is pinned via PACKAGE_PIN
-	@# constraints on the GT pads themselves -- see openxc7.xdc.
+	@# constraints on the GT pads themselves -- see openxc7.x*.xdc.
 	@#
 	@# -nosrl history (see README, "-nosrl at synthesis"):
 	@#   pre-v1.0.0: required. Yosys turns the PLL0 power-up shift registers into
@@ -629,8 +629,9 @@ $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $
 	@echo "================================================================"
 	@echo " Place & Route (nextpnr-xilinx)"
 	@echo "================================================================"
-	@# --timing-allow-fail is INTENTIONAL -- see the rationale above. Failing the
-	@# 250 MHz metric is expected and verified harmless; forcing closure breaks it.
+	@# --timing-allow-fail is INTENTIONAL: a timing miss must not stop the build.
+	@# The achieved clocks are printed after P&R; x4 Gen2 misses its 250 MHz
+	@# user_clk because nextpnr cannot apply the eduBOS5 multicycle paths (#110).
 	@#
 	@# The exit status is captured DIRECTLY, without piping into tee. Do not rely
 	@# on  set -o pipefail : make uses /bin/sh, which on Ubuntu is dash and does
@@ -653,7 +654,7 @@ $(BUILD_ARTIFACTS)/top.fasm: $(BUILD_ARTIFACTS)/top.json $(CHIPDB)/$(PART).bin $
 	    exit 1; \
 	fi
 	@test -s $@ || { echo "ERROR: $@ is empty or missing"; exit 1; }
-	@echo "-- achieved clocks (a failure on clk_oobclk is expected) --"
+	@echo "-- achieved clocks --"
 	@grep -E "Max frequency" $(BUILD_ARTIFACTS)/nextpnr.log | tail -4
 	@echo "-- checks --"
 	@grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" $@ | sort -u \
@@ -706,7 +707,7 @@ endif
 # =============================================================================
 
 clean:
-	rm -rf $(BUILD_ARTIFACTS) firmware.hex .build-config$(OUT_SFX)$(GEN_SFX)
+	rm -rf $(BUILD_ARTIFACTS) firmware.hex
 
 clean-converted:
 	rm -rf $(CONV_DIR)

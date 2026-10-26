@@ -7,7 +7,7 @@
 # ORDER MATTERS: packages and interfaces first, then the modules that use them.
 #
 # The RTL is taken straight out of 2.rtl/0.common.opensource -- no copies,
-# no forks. Exactly two files are swapped for co-simulation models:
+# no forks. Exactly one file is swapped for a co-simulation model:
 #
 #   src/pcie/phy_top.sv  ->  models/phy_top.PIPE.sv
 #         the GT transceiver cannot talk to a PIPE-level VIP, so a behavioural
@@ -22,10 +22,10 @@
 # ---------------------------------------------------------------------
 sv work models/cosim/mem_model.sv
 sv work models/cosim/f_VProc.v
-# VProc dressed up as a picorv32. Only reached when the design is analysed with
+# VProc as the SOC's CPU, on its native memory bus. Only reached when the design is analysed with
 # --define SOC_CPU_VPROC (make CPU=vproc / CPU=iss); otherwise it is compiled
 # but never instantiated, and xelab prunes it.
-sv work models/soc_cpu.VPROC.picorv32.sv
+sv work models/soc_cpu.VPROC.native.sv
 sv work models/pcievhost/verilog/pcieVHost/pcieVHost.v
 sv work models/pcievhost/verilog/pcieVHost/pcieVHostPipex1.v
 sv work models/pcieVHostPipexN.sv
@@ -58,7 +58,8 @@ sv work ../2.rtl/0.common.opensource/src/soc_csr.sv
 # provides that module instead. mac2phy.sv, rx_eios_filter.sv, gtp_wrapper.sv,
 # lane_xcvr.sv, chan_retune.sv, phase_align.sv, speed_ctrl.sv
 # and init_ctrl.sv only exist inside phy_top,
-# so they go with it.
+# so they go with it. speed_ctrl.sv is still compiled below; nothing here
+# instantiates it, so xelab prunes it.
 sv work ../2.rtl/0.common.opensource/src/pcie/buffer_bank.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/clk_rst_gen.sv
 sv work ../2.rtl/0.common.opensource/src/pcie/speed_ctrl.sv

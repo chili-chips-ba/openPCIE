@@ -54,7 +54,7 @@ The diagram below is a block diagram of the top level test bench showing the mai
 <img alt="openPCIE Root Complex test bench structure" width=1000 src="../0.doc/5.sim/tb-structure.drawio.png">
 </p>
 
-The DUT's PCIE link connects to _pcievhost_, in an x1 PIPE wrapper (`pcieVHostPipex1.v`) configured as an endpoint. Its user code can generate traffic, and it answers every request that needs a completion by itself. It can print the traffic of both directions to the console, configured by `ContDisps.hex`.
+The DUT's PCIE link connects to _pcievhost_, configured as an endpoint, in our wrapper `PIPExN__pcieVHost.sv`: upstream's x1 PIPE wrapper `pcieVHostPipex1.v` at x1, our `pcieVHostPipexN.sv` at x4. Its user code can generate traffic, and it answers every request that needs a completion by itself. It can print the traffic of both directions to the console, configured by `ContDisps.hex`.
 
 The user software on the virtual processor configures the model: config space registers, link initialisation, and whatever a specific Endpoint should do. Here that is [`usercode/VUserMain1.cpp`](usercode/VUserMain1.cpp). It builds a Type 0 configuration space with PCIE, MSI and Power Management capabilities, and calls `initFc()` to bring up flow control. It does not model device behaviour behind the BARs ([Endpoint feature limitations](#endpoint-feature-limitations)).
 
@@ -76,8 +76,9 @@ tb.sv
       |    |    `- PCIE_2_1                     Xilinx hard macro (secureip)
       |    `- phy_top    <-- REPLACED -->      5.sim/models/phy_top.PIPE.sv
       |                                                +- PIPE PHY model
-      |                                                `- pcieVHostPipex1 (endpoint,
-      |                                                   VProc node 1, VUserMain1.cpp)
+      |                                                `- PIPExN__pcieVHost (endpoint,
+      |                                                   VProc node 1, VUserMain1.cpp;
+      |                                                   pcieVHostPipex1 / PipexN at x4)
       `- riscv_pcie_soc                             real RTL
            +- eduBOS5 (or picorv32)                 real RTL, runs firmware.hex
            `- soc_csr -> csr                        PeakRDL-generated CSR
@@ -159,8 +160,9 @@ device model. What you get, and what you don't:
   application logic to test against.
 * **No error injection.** Malformed TLPs, completion timeouts, retries and CRS
   storms take an edit of the model, not a setting.
-* **One lane.** The wrapper here is `pcieVHostPipex1`, x1 with a 16-bit PIPE
-  datapath. Wider links need another wrapper.
+* **x1 upstream, x4 here.** Upstream's wrapper `pcieVHostPipex1` is x1 with a
+  16-bit PIPE datapath; our `pcieVHostPipexN` runs the same model over x4
+  (`make SIM_LANES=4`), Gen1 only.
 * **The endpoint LTSSM paths were the least exercised part of the model.** Its
   usual job is the root complex. Three of them turned out wrong once real
   silicon drove them, instead of another copy of the same VIP. The fixes are in
@@ -221,7 +223,7 @@ A Verilator run would need `--timing` for the whole test bench, not only for the
 
 #### Why VCD and not FST?
 
-XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. [`tb.fst`](tb.fst) is tracked (5.3 MB VCD -> 73 KB, a 70x diet). `tb.vcd` is not.
+XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. [`tb.fst`](tb.fst) is tracked (11.6 MB VCD -> 86 KB, a 134x diet). `tb.vcd` is not.
 
 The ready-made `.wavecrux` sessions open `tb.fst`, so they work from a fresh clone. They bind signals by their number in the file, and that number differs between the VCD and the FST.
 
@@ -234,7 +236,7 @@ The ready-made `.wavecrux` sessions open `tb.fst`, so they work from a fresh clo
 | `models/rv32/src/rv32i_cpu.cpp` (in `rv32-openpcie.patch`) | `sw`, `sh` add the store extra cycles | upstream adds the load ones |
 | `models/rv32/usercode/rv32_timing_config.h` | PicoRV32, eduBOS5 2-/3-stage tables measured on the RTL in this SOC | see [Our Local VIP Improvements](#our-local-vip-improvements) |
 | `models/rv32/usercode/VUserMain0.cpp` | no fetch/load wait states; bus credit; waits for reset release, restarts on reset | see [Our Local VIP Improvements](#our-local-vip-improvements) |
-| `models/soc_cpu.VPROC.picorv32.sv` | 2-clock picorv32 handshake; `!resetn` on VProc interrupt bit 3 | see [Our Local VIP Improvements](#our-local-vip-improvements) |
+| `models/soc_cpu.VPROC.native.sv` | 2-clock picorv32 handshake; `!resetn` on VProc interrupt bit 3 | see [Our Local VIP Improvements](#our-local-vip-improvements) |
 
 pcievhost:
 
@@ -641,11 +643,11 @@ The SOC's CPU socket takes three different tenants, picked with `CPU=` on the ma
 make run                               # CPU=rtl CORE=edubos5, the default
 make run CORE=picorv32
 make run CPU=vproc
-make run CPU=iss                       # -V PICORV32
+make run CPU=iss                       # -V EDUBOS5STG2 (CORE=edubos5, the default)
 make run CPU=iss CORE=picorv32         # -V PICORV32
 ```
 
-The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv). eduBOS5 is the default, and `` `ifdef SOC_CPU_PICORV32 `` selects PicoRV32. `` `ifdef SOC_CPU_VPROC `` selects the module for the two VProc builds, [`models/soc_cpu.VPROC.picorv32.sv`](models/soc_cpu.VPROC.picorv32.sv): VProc in a picorv32 costume, driving the core's *native* memory interface.
+The swap happens in [`riscv_pcie_soc.sv`](../2.rtl/0.common.opensource/src/riscv_pcie_soc.sv). eduBOS5 is the default, and `` `ifdef SOC_CPU_PICORV32 `` selects PicoRV32. `` `ifdef SOC_CPU_VPROC `` selects the module for the two VProc builds, [`models/soc_cpu.VPROC.native.sv`](models/soc_cpu.VPROC.native.sv): VProc as the CPU, on the SOC's *native* memory bus (picorv32's `mem_valid`/`mem_ready` bus, which eduBOS5 drives too).
 
 > Not to be confused with the inherited `models/soc_cpu.VPROC.sv`, kept for reference. That one speaks the `soc_if` bus of the sibling Chili.CHIPS SOC infrastructure. This design has no `soc_if`: it instantiates the core directly, so it needed its own wrapper.
 
@@ -883,10 +885,11 @@ make help          Display this message
 make               Build C/C++ and HDL code without running simulation
 make run           Build and run batch simulation
 make rungui/gui    Build and run GUI simulation
+make fst           Convert tb.vcd into tb.fst (run does it when USRSIMOPTS has DUMP_VCD)
 make clean         clean previous build artefacts
 
 Command line configurable variables:
-  USER_C:       list of user source code files for soc_cpu (default VUserMain0.cpp)
+  USER_C:       list of user source code files for VProc (default ltssm.c; CPU=vproc/iss add VUserMain0.cpp)
   PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp)
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
@@ -896,6 +899,9 @@ Command line configurable variables:
                   rtl    the RTL core (CORE), executing firmware.hex
                   vproc  native C++ in usercode/VUserMain0.cpp
                   iss    the rv32 ISS, executing firmware.elf
+  CORE:         edubos5, edubos5_3stg or picorv32: the RTL core, or the ISS timing model (default edubos5)
+  VARIANT:      firmware variant, direct or switched, built with SIM=1 into obj/fw (default direct)
+  SIM_LANES:    link width, 1 or 4; 4 is Gen1 with a 125 MHz user_clk (default 1)
   RUN_US:       time limit in microseconds; a run ends 10 us after the firmware result (default 2000)
 ```
 
@@ -1010,7 +1016,7 @@ ISS on its own. What [`vusermain.cfg`](vusermain.cfg) really selects is the
 real firmware:
 
 ```
-vusermain0 -V EDUBOS5STG2 -H -x 0x30000000 -X 0x3FFFFFFF -t ../4.build/sw_build/firmware.elf
+vusermain0 -V EDUBOS5STG2 -H -x 0x30000000 -X 0x3FFFFFFF -t obj/fw/firmware.elf
 ```
 
 `-x`/`-X` put **only** the CSR window on the simulated bus. Code and data at
@@ -1064,13 +1070,13 @@ The [ISS manual](https://github.com/wyvernSemi/rv32/blob/main/iss/doc/iss_manual
 
 The _openPCIE_ test bench uses the [mem_model](https://github.com/wyvernSemi/mem_model) co-simulation HDL component. Behind it is the sparse memory model: C, with an API for reads and writes, part of the _pcieVHost_ software. It maps a 64-bit address space, allocating pages on demand, so it uses only the memory it needs. Any _VProc_ code can call the API to share this memory. The HDL reaches it through the `mem_model` component. Instantiate it as often as you like: every instance sees the same memory. So several _VProc_ virtual processors and the test bench logic all share one memory space.
 
-The inherited `soc_cpu.VPROC` has a `mem_model` for program writes via a UART. The `soc_cpu.VPROC.picorv32` wrapper used here has none, but the software on its _VProc_ can still reach the memory through the API. So can the software on the [_pcievhost_](#driving-the-pcie-link)'s _VProc_, in the `pcieVHostPipex1` driver.
+The inherited `soc_cpu.VPROC` has a `mem_model` for program writes via a UART. The `soc_cpu.VPROC.native` wrapper used here has none, but the software on its _VProc_ can still reach the memory through the API. So can the software on the [_pcievhost_](#driving-the-pcie-link)'s _VProc_, in the `pcieVHostPipex1` / `pcieVHostPipexN` driver.
 
 Details of the memory model HDL can be found in the [README.md](models/cosim/README.md) in `5.sim/models/cosim`.
 
 ## Driving the PCIE Link
 
-The _openPCIE_ logic has one x1 PCIE PIPE downstream port, for Gen1 and Gen2. The test bench drives it with `pcieVHostPipex1`, a module built on the _pcieVHost_ VIP.
+The _openPCIE_ logic has one PCIE PIPE downstream port, x1 or x4, for Gen1 and Gen2. The test bench drives it with `pcieVHostPipex1` (x1) or our `pcieVHostPipexN` (x4), modules built on the _pcieVHost_ VIP.
 
 <p align=center>
 <img alt="pcieVHost module" width=750 src="models/pcievhost/images/pcievhost_module.png">
@@ -1151,7 +1157,7 @@ How our co-simulation models differ from upstream, beyond [Local changes](#local
 
   jump: `jal`, `jalr` and a taken branch. eduBOS5 is exact. PicoRV32 is a fit: it prefetches, and its shifts take 1 cycle per 4 bits or per bit.
 - **Bus credit.** A load or store to the simulation takes real clocks on the VProc bus, but the timing table already counts them. So the ISS takes those clocks (2 per access) off its next synchronisation, and an access costs only its table cycles. No double billing.
-- **2-clock bus.** `soc_cpu.VPROC.picorv32.sv` runs picorv32's handshake: `mem_valid` with the request, `mem_ready` as the ack, one idle cycle after. Was 4 clocks.
+- **2-clock bus.** `soc_cpu.VPROC.native.sv` runs picorv32's handshake: `mem_valid` with the request, `mem_ready` as the ack, one idle cycle after. Was 4 clocks.
 - **Reset input.** `!resetn` drives VProc interrupt bit 3. The ISS starts at reset release, as the RTL core does, and restarts at the reset vector on a new reset.
 
 Result: the ISS lands within 0.6% of the RTL core it models ([What they cost](#what-they-cost)).

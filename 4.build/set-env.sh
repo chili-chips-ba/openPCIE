@@ -110,6 +110,9 @@ _se_tool NEXTPNR_HIMBAECHEL nextpnr-himbaechel ""    '$T --version' "$_se_hint_x
 _se_tool NEXTPNR_XILINX     nextpnr-xilinx     ""    ''             "$_se_hint_x7"
 _se_tool BBASM              bbasm              ""    ''             "$_se_hint_x7"
 _se_tool FPGA_AS            fpga-as            ""    ''             "$_se_hint_x7"
+# the default assembler (ASSEMBLER=prjxray): fasm2frames lives in the openXC7 venv
+_se_tool FASM2FRAMES        "${_se_x7:+$_se_x7/venv/bin/}fasm2frames" "" '' "$_se_hint_x7"
+_se_tool XC7FRAMES2BIT      xc7frames2bit      ""    ''             "$_se_hint_x7"
 _se_tool OPENXC7_PYTHON     python3            3.10  '$T --version' "$_se_hint_x7"
 _se_tool SV2V               sv2v               0.0.13 '$T --numeric-version' \
     "sv2v v0.0.13+: sv2v-Linux.zip from github.com/zachjs/sv2v/releases, into ~/.local/bin"

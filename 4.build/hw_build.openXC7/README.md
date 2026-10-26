@@ -104,14 +104,14 @@ v1.0.0 has its own `chipdb.new/` (different format) and output folders. It never
 
 The chipdb now comes from `xilinx_gen.py` instead of `bbaexport.py`. Synthesis and P&R are called as before: the new `nextpnr-xilinx` is a small shim that hands the same options to `nextpnr-himbaechel`.
 
-**Measured** (RC-direct unless noted):
+**Measured** on the same build for both: RC-direct x1 Gen2, sv2v front end, unless noted. The default x4 builds use channels 0-3.
 
 | | Pre-v1.0.0 toolchain | New toolchain |
 |---|---|---|
 | Build time, chipdb cached | about 2 min | 2 min 13 s (1) |
 | First build, incl. chipdb | several minutes | 6 min |
 | GT channel, link speed | channel 1, Gen2 | channel 1 (2), Gen2 |
-| Pipe clock `clk_oobclk`, 250 MHz | misses it (3) | 280 MHz (4), passes |
+| Pipe clock `pipe_clk`, 250 MHz | misses it (3) | 280 MHz (4), passes |
 | On hardware | **link up at Gen2** | not tested yet |
 
 1. RC-switched 2 min 21 s; 16 threads.
@@ -119,7 +119,7 @@ The chipdb now comes from `xilinx_gen.py` instead of `bbaexport.py`. Synthesis a
 3. Expected and verified harmless, see [Clocks](#clocks).
 4. RC-switched 274 MHz.
 
-nextpnr warns "Overriding derived constraint of 250.0 MHz on net u_pcie.clk_oobclk with user-specified constraint of 125.0 MHz". Ignore it. v1.0.0 prints the two values swapped, and the 250 MHz from `openxc7.xdc` applies. Fixed on nextpnr main `e313e46f` ([#21](https://github.com/chili-chips-ba/openPCIE/issues/21)).
+Older builds warned "Overriding derived constraint of 250.0 MHz on net u_pcie.clk_oobclk with user-specified constraint of 125.0 MHz" (`clk_oobclk` is now `pipe_clk`). v1.0.0 printed the two values swapped, and the 250 MHz from the XDC applied. Fixed on nextpnr main `e313e46f` ([#21](https://github.com/chili-chips-ba/openPCIE/issues/21)).
 
 [openXC7 findings](#openxc7-findings) lists which defects still bite on v1.0.0. The design-side fixes live in the RTL, so v1.0.0 builds get them too.
 
@@ -129,13 +129,13 @@ For years, open-source Yosys read only a subset of SystemVerilog. No packages, n
 
 Since **Yosys 0.67**, every Yosys has its own SystemVerilog front end, `read_slang`. It is the [slang](https://github.com/MikePopoloski/slang) compiler, through [sv-elab](https://github.com/povik/sv-elab). With v1.0.0 it is our default: plain `make`, no sv2v.
 
-**Our SystemVerilog goes in unchanged:** all 34 files (packages, interfaces, structs, the SystemVerilog picorv32), no language errors. Synthesis takes about 10 s, the whole build 2 min 26 s (2 min 13 s with sv2v).
+**Our SystemVerilog goes in unchanged:** all 35 files (32 with PicoRV32: packages, interfaces, structs, the CPU), no language errors. Synthesis takes about 10 s, the whole build 2 min 26 s (2 min 13 s with sv2v).
 
 **The Xilinx primitives need three workarounds** for upstream gaps:
 
 | Problem | Workaround |
 |---|---|
-| Primitives need declarations with parameters (a) | [`gen_xilinx_bb.py`](gen_xilinx_bb.py) writes them for the 8 primitives used |
+| Primitives need declarations with parameters (a) | [`gen_xilinx_bb.py`](gen_xilinx_bb.py) writes them for the 9 primitives used |
 | No `real` parameters on primitives ([sv-elab#282](https://github.com/povik/sv-elab/issues/282)) | MMCM real settings behind `` `ifndef SYN_YOSYS_BUG `` (b) |
 | `IBUFDS_GTE2.CLKSWING_CFG` default is `"TRUE"`, not `2'b11` ([yosys#6322](https://github.com/YosysHQ/yosys/issues/6322)) | `gen_xilinx_bb.py` writes `2'b11` |
 
@@ -196,7 +196,7 @@ v1.0.0 handles the cascade, so the Makefile passes `-nosrl` only with `TOOLCHAIN
 | Flip-flops | 1702 | 1486 |
 | SRL cells | 0 | 7 `SRLC32E`, 2 `SRL16E` |
 | LUTs | 1761 | 1740 |
-| `clk_oobclk` Fmax (250 MHz target) | 259 MHz | 280 MHz |
+| `pipe_clk` Fmax (250 MHz target) | 259 MHz | 280 MHz |
 
 *(`-nocarry` and `--router router1` only worked around the broken master nextpnr; `45a986b` needs neither.)*
 
@@ -293,20 +293,20 @@ make TOOLCHAIN=old VARIANT=switched     # pre-v1.0.0, x1                   -> bu
 | Target | Purpose |
 |---|---|
 | `make convert` | only sv2v conversion + module extraction (`FRONTEND=sv2v`) |
-| `make TOOLCHAIN=old` | build with the pre-v1.0.0 toolchain, into `build_artifacts/` |
-| `make FRONTEND=sv2v` | v1.0.0 through sv2v instead of `read_slang`, into `build_artifacts.new/` |
+| `make TOOLCHAIN=old` | build with the pre-v1.0.0 toolchain, into `build_artifacts.x4/` (`build_artifacts/` with `LANES=1`) |
+| `make FRONTEND=sv2v` | v1.0.0 through sv2v instead of `read_slang`, into `build_artifacts.x4.new/` |
 | `make info` | print resolved configuration and tool paths |
-| `make clean` | remove `build_artifacts/` and the local copy of `firmware.hex` |
-| `make clean-converted` | remove `converted/` |
-| `make clean-all` | all of the above, plus `chipdb/` |
+| `make clean` | remove this configuration's `build_artifacts*/` and the local copy of `firmware.hex` |
+| `make clean-converted` | remove this configuration's `converted*/` |
+| `make clean-all` | all of the above, plus the chipdb (`chipdb.new/`; `chipdb/` with `TOOLCHAIN=old`) |
 
 Each tool is called through a variable (`YOSYS`, `NEXTPNR_XILINX`, `FPGA_AS`, ...) that `set-env.sh` sets. Override one with e.g. `make YOSYS=/path/to/yosys`.
 
-`VARIANT=switched` gets its own `converted.switched/` and `build_artifacts.switched/`, and the clean targets act on those. The variants never mix. `chipdb/` is shared: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
+`VARIANT=switched` gets its own `converted.switched*/` and `build_artifacts.switched.slang/` (`build_artifacts.switched/` with `TOOLCHAIN=old`), and the clean targets act on those. The variants never mix. The chipdb is shared: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
 
 **Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `CSR` changes the file list but no file, so a date-based make would keep the old bitstream. And dates on a network share can come from the future. Always rebuilding beats both, and `make clean` is never needed.
 
-The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `chipdb/`. After that, a build takes about 2 minutes.
+The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `chipdb.new/` (`chipdb/` with `TOOLCHAIN=old`). After that, a build takes about 2 minutes.
 
 ---
 
@@ -338,10 +338,10 @@ Bank 216, from `prjxray-db/artix7/xc7a200tfbg484-3/package_pins.csv` (the `tile`
 
 RC-switched uses channel **2** (`openxc7.switched.xdc`), the position its Vivado XDC locks. x4 (`openxc7.x4.xdc`) uses all four: board lanes 0, 1, 2, 3 on channels 2, 0, 1, 3. Channels are numbered as in prjxray. [`2.rtl/README.md`](../../2.rtl/README.md#common-physical-constraints-xdc) lists the same positions by board lane.
 
-After every build, the FASM must contain `GTP_CHANNEL_1_MID_LEFT` (`GTP_CHANNEL_2_...` for RC-switched). The P&R step prints it:
+After every build, the FASM must contain `GTP_CHANNEL_1_MID_LEFT` at x1 (`GTP_CHANNEL_2_...` for RC-switched), and channels 0-3 at x4. The P&R step prints them:
 
 ```bash
-grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/top.fasm | sort -u
+grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts.x4.slang/top.fasm | sort -u   # default x4 build
 ```
 
 **Gotcha:** at `PCIE_LANES=1` the netlist port is `txn`, not `txn[0]`. `[get_ports {txn[0]}]` silently matches nothing. At x4 it is the reverse: `openxc7.x4.xdc` must use `{txn[0]}` ... `{txn[3]}`.
@@ -352,7 +352,7 @@ grep -oE "GTP_CHANNEL[A-Z0-9_]*_X[0-9]+Y[0-9]+" build_artifacts/top.fasm | sort 
 
 An **unconstrained** clock gets nextpnr's default target of **12 MHz**. So it is never optimised, and never reported as failing. Three of our four domains were like that. The pipe clock reached 245 MHz against 250 MHz required, and nobody said a word.
 
-The target must be the **exact** net name nextpnr reports (`u_pcie.clk_oobclk`), not the RTL hierarchical name. On a miss (`getNetByAlias`), the constraint is dropped **silently** (v1.0.0 now warns). That is why the five `create_clock` lines in regymm/pcie_7x do nothing there. They use Vivado-style `a/b/c` names; the netlist has `a.b.c`.
+The target must be the **exact** net name nextpnr reports (`u_pcie.pipe_clk`), not the RTL hierarchical name. On a miss (`getNetByAlias`), the constraint is dropped **silently** (v1.0.0 now warns). That is why the five `create_clock` lines in regymm/pcie_7x do nothing there. They use Vivado-style `a/b/c` names; the netlist has `a.b.c`.
 
 ---
 
@@ -412,7 +412,7 @@ usbipd bind --busid <BUSID>             # once per cable, admin shell
 usbipd attach --wsl --busid <BUSID>     # after every replug or reboot
 ```
 
-In WSL, `lsusb` now lists the cable. Load the bitstream with [openFPGALoader](https://github.com/trabucayre/openFPGALoader) (open source, `sudo apt install openfpgaloader`):
+In WSL, `lsusb` now lists the cable. Load the bitstream with [openFPGALoader](https://github.com/trabucayre/openFPGALoader) (open source, v1.1.1+; Ubuntu's package is older, so build it from source, see [4.build](../README.md)):
 
 ```bash
 openFPGALoader --detect                 # cable and FPGA found?
@@ -474,6 +474,7 @@ Each tool workaround in the sources carries a `FIXME` comment (`grep -rn FIXME`)
 |---|---|---|
 | `lane_xcvr.sv` | `TXPI_SYNFREQ_PPM = 3'd1` instead of Xilinx's 0 | [#27](https://github.com/chili-chips-ba/openPCIE/issues/27) |
 | `gtp_wrapper.sv` | PLL0 power-up delay clocked from `clk125` instead of `BUFG(PIPE_CLK)` | [#22](https://github.com/chili-chips-ba/openPCIE/issues/22) |
+| `gtp_wrapper.sv` | `PLL0_CFG`/`PLL1_CFG`: v1.0.0 ignores them and writes `0x1F03DC`, the value the board-proven bitstream runs on; test the RTL value on hardware once a nextpnr with the fix ships | [#18](https://github.com/chili-chips-ba/openPCIE/issues/18) |
 | `Makefile` | `ASSEMBLER=prjxray` by default instead of `fpga-as` | row 27 |
 | `clk_rst_gen.sv` | MMCM `real` parameters left out under `SYN_YOSYS_BUG` (slang flow) | [#20](https://github.com/chili-chips-ba/openPCIE/issues/20) |
 | `gen_xilinx_bb.py` | whole script (blackbox stubs for slang), plus the `CLKSWING_CFG` fix | [#29](https://github.com/chili-chips-ba/openPCIE/issues/29), [#19](https://github.com/chili-chips-ba/openPCIE/issues/19) |

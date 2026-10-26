@@ -80,12 +80,12 @@ around it - what AMD ships as encrypted IP - is opensource RTL here.
 | Buffering | `buffer_bank.sv` | RX/TX packet buffers (BRAM) |
 | Streaming | `trn_bridge.sv`, `trn_tx.sv`, `trn_rx.sv`, `trn_tx_throttle.sv` | AXI-Stream TLP interface towards the SOC |
 | Bridge | `pcie_top.sv` | ties the transaction and PHY sides together |
-| PHY control | `phy_top.sv`, `gtp_wrapper.sv` | PIPE-level control, reset and rate sequencing |
+| PHY control | `phy_top.sv`, `mac2phy.sv`, `gtp_wrapper.sv` | PIPE-level control (16/32-bit width conversion in `mac2phy`), reset and rate sequencing |
 | Bring-up FSMs | `init_ctrl.sv`, `phase_align.sv`, `lane_xcvr.sv` | GT reset sequence, TX phase alignment, per-lane status |
 | Transceiver | `lane_xcvr.sv`, `gtp_wrapper.sv` | `GTPE2_CHANNEL` and `GTPE2_COMMON` instances |
 | Clocking | `clk_rst_gen.sv` | MMCM: 125 / 250 MHz and the user clock from the 100 MHz refclk |
 | Tuning | `chan_retune.sv`, `speed_ctrl.sv`, `rx_eios_filter.sv` | RX data width (x16/x20) via DRP, Gen1/Gen2 rate change, EIOS filtering |
-| Interfaces | `link_pkg.sv`, `axis_if.sv`, `trn_if.sv`, `pipe_if.sv`, `cfg_if.sv`, `mem_if.sv`, `mim_if.sv`, `gtp_if.sv` | package and SystemVerilog interfaces, see [SystemVerilog interfaces](../README.md#systemverilog-interfaces) |
+| Interfaces | `link_pkg.sv`, `pcie_pkg.sv`, `axis_if.sv`, `trn_if.sv`, `pipe_if.sv`, `cfg_if.sv`, `mem_if.sv`, `mim_if.sv`, `gtp_if.sv` | package and SystemVerilog interfaces, see [SystemVerilog interfaces](../README.md#systemverilog-interfaces) |
 
 ### Clocking
 
@@ -106,7 +106,7 @@ it on rate change. It is the tightest timing domain in the design, with
 `user_clk` at x4 Gen2. The user clock follows the link: 62.5 MHz at x1, 125 MHz
 at x4 Gen1, 250 MHz at x4 Gen2 (`USER_CLK_FREQ` in `pcie_pkg.sv`).
 
-The PLL0 power-up delay in `init_ctrl` runs from `clk125` rather than from the refclk buffer - see [PLL0 power-up delay clocked from `clk125`](../../4.build/hw_build.openXC7/README.md#pll0-power-up-delay-clocked-from-clk125) for why.
+The PLL0 power-up delay in `gtp_wrapper` runs from `clk125` rather than from the refclk buffer - see [PLL0 power-up delay clocked from `clk125`](../../4.build/hw_build.openXC7/README.md#pll0-power-up-delay-clocked-from-clk125) for why.
 
 ---
 
@@ -169,8 +169,7 @@ source RC-direct.opensource.tcl
 It is a short wrapper around the shared
 [`RC.opensource.tcl`](../0.common.opensource/RC.opensource.tcl), which collects
 `src/` and `src/pcie/*.sv` from `0.common.opensource`, the shared XDC plus this
-folder's lane XDC, sets
-`XPM_LIBRARIES = XPM_CDC`, and registers `firmware.hex` from
+folder's lane XDC, and registers `firmware.hex` from
 `4.build/sw_build/` as the memory-init file. The generated project lands in
 `xbuild.Vivado-v2024.2/`.
 

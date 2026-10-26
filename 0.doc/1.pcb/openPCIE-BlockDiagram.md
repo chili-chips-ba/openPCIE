@@ -86,7 +86,7 @@ Note: discovery-stage option for a follow-up Gen3 board. A 20-lane ASMedia-based
 - SW_EP3
 - PC2-EPEP pinout / Oculink provides REFCLK and RESET
 - OCuLink SFF-8612 (female/board side) / - x8 / 80Pin -
-- PI7C9X3G / 1224GPB
+- PI7C9X3G / 1224GP
 - cca 10W per slot70W total
 - 6-pin PCIE Power connector(3x12V, 3xGND)
 - DC/DC Buck and LDOs for power distribution

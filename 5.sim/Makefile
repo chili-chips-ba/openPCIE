@@ -36,7 +36,7 @@ BUILD            = DEFAULT
 #         executed by RTL.
 #
 # The DUT is identical in all three; only the module plugged into the CPU
-# socket of riscv_pcie_soc.sv changes. See models/soc_cpu.VPROC.picorv32.sv.
+# socket of riscv_pcie_soc.sv changes. See models/soc_cpu.VPROC.native.sv.
 CPU             ?= rtl
 
 # The RISC-V core: edubos5 (default, 2-stage), edubos5_3stg or picorv32.
@@ -231,7 +231,7 @@ SPC =
 # BUILD RULES
 #======================================================
 
-.PHONY: all, compile, run, rungui, gui, fst, help, clean
+.PHONY: all, sysverilog, sim, run, rungui, gui, fst, help, clean
 
 all: sysverilog
 
@@ -343,7 +343,7 @@ help:
 	@$(info make clean         clean previous build artefacts)
 	@$(info )
 	@$(info Command line configurable variables:)
-	@$(info $(SPC) $(SPC) USER_C:       list of user source code files for soc_cpu (default VUserMain0.cpp))
+	@$(info $(SPC) $(SPC) USER_C:       list of user source code files for VProc (default ltssm.c; CPU=vproc/iss add VUserMain0.cpp))
 	@$(info $(SPC) $(SPC) PCIE_C:       list of user source code files for pcievhost modules (default VUserMain1.cpp))
 	@$(info $(SPC) $(SPC) USRCODEDIR:   directory containing user source code (default $$(CURDIR)/usercode))
 	@$(info $(SPC) $(SPC) OPTFLAG:      Optimisation flag for user VProc code (default -g))
@@ -355,6 +355,7 @@ help:
 	@$(info $(SPC) $(SPC) $(SPC)   iss    the rv32 ISS, executing firmware.elf)
 	@$(info $(SPC) $(SPC) CORE:         edubos5, edubos5_3stg or picorv32: the RTL core, or the ISS timing model (default edubos5))
 	@$(info $(SPC) $(SPC) VARIANT:      firmware variant, direct or switched, built with SIM=1 into obj/fw (default direct))
+	@$(info $(SPC) $(SPC) SIM_LANES:    link width, 1 or 4; 4 is Gen1 with a 125 MHz user_clk (default 1))
 	@$(info $(SPC) $(SPC) RUN_US:       time limit in microseconds; a run ends 10 us after the firmware result (default $(RUN_US)))
 	@$(info )
 

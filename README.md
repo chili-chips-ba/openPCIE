@@ -237,7 +237,7 @@ The [openPCIE test bench](5.sim/README.md) aims to have a flexible approach to s
 
 The test bench has the following features:
 
-* A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.picorv32`](5.sim/models/README.md#soc_cpuvprocpicorv32) component
+* A [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor based [`soc_cpu.VPROC.native`](5.sim/models/README.md#soc_cpuvprocnative) component
   * [Selectable](5.sim/README.md#the-three-cpu-options) between this or the RTL core (eduBOS5 by default, or PicoRV32), with `make CPU=rtl|vproc|iss`
   * Can run natively compiled test code
   * Can run the application compiled natively with the [auto-generated co-sim HAL](4.build/README.md#csr-hal-compilation)
@@ -260,7 +260,7 @@ One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://githu
 
 ### Co-sim HAL
 
-The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the picorv32 memory bus, and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
+The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header. For co-simulation purposes an additional layer is auto-generated from the same SystemRDL specification using [`systemrdl-compiler`](https://systemrdl-compiler.readthedocs.io/en/stable/) that accompanies the `peakrdl` tools. This produces two header files that define a common API to the application layer for both the RISC-V platform and the *VProc* based co-simulation verification environment. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
 
 More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
   

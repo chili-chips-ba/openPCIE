@@ -6,9 +6,11 @@
 // openPCIE * NLnet-sponsored open-source implementation
 //--------------------------------------------------------------------------
 // Description:
-//   VProc virtual processor presented as a picorv32.
+//   VProc virtual processor as the SOC's CPU, on its native memory bus
+//   (picorv32's mem_valid/mem_ready bus, which eduBOS5 drives too).
 //
-//   Drop-in replacement for the picorv32 instance in riscv_pcie_soc.sv, so
+//   Drop-in replacement for the RTL core (eduBOS5 or PicoRV32) in
+//   riscv_pcie_soc.sv, so
 //   that the CPU of the SOC can be a native C/C++ program (or the rv32 ISS)
 //   instead of the RTL core. Everything else in the design -- the CSR, the
 //   PCIe stack, the top level -- is untouched and runs exactly as it does

@@ -180,27 +180,27 @@ The XDC maps the PCIE signals to the pins of the `Acorn CLE-215+` and the `openP
 
 ### Utilization and Timing Stats
 
-openXC7 v1.0.0 build (Yosys `read_slang` + nextpnr-himbaechel) of the opensource RC, part `xc7a200tfbg484-3`: **x4 Gen2**, then the default, and x1 Gen2 (`make LANES=1`) for reference.
+openXC7 v1.0.0 builds (Yosys `read_slang` + nextpnr-himbaechel) of the opensource RC, part `xc7a200tfbg484-3`, 2026-10-25: **x4 Gen1** (the default, eduBOS5 2-stage), x4 Gen2 (`make GEN=2`, eduBOS5 3-stage) and x1 Gen2 (`make LANES=1`).
 
-| Resource | x4 Gen2 | x1 Gen2 |
-|---|---|---|
-| LUTs (`SLICE_LUTX`) | 2,641 | 2,246 |
-| Flip-flops (`SLICE_FFX`) | 2,230 | 1,588 |
-| `CARRY4` | 109 | 90 |
-| `RAMB36E1` (BRAM) | 10 | 10 |
-| `PCIE_2_1` | 1 | 1 |
-| `GTPE2_CHANNEL` | 4 | 1 |
-| `GTPE2_COMMON` | 1 | 1 |
-| `MMCME2_ADV` | 1 | 1 |
-| `BUFGCTRL` (BUFG + BUFGCTRL) | 4 | 4 |
+| Resource | x4 Gen1 | x4 Gen2 | x1 Gen2 |
+|---|---|---|---|
+| LUTs (`SLICE_LUTX`) | 2,186 | 2,190 | 1,807 |
+| Flip-flops (`SLICE_FFX`) | 2,270 | 2,266 | 1,628 |
+| `CARRY4` | 79 | 79 | 62 |
+| `RAMB36E1` (BRAM) | 10 | 10 | 10 |
+| `PCIE_2_1` | 1 | 1 | 1 |
+| `GTPE2_CHANNEL` | 4 | 4 | 1 |
+| `GTPE2_COMMON` | 1 | 1 | 1 |
+| `MMCME2_ADV` | 1 | 1 | 1 |
+| `BUFGCTRL` (BUFG + BUFGCTRL) | 4 | 4 | 4 |
 
-| Clock | Target | Fmax, x4 Gen2 | Margin, x4 Gen2 | Fmax, x1 Gen2 |
-|---|---|---|---|---|
-| `pipe_clk` | 250 MHz (Gen2) | 311.24 MHz | +24% | 310.66 MHz |
-| `clk125` | 125 MHz | 379.51 MHz | +204% | 382.85 MHz |
-| `user_clk` (then `clk62m5`) | 62.5 MHz | 170.01 MHz | +172% | 175.69 MHz |
+| Clock | x4 Gen1 | x4 Gen2 | x1 Gen2 |
+|---|---|---|---|
+| `pipe_clk`, needs 250 MHz | 283.9 MHz | 285.1 MHz | 285.4 MHz |
+| `clk125`, needs 125 MHz | 337.0 MHz | 348.6 MHz | 409.8 MHz |
+| `user_clk` | 157.2 MHz, needs 125 | **181.1 MHz, needs 250** | 148.2 MHz, needs 62.5 |
 
-All clocks meet target. Fmax is nextpnr's estimate and varies with placement. These builds predate the x4 user clock fix: x4 Gen2 now needs `user_clk` at 250 MHz ([above](#link-width-speed-and-user-clock)).
+Fmax is nextpnr's estimate and varies with placement. Every clock meets its target except x4 Gen2's `user_clk`: nextpnr cannot apply the 3-stage eduBOS5's multicycle paths ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), so it times them as single-cycle. Vivado closes x4 Gen2 ([above](#link-width-speed-and-user-clock)).
 
 ### RTL coding rules
 

@@ -60,7 +60,7 @@ const  uint32_t        sw_irq_addr     = 0xafffffff;
 const  uint32_t        max_sync_diff   = 1000;
 
 // openPCIE: simulation clocks a load / store over the VProc bus takes
-// (soc_cpu.VPROC.picorv32.sv handshake), on top of the ISS's own cycle count.
+// (soc_cpu.VPROC.native.sv handshake), on top of the ISS's own cycle count.
 // They are taken off the following synchronisations, so that an access costs
 // only its timing-model cycles, as on the RTL core. Calibrated: 5.sim/README.md.
 const  uint32_t        sim_write_cycles = 2;
@@ -73,7 +73,7 @@ const  uint32_t        sim_read_cycles  = 2;
 static uint32_t        extirq          = 0;
 static uint32_t        swirq           = 0;
 
-// openPCIE: the SOC reset, VProc interrupt bit 3 (soc_cpu.VPROC.picorv32.sv).
+// openPCIE: the SOC reset, VProc interrupt bit 3 (soc_cpu.VPROC.native.sv).
 // Assumed asserted until the first interrupt callback says otherwise.
 static volatile bool   in_reset        = true;
 

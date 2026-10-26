@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # =============================================================================
-# Firmware build for the picorv32 core inside the opensource RC
+# Firmware build for the RISC-V core (eduBOS5 or PicoRV32) inside the opensource RC
 #
 # Run FROM THIS FOLDER, on Linux or WSL:
 #   source ../set-env.sh      (tcsh: source ../set-env.csh) -- finds the tools
@@ -77,7 +77,7 @@ PYTHON ?= python3
 # ---- Output folder ----------------------------------------------------------
 # Default: this folder, where the tracked firmware.hex (the board build) lives.
 OUT    ?= .
-RM_OUT  = rm -f $(OUT)/firmware.elf $(OUT)/firmware.bin $(OUT)/firmware.hex .build-config
+RM_OUT  = rm -f $(OUT)/firmware.elf $(OUT)/firmware.bin $(OUT)/firmware.hex
 
 # ---- Flags ------------------------------------------------------------------
 # rv32i only -- picorv32 is configured without M/C extensions.

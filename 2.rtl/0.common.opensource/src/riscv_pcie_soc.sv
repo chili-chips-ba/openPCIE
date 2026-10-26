@@ -87,7 +87,7 @@ module riscv_pcie_soc
   //   `define SOC_CPU_VPROC : the VProc virtual processor, so that a native
   //                         C/C++ program or the rv32 ISS drives the very
   //                         same bus. Co-simulation only -- see
-  //                         5.sim/models/soc_cpu.VPROC.picorv32.sv and
+  //                         5.sim/models/soc_cpu.VPROC.native.sv and
   //                         "make CPU=vproc" / "make CPU=iss" in 5.sim.
   //
   // Nothing else in the SOC changes: the address decode, the CSR and the PCIe

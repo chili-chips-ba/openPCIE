@@ -21,7 +21,7 @@ What stays in each variant's own folder is only what really differs:
 
 | | RC-direct | RC-switched |
 |---|---|---|
-| GT lane (one-line XDC) | `GTPE2_CHANNEL_X0Y5` | `GTPE2_CHANNEL_X0Y6` |
+| GT lanes (XDC) | x4 (default): `GTPE2_CHANNEL_X0Y6`, `X0Y4`, `X0Y5`, `X0Y7`; x1: `X0Y5` | x1: `GTPE2_CHANNEL_X0Y6` |
 | Vivado project | `RC-direct.opensource.tcl` -> `xbuild.Vivado-v2024.2/` | `RC-switched.opensource.tcl` -> `xbuild.Vivado-v2024.2/` |
 | Firmware | [`3.sw/RC-direct`](../../3.sw/RC-direct) | [`3.sw/RC-switched`](../../3.sw/RC-switched) |
 

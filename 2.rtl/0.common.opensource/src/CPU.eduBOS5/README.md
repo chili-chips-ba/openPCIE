@@ -94,7 +94,7 @@ The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.bui
 
 ### Experiment: CSR read without its output register
 
-Built 2026-10-16, before the user-clock fix, with the CPU clock constrained to 220 MHz. By default the CSR registers its read data and ready, so every CSR access takes 1 cycle more. `` `define SOC_CSR_RD_COMB `` (`soc_csr.sv`, `RD_FLOP=0`) answers straight from the 9-input read mux, in the request cycle. Does the flop favour one CPU? Or is it a flop?
+Built 2026-10-16, before the user-clock fix, with the CPU clock constrained to 220 MHz. By default the CSR registers its read data and ready, so every CSR access takes 1 cycle more. `` `define SOC_CSR_RD_COMB `` (`soc_csr.sv`, `RD_FLOP=0`) answers straight from the read mux (9 inputs then; 10 since `status.result`), in the request cycle. Does the flop favour one CPU? Or is it a flop?
 
 | Flop (default) / comb | PicoRV32 | eduBOS5 2-stage |
 |---|---|---|
@@ -106,7 +106,7 @@ Built 2026-10-16, before the user-clock fix, with the CPU clock constrained to 2
 
 - **The critical path tells, not the Fmax figure.** Without the flop, PicoRV32's worst path runs through the read mux. PicoRV32 decodes the read data in the same cycle, and the CSR flop is what kept that path off. eduBOS5 registers the read data first. Its worst path stays RAM -> ALU and never touches the CSR.
 - **The figures alone are noise.** Both PicoRV32 runs met the 220 MHz target, so Vivado stopped optimising. Both are lower bounds, and the 7 MHz gap proves nothing by itself. eduBOS5's 8.5 MHz drop is on a path the change did not touch, so it can only be place-and-route variation. The openXC7 rise on both is noise too: nextpnr's Fmax wobbles more than that between builds.
-- **9 registers is a small CSR, but a good model of peripherals.** Each register stands in for a peripheral answering on the bus: 9 peripherals plus the RAM. Peripherals and CSRs are typically flopped at their output, as here.
+- **9 registers (10 now) is a small CSR, but a good model of peripherals.** Each register stands in for a peripheral answering on the bus: 9 peripherals plus the RAM. Peripherals and CSRs are typically flopped at their output, as here.
 - The comb read saves 33 FF (the 32-bit read data and ready) and costs up to 23 LUT.
 - Both pass the co-simulation, and the result comes under 1% sooner. The PCIE link sets the pace, not the CSR accesses.
 - Same setup as the table above, built 2026-10-16. The default stays the flop.

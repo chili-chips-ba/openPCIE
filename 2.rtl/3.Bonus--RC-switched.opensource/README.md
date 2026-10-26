@@ -77,23 +77,29 @@ the bus number is picked back out of the header, and only the Type bit is
 overridden:
 
 ```systemverilog
-assign pkt_bus_num       = tx_header2[31:24];
-assign pkt_is_cfg        = (tx_header0[28:25] == 4'b0010);
-assign tx_header0_routed = pkt_is_cfg
-                         ? {tx_header0[31:25], (pkt_bus_num > 8'd1), tx_header0[23:0]}
-                         : tx_header0;
+assign tx_dw0     = csr_out.tx.header0.hdr.value;
+assign tx_cfg_dw2 = csr_out.tx.header2.hdr.value;
+assign pkt_is_cfg = (tx_dw0.tlp_type[4:1] == TLP_TYPE_CFG);
+
+always_comb begin
+  tx_dw0_routed = tx_dw0;
+  if (pkt_is_cfg) begin
+    tx_dw0_routed.tlp_type[0] = (tx_cfg_dw2.bus > 8'd1);
+  end
+end
 ```
 
-`Fmt`/`Type` sits in `tx_header0[31:24]`; `[28:25] == 4'b0010` marks a
-Configuration request and bit `[24]` is the Type 0 / Type 1 selector. Memory and
-Completion TLPs pass through untouched.
+`tlp_type[4:1]` marks a Configuration request and `tlp_type[0]` is the Type 0 /
+Type 1 selector (structs `pcie_tlp_dw0_t`, `pcie_cfg_dw2_t` in `pcie_pkg.sv`).
+Memory and Completion TLPs pass through untouched.
 
 This logic is in the shared SOC, so RC-direct carries it too. There it never
 acts: the direct firmware addresses its endpoint on bus 1, which is a Type 0
 request either way. What does differ between the two projects:
 
 * The GT lane. This folder's XDC holds one line, locking the transceiver to
-  `GTPE2_CHANNEL_X0Y6` (RC-direct: `X0Y5`); all other constraints are shared -
+  `GTPE2_CHANNEL_X0Y6` (RC-direct: `X0Y5` at x1; at x4, the default, `X0Y6`,
+  `X0Y4`, `X0Y5`, `X0Y7` for lanes 0-3); all other constraints are shared -
   see the lane table in [`2.rtl/README.md`](../README.md#common-physical-constraints-xdc).
 * The firmware, below.
 
@@ -239,7 +245,7 @@ make VARIANT=switched
 
 Output goes to `build_artifacts.switched.slang/top.x1.switched.bit`, kept separate from the direct
 build. See [`4.build/hw_build.openXC7`](../../4.build/hw_build.openXC7) for the
-toolchain requirements - in particular, the nextpnr-xilinx version is critical.
+toolchain requirements - in particular, the nextpnr version is critical.
 
 ----
 End-of-Document

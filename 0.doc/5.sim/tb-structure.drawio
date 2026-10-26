@@ -13,7 +13,7 @@
         <mxCell id="c5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#f2f2f2;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;arcSize=4;" value="" vertex="1">
           <mxGeometry height="445" width="453" x="352" y="30" as="geometry" />
         </mxCell>
-        <mxCell id="c6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#000000;fontSize=14;fontStyle=0;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;" value="&lt;span style=&quot;font-size:20px&quot;&gt;top&lt;/span&gt;&lt;br&gt;PCIe 2.0&lt;br&gt;1 lane RC" vertex="1">
+        <mxCell id="c6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#000000;fontSize=14;fontStyle=0;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;" value="&lt;span style=&quot;font-size:20px&quot;&gt;top&lt;/span&gt;&lt;br&gt;PCIe 2.0&lt;br&gt;x1/x4 RC" vertex="1">
           <mxGeometry height="100" width="160" x="352" y="30" as="geometry" />
         </mxCell>
         <mxCell id="c7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d9d9d9;strokeColor=default;fontColor=#000000;fontSize=14;fontStyle=0;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;shadow=1;dashed=1;dashPattern=1 2;" value="riscv_pcie_soc (PICORV32)" vertex="1">
@@ -30,9 +30,6 @@
         </mxCell>
         <mxCell id="c11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#a9d18e;strokeColor=none;fontColor=#ffffff;fontSize=22;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;fontStyle=1;" value="&lt;b&gt;vproc&lt;/b&gt; (0)" vertex="1">
           <mxGeometry height="56" width="172" x="497" y="188" as="geometry" />
-        </mxCell>
-        <mxCell id="c12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#a9d18e;strokeColor=none;fontColor=#ffffff;fontSize=14;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;horizontal=0;rotation=180;" value="mem model" vertex="1">
-          <mxGeometry height="82" width="42" x="430" y="182" as="geometry" />
         </mxCell>
         <mxCell id="EHsqjRW1D2qR2rqIMf5r-3" edge="1" parent="1" source="c17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="c11" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -67,7 +64,7 @@
             <mxPoint x="583" y="537" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=14;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="PCIe PIPE Data x1" vertex="1">
+        <mxCell id="c23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=14;fontStyle=0;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="PCIe PIPE Data x1 or x4" vertex="1">
           <mxGeometry height="24" width="200" x="605" y="482" as="geometry" />
         </mxCell>
         <mxCell id="c24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=40;fontStyle=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="DUT" vertex="1">
@@ -88,7 +85,7 @@
             <mxPoint x="508" y="154" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=2;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="selected through&lt;br&gt;auto-processing&lt;br&gt;top.filelist" vertex="1">
+        <mxCell id="c28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=none;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=2;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="selected with&lt;br&gt;make CPU= and&lt;br&gt;CORE=" vertex="1">
           <mxGeometry height="58" width="140" x="850" y="160" as="geometry" />
         </mxCell>
         <mxCell id="c29" edge="1" parent="1" style="html=1;endArrow=oval;endSize=5;strokeColor=#bfbfbf;rounded=0;">
@@ -148,7 +145,7 @@
             <mxPoint x="806" y="578" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c39" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#adb9ca;strokeColor=none;fontColor=#ffffff;fontSize=17;fontStyle=0;align=right;verticalAlign=top;spacingLeft=6;spacingRight=6;opacity=85;" value="pcieVHostPipex1" vertex="1">
+        <mxCell id="c39" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#adb9ca;strokeColor=none;fontColor=#ffffff;fontSize=17;fontStyle=0;align=right;verticalAlign=top;spacingLeft=6;spacingRight=6;opacity=85;" value="PIPExN__pcieVHost (pcieVHostPipex1 / PipexN)" vertex="1">
           <mxGeometry height="316" width="442" x="362" y="510" as="geometry" />
         </mxCell>
         <mxCell id="c40" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#6b8f45;strokeColor=none;fontColor=#a9d18e;fontSize=22;fontStyle=0;align=center;verticalAlign=bottom;spacingLeft=6;spacingRight=6;shadow=1;fontStyle=1;" value="pcievhost" vertex="1">
@@ -205,18 +202,12 @@
             <mxPoint x="508" y="684" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c55" edge="1" parent="1" style="html=1;endArrow=classic;endSize=5;strokeColor=#404040;dashed=1;rounded=0;">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="390" y="240" as="sourcePoint" />
-            <mxPoint x="432" y="240" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="c56" edge="1" parent="1" style="html=1;endArrow=classic;endSize=5;strokeColor=#404040;dashed=1;rounded=0;">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="390" y="170" />
             </Array>
-            <mxPoint x="390" y="240" as="sourcePoint" />
+            <mxPoint x="390" y="428" as="sourcePoint" />
             <mxPoint x="497" y="170" as="targetPoint" />
           </mxGeometry>
         </mxCell>

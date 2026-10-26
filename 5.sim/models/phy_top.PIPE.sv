@@ -35,8 +35,9 @@
 //
 //   Clocking
 //   --------
-//   In hardware the GT recovers TXOUTCLK (125 MHz) and clk_rst_gen's MMCM makes
-//   PCLK (125 MHz Gen1 / 250 MHz Gen2) and USERCLK1/2 (62.5 MHz) from it. Here
+//   In hardware the GT passes the 100 MHz refclk out as TXOUTCLK, and
+//   clk_rst_gen's MMCM makes PCLK (125 MHz Gen1 / 250 MHz Gen2) and
+//   USERCLK1/2 (62.5 MHz at x1, 125 MHz at x4 Gen1, 250 MHz at x4 Gen2). Here
 //   TXOUTCLK is a behavioural oscillator and everything downstream is the real
 //   clk_rst_gen, so the clock topology the design sees is unchanged.
 //
@@ -86,7 +87,7 @@ module phy_top
   // 1000 MHz and the outputs come out as
   //     CLKOUT0 = 1000/8  = 125   MHz   PCLK, Gen1
   //     CLKOUT1 = 1000/4  = 250   MHz   PCLK, Gen2
-  //     CLKOUT2 = 1000/16 =  62.5 MHz   USERCLK1/2
+  //     CLKOUT2 = 1000/(32 >> USER_CLK_FREQ) = 62.5 / 125 / 250 MHz   USERCLK1/2
   // Feed it anything else and every clock in the design scales with it -- at
   // 125 MHz in, PCLK becomes 156.25 MHz and the PIPE then over-samples the
   // link partner, duplicating one symbol in five.

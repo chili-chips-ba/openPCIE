@@ -2,8 +2,8 @@
 
 This directory contains the following bus functional models
 
-* `soc_cpu.VPROC.picorv32.sv` : _VProc_ presented as a **picorv32**, and the one
-  this project actually uses. Selected with `make CPU=vproc` or `make CPU=iss`
+* `soc_cpu.VPROC.native.sv` : _VProc_ as the SOC's CPU, on its **native** memory
+  bus, and the one this project actually uses. Selected with `make CPU=vproc` or `make CPU=iss`
   -- see [The three CPU options](../README.md#the-three-cpu-options).
 * `soc_cpu.VPROC.sv` : the inherited _VProc_ based `soc_cpu`, which speaks the
   `soc_if` bus. Kept for reference; not instantiated here (see below).
@@ -24,15 +24,15 @@ In addition, sub-directories contain the following models
 
 * [`cosim`](cosim/README.md) : Contains the _VProc_ and _mem_model_ co-simulation VIP.
 * [`rv32`](rv32/README.md) : Contains the _rv32_ RISC-V RV32GC (+ Zba/Zbb/Zbc/Zbs) instruction set simulator C++ model
-* [`pcievhost`](pcievhost/README.md) : Contains the PCIE traffic generator with PIPE TX and RX data interface for a single lane.
+* [`pcievhost`](pcievhost/README.md) : Contains the PCIE traffic generator with PIPE TX and RX data interface (x1 upstream; x4 through our `pcieVHostPipexN.sv`).
 
-## soc_cpu.VPROC.picorv32
+## soc_cpu.VPROC.native
 
-This is the CPU model in use. `riscv_pcie_soc.sv` instantiates a `picorv32`
-directly, driving the core's **native** memory interface -- `mem_valid`,
-`mem_ready`, `mem_addr`, `mem_wdata`, `mem_wstrb`, `mem_rdata` -- and this
-module presents exactly those ports, with a _VProc_ behind them. It is
-therefore a drop-in replacement for the core, reached through
+This is the CPU model in use. `riscv_pcie_soc.sv` connects its RISC-V core
+(eduBOS5 by default, or PicoRV32) through a **native** memory bus, picorv32's
+-- `mem_valid`, `mem_ready`, `mem_addr`, `mem_wdata`, `mem_wstrb`,
+`mem_rdata` -- and this module presents exactly those ports, with a _VProc_
+behind them. It is therefore a drop-in replacement for either core, reached through
 `` `ifdef SOC_CPU_VPROC `` in the SOC, and nothing else in the design changes.
 
 Two details are worth knowing:
@@ -45,13 +45,13 @@ Two details are worth knowing:
   ready.
 * There is no instruction memory in this wrapper. The program lives on the host
   -- either as native code, or inside the _rv32_ ISS -- so the SOC's own
-  instruction RAM simply goes unused.
+  8 KB RAM holds no program. Only the CSR accesses (`0x3000_0000`) reach this bus.
 
 ## soc_cpu.VPROC
 
 Inherited from the sibling Chili.CHIPS SOC infrastructure and kept for
 reference. **It is not used here**, because this design has no `soc_if` bus: the
-SOC instantiates picorv32 directly, which is why the wrapper above exists.
+SOC connects its core directly on the native bus, which is why the wrapper above exists.
 
 The `soc_cpu.VPROC` module is pin compatible with the other `soc_cpu` components with RTL softcore implementations of 32-bit RISC-V processors, such as that based on PicoRV32 or EDUBOS5. In place of the softcore is a [_VProc_](https://github.com/wyvernSemi/vproc) virtual processor which can run natively compiled code and drive its memory mapped bus in the logic simulation (see [here](../README.md#vproc-software)). The HDL has only two interfaces. The main memory mapped bus is of type `soc_if`, and this is the external bus to the rest of the logic, just as for the softcores. The other interface is a three wire write-only port (`imem_we`, `imem_waddr[31:2]` and `imem_wdat[31:0]`) for updating the processor program via an external UART. In the `soc_cpu.VPROC` component this is connected to an instantiation of the [_mem_model_](https://github.com/wyvernSemi/mem_model) memory HDL, used by _VProc_ for its [main memory](../README.md#the-mem_model-co-simulation-sparse-memory-model), which accesses the sparse C memory model of [_pcieVHost_](https://github.com/wyvernSemi/pcievhost), allowing this upload to go to the same memory as accessible by the virtual processor.
 

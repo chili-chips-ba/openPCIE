@@ -154,9 +154,8 @@ set_property -name "default_lib"        -value "xil_defaultlib" -objects $obj
 
 
 # ---- Source files -----------------------------------------------------------
-# The glob is DELIBERATELY non-recursive: src/pcie/_catB_backup/ holds the
-# original Xilinx files as *.sv.orig (reference for the rewrite) and they must
-# not enter synthesis.
+# The glob is deliberately non-recursive: only the .sv files directly in
+# src/pcie/ enter synthesis, never anything a subfolder might hold.
 set svfiles [lsort [glob -nocomplain $pcie_dir/*.sv]]
 
 # Any remaining .v in pcie/ (currently none -- everything has been ported to .sv)
@@ -173,8 +172,9 @@ set link_defines [list "PCIE_LANES=$pcie_lanes" "PCIE_GEN=$pcie_gen" {*}$cpu_def
 set_property verilog_define $link_defines [get_filesets sources_1]
 set_property verilog_define $link_defines [get_filesets sim_1]
 
-# Mark SystemVerilog explicitly. This matters because src/pcie/ contains an SV
-# package (link_pkg.sv) and SV interfaces (axis_if, trn_if, pipe_if, cfg_if, mem_if) --
+# Mark SystemVerilog explicitly. This matters because src/pcie/ contains SV
+# packages (link_pkg.sv, pcie_pkg.sv) and SV interfaces (axis_if, trn_if, pipe_if,
+# cfg_if, mem_if, mim_if, gtp_if) --
 # if Vivado treats them as plain Verilog, elaboration fails. picorv32.CHILI.sv is
 # SystemVerilog too.
 foreach f [concat $svfiles $csr_files $cpu_v [list $soc_sv $top_sv]] {
