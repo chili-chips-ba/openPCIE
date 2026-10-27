@@ -339,27 +339,31 @@ module riscv_pcie_soc
         tx_packet_counter <= tx_packet_counter + 32'd1;
       end
 
+      // AXI-Stream: a beat stays on the bus until tvalid && tready, so a
+      // throttled tready (trn_tx_throttle, the core) holds it, never drops it
       unique case (tx_state)
         IDLE: begin
           s_axis_tx.tvalid <= 1'b0;
         end
         SEND_CYCLE_1: begin
-          s_axis_tx.tdata  <= pcie_trn_desc_t'{dw1: tx_header1, dw0: tx_dw0_routed};
-          s_axis_tx.tkeep  <= 8'hFF;
-          s_axis_tx.tvalid <= 1'b1;
-          s_axis_tx.tlast  <= 1'b0;
-          if (s_axis_tx.tready) begin
-            tx_state <= SEND_CYCLE_2;
+          if (!s_axis_tx.tvalid) begin  // beat 1 onto the bus
+            s_axis_tx.tdata  <= pcie_trn_desc_t'{dw1: tx_header1, dw0: tx_dw0_routed};
+            s_axis_tx.tkeep  <= 8'hFF;
+            s_axis_tx.tvalid <= 1'b1;
+            s_axis_tx.tlast  <= 1'b0;
+          end
+          else if (s_axis_tx.tready) begin  // beat 1 taken: beat 2 onto the bus
+            s_axis_tx.tdata <= {tx_data, tx_cfg_dw2};
+            s_axis_tx.tkeep <= tx_dw0.fmt[1] ? 8'hFF : 8'h0F;  // with data: DW2 + payload
+            s_axis_tx.tlast <= 1'b1;
+            tx_state        <= SEND_CYCLE_2;
           end
         end
         SEND_CYCLE_2: begin
-          s_axis_tx.tdata  <= {tx_data, tx_cfg_dw2};
-          s_axis_tx.tkeep  <= tx_dw0.fmt[1] ? 8'hFF : 8'h0F;  // with data: DW2 + payload
-          s_axis_tx.tvalid <= 1'b1;
-          s_axis_tx.tlast  <= 1'b1;
-
-          if (s_axis_tx.tready) begin
-            tx_state <= IDLE;
+          if (s_axis_tx.tready) begin  // beat 2 taken
+            s_axis_tx.tvalid <= 1'b0;
+            s_axis_tx.tlast  <= 1'b0;
+            tx_state         <= IDLE;
           end
         end
       endcase
@@ -374,23 +378,33 @@ module riscv_pcie_soc
   pcie_cpl_dw2_t rx_hdr_cpl_dw2;
   logic          rx_cpl_dw0;
   logic          rx_cpl_dw2;
+  logic          rx_sop;  // the next beat starts a TLP
 
-  assign rx_hdr_dw0 = m_axis_rx.tdata[31:0];  // 1st beat
+  assign rx_hdr_dw0     = m_axis_rx.tdata[31:0];  // 1st beat
   assign rx_hdr_cpl_dw1 = m_axis_rx.tdata[63:32];  // 1st beat
   assign rx_hdr_cpl_dw2 = m_axis_rx.tdata[31:0];  // 2nd beat
 
-  assign rx_cpl_dw0 = m_axis_rx.tvalid & (rx_phase == 1'b0) & (rx_hdr_dw0.tlp_type == TLP_TYPE_CPL);
-  assign rx_cpl_dw2 = m_axis_rx.tvalid & (rx_phase == 1'b1);
+  // Only the first beat of a TLP is a header, and only the beat after a
+  // Completion's first carries its DW2 and payload DWORD: later beats (a
+  // longer CplD, a TLP of another type) are not decoded
+  assign rx_cpl_dw0     = m_axis_rx.tvalid & rx_sop & (rx_hdr_dw0.tlp_type == TLP_TYPE_CPL);
+  assign rx_cpl_dw2     = m_axis_rx.tvalid & (rx_phase == 1'b1);
 
   always_ff @(posedge clk or negedge resetn) begin
     if (!resetn) begin
       rx_phase <= 1'b0;
+      rx_sop   <= 1'b1;
     end
-    else if (rx_cpl_dw0) begin
-      rx_phase <= 1'b1;
-    end
-    else if (rx_cpl_dw2 && m_axis_rx.tlast) begin
-      rx_phase <= 1'b0;
+    else begin
+      if (m_axis_rx.tvalid) begin  // tready is always 1
+        rx_sop <= m_axis_rx.tlast;
+      end
+      if (rx_cpl_dw0) begin
+        rx_phase <= 1'b1;
+      end
+      else if (rx_cpl_dw2) begin
+        rx_phase <= 1'b0;
+      end
     end
   end
 
@@ -408,7 +422,7 @@ module riscv_pcie_soc
   assign csr_in.rx.header_info.lower_addr.next   = rx_hdr_cpl_dw2.lower_addr;
 
   // ---- Status: straight from the hard macro, no shadow registers ----------
-  assign csr_in.status.err.msg_err_fatal.next    = cfg.msg_err_fatal;
+  assign csr_in.status.err.msg_err_fatal.hwset   = cfg.msg_err_fatal;  // a one-cycle pulse
 
   assign csr_in.status.phy.tx_state.next         = tx_state;
   assign csr_in.status.phy.tx_buf_avail.next     = cfg.tx_buf_avail;
@@ -442,7 +456,15 @@ module riscv_pcie_soc
     end
   end
 
-  assign mem.ready = ram_ready || bridge_rdy;
+  // Any other address answers after one clock, like the RAM, with DEADBEEF:
+  // a stray access must not stall the CPU forever
+  logic other_rdy;
+
+  always_ff @(posedge clk) begin
+    other_rdy <= mem.valid && !is_ram && !is_bridge;
+  end
+
+  assign mem.ready = ram_ready || bridge_rdy || other_rdy;
 
 endmodule
 

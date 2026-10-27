@@ -249,17 +249,24 @@ module gtp_wrapper
   assign phystatus_rst = gtp.phystatus_rst;
   assign txoutclk      = gt_txoutclk;
   // ---- pipe_clk select: each lane's speed_ctrl votes for the new rate once
-  // it is ready; pipe_clk switches when all lanes agree, and holds otherwise
+  // it is ready; pipe_clk switches when all lanes agree, and holds otherwise.
+  // After a runtime PERST#, speed_ctrl still holds the last rate's select
+  // until gtpll0_reset clears it, so the vote counts only once that is done.
   logic [PCIE_LANES-1:0] pipe_clk_sel_reg1, pipe_clk_sel_reg2;
+  logic                  vote_armed;
 
   always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
     if (!pipe_rst_n) begin
+      vote_armed        <= 1'b0;
       pipe_clk_sel_reg1 <= '0;
       pipe_clk_sel_reg2 <= '0;
       pipe_clk_sel      <= 1'b0;
     end
     else begin
-      pipe_clk_sel_reg1 <= gtp.pipe_clk_sel;
+      if (gtpll0_reset) begin
+        vote_armed <= 1'b1;
+      end
+      pipe_clk_sel_reg1 <= vote_armed ? gtp.pipe_clk_sel : '0;
       pipe_clk_sel_reg2 <= pipe_clk_sel_reg1;
       if (&pipe_clk_sel_reg2) begin
         pipe_clk_sel <= 1'b1;

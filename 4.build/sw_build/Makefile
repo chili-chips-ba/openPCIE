@@ -44,14 +44,15 @@ CSR_CFLAGS = -I$(CSR_DIR) -I../csr_build
 CSR_DEPS   = $(CSR_DIR)/csr.h $(CSR_DIR)/csr_top.h ../csr_build/csr_regs.h
 
 # ---- Simulation build -------------------------------------------------------
-# SIM=1 shortens the start-up delay in main.c. That loop waits for the PCIe link
+# SIM=1 shortens the start-up delay in main.c and the Completion wait
+# (CPL_POLL_LIMIT, pcie.h). The start-up loop waits for the PCIe link
 # to train, which matters on hardware but not in co-simulation, where the link
 # is already up before the SOC leaves reset -- and where the loop, compiled
 # without optimisation, costs about 37 ms of simulated time on eduBOS5.
 SIM ?= 0
 
 ifeq ($(SIM),1)
-    SIM_CFLAGS = -DSTARTUP_DELAY=200
+    SIM_CFLAGS = -DSTARTUP_DELAY=200 -DCPL_POLL_LIMIT=2000
 else
     SIM_CFLAGS =
 endif

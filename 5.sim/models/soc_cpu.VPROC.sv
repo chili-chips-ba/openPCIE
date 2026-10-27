@@ -227,7 +227,7 @@ end
       // Port used for reading program from VProc
       // when not using memory model's direct C API
       .address           (vp_addr),                // i
-      .byteenable        (4'hf),                   // i
+      .byteenable        (vp_be),                  // i
       .write             (imem_write),             // i
       .writedata         (vp_wdat),                // i
       .read              (imem_read),              // i

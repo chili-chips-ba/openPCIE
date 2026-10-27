@@ -57,7 +57,7 @@ package csr_pkg;
     } csr__rx__in_t;
 
     typedef struct {
-        logic next;
+        logic hwset;
     } csr__status__err__msg_err_fatal__in_t;
 
     typedef struct {

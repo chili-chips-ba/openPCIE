@@ -107,7 +107,7 @@ module csr (
         decoded_reg_strb.rx.status = cpuif_req_masked & (cpuif_addr == 6'h10) & !cpuif_req_is_wr;
         decoded_reg_strb.rx.data = cpuif_req_masked & (cpuif_addr == 6'h14) & !cpuif_req_is_wr;
         decoded_reg_strb.rx.header_info = cpuif_req_masked & (cpuif_addr == 6'h18) & !cpuif_req_is_wr;
-        decoded_reg_strb.status.err = cpuif_req_masked & (cpuif_addr == 6'h1c) & !cpuif_req_is_wr;
+        decoded_reg_strb.status.err = cpuif_req_masked & (cpuif_addr == 6'h1c);
         decoded_reg_strb.status.phy = cpuif_req_masked & (cpuif_addr == 6'h20) & !cpuif_req_is_wr;
         decoded_reg_strb.status.result = cpuif_req_masked & (cpuif_addr == 6'h24);
         decoded_err = '0;
@@ -181,6 +181,12 @@ module csr (
         struct {
             struct {
                 struct {
+                    logic next;
+                    logic load_next;
+                } msg_err_fatal;
+            } err;
+            struct {
+                struct {
                     logic [31:0] next;
                     logic load_next;
                 } marker;
@@ -236,6 +242,11 @@ module csr (
             } header_info;
         } rx;
         struct {
+            struct {
+                struct {
+                    logic value;
+                } msg_err_fatal;
+            } err;
             struct {
                 struct {
                     logic [31:0] value;
@@ -448,6 +459,31 @@ module csr (
             end
         end
     end
+    // Field: csr.status.err.msg_err_fatal
+    always_comb begin
+        automatic logic [0:0] next_c;
+        automatic logic load_next_c;
+        next_c = field_storage.status.err.msg_err_fatal.value;
+        load_next_c = '0;
+        if(hwif_in.status.err.msg_err_fatal.hwset) begin // HW Set
+            next_c = '1;
+            load_next_c = '1;
+        end else if(decoded_reg_strb.status.err && decoded_req_is_wr) begin // SW write 1 clear
+            next_c = field_storage.status.err.msg_err_fatal.value & ~(decoded_wr_data[16:16] & decoded_wr_biten[16:16]);
+            load_next_c = '1;
+        end
+        field_combo.status.err.msg_err_fatal.next = next_c;
+        field_combo.status.err.msg_err_fatal.load_next = load_next_c;
+    end
+    always_ff @(posedge clk or negedge arst_n) begin
+        if(~arst_n) begin
+            field_storage.status.err.msg_err_fatal.value <= 1'h0;
+        end else begin
+            if(field_combo.status.err.msg_err_fatal.load_next) begin
+                field_storage.status.err.msg_err_fatal.value <= field_combo.status.err.msg_err_fatal.next;
+            end
+        end
+    end
     // Field: csr.status.result.marker
     always_comb begin
         automatic logic [31:0] next_c;
@@ -516,7 +552,7 @@ module csr (
             readback_data_var[31:16] = field_storage.rx.header_info.requester_id.value;
         end
         if(rd_mux_addr == 6'h1c) begin
-            readback_data_var[16] = hwif_in.status.err.msg_err_fatal.next;
+            readback_data_var[16] = field_storage.status.err.msg_err_fatal.value;
         end
         if(rd_mux_addr == 6'h20) begin
             readback_data_var[5:0] = hwif_in.status.phy.tx_buf_avail.next;

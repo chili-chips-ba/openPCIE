@@ -9,7 +9,6 @@
 *-backups/
 *.log
 *\#*\#
-*\#*
 
 
 #--------
@@ -17,6 +16,7 @@
 #--------
 *.fst
 !5.sim/tb.*.fst
+5.sim/tb.*.*.*.fst
 *.vcd
 
 
@@ -103,7 +103,8 @@ kibot_*.kicad_pro
 #--------
 */Thumbs.db
 *xOLD*
-*output*
+output/
+*.kicad_prl
 
 
 #--------

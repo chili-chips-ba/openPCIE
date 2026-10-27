@@ -223,7 +223,7 @@ A Verilator run would need `--timing` for the whole test bench, not only for the
 
 #### Why VCD and not FST?
 
-XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. The FSTs are tracked (`tb.x1g1.direct.fst`: 11.6 MB VCD -> 86 KB, a 134x diet). `tb.vcd` is not.
+XSIM writes only VCD (`$dumpfile`/`$dumpvars`) and its own `.wdb`. FST is a GTKWave format: Verilator and Icarus write it, XSIM does not. A converted copy is much smaller, and WaveCrux reads it. `make run` with `DUMP_VCD` converts it with [`tools/vcd2fst.sh`](tools/vcd2fst.sh) (GTKWave's `vcd2fst -Z`); `make fst` does only that. The FSTs are tracked (`tb.x1g1.direct.fst`: 11.6 MB VCD -> 86 KB, a 134x diet). `tb.vcd` is not. Only `CPU=rtl CORE=edubos5` writes the tracked names; another CPU or core adds its name (`tb.x1g1.direct.vproc.fst`, not tracked).
 
 The ready-made `.wavecrux` sessions open the tracked FSTs (`tb.x1g1.direct.fst`, `tb.x1g1.switched.fst`, `tb.x4g1.direct.fst`), named like the bitstreams, so they work from a fresh clone. They bind signals by their number in the file, and that number differs between the VCD and the FST.
 
@@ -269,8 +269,8 @@ no hardware in sight. It ends 10 µs after the firmware reports its result. `RUN
             75287001  TB     trn_link_up   = 1  <- data link layer up, flow control done
             75287001  TB     ===> PCIe LINK UP -- SOC released from reset
             75303000  TB     core_rst_n   = 1  <- core reset released (TRN, SOC)
-           389575000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
-           399575000  TB     *** run ends 10 us after the firmware result ***
+           390695000  TB     ===> FIRMWARE RESULT 0x0000face  (PASS)
+           400695000  TB     *** run ends 10 us after the firmware result ***
 --------------------------------------------------------
  openpcie2-rc co-simulation summary
 --------------------------------------------------------
@@ -288,6 +288,9 @@ the verdict the firmware reports. The two lines above it are the dword that
 really crossed the link: written to the endpoint at `0x8000_0000` by a Memory
 Write TLP, then fetched back by a Memory Read and its completion. The firmware
 says PASS; the wire proves it.
+
+Any result other than PASS, including a run that hits `RUN_US`, ends with
+`$fatal`, so `make run` fails and a script can tell pass from fail.
 
 In between, the real firmware enumerates the endpoint model exactly as it does
 on the board. The endpoint's own decode of the traffic:
@@ -747,7 +750,7 @@ Vivado XSIM 2026.1, x1 Gen1 runs, simulated time, which is exact. Every run give
 | `CPU=` | Core | Result at (simulated) | Run time, wall clock, relative |
 |---|---|---|---|
 | `rtl` | PicoRV32 | 667.2 µs | 1.3x |
-| `rtl` | eduBOS5 2-stage | **389.6 µs** | 1.0x |
+| `rtl` | eduBOS5 2-stage | **390.2 µs** | 1.0x |
 | `rtl` | eduBOS5 3-stage | 481.2 µs | 1.1x |
 | `iss` | PicoRV32 timing | 663.1 µs (-0.6%) | 1.4x |
 | `iss` | eduBOS5 2-stage timing | 389.6 µs (0.0%) | 1.4x |
@@ -981,7 +984,6 @@ Command line configurable variables:
   USRCODEDIR:   directory containing user source code (default $(CURDIR)/usercode)
   OPTFLAG:      Optimisation flag for user VProc code (default -g)
   USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank)
-  BUILD:        Select build type from DEFAULT or ISS (default DEFAULT)
   CPU:          CPU model on VProc node 0 (default rtl)
                   rtl    the RTL core (CORE), executing firmware.hex
                   vproc  the 3.sw firmware, compiled for the host (usercode/VUserMain0.cpp)
@@ -994,7 +996,7 @@ Command line configurable variables:
 
 Override any variable on the command line, <tt>make VAR=NewVal</tt>; quote values with spaces.
 
-The one to reach for is <tt>CPU</tt>. It picks what sits on node 0 and sets everything else to match. <tt>CPU=iss</tt> selects the ISS build, with the ISS integration source in place of <tt>USER_C</tt> and <tt>USRCODEDIR</tt>. The older <tt>BUILD=ISS</tt> still works, but changes only the C side. Without <tt>CPU=iss</tt>, the HDL still has the RTL core, and the ISS has no socket to sit in.
+The one to reach for is <tt>CPU</tt>. It picks what sits on node 0 and sets everything else to match. <tt>CPU=iss</tt> selects the ISS build, with the ISS integration source in place of <tt>USER_C</tt> and <tt>USRCODEDIR</tt>. <tt>BUILD</tt> follows <tt>CPU</tt> and cannot be set on its own.
 
 The _VProc_ code is compiled for debugging (<tt>-g</tt>); <tt>OPTFLAG</tt> changes that, for a faster executable. Extra simulator options go in <tt>USRSIMOPTS</tt>.
 

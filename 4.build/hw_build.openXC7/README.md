@@ -68,7 +68,7 @@ It installs missing Ubuntu packages, then builds Yosys, nextpnr, prjxray and `fp
 
 **3. Build:** `source ../set-env.sh`, then the commands in [Building](#building). `set-env.sh` finds openXC7 in `~/opt/openxc7` or `/opt/openxc7`.
 
-Bitstreams go to `build_artifacts/`, everything else to `build_artifacts/work/` ([Building](#building)). The `read_slang` bitstreams are in git, prebuilt from the current RTL, not yet on the board. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
+Bitstreams go to `build_artifacts/`, everything else to `build_artifacts/work/` ([Building](#building)). The `read_slang` bitstreams are in git for convenience only, not yet on the board: always rebuild from the current RTL. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
 
 The chipdb now comes from `xilinx_gen.py` instead of `bbaexport.py`. Synthesis and P&R are called as before: the new `nextpnr-xilinx` is a small shim that hands the same options to `nextpnr-himbaechel`.
 
@@ -256,7 +256,7 @@ make CPU=picorv32                       # PicoRV32           -> build_artifacts/
 make FRONTEND=sv2v                      # sv2v, not slang    -> build_artifacts/work/x4g1.direct.sv2v/top.x4g1.direct.bit
 ```
 
-All bitstreams sit side by side in `build_artifacts/`, named for the link and variant: `top.x4g1.direct.bit`, `top.x4g2.direct.bit`, `top.x1g2.direct.bit`, `top.x1g2.switched.bit`. These four are in git. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
+All bitstreams sit side by side in `build_artifacts/`, named for the link and variant: `top.x4g1.direct.bit`, `top.x4g2.direct.bit`, `top.x1g2.direct.bit`, `top.x1g2.switched.bit`. These four are in git for convenience only: always rebuild from the current RTL. The board-tested pre-v1.0.0 ones are in `build_artifacts/pre-v1.0.0/`.
 
 Everything else a build makes goes to `build_artifacts/work/<build>/`, not in git: `top.json`, `top_routed.json`, `top.fasm`, `top.frames`, the logs, and with sv2v the converted sources. Any build other than the default (another `CPU`, `FRONTEND=sv2v`, `ASSEMBLER=fpga-as` or another `SEED`) keeps its bitstream there too, in a folder named for it (e.g. `x4g1.direct.seed1/`), so it never replaces a committed one.
 
@@ -270,11 +270,11 @@ Everything else a build makes goes to `build_artifacts/work/<build>/`, not in gi
 
 Each tool is called through a variable (`YOSYS`, `NEXTPNR_XILINX`, `FPGA_AS`, ...) that `set-env.sh` sets. Override one with e.g. `make YOSYS=/path/to/yosys`.
 
-The chipdb is shared by all builds: it depends on the part, not the design. `../sw_build/firmware.hex` is **not** separated, so build the matching firmware first (`make VARIANT=switched` in `sw_build/`).
+The chipdb is shared by all builds: it depends on the part, not the design. The firmware is: each build makes the one of its `VARIANT` into its work folder.
 
 **Every `make` rebuilds from scratch**; only the chipdb is kept. Switching `LANES`, `GEN` or `CPU` changes only defines and the file list, no file, so a date-based make would keep the old bitstream. And dates on a network share can come from the future. Always rebuilding beats both, and `make clean` is never needed.
 
-The first build generates the chipdb for `xc7a200tfbg484-3` (317 MB, several minutes) and caches it in `build_artifacts/work/chipdb/`. After that, a build takes about 2 minutes.
+The first build generates the chipdb for `xc7a200tfbg484-3` (60 MB, several minutes) and caches it in `build_artifacts/work/chipdb/`. After that, a build takes about 2 minutes.
 
 ---
 
@@ -352,7 +352,7 @@ Vivado gets these from libraries openXC7 lacks. Here are open stand-ins. The Viv
 - openXC7: area is Yosys `synth_xilinx` (`stat`), Fmax nextpnr's report. Vivado: area after implementation (`report_utilization`).
 - Vivado reports no Fmax. Its figure here is 1 / (period - WNS). Vivado optimises only until each target is met, so it undersells what the design could reach. Compare with care.
 - nextpnr's Fmax varies between builds. The same eduBOS5 2-stage SOC gave 158.4 MHz in another build.
-- The committed x4 bitstreams are later builds (2026-10-25, current RTL), assembled with the prjxray pair. `top.x4g1.direct.bit` (x4 Gen1, 2-stage eduBOS5): `user_clk` 157.2 MHz (needs 125), `clk125` 337.0 MHz, pipe clock 283.9 MHz. `top.x4g2.direct.bit` (x4 Gen2, 3-stage eduBOS5): `user_clk` **181.1 MHz, misses 250 MHz** ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), `clk125` 348.6 MHz, pipe clock 285.1 MHz. Neither is tested on hardware yet. The x1 builds (2026-10-21) pass: pipe clock 330.7 MHz (direct), 335.8 MHz (switched).
+- The committed x4 bitstreams are later builds (2026-10-25), assembled with the prjxray pair. `top.x4g1.direct.bit` (x4 Gen1, 2-stage eduBOS5): `user_clk` 157.2 MHz (needs 125), `clk125` 337.0 MHz, pipe clock 283.9 MHz. `top.x4g2.direct.bit` (x4 Gen2, 3-stage eduBOS5): `user_clk` **181.1 MHz, misses 250 MHz** ([nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), `clk125` 348.6 MHz, pipe clock 285.1 MHz. Neither is tested on hardware yet. The x1 builds pass: pipe clock 285.4 MHz (direct, 2026-10-25), 335.8 MHz (switched, 2026-10-21).
 - Both bitstreams were uncompressed, so their size does not depend on the design. The 13 bytes of difference are header metadata. The Vivado build now compresses (`BITSTREAM.GENERAL.COMPRESS` in the common XDC). openXC7's assemblers cannot yet ([lromor/fpga-assembler#59](https://github.com/lromor/fpga-assembler/issues/59)); a smaller bitstream would also be easier to keep in the repo.
 
 ## CPU options compared

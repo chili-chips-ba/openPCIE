@@ -219,16 +219,8 @@ Details: [`4.build/README.md`](../../4.build/README.md#csr-hal-compilation).
 
 ## Building
 
-Build the firmware first - `firmware.hex` is a hard dependency of both flows,
-and it has to be the **switched** one:
-
-```sh
-cd 4.build/sw_build
-make VARIANT=switched
-```
-
-No `make clean` is needed to switch variants - every `make` there rebuilds the
-firmware from scratch (about a second).
+Both flows build the **switched** firmware themselves (`4.build/sw_build`,
+`make VARIANT=switched`), into their own folder; nothing to do by hand.
 
 ### Vivado
 

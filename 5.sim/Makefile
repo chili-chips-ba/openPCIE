@@ -21,7 +21,8 @@ PCIECODEDIR      = $(CURDIR)/usercode
 OPTFLAG          = -g
 VPROC_PLI        = VProc.so
 USRSIMOPTS       =
-BUILD            = DEFAULT
+# BUILD (DEFAULT or ISS) follows CPU; not a command-line option
+override BUILD   = DEFAULT
 
 # --------------------------------------------
 # CPU model for the SOC (VProc node 0)
@@ -60,7 +61,7 @@ ifeq ("$(CPU)", "vproc")
   FW_HOST_OBJS   = $(VOBJDIR)/fw_pcie.o $(VOBJDIR)/fw_main.o
   CPUDEFINE      = --define SOC_CPU_VPROC
 else ifeq ("$(CPU)", "iss")
-  BUILD          = ISS
+  override BUILD = ISS
   CPUDEFINE      = --define SOC_CPU_VPROC
 else ifeq ("$(CPU)", "rtl")
   CPUDEFINE      = $(CORE_DEFINE)
@@ -240,7 +241,7 @@ SPC =
 # BUILD RULES
 #======================================================
 
-.PHONY: all, sysverilog, sim, run, rungui, gui, fst, help, clean
+.PHONY: all sysverilog sim run rungui gui fst help clean
 
 all: sysverilog
 
@@ -272,8 +273,9 @@ $(VOBJDIR)/%.o: $(PCIEDIR)/ltssm/%.c
 # main() renamed fw_main() for usercode/VUserMain0.cpp to call. Under VPROC,
 # csr_regs.h turns its register accesses into VProc bus cycles.
 FW_SRC_DIR       = $(CURDIR)/../3.sw
-FW_HOST_FLAGS    = -x c++ -Dmain=fw_main -Wno-volatile -I$(FW_SRC_DIR)/common
-FW_HOST_DEPS     = $(FW_SRC_DIR)/common/pcie.h $(BLD_DIR)/csr_build/csr_regs.h
+FW_HOST_FLAGS    = -x c++ -Dmain=fw_main -Wno-volatile -I$(FW_SRC_DIR)/common -DCPL_POLL_LIMIT=2000
+FW_HOST_DEPS     = $(FW_SRC_DIR)/common/pcie.h $(BLD_DIR)/csr_build/csr_regs.h \
+                   $(BLD_DIR)/csr_build/generated-files/csr.h $(BLD_DIR)/csr_build/generated-files/csr_top.h
 
 $(VOBJDIR)/fw_pcie.o: $(FW_SRC_DIR)/common/pcie.c $(FW_HOST_DEPS) | $(VOBJDIR)
 	@$(C++) -c -fPIC $(OPTFLAG) $(CPPSTD) $(FW_HOST_FLAGS) $(DEFS) $(INCLPATHS) $< -o $@
@@ -345,8 +347,11 @@ sim: sysverilog run_us.cfg $(RUN_CFG)
 # A run with DUMP_VCD also converts tb.vcd into the tracked FST, named like
 # the bitstreams: tb.x1g1.direct.fst, tb.x1g1.switched.fst, tb.x4g1.direct.fst
 # (the co-simulation link is Gen1). The conversion runs whatever xsim
-# returns, and xsim's exit code is kept.
-DUMP_FST = tb.$(if $(filter 4,$(SIM_LANES)),x4g1,x1g1).$(VARIANT).fst
+# returns, and xsim's exit code is kept. Those names are for CPU=rtl
+# CORE=edubos5; any other CPU or core adds its name (tb.x1g1.direct.vproc.fst,
+# not tracked), so it never replaces a tracked dump.
+DUMP_TAG = $(if $(filter rtl,$(CPU)),$(filter-out edubos5,$(CORE)),$(CPU))
+DUMP_FST = tb.$(if $(filter 4,$(SIM_LANES)),x4g1,x1g1).$(VARIANT)$(if $(DUMP_TAG),.$(DUMP_TAG)).fst
 run: sysverilog run_us.cfg $(RUN_CFG)
 	@$(SIMEXE) -R $(SIMFLAGS); rc=$$?; \
 	$(if $(findstring DUMP_VCD,$(USRSIMOPTS)),bash tools/vcd2fst.sh tb.vcd $(DUMP_FST);) exit $$rc
@@ -373,7 +378,6 @@ help:
 	@$(info $(SPC) $(SPC) USRCODEDIR:   directory containing user source code (default $$(CURDIR)/usercode))
 	@$(info $(SPC) $(SPC) OPTFLAG:      Optimisation flag for user VProc code (default -g))
 	@$(info $(SPC) $(SPC) USRSIMOPTS:   additional simulator analysis flags, such as setting defines (default blank))
-	@$(info $(SPC) $(SPC) BUILD:        Select build type from DEFAULT or ISS (default DEFAULT))
 	@$(info $(SPC) $(SPC) CPU:          CPU model on VProc node 0 (default rtl))
 	@$(info $(SPC) $(SPC) $(SPC)   rtl    the RTL core (CORE), executing firmware.hex)
 	@$(info $(SPC) $(SPC) $(SPC)   vproc  the 3.sw firmware, compiled for the host (usercode/VUserMain0.cpp))

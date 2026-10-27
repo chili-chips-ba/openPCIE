@@ -206,9 +206,13 @@ addrmap csr {
          field {
             name = "csr.status.err.msg_err_fatal";
             desc = "A fatal-error Message TLP has been received
-                    (cfg_msg_received_err_fatal)";
-            sw = r;
-            hw = w;
+                    (cfg_msg_received_err_fatal). Sticky: stays 1 until
+                    software writes 1 to it";
+            sw = rw;
+            woclr;
+            hw = na;
+            hwset;
+            precedence = hw;  // an error in the clearing cycle is kept
          } msg_err_fatal[16:16] = 0;
       } err;
 

@@ -17,8 +17,8 @@
 # top.x1g2.switched.bit. Everything else a build makes goes to its own
 # build_artifacts/work/<build>/ (not in git), so builds never pick up each
 # other's stale output.
-# What they DO share is ../sw_build/firmware.hex -- build the matching firmware
-# first (make VARIANT=switched over in sw_build/).
+# Each build also makes the firmware of its VARIANT, into its work folder, so a
+# bitstream always carries the matching firmware.
 #
 # Flow, FRONTEND=slang (default, no sv2v):
 #        .sv --yosys read_slang--> .json --nextpnr (himbaechel)--> .fasm
@@ -180,24 +180,32 @@ PCIE_DIR = $(SRC_DIR)/pcie
 #   openxc7.x4.xdc       lanes 0..3     -> GTP_CHANNEL_2, 0, 1, 3
 # The pin-to-channel mapping is straight out of prjxray package_pins.csv.
 
-# firmware.hex is a product of the sw_build stage; riscv_pcie_soc.sv reads it via
-# $readmemh with a bare name, so it must sit in Yosys' working directory.
-FIRMWARE = ../sw_build/firmware.hex
+# firmware.hex: the firmware of this build's VARIANT, made by ../sw_build into
+# the build's work folder (rule below WORK). riscv_pcie_soc.sv reads it via
+# $readmemh with a bare name, so a copy must sit in Yosys' working directory.
+# The tracked ../sw_build/firmware.hex stays the RC-direct board build.
+FIRMWARE = $(WORK)/fw/firmware.hex
 
 # ---- Output -----------------------------------------------------------------
 # build_artifacts/ holds the bitstreams, side by side (in git), and work/ (not
 # in git): the chipdb, and one folder per build for its netlist, FASM, frames,
 # logs and sv2v output. Only the default build (default CPU, read_slang, the
-# prjxray assembler, SEED 3) writes its bitstream to build_artifacts/; any other
-# keeps it in its own work folder, so it never replaces a committed one.
+# prjxray assembler, SEED 3) of a committed link (BIT_LINKS) writes its
+# bitstream to build_artifacts/; any other keeps it in its own work folder, so
+# it never replaces a committed one.
 SEED_DEF  = 3
 SEED     ?= $(SEED_DEF)
 OUT_DIR   = build_artifacts
 WORK_ROOT = $(OUT_DIR)/work
 BUILD_SFX = $(CPU_SFX)$(if $(filter sv2v,$(FRONTEND)),.sv2v)$(if $(filter-out prjxray,$(ASSEMBLER)),.$(ASSEMBLER))$(if $(filter-out $(SEED_DEF),$(SEED)),.seed$(SEED))
 WORK      = $(WORK_ROOT)/$(LINK).$(VARIANT)$(BUILD_SFX)
-BIT_DIR   = $(if $(BUILD_SFX),$(WORK),$(OUT_DIR))
+BIT_LINKS = x1g2 x4g1 x4g2
+BIT_DIR   = $(if $(BUILD_SFX)$(filter-out $(BIT_LINKS),$(LINK)),$(WORK),$(OUT_DIR))
 CHIPDB    = $(WORK_ROOT)/chipdb
+
+# every build asks sw_build again (about a second), as the variant may differ
+$(FIRMWARE): FORCE
+	@$(MAKE) --no-print-directory -C ../sw_build VARIANT=$(VARIANT) OUT=$(abspath $(dir $(FIRMWARE)))
 
 CONV_DIR      = $(WORK)/converted
 EXTRACTED_DIR = $(CONV_DIR)/extracted
@@ -235,8 +243,6 @@ SV_IF = \
     $(PCIE_DIR)/pipe_if.sv
 
 # All other .sv from pcie/, excluding the package and the interfaces.
-# _catB_backup/ holds the original Xilinx files as *.sv.orig -- the *.sv wildcard
-# does not catch them, and they must not enter synthesis.
 SV_PCIE_REST = $(filter-out $(SV_PKG) $(SV_IF), $(sort $(wildcard $(PCIE_DIR)/*.sv)))
 
 # The CPU is SystemVerilog (always_ff, typedef enum, unique case), so it goes
@@ -361,16 +367,15 @@ check-sv2v:
 
 check-sources:
 	@missing=0; \
-	for f in $(SV_ORDERED) $(PURE_V_FILES) $(XDC_FILE) $(FIRMWARE) \
+	for f in $(SV_ORDERED) $(PURE_V_FILES) $(XDC_FILE) \
 	         $(RTL_XDC); do \
 	    if [ ! -f "$$f" ]; then echo "MISSING: $$f"; missing=$$((missing+1)); fi; \
 	done; \
 	if [ $$missing -gt 0 ]; then \
 	    echo "ERROR: $$missing file(s) missing"; \
-	    echo "If firmware.hex is missing -- run the sw_build stage before this."; \
 	    exit 1; \
 	else \
-	    echo "OK -- $(words $(SV_ORDERED)) SV + $(words $(PURE_V_FILES)) V + xdc + firmware.hex"; \
+	    echo "OK -- $(words $(SV_ORDERED)) SV + $(words $(PURE_V_FILES)) V + xdc (firmware.hex: built per build)"; \
 	fi
 
 # =============================================================================

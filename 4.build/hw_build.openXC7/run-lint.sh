@@ -43,7 +43,9 @@
 #     a /*LINT:OK*/ on an input, so it cannot hide a floating input
 #   - run-lint-waivers.txt (or LINT_WAIVERS=<file>), for findings without a
 #     source line of ours (generated code, Vivado reports, ...)
-# Exit status is non-zero when any phase has findings that are not waived.
+# Exit status is non-zero when any phase has findings that are not waived, or
+# when its tool fails or stops before the step it reports on (FAILED in the
+# summary): "0 finding(s)" always means the phase really ran.
 #
 # TODO: Verilator lints the SYN_YOSYS_BUG variant of the RTL, as the stubs have
 #       no real parameters.
@@ -81,6 +83,7 @@ WAIVERS=${LINT_WAIVERS:-$HERE/run-lint-waivers.txt}
 PHASES=${*:-tags verilator yosys slang verible cdc}
 W=${LINT_WORK:-$(mktemp -d)}
 mkdir -p "$W"
+rm -rf "$W/src" "$W/xdc" "$W/bb.sv"   # a reused LINT_WORK keeps no stale sources or stubs
 
 # ---- work copy, in the same order as SV_ORDERED in the Makefile ---------------
 cp -r "$SRC/src" "$SRC/xdc" "$W/"
@@ -132,6 +135,19 @@ found() {  # $1 phase; one finding per line on stdin (not a pipe: RESULT must st
   echo "-- $1: $n finding(s), $((t - n)) waived ($((t - i)) inline)"
 }
 
+# A tool that fails, or stops before the step its findings come from, fails its
+# phase: "0 finding(s)" must not stand for "not checked"
+failed() {  # $1 phase, $2 reason
+  RESULT[$1]="FAILED ($2), see $W/$1.log"
+  echo "-- $1: FAILED, $2"
+}
+
+# after found: a tool that exits non-zero must have reported something (waived
+# or not); a non-zero exit with nothing to show is the tool failing
+exit_check() {  # $1 phase, $2 exit status
+  if [ "$2" -ne 0 ] && [ ! -s "$1.all" ]; then failed "$1" "exit $2, nothing reported"; fi
+}
+
 # Xilinx primitive stubs, for the tags, Verilator, Yosys and slang phases
 bb() {
   [ -s bb.sv ] && return 0
@@ -177,6 +193,8 @@ for f in files:
             if d != 'output':
                 print(f'{f}:{n}: LINT:OK on {d or "unknown"} port {typ}.{m.group(1)}')
 EOF
+  local rc=$?
+  [ $rc -eq 0 ] || { failed tags "exit $rc"; return; }
   found tags < tags.log
 }
 
@@ -190,7 +208,9 @@ lint_off -file "*_shim.v"
 EOF
   "$VERILATOR" --lint-only -Wall -Wno-fatal --top-module $TOP -DSYN_YOSYS_BUG -DPCIE_LANES=$LANES ${GEN:+-DPCIE_GEN=$GEN} $VL_DEFS \
     -Isrc -I$P waive.vlt bb.sv $SV $SHIMS > verilator.log 2>&1
+  local rc=$?
   found verilator < <(grep -E '^%(Warning|Error)' verilator.log)
+  exit_check verilator $rc
 }
 
 run_yosys() {
@@ -199,6 +219,10 @@ run_yosys() {
   "$YOSYS" $YOSYS_ARGS -q -l yosys.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $SL_DEFS --top $TOP -I $P -I src \
       bb.sv $SV $SHIMS; hierarchy -check -top $TOP; proc; check -nolatches -initdrv" \
       >/dev/null 2>&1
+  local rc=$?
+  if [ $rc -ne 0 ] || ! grep -q 'Executing CHECK pass' yosys.log; then
+    failed yosys "exit $rc, CHECK pass not reached"; return
+  fi
   # read_slang's own warnings are the slang phase's business; take check's
   found yosys < <(awk '/Executing CHECK pass/ { c = 1 } c && /^Warning:/' yosys.log)
 }
@@ -208,18 +232,23 @@ run_slang() {
   bb || { skip slang "no Xilinx stubs"; return; }
   "$YOSYS" $YOSYS_ARGS -q -l slang.log -p "read_slang -D SYN_YOSYS_BUG -D PCIE_LANES=$LANES ${GEN:+-D PCIE_GEN=$GEN} $SL_DEFS --top $TOP -I $P -I src \
       -Wextra bb.sv $SV $SHIMS" >/dev/null 2>&1
+  local rc=$?
   # Yosys' built-in read_slang prints "file:line:col: warning:", the yosys-slang
   # plugin (OSS CAD Suite, CI) prints "file:line: Warning:"; bring both to the
   # first form so the waivers match either
   found slang < <(sed -E 's/^([^ :]+:[0-9]+): Warning:/\1:0: warning:/; s/^([^ :]+:[0-9]+): Error:/\1:0: error:/' slang.log |
                   grep -E 'warning:|error:')
+  exit_check slang $rc
 }
 
 run_verible() {
   have "$VERIBLE" || { skip verible "$VERIBLE not found"; return; }
   cp "$HERE/run-lint.verible" .
   "$VERIBLE" --rules_config=run-lint.verible $SV > verible.log 2>&1
+  local rc=$?
+  [ $rc -le 1 ] || { failed verible "exit $rc"; return; }
   found verible < <(grep -E ':[0-9]+:[0-9]+' verible.log)
+  exit_check verible $rc
 }
 
 run_cdc() {
@@ -232,9 +261,12 @@ synth_design -top $TOP -part $PART -flatten_hierarchy rebuilt -verilog_define PC
 report_cdc -details -file cdc.rpt
 report_clock_interaction -file clock_interaction.rpt
 EOF
+  rm -f cdc.rpt
   "$VIVADO" -mode batch -nojournal -log cdc.log -source cdc.tcl >/dev/null 2>&1
+  local rc=$?
+  if [ $rc -ne 0 ] || [ ! -s cdc.rpt ]; then failed cdc "exit $rc, no cdc.rpt"; return; fi
   # detail rows: <row> CDC-<n> <severity> <description> ... <from> <to>
-  found cdc < <(grep -s -E '^ +[0-9]+ +CDC-[0-9]+ +(Critical|Warning) ' cdc.rpt)
+  found cdc < <(grep -E '^ +[0-9]+ +CDC-[0-9]+ +(Critical|Warning) ' cdc.rpt)
 }
 
 for ph in $PHASES; do

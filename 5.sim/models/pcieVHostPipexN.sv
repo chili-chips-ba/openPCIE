@@ -1,7 +1,9 @@
 //==========================================================================
-// Copyright (C) 2026 Chili.CHIPS
+// Copyright (c) 2025 - 2026 Simon Southwell (pcieVHostPipex1, which this extends)
+// Copyright (C) 2026 Chili.CHIPS (the N-lane version)
 //--------------------------------------------------------------------------
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: GPL-3.0-or-later
+//   Derived from pcievhost's pcieVHostPipex1.v, so GPL-3.0-or-later like it.
 //--------------------------------------------------------------------------
 // Description:
 //   pcieVHostPipexN: upstream's pcieVHostPipex1 (pcievhost

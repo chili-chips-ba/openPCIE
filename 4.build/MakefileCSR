@@ -65,8 +65,9 @@ endef
 
 all: $(PKRDLHDR) $(PKRDLTOP) rtl $(PKRDLHTML) $(PKRDLMD)
 
-$(PKRDLHDR): $(RDLSRC)
-	@$(PEAKRDL) c-header $^ -b ltoh -o $@
+# FORCE: NAS file dates can lie, so every output is made again, like rtl
+$(PKRDLHDR): $(RDLSRC) FORCE
+	@$(PEAKRDL) c-header $(RDLSRC) -b ltoh -o $@
 	$(call spdx_c,$@)
 
 # csr_top.h: the struct of the SOC address map in csr.h, so csr_regs.h takes
@@ -81,11 +82,11 @@ rtl: $(RDLSRC)
 	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP).sv)
 	$(call spdx_c,$(GENDIR)/$(RDLCSRTOP)_pkg.sv)
 
-$(PKRDLHTML): $(RDLSRC)
-	@$(PEAKRDL) html $^ -o $@ --top $(RDLPCIETOP)
+$(PKRDLHTML): $(RDLSRC) FORCE
+	@$(PEAKRDL) html $(RDLSRC) -o $@ --top $(RDLPCIETOP)
 
-$(PKRDLMD): $(RDLSRC)
-	@$(PEAKRDL) markdown $^ -o $@ --top $(RDLPCIETOP)
+$(PKRDLMD): $(RDLSRC) FORCE
+	@$(PEAKRDL) markdown $(RDLSRC) -o $@ --top $(RDLPCIETOP)
 	$(call spdx_md,$@)
 
 # Report what the generation flow would actually use. Run this first when
@@ -104,7 +105,9 @@ clean:
 clean-all: clean
 	@rm -rf $(PKRDLHDR) $(PKRDLTOP) $(GENDIR)/*.sv $(PKRDLHTML) $(PKRDLMD)
 
-.PHONY: all rtl tools clean clean-all
+FORCE:
+
+.PHONY: all rtl tools clean clean-all FORCE
 
 # -----------------------------------------------------------------------------
 # Project:     openPCIE

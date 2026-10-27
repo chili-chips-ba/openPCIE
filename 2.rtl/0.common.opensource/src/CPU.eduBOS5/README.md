@@ -81,7 +81,7 @@ The scripts named `run-*.sh` are in [4.build/hw_build.openXC7](../../../../4.bui
 | **Resource&nbsp;utilization:&nbsp;CPU&nbsp;LUT&nbsp;(incl.&nbsp;LUT-RAM)&nbsp;/&nbsp;FF**<br>&nbsp;&nbsp;&nbsp;&nbsp;Vivado 2026.1<br>&nbsp;&nbsp;&nbsp;&nbsp;openXC7 v1.0.0 | <br>913 / 416<br>958 / 430 | <br>791 / 456<br>833 / 464 | <br>791 / 447<br>757 / 462 |
 | SOC LUT (incl. LUT-RAM) / FF, Vivado | 1199 / 746 | 1042 / 787 | 1043 / 778 |
 | BRAM / DSP48 | 2 / 0 | 2 / 0 | 2 / 0 |
-| Co-simulation result at, x1, 62.5 MHz | 667.2 µs | **389.6 µs** | 481.2 µs |
+| Co-simulation result at, x1, 62.5 MHz | 667.2 µs | **390.2 µs** | 481.2 µs |
 
 - **The 3-stage now trades IPC for clock, and breaks even.** 1.40x the 2-stage's Fmax against 0.73x its IPC: 71 against 70 MIPS. It is the only core here that closes timing at x4 Gen2's 250 MHz. Where the clock is free, the 2-stage does the same work with fewer cycles and less latency.
 - **IPC:** retired instructions (RVFI) per `user_clk` cycle, from SOC reset release to the firmware result: `make run CORE=... USRSIMOPTS="--define SOC_IPC"` ([5.sim](../../../../5.sim/README.md)). The firmware polls the PCIE stack, so each core retires a different count (6367, 6783, 6368). The 3-stage pays 1 more cycle per instruction, 2 more per jump or taken branch.

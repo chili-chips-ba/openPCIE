@@ -32,8 +32,8 @@ RV32I without the C extension (no compressed instructions), built without optimi
 
 | Firmware | Code (`.text`) | Read-only data | Data (`.data` + `.bss`) | Stack, worst case | Of the 8 KB RAM |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| `RC-direct` | 2,540 B | 0 B | 1 B | 368 B | 36% |
-| `RC-switched` | 3,524 B | 8 B | 1 B | 416 B | 48% |
+| `RC-direct` | 2,548 B | 0 B | 1 B | 368 B | 36% |
+| `RC-switched` | 3,532 B | 8 B | 1 B | 416 B | 48% |
 
 The firmware keeps its data on the stack: its only global is `tx_tag` (`common/pcie.c`), the tag of the next request TLP; `RC-switched` adds two 4-byte constant tables of the switch ports. The worst case is the deepest call chain, from `gcc -fcallgraph-info=su`: `main` → `assign_bars` → `cfg_read32_checked` → `cfg_read32` → `pcie_cfg_read` → `pcie_request` → `wait_for_completion`. No recursion and no variable-size frames.
 
@@ -176,7 +176,7 @@ The driver reports its execution status by writing specific "Magic Numbers" to t
 | :--- | :--- |
 | **`0x0000FACE`** | **PASS:** Data `0x6` was written and successfully read back. |
 | **`0x0000DEAD`** | **FAIL:** Readback data did not match the written value, or the memory read was not completed with SC. |
-| **`0xBAD00000`** | **ERROR:** Device ID read failed (Link down or device not found). In `RC-switched`: the switch upstream port did not answer. |
+| **`0xBAD00000`** | **ERROR:** Device ID read failed: no device at bus 1, or no Completion. (Not a link down: the SOC is held in reset until the link is up.) In `RC-switched`: the switch upstream port did not answer. |
 | **`0xBAD00001`** | **ERROR** (`RC-switched` only): the switch is up, but no Endpoint was found behind it. |
 | **`0xBAD00002`** | **ERROR:** A config request to a device that had answered failed (UR, CA, timeout, or CRS after 100 retries). |
 | **`0xBAD00003`** | **ERROR:** The Endpoint's BAR0 is not implemented, is an I/O BAR, or does not fit the window. |

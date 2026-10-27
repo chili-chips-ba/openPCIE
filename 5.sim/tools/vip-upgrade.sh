@@ -23,23 +23,29 @@ M=$HERE/../models
 W=${VIP_WORK:-$HOME/.cache/openpcie-vip}
 mkdir -p "$W"
 
-# clone or update a repo, check out $2 (default: its newest tag); prints the ref
+# clone or update a repo, check out $2 (default: its newest tag); prints the ref.
+# It runs in $(...), where set -e does not stop the script, so each step
+# checks itself and fetch_ref below stops on a failure.
 fetch() {
     local repo=$1 ref=${2:-}
-    [ -d "$W/$repo" ] || git clone -q "https://github.com/wyvernSemi/$repo.git" "$W/$repo"
-    git -C "$W/$repo" fetch -q --tags origin
-    git -C "$W/$repo" checkout -q -- .  # drop a patch from the last run
+    if [ ! -d "$W/$repo" ]; then
+        git clone -q "https://github.com/wyvernSemi/$repo.git" "$W/$repo" || return 1
+    fi
+    git -C "$W/$repo" fetch -q --tags origin || return 1
+    git -C "$W/$repo" checkout -q -- . || return 1  # drop a patch from the last run
     [ -n "$ref" ] || ref=$(git -C "$W/$repo" tag --sort=-creatordate | head -1)
-    git -C "$W/$repo" checkout -q "$ref"
+    [ -n "$ref" ] || { echo "$repo: no tag found" >&2; return 1; }
+    git -C "$W/$repo" checkout -q "$ref" || return 1
     echo "$ref"
 }
+fetch_ref() { fetch "$@" || { echo "vip-upgrade: fetching $1 failed" >&2; exit 1; }; }
 
 lf() { tr -d '\r' < "$1"; }  # upstream mixes CRLF and LF; we keep LF
 
-VPROC_REF=$(fetch vproc "${VPROC_REF:-}")
-PCIEVHOST_REF=$(fetch pcievhost "${PCIEVHOST_REF:-}")
-MEM_MODEL_REF=$(fetch mem_model "${MEM_MODEL_REF:-}")
-RV32_REF=$(fetch rv32 "${RV32_REF:-}")
+VPROC_REF=$(fetch_ref vproc "${VPROC_REF:-}") || exit 1
+PCIEVHOST_REF=$(fetch_ref pcievhost "${PCIEVHOST_REF:-}") || exit 1
+MEM_MODEL_REF=$(fetch_ref mem_model "${MEM_MODEL_REF:-}") || exit 1
+RV32_REF=$(fetch_ref rv32 "${RV32_REF:-}") || exit 1
 echo "VProc $VPROC_REF, pcievhost $PCIEVHOST_REF, mem_model $MEM_MODEL_REF, rv32 $RV32_REF"
 
 O=$(mktemp -d)

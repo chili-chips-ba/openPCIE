@@ -34,11 +34,11 @@ Windows `.exe` files on `PATH` count as missing.
 
 | Step | Makefile / Directory | Produces |
 |---|---|---|
-| 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h` |
+| 1. CSR | [`MakefileCSR`](./MakefileCSR) | `csr_build/generated-files/` - `csr.sv`, `csr_pkg.sv`, `csr.h`, `csr_top.h`, register map docs |
 | 2. SW | [`sw_build`](./sw_build) | `firmware.elf`, `firmware.bin`, `firmware.hex` |
 | 3. HW | [`hw_build.openXC7`](./hw_build.openXC7) | `build_artifacts/top.x4g1.direct.bit` |
 
-<p align="center"><img src="../0.doc/4.build/build-flow.drawio.png" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (slang or sv2v, yosys, nextpnr, fasm2frames and xc7frames2bit) into top.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
+<p align="center"><img src="../0.doc/4.build/build-flow.drawio.png" width="100%" alt="Build flow: csr.rdl through PeakRDL into the register RTL and the firmware and co-sim headers; the firmware build into firmware.hex; the bitstream build through Vivado or openXC7 (slang or sv2v, yosys, nextpnr, fasm2frames and xc7frames2bit) into top.<link>.<variant>.bit for the Acorn CLE-215+; co-simulation, lint and the formal equivalence check alongside"></p>
 
 The diagram source is [`0.doc/4.build/build-flow.drawio`](../0.doc/4.build/build-flow.drawio).
 
@@ -61,7 +61,7 @@ The versions the build was validated with. "Board" means the bitstream was teste
 | SymbiYosys (`sby`) | v0.69 | formal: riscv-formal on eduBOS5, with ABC `bmc3` | checks |
 | Z3 | 5.3.1 (pip `z3-solver`) | formal: replays a riscv-formal failure | runs |
 | WaveCrux Pro | 1.1.1 | waveforms, RISC-V decoding (built in) | runs |
-| Ferrite wavecrux-decoders | pcie-v0.2.0, pcie-tlp-v0.1.0 (5) | PIPE, DLL and TLP decoding in WaveCrux | runs |
+| Ferrite wavecrux-decoders | pcie-v0.2.0, pcie-tlp-v0.1.1 (5) | PIPE, DLL and TLP decoding in WaveCrux | runs |
 | Python | 3.12 | build scripts | runs |
 | openFPGALoader | 1.1.1 | loading the bitstream over JTAG | not yet used on the board |
 | usbipd-win | 5.3.0 | JTAG cable into WSL (Windows side) | not yet used on the board |
@@ -218,7 +218,7 @@ Descend to [`hw_build.openXC7`](./hw_build.openXC7) and follow the Makefile and 
 
 1. `ASSEMBLER=fpga-as` for the one-step assembler. Not the default yet: it writes `RXCDR_CFG` wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)).
 
-Add `VARIANT=switched` for RC-switched: `build_artifacts/top.x1g2.switched.bit`. Each build has its own work folder, so they never overwrite each other. They do share `../sw_build/firmware.hex`, so build the matching firmware first. `make check-env` checks the tools.
+Add `VARIANT=switched` for RC-switched: `build_artifacts/top.x1g2.switched.bit`. Each build has its own work folder, so they never overwrite each other. Each build also makes the firmware of its variant, so a bitstream always carries the matching one. `make check-env` checks the tools.
 
 **Verified on hardware:** the pre-v1.0.0 bitstream (`build_artifacts/pre-v1.0.0/`) brings the PCIE link up at **Gen2**, against a second Artix-7 board as endpoint. The Vivado bitstream from the same RTL gets the same. The v1.0.0 bitstreams build and meet timing, except x4 Gen2 (181 MHz of 250 MHz: nextpnr cannot apply the eduBOS5 multicycle paths, [nextpnr#110](https://github.com/openXC7/nextpnr/issues/110)), but have not met the board yet.
 

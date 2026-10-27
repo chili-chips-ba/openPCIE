@@ -42,7 +42,7 @@
         <td>[16]</td>
         <td><a href="#msg_err_fatal.desc">msg_err_fatal</a></td>
         <td>
-            <span title='Read-only'>r</span></td>
+            <span title='Readable and Writable'>rw</span>, <span title='Bitwise write 1 to clear'>woclr</span></td>
         <td>0x0
         </td>
         <td>
@@ -82,6 +82,7 @@
 </h3>
 <div id="_Content.msg_err_fatal.desc">
 <p>A fatal-error Message TLP has been received
-(cfg_msg_received_err_fatal)</p>
+(cfg_msg_received_err_fatal). Sticky: stays 1 until
+software writes 1 to it</p>
 </div>
 </div>

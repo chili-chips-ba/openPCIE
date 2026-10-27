@@ -221,7 +221,7 @@ The architecture adopts a clean, well-defined, layered approach:
 
 > The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header, `csr.h`. The firmware reaches every register through one accessor, `CSR_REG32()`: a load or store on the RISC-V cores, a *VProc* bus cycle when the same firmware is compiled for the host in co-sim. The details of the HAL generation can be found in the [4.build/README.md](./4.build/README.md#csr-hal-compilation).
 
-More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md) and its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md).
 
 > **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
 
@@ -527,7 +527,16 @@ Given that PCIE is an advanced, high-speed design, in the light of _nextpnr-xili
 
 The design has also been ported to, and built with [_openXC7_ 1.0.0 edition](https://lnkd.in/p/gsDArjSt), which was a major step forward and essentially what _"ScalePNR"_ idea eventually evolved into. Its bitstreams have not been tested on hardware yet; the Gen2 result above is from the earlier flow. It brought to the forefront _Yosys0.69_ with integrated _**Slang**_, _**nextpnr-himbaechel**_ (instead of _nextpnr-xilinx_) and _**fpga-as**_. We do not use _fpga-as_ yet: it writes one GTP setting wrong ([#41](https://github.com/chili-chips-ba/openPCIE/issues/41)), so the build still assembles with _fasm2frames_ and _xc7frames2bit_. With that, the earlier SV2V standalone prep step for our SystemVerilog design sources proved to be unnecessary, which simplified the build process. The SV2V option is however still retained for cross-tool checking.
 
-**x4 and Gen2.** The RC now builds as x4 Gen1 (default), x4 Gen2 or x1 Gen2, with the user clock scaled to the link (62.5, 125 or 250 MHz) and the eduBOS5 CPU at 250 MHz in its 3-stage form. The x4 co-simulation passes, and Vivado meets timing on all three. On hardware, the x4 link trained before the user-clock fix; x4 TLP traffic is not re-tested yet ([2.rtl](2.rtl/README.md#link-width-speed-and-user-clock)).
+--------------------
+
+### Beyond the plan
+
+Bonus results: what the project delivered on its own.
+
+- **x4 and Gen2.** The RC builds as x4 Gen1 (default), x4 Gen2 or x1 Gen2, with the user clock scaled to the link (62.5, 125 or 250 MHz). Vivado meets timing on all three, and the x4 co-simulation passes. On hardware, the x4 link trained before the user-clock fix; x4 TLP traffic is not re-tested yet ([2.rtl](2.rtl/README.md#link-width-speed-and-user-clock)).
+- **eduBOS5, our own RISC-V core.** It replaces PicoRV32 as the default CPU, with twice its IPC: the firmware finishes in 390.2 µs instead of 667.2 µs. Its 3-stage form is the only core here that closes x4 Gen2's 250 MHz. Checked against the ISA with riscv-formal, and its multicycle paths proven formally ([eduBOS5](2.rtl/0.common.opensource/src/CPU.eduBOS5/README.md)).
+- **RC-switched in simulation.** A switch model behind the link (two endpoints, two empty ports) runs the RC-switched firmware end to end, enumeration through memory traffic ([5.sim](5.sim/README.md#rc-switched-a-switch-behind-the-link)).
+- **A PCIE TLP decoder in WaveCrux.** Our experimental TLP decoder is now Ferrite's official `pcie-tlp` decoder in [wavecrux-decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp): every TLP of the co-simulation, named and paired, in the waveform viewer ([5.sim](5.sim/README.md#wavecrux-decoders)).
 
 --------------------
 

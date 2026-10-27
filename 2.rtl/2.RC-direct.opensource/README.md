@@ -38,7 +38,7 @@ Link width and speed are two defines, `PCIE_LANES` and `PCIE_GEN`, read by [`lin
 |---|---|---|---|
 | openXC7 | `make` -> `top.x4g1.direct.bit` | `make GEN=2` -> `top.x4g2.direct.bit` | `make LANES=1` -> `top.x1g2.direct.bit` |
 | Vivado | `RC-direct.opensource.tcl` | `set ::pcie_gen 2` before sourcing it | `set ::pcie_lanes 1` before sourcing it |
-| `run-lint.sh`, `run-leq.sh` | default | Gen1 only (no `GEN` option) | `LANES=1` |
+| `run-lint.sh`, `run-leq.sh` | default | `GEN=2` | `LANES=1` |
 
 Width and speed set the user clock: see [Link width, speed and user clock](../README.md#link-width-speed-and-user-clock). The CPU: openXC7 `make CPU=edubos5|edubos5_3stg|picorv32`, Vivado `set ::cpu ...`. Default CPU: the 2-stage eduBOS5; at x4 Gen2 the 3-stage, which 250 MHz needs. The 3-stage eduBOS5 adds its multicycle constraint, [`edubos5.3STG-ONLY.mcp.tcl`](../0.common.opensource/src/CPU.eduBOS5/edubos5.3STG-ONLY.mcp.tcl).
 

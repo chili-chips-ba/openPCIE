@@ -88,7 +88,11 @@
 #define CPL_STAT_CA  4 // Completer Abort
 #define CPL_TIMEOUT  8 // not a PCIe status: no Completion arrived in time
 
-#define CPL_POLL_LIMIT 2000000 // polls of rx.header_info before giving up
+// Polls of rx.header_info before giving up. The simulation builds shorten it,
+// so a lost Completion ends as 0xBAD00002 within the run, not as a time-out.
+#ifndef CPL_POLL_LIMIT
+#define CPL_POLL_LIMIT 2000000
+#endif
 #define CRS_RETRIES    100     // re-issues of a request answered with CRS
 
 // Configuration space offsets

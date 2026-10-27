@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="build flow" id="build-flow">
-    <mxGraphModel dx="2395" dy="1711" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="2902" dy="1711" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -30,9 +30,6 @@
         </mxCell>
         <mxCell id="c7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#d5e8d4;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;" value="csr_pkg.sv, csr.sv&lt;br&gt;(register block RTL)" vertex="1">
           <mxGeometry height="46" width="130" x="-650" y="-310" as="geometry" />
-        </mxCell>
-        <mxCell id="c8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#fff2cc;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;points=[[0,0,0,0,0],[0,0,0,103,0],[0,0,0,109,6],[0,0,0,115,12],[0,0.5,0,0,0],[0,1,0,0,0],[0.252174,0,0,0,0],[0.5,0,0,0,0],[0.5,1,0,0,0],[1,0.5,0,0,0],[1,1,0,0,0]];" value="&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;firmware HAL&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;- csr.h&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;- openpcie_regs.h&lt;/span&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="56" width="125" x="-615" y="-447" as="geometry" />
         </mxCell>
         <mxCell id="c10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#eef4fb;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;" value="openpcie.md, html/&lt;br&gt;(register map docs)" vertex="1">
           <mxGeometry height="46" width="125.5" x="-813" y="-447" as="geometry" />
@@ -74,11 +71,11 @@
             <mxPoint x="-321" y="-424" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c20" edge="1" parent="1" source="c8" style="html=1;endArrow=block;endSize=5;strokeColor=#f4b183;strokeWidth=4;rounded=0;exitX=0.998;exitY=0.442;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="c15">
-          <mxGeometry relative="1" x="-0.357" as="geometry">
+        <mxCell id="c20" edge="1" parent="1" source="c8" style="html=1;endArrow=block;endSize=5;strokeColor=#f4b183;strokeWidth=4;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="c15">
+          <mxGeometry relative="1" x="-0.3173" as="geometry">
             <Array as="points">
-              <mxPoint x="-460" y="-430" />
-              <mxPoint x="-450" y="-440" />
+              <mxPoint x="-460" y="-420" />
+              <mxPoint x="-450" y="-430" />
               <mxPoint x="-450" y="-587" />
               <mxPoint x="-440" y="-597" />
             </Array>
@@ -264,8 +261,8 @@
             <mxPoint x="225" y="-31" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="c9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#fff2cc;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;dashed=1;" value="&lt;div&gt;&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;co-sim HAL&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;CSR_REG32 → VProc&lt;/div&gt;" vertex="1">
-          <mxGeometry height="56" width="125" x="-615" y="-383" as="geometry" />
+        <mxCell id="c9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#fff2cc;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;dashed=1;" value="&lt;div&gt;&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;VProc binding&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;CSR_* → VProc&lt;/div&gt;" vertex="1">
+          <mxGeometry height="56" width="125" x="-627.5" y="-400" as="geometry" />
         </mxCell>
         <mxCell id="IcAYbFRHrOeOv3Z--aI9-10" edge="1" parent="1" source="c5" style="shape=flexArrow;html=1;endArrow=block;endSize=5;startArrow=none;startSize=5;width=8;endWidth=10;startWidth=10;fillColor=#8faadc;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="c10" value="">
           <mxGeometry relative="1" x="-0.1269" as="geometry">
@@ -352,7 +349,7 @@
             <mxPoint x="-140" y="-240" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="pargd6hrnN6QfBMevZUr-2" edge="1" parent="1" source="c5" style="shape=flexArrow;html=1;endArrow=block;endSize=5;startArrow=none;startSize=5;width=8;endWidth=10;startWidth=10;fillColor=#8faadc;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=1;exitX=0.830303;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.252174;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="c8" value="">
+        <mxCell id="pargd6hrnN6QfBMevZUr-2" edge="1" parent="1" source="c5" style="shape=flexArrow;html=1;endArrow=block;endSize=5;startArrow=none;startSize=5;width=8;endWidth=10;startWidth=10;fillColor=#8faadc;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=1;exitX=0.830303;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="c8" value="">
           <mxGeometry relative="1" as="geometry">
             <Array as="points" />
             <mxPoint x="-586.31" y="-481" as="sourcePoint" />
@@ -365,16 +362,22 @@
         <mxCell id="pargd6hrnN6QfBMevZUr-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fillColor=#1f3864;strokeColor=none;fontColor=#ffffff;fontSize=13;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;" value="&lt;b style=&quot;font-size: 17px; color: rgb(255, 255, 255);&quot;&gt;Verif0.Lint&lt;/b&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;4.build/&lt;/font&gt;&lt;span style=&quot;text-align: left; background-color: transparent;&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;hw_build.openXC&lt;/font&gt;7&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="44" width="158" x="-817" y="-96.62" as="geometry" />
         </mxCell>
-        <mxCell id="pargd6hrnN6QfBMevZUr-9" edge="1" parent="1" source="c9" style="html=1;endArrow=block;endSize=5;strokeColor=#f4b183;strokeWidth=4;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0;exitDx=115;exitDy=39;exitPerimeter=0;dashed=1;dashPattern=1 1;" target="IcAYbFRHrOeOv3Z--aI9-28">
-          <mxGeometry relative="1" x="-0.3581" as="geometry">
+        <mxCell id="pargd6hrnN6QfBMevZUr-9" edge="1" parent="1" source="c9" style="html=1;endArrow=block;endSize=5;strokeColor=#f4b183;strokeWidth=4;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0;exitDx=125;exitDy=34;exitPerimeter=0;dashed=1;dashPattern=1 1;" target="IcAYbFRHrOeOv3Z--aI9-28">
+          <mxGeometry relative="1" x="-0.3924" as="geometry">
             <Array as="points">
-              <mxPoint x="-460" y="-362" />
+              <mxPoint x="-460" y="-366" />
               <mxPoint x="-451" y="-353" />
               <mxPoint x="-451" y="-157" />
             </Array>
             <mxPoint x="-461" y="-348" as="sourcePoint" />
             <mxPoint x="-451" y="-141" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;arcSize=8;fillColor=#fff2cc;strokeColor=#7f7f7f;fontColor=#000000;fontSize=12;fontStyle=0;align=center;verticalAlign=middle;spacingLeft=6;spacingRight=6;shape=note;size=12;points=[[0,0,0,0,0],[0,0,0,103,0],[0,0,0,109,6],[0,0,0,115,12],[0,0.5,0,0,0],[0,1,0,0,0],[0.252174,0,0,0,0],[0.5,0,0,0,0],[0.5,1,0,0,0],[1,0.5,0,0,0],[1,1,0,0,0]];" value="&lt;div&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;firmware HAL&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;- csr.h&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(237, 237, 237));&quot;&gt;- csr_regs.h&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="56" width="125" x="-647.5" y="-447" as="geometry" />
+        </mxCell>
+        <mxCell id="VFPkzVfLRDUBY_W5Dw_9-1" parent="1" style="text;whiteSpace=wrap;fontSize=9;fontColor=#663300;" value="-DVPROC" vertex="1">
+          <mxGeometry height="20" width="50" x="-478" y="-387" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

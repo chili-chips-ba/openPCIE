@@ -43,7 +43,11 @@
 
 #include "pcie.h"
 
+// Counts the requests; a TLP carries its low 5 bits as the tag (TX_TAG): the
+// RC does not enable Extended Tag (DEV_CONTROL_EXT_TAG_DEFAULT), so tags are
+// 0..31
 uint8_t tx_tag;
+#define TX_TAG() (tx_tag++ & 0x1F)
 
 void wait_cycles(int n) {
     for (int i = 0; i < n; i++) __asm__("nop");
@@ -103,7 +107,7 @@ uint32_t pcie_request(uint32_t type, uint32_t addr_or_id, uint32_t wdata, uint32
 
     for (int retry_count = 0; retry_count <= CRS_RETRIES; retry_count++) {
 
-        uint8_t current_tag = tx_tag++;
+        uint8_t current_tag = TX_TAG();
 
         send_tlp(type | 0x01,
                  (MY_REQUESTER_ID << 16) | (current_tag << 8) | 0x0F,
@@ -131,7 +135,7 @@ uint32_t pcie_cfg_read(uint32_t bus, uint32_t dev, uint32_t func, uint32_t reg, 
 }
 
 void pcie_mem_write(uint32_t addr, uint32_t val) {
-	uint8_t tag = tx_tag++;
+	uint8_t tag = TX_TAG();
 
     // Posted -- no Completion to wait for
     send_tlp(TLP_MEM_WR | 0x01,

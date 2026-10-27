@@ -47,7 +47,9 @@ module tb;
   localparam int RESULT_TAIL_US = 10;
   event result_seen;  // the firmware has written its result marker
 
-  initial begin : get_run_length
+  // A task called from the clock-and-reset initial block, so the run length is
+  // set before its time limit uses it (two initial blocks run in any order)
+  task automatic get_run_length();
     integer fh;
     integer code;
 
@@ -63,7 +65,7 @@ module tb;
     end
 
     $display("%t  TB     run length %0d us", $time, RUN_SIM_US);
-  end
+  endtask
 
 //--------------------------------------------------------------
 // Clock and reset generation
@@ -80,6 +82,7 @@ module tb;
   logic perst_n;
 
   initial begin
+    get_run_length();
     refclk_p = 1'b0;
     perst_n = 1'b0;
 
@@ -108,7 +111,7 @@ module tb;
                      RESULT_TAIL_US);
           end
         join_any
-        report_status();
+        report_status();  // ends with $fatal unless PASS, so make run fails
         $finish(2);
       end
     join
@@ -484,6 +487,10 @@ module tb;
       default:       $display("  FIRMWARE RESULT ......... not reached yet");
     endcase
     $display("--------------------------------------------------------");
+    // the result sets the exit status
+    if (result_marker !== 32'h0000_face) begin
+      $fatal(1, "firmware result 0x%08h, not PASS (0x0000face)", result_marker);
+    end
   endtask
 
 // Top level fatal task, which can be called from anywhere in verilog code

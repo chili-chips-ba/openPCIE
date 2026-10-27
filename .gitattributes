@@ -13,7 +13,9 @@
 5.sim/models/rv32/**                 linguist-vendored
 4.build/csr_build/generated-files/** linguist-generated
 
-# LF in the working copy too, whatever core.autocrlf says
+# LF in the working copy too, whatever core.autocrlf says: every text file,
+# binaries detected by git; the rules below name the main types explicitly
+* text=auto eol=lf
 *.sv      text eol=lf
 *.svh     text eol=lf
 # scripts, Makefiles and run configs are read on Linux / WSL, where a CR
@@ -24,7 +26,6 @@
 Makefile* text eol=lf
 *.v       text eol=lf
 *.md      text eol=lf
-*.sh      text eol=lf
 *.py      text eol=lf
 *.tcl     text eol=lf
 *.xdc     text eol=lf
@@ -32,5 +33,4 @@ Makefile* text eol=lf
 *.yml     text eol=lf
 *.toml    text eol=lf
 *.drawio  text eol=lf
-Makefile* text eol=lf
 *.bat     text eol=crlf

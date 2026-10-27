@@ -167,6 +167,8 @@ The RootComplex has also been tested with EndPoints behind the on-board ASM1184e
 ### Usecase 3: PCIE Expansion or Extension
 By using our _"PCIE Jumper Cable"_, the backplane can be connected to a standard PC serving as a RootComplex, such as for the expansion of its I/O Slot capacity, or for the extension of its physical reach. We also intend to use it for [openCologne-PCIE](https://github.com/chili-chips-ba/openCologne-PCIE) EndPoint validation, specifically to assess and compare the strength of GateMate SerDes to others, Xilinx Artix-7 and off-the-shelf ASICs in particular.
 
+> **Planned for openPCIE3.** This use case is the main purpose of our next backplane, [openPCIE3](../README.md#future-outlook), which introduces OCuLink: one or two PCs, each over an x4 OCuLink cable, to four x4 EP connectors. Design input is welcome in [#9](https://github.com/chili-chips-ba/openPCIE/issues/9) and [#13](https://github.com/chili-chips-ba/openPCIE/issues/13).
+
 <p align="center" width="100%">
     <img alt="PCIE male-to-male jumper cable" width="60%" src="0.doc/images/PCIE-Jumper-Cable-Male2Male.jpg">
 </p>

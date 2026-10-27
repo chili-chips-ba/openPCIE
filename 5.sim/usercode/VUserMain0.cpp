@@ -37,7 +37,7 @@ extern "C" void VUserMain0(int node)
 Version History:
 -----------------------------------------------------------------------------
  2026/08/16 AV: initial creation -- native C++ equivalent of 3.sw/RC-direct/main.c
-                (the previous node-0 sanity test is kept in stubs/)
+                (the previous node-0 sanity test was in stubs/, removed 2026-10-26)
  2026/10/06   : follows the firmware -- Completion Status checks, CRS retry on
                 config writes, BAR sizing by readback
  2026/10/26   : runs the 3.sw firmware itself (RC-direct or RC-switched)

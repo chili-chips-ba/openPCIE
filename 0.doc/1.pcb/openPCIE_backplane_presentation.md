@@ -79,6 +79,10 @@ Prototype bring-up story: topology, layout, manufacturing, factory tests, the CL
 - The CLKREQ is the last pin on the left side of the connector
 - The Permanent Fix
 
+<p align="center">
+    <img alt="Solder bridge between the CLKREQ# pin and the Ground pin next to it" width="50%" src="../../1.pcb/0.doc/images/CLKREQ--solder-shunt.jpg">
+</p>
+
 ## Slide 13
 - Verification Environment
 - Dual-PC Setup:

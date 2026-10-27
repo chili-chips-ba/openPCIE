@@ -122,10 +122,16 @@ set soc_csr_sv  "$src_dir/soc_csr.sv"
 
 set csr_files [list $csr_pkg_sv $csr_sv $soc_csr_sv]
 
-# firmware.hex is a product of the sw_build stage. The copy checked in is the
-# RC-direct one; for RC-switched, rebuild it with  make VARIANT=switched
-#   <openPCIE>/4.build/sw_build/firmware.hex
-set hex_file [file normalize "$common_dir/../../4.build/sw_build/firmware.hex"]
+# firmware.hex: the firmware of this variant, made by 4.build/sw_build into
+# xbuild.firmware/ next to the project (not in git). The tracked
+# 4.build/sw_build/firmware.hex stays the RC-direct board build.
+set sw_dir   [file normalize "$common_dir/../../4.build/sw_build"]
+set fw_dir   "$origin_dir/xbuild.firmware"
+if { [catch { exec {*}$fw_make -C $sw_dir OUT=$fw_dir 2>@1 } msg] } {
+  puts $msg
+  return -code error "Firmware build failed: $fw_make -C $sw_dir OUT=$fw_dir"
+}
+set hex_file "$fw_dir/firmware.hex"
 
 # ---- Check everything exists before Vivado is even started ------------------
 set missing {}
@@ -139,9 +145,6 @@ if { [llength $missing] } {
   puts " ERROR -- missing:"
   foreach f $missing { puts "   $f" }
   puts ""
-  puts " If firmware.hex is missing: run the sw_build stage with"
-  puts "   $fw_make"
-  puts " before creating the RTL project."
   puts "=============================================================="
   return -code error "Missing source files -- project not created."
 }

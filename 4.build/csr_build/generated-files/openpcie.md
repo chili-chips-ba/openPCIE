@@ -227,14 +227,15 @@ compares it against its own ID to filter foreign traffic.</p>
 
 <p>PCIe Error Status Register</p>
 
-|Bits|  Identifier |Access|Reset|            Name            |
-|----|-------------|------|-----|----------------------------|
-| 16 |msg_err_fatal|   r  | 0x0 |csr.status.err.msg_err_fatal|
+|Bits|  Identifier |  Access |Reset|            Name            |
+|----|-------------|---------|-----|----------------------------|
+| 16 |msg_err_fatal|rw, woclr| 0x0 |csr.status.err.msg_err_fatal|
 
 #### msg_err_fatal field
 
 <p>A fatal-error Message TLP has been received
-(cfg_msg_received_err_fatal)</p>
+(cfg_msg_received_err_fatal). Sticky: stays 1 until
+software writes 1 to it</p>
 
 ### phy register
 
