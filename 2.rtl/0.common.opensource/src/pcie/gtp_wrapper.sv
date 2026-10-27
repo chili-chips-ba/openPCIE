@@ -253,7 +253,7 @@ module gtp_wrapper
   // After a runtime PERST#, speed_ctrl still holds the last rate's select
   // until gtpll0_reset clears it, so the vote counts only once that is done.
   logic [PCIE_LANES-1:0] pipe_clk_sel_reg1, pipe_clk_sel_reg2;
-  logic                  vote_armed;
+  logic vote_armed;
 
   always_ff @(posedge pipe_clk or negedge pipe_rst_n) begin
     if (!pipe_rst_n) begin
