@@ -219,6 +219,10 @@ The architecture adopts a clean, well-defined, layered approach:
 3.  **HAL (Hardware Abstraction Layer)**:
     - Low-level helper functions that interact with the hardware by reading and writing data to **specific memory addresses**.
 
+> The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header, `csr.h`. The firmware reaches every register through one accessor, `CSR_REG32()`: a load or store on the RISC-V cores, a *VProc* bus cycle when the same firmware is compiled for the host in co-sim. The details of the HAL generation can be found in the [4.build/README.md](./4.build/README.md#csr-hal-compilation).
+
+More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
+
 > **Note:** This structure allows developers to treat PCIE devices just like any other local peripheral, abstracting away the complexities of the physical link.
 
 Details are in the [SW README](3.sw/README.md).
@@ -249,9 +253,9 @@ The test bench has the following features:
   * An [HDL component](5.sim/models/cosim/README.md) instantiated in logic gives logic access to this memory
   * An API is provided to _VProc_ running code for direct access from the _pcieVHost_ software, which implements this sparse memory C model.
 
-More details on the architecture and usage of the openPCIE test bench can be found in the [README.md](5.sim/README.md) in the `5.sim` directory.
+More details on the architecture and usage of the openPCIE test bench can be found in the [5.sim/README.md](5.sim/README.md).
 
-The co-simulation can also be followed at TLP level in the [WaveCrux](https://wavecrux.app) waveform viewer, with an [open-source PCIE TLP decoder plugin](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp) and a ready-made session -- here the firmware sizing BAR0 by readback and placing it at `0x80000000` ([more](5.sim/README.md#viewing-the-tlps-in-wavecrux)):
+The co-simulation can also be followed at TLP level in the [WaveCrux](https://wavecrux.app) waveform viewer, with an [open-source PCIE TLP decoder plugin](https://github.com/Ferrite-Engineering/wavecrux-decoders/tree/main/decoders/pcie-tlp) and a ready-made session -- Here the firmware sizing BAR0 by read-back and placing it at `0x80000000` ([more](5.sim/README.md#viewing-the-tlps-in-wavecrux)):
 
 <p align="center">
 <img alt="WaveCrux TLP view: firmware sizing BAR0" src="5.sim/images/wavecrux-tlp-bar-sizing.png" width="75%">
@@ -259,12 +263,7 @@ The co-simulation can also be followed at TLP level in the [WaveCrux](https://wa
 
 One level down, Ferrite's [PCIe PIPE and Data Link Layer decoders](https://github.com/Ferrite-Engineering/wavecrux-decoders) show the same link on the wire: link training, flow-control credits, and every TLP with its sequence number and Ack ([more](5.sim/README.md#viewing-the-pipe-in-wavecrux)). With all three layers in one view, you can also see how long a TLP spends inside the hard macro: about 0.4 µs each way ([more](5.sim/README.md#how-long-a-tlp-spends-in-the-hard-macro)).
 
-### Co-sim HAL
-
-The openPCIE control and status register hardware abstraction layer (HAL) software is [auto-generated](4.build/README.md#csr-hal-compilation), as is the CSR RTL, using [`peakrdl`](https://peakrdl-cheader.readthedocs.io/en/latest/). A single SystemRDL specification, [`4.build/csr_build/csr.rdl`](4.build/csr_build/csr.rdl), describes the TLP transmit/receive window the RISC-V firmware drives, and everything else is derived from it: the register block RTL (`csr.sv`, `csr_pkg.sv`), which [`soc_csr.sv`](2.rtl/0.common.opensource/src/soc_csr.sv) bridges to the CPU memory bus (eduBOS5 or PicoRV32), and the software header, `csr.h`. The firmware reaches every register through one accessor, `CSR_REG32()`: a load or store on the RISC-V cores, a *VProc* bus cycle when the same firmware is compiled for the host in co-simulation. The details of the HAL generation can be found in the [README.md](./4.build/README.md#csr-hal-compilation) in the `4.build/` directory.
-
-More details of the test bench, the _pcievhost_ component and its usage can be found in the [5.sim/README.md](5.sim/README.md) file. See also the [pcievhost model](5.sim/models/pcievhost/README.md), its [LTSSM support code](5.sim/models/pcievhost/ltssm/README.md), and the superseded [DUT stubs](5.sim/stubs/README.md).
-  
+ 
 #### References
 - [pcieVHost](https://github.com/wyvernSemi/pcievhost/blob/master/doc/pcieVHost.pdf)
 - [WaveCrux](https://wavecrux.app) waveform viewer, [decoder plugin interface](https://github.com/Ferrite-Engineering/wavecrux/blob/main/include/wavecrux_decoder.h)
